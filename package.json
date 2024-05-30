@@ -1,38 +1,80 @@
 {
-  "name": "serene_frontend",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+	"name": "ecommerce_frontend",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@square/web-sdk": "^2.0.1",
+		"@testing-library/jest-dom": "^5.17.0",
+		"@testing-library/react": "^13.4.0",
+		"@testing-library/user-event": "^13.5.0",
+		"antd": "^5.13.2",
+		"aos": "^2.3.4",
+		"apexcharts": "^3.45.2",
+		"axios": "^1.6.7",
+		"bootstrap-icons": "^1.11.3",
+		"chart.js": "^4.4.1",
+		"emoji-picker-react": "^4.9.3",
+		"express": "^4.18.2",
+		"html2canvas": "^1.4.1",
+		"install": "^0.13.0",
+		"jsonwebtoken": "^9.0.2",
+		"jspdf": "^2.5.1",
+		"moment": "^2.30.1",
+		"prettier": "^3.2.4",
+		"query-string": "^9.0.0",
+		"react": "^18.2.0",
+		"react-apexcharts": "^1.4.1",
+		"react-barcode": "^1.4.6",
+		"react-bootstrap": "^2.10.0",
+		"react-countup": "^6.5.0",
+		"react-dnd": "^16.0.1",
+		"react-dnd-html5-backend": "^16.0.1",
+		"react-dom": "^18.2.0",
+		"react-export-excel": "^0.5.3",
+		"react-facebook-pixel": "^1.0.4",
+		"react-ga4": "^2.1.0",
+		"react-helmet": "^6.1.0",
+		"react-icons": "^5.0.1",
+		"react-image-file-resizer": "^0.4.8",
+		"react-messenger-chat-plugin": "^3.0.5",
+		"react-quill": "^2.0.0",
+		"react-responsive-carousel": "^3.2.23",
+		"react-router-dom": "^5.3.0",
+		"react-scripts": "5.0.1",
+		"react-slick": "^0.30.2",
+		"react-square-web-payments-sdk": "^3.2.1",
+		"react-star-ratings": "^2.3.0",
+		"react-to-print": "^2.14.15",
+		"react-toastify": "^10.0.4",
+		"react-transition-group": "^4.4.5",
+		"slick-carousel": "^1.8.1",
+		"socket.io-client": "^4.7.5",
+		"styled-components": "^6.1.8",
+		"web-vitals": "^2.1.4",
+		"xlsx": "^0.18.5"
+	},
+	"scripts": {
+		"start": "react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject"
+	},
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	}
 }

@@ -1,43 +1,176 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+<!-- @format -->
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+<!doctype html>
+<html lang="en_US">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#000000" />
+		<meta
+			name="description"
+			content="Discover the best offers at Serene Jannat, your online gift store for candles, glass items, and more. Show love to your loved ones with our exquisite collection."
+		/>
+		<meta
+			name="keywords"
+			content="Serene Jannat, gifts, candles, glass items, online shop, best offers, gift store"
+		/>
+		<meta
+			property="og:title"
+			content="Serene Jannat | Best Gifts and Candles Online Shop"
+		/>
+		<meta
+			property="og:description"
+			content="Discover the best offers at Serene Jannat, your online gift store for candles, glass items, and more. Show love to your loved ones with our exquisite collection."
+		/>
+		<meta property="og:image" content="%PUBLIC_URL%/logo192.png" />
+		<meta property="og:url" content="https://serenejannat.com" />
+		<meta property="og:type" content="website" />
+		<meta property="og:locale" content="en_US" />
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+		<!-- <meta
+			name="facebook-domain-verification"
+			content="7ep1e76q53u7eukptogvhqx5waivyk"
+		/> -->
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
+		<link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+		<link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+			integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		/>
+
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+			crossorigin="anonymous"
+		/>
+		<link rel="stylesheet" href="bower_components/aos/dist/aos.css" />
+
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"
+		/>
+
+		<link
+			rel="stylesheet"
+			href="//fonts.googleapis.com/earlyaccess/droidarabickufi.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			charset="UTF-8"
+			href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+			rel="stylesheet"
+		/>
+
+		<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+		<link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+		<!-- Meta Pixel Code -->
+		<!-- <script>
+			!(function (f, b, e, v, n, t, s) {
+				if (f.fbq) return;
+				n = f.fbq = function () {
+					n.callMethod
+						? n.callMethod.apply(n, arguments)
+						: n.queue.push(arguments);
+				};
+				if (!f._fbq) f._fbq = n;
+				n.push = n;
+				n.loaded = !0;
+				n.version = "2.0";
+				n.queue = [];
+				t = b.createElement(e);
+				t.async = !0;
+				t.src = v;
+				s = b.getElementsByTagName(e)[0];
+				s.parentNode.insertBefore(t, s);
+			})(
+				window,
+				document,
+				"script",
+				"https://connect.facebook.net/en_US/fbevents.js"
+			);
+			fbq("init", "3506674879555844");
+			fbq("track", "PageView");
+		</script>
+		<noscript
+			><img
+				height="1"
+				width="1"
+				style="display: none"
+				src="https://www.facebook.com/tr?id=3506674879555844&ev=PageView&noscript=1"
+		/></noscript> -->
+		<!-- End Meta Pixel Code -->
+
+		<title>Serene Jannat | Best Gifts and Candles Online Shop</title>
+	</head>
+	<body>
+		<!-- Google tag (gtag.js) -->
+		<!-- <script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-7JM36296GR"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-7JM36296GR");
+		</script> -->
+		<!-- Messenger Chat plugin Code -->
+		<!-- <div id="fb-root"></div> -->
+
+		<!-- Your Chat plugin code -->
+		<!-- <div id="fb-customer-chat" class="fb-customerchat"></div> -->
+
+		<!-- <script>
+			var chatbox = document.getElementById("fb-customer-chat");
+			chatbox.setAttribute("page_id", "107169288975957");
+			chatbox.setAttribute("attribution", "biz_inbox");
+		</script> -->
+
+		<!-- Your SDK code
+		<script>
+			window.fbAsyncInit = function () {
+				FB.init({
+					xfbml: true,
+					version: "v16.0",
+				});
+			};
+
+			(function (d, s, id) {
+				var js,
+					fjs = d.getElementsByTagName(s)[0];
+				if (d.getElementById(id)) return;
+				js = d.createElement(s);
+				js.id = id;
+				js.src = "https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js";
+				fjs.parentNode.insertBefore(js, fjs);
+			})(document, "script", "facebook-jssdk");
+		</script> -->
+
+		<noscript>You need to enable JavaScript to run this app.</noscript>
+
+		<div id="root"></div>
+	</body>
 </html>
