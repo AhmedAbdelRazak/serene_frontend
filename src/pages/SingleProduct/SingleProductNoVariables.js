@@ -294,7 +294,7 @@ const ProductImagesWrapper = styled.div`
 
 	img {
 		width: 100%;
-		height: 500px; /* Ensure the height matches the height set in DisplayImages */
+		height: 700px; /* Ensure the height matches the height set in DisplayImages */
 		object-fit: contain; /* Ensure the whole image is displayed without distortion */
 		border-radius: 5px;
 	}
@@ -317,10 +317,11 @@ const ProductDetailsWrapper = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 10px; /* Ensure even spacing between elements */
-
+	padding-top: 30px;
 	@media (max-width: 768px) {
 		flex: 1 1 100%;
 		margin-top: 20px;
+		padding-top: 10px;
 	}
 `;
 

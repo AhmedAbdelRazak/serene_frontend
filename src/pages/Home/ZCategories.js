@@ -60,10 +60,12 @@ const ZCategories = ({ allCategories }) => {
 							<Link to={`/our-products?category=${category.categorySlug}`}>
 								{/* Ensure thumbnail exists and has at least one item */}
 								{category.thumbnail && category.thumbnail.length > 0 && (
-									<CategoryImage
-										src={category.thumbnail[0].url}
-										alt={category.categoryName}
-									/>
+									<CategoryImageWrapper>
+										<CategoryImage
+											src={category.thumbnail[0].url}
+											alt={category.categoryName}
+										/>
+									</CategoryImageWrapper>
 								)}
 								<CategoryName>{category.categoryName}</CategoryName>
 							</Link>
@@ -109,7 +111,7 @@ const ZCategoriesWrapper = styled.div`
 	}
 
 	.ant-card-body {
-		padding: 5px 5px !important;
+		padding: 0 !important; /* Remove padding from the card body */
 	}
 `;
 
@@ -120,6 +122,7 @@ const CategoryCard = styled(Card)`
 	transition:
 		transform 0.3s ease,
 		box-shadow 0.3s ease;
+	padding: 0 !important; /* Remove padding from the card */
 
 	&:hover {
 		transform: translateY(-10px);
@@ -127,17 +130,24 @@ const CategoryCard = styled(Card)`
 	}
 `;
 
-const CategoryImage = styled.img`
+const CategoryImageWrapper = styled.div`
 	width: 100%;
 	height: 200px;
-	object-fit: cover;
+	overflow: hidden;
+	border-radius: 10px 10px 0 0;
+`;
+
+const CategoryImage = styled.img`
+	width: 100%;
+	height: 100%;
+	object-fit: fill;
 	object-position: center;
-	border-radius: 10px;
 `;
 
 const CategoryName = styled.h3`
 	text-align: center;
-	margin-top: 10px;
+	margin: 0; /* Remove margin from CategoryName */
+	padding: 10px 0; /* Add padding to the top and bottom */
 	color: var(--text-color-dark);
 	font-size: 16px;
 	text-transform: capitalize;

@@ -661,7 +661,11 @@ const ProductsSection = styled.div`
 const ProductCard = styled(Card)`
 	border-radius: 10px;
 	overflow: hidden;
-	min-height: 400px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-height: 450px;
+	max-height: 450px;
 	transition: var(--main-transition);
 	text-transform: capitalize;
 
@@ -671,18 +675,27 @@ const ProductCard = styled(Card)`
 	}
 
 	@media (max-width: 700px) {
-		min-height: 200px;
+		min-height: 300px;
+		max-height: 300px;
 	}
 `;
 
 const ImageContainer = styled.div`
 	position: relative;
+	height: 300px;
+	overflow: hidden;
+	border-radius: 10px 10px 0 0;
+
+	@media (max-width: 700px) {
+		height: 200px;
+	}
 `;
 
 const ProductImage = styled.img`
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	object-fit: fill;
+	object-position: center;
 	cursor: pointer;
 `;
 

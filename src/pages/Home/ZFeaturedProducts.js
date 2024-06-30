@@ -218,14 +218,15 @@ const ImageContainer = styled.div`
 
 const ImageWrapper = styled.div`
 	width: 100%;
-	height: 400px;
+	height: 300px;
 	overflow: hidden;
+	border-radius: 10px 10px 0 0;
 `;
 
 const ProductImage = styled.img`
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	object-fit: fill;
 	object-position: center;
 `;
 

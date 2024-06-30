@@ -19,7 +19,7 @@ export default DisplayImages;
 const ImageCarousel = styled.div`
 	img {
 		width: 100%;
-		height: 500px; /* Adjust this height as necessary */
+		height: 700px; /* Adjust this height as necessary */
 		object-fit: contain; /* Ensure the whole image is displayed without distortion */
 		border-radius: 5px;
 	}
