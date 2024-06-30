@@ -167,7 +167,11 @@ const App = () => {
 				/>
 				<PrivateRoute path='/dashboard' exact component={UserDashboard} />
 			</Switch>
-			<ChatIcon />
+			{window.location.pathname.includes("admin") ? null : (
+				<>
+					<ChatIcon />
+				</>
+			)}
 
 			{window.location.pathname.includes("admin") ? null : (
 				<>

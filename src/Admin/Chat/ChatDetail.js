@@ -45,20 +45,16 @@ const ChatDetail = ({ chat, isHistory, fetchChats }) => {
 	};
 
 	const handleSendMessage = async () => {
-		const messageBy = { customerName: displayName, customerEmail: user.email };
-		const message = {
-			messageBy,
+		const messageData = {
+			messageBy: { customerName: displayName, customerEmail: user.email },
 			message: newMessage,
 			date: new Date(),
 			caseId: chat._id,
 		};
 
 		try {
-			await updateSupportCase(chat._id, {
-				conversation: [...messages, message],
-				supporterName: displayName,
-			});
-			socket.emit("sendMessage", message);
+			await updateSupportCase(chat._id, { conversation: messageData });
+			socket.emit("sendMessage", messageData);
 			setNewMessage("");
 			socket.emit("stopTyping", { name: displayName, caseId: chat._id });
 			fetchChats(); // Update the parent component's chat list

@@ -13,12 +13,13 @@ const HistoryChats = () => {
 	useEffect(() => {
 		const fetchChats = async () => {
 			try {
-				const response = await getSupportCases(token);
-				setChats(
-					response
-						.filter((chat) => chat.caseStatus === "closed")
-						.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+				const response = await getSupportCases("closed", token);
+				console.log("Fetched Support Cases:", response); // Log the fetched data
+				const closedChats = response.sort(
+					(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
 				);
+				setChats(closedChats);
+				console.log("Filtered Closed Chats:", closedChats); // Log the filtered data
 			} catch (error) {
 				console.error("Error fetching support cases", error);
 			}
@@ -42,7 +43,7 @@ const HistoryChats = () => {
 							isActive={selectedChat && selectedChat._id === chat._id}
 						>
 							<ChatItemHeader>
-								<p>{chat.conversation[0].messageBy.customerName}</p>
+								<p>{chat.conversation[0]?.messageBy?.customerName}</p>
 								<p>{new Date(chat.createdAt).toLocaleString()}</p>
 							</ChatItemHeader>
 							<StarRatingWrapper>

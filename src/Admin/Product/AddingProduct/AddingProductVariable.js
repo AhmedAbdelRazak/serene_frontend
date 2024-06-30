@@ -293,28 +293,39 @@ const AddingProductVariable = ({
 
 			<form className=''>
 				{clickedVariableLink === "SizesColorsImages" ? (
-					<div className='form-group formwrapper   col-md-8'>
+					<div className='form-group formwrapper col-md-8'>
 						<label>Product Available Sizes</label>
 						<Select
 							mode='multiple'
 							style={{ width: "100%" }}
 							placeholder='Please Select Sizes'
 							value={chosenSizes}
-							onChange={(value) => setChosenSizes(value)}
+							onChange={(value) => {
+								// Check if "Constant Size" is selected
+								if (value.includes("nosizes") && value.length > 1) {
+									// If "Constant Size" is selected, remove other sizes
+									value = ["nosizes"];
+								} else if (value.length > 1 && value.includes("nosizes")) {
+									// If other sizes are selected, remove "Constant Size"
+									value = value.filter((size) => size !== "nosizes");
+								}
+								setChosenSizes(value);
+							}}
 						>
 							{allSizes &&
-								allSizes.map((ss, iii) => {
-									return (
-										<Option
-											style={{ textTransform: "uppercase" }}
-											key={iii}
-											value={ss.size}
-										>
-											{ss.size}
-										</Option>
-									);
-								})}
-						</Select>{" "}
+								allSizes.map((ss, iii) => (
+									<Option
+										style={{ textTransform: "uppercase" }}
+										key={iii}
+										value={ss.size}
+									>
+										{ss.size}
+									</Option>
+								))}
+							<Option style={{ textTransform: "uppercase" }} value='nosizes'>
+								Constant Size
+							</Option>
+						</Select>
 						{chosenSizes.length > 0 ? (
 							<div className='mt-4'>
 								<label>Product Available Colors</label>
@@ -328,17 +339,15 @@ const AddingProductVariable = ({
 									}}
 								>
 									{allColors &&
-										allColors.map((c, ii) => {
-											return (
-												<Option
-													style={{ textTransform: "capitalize" }}
-													key={ii}
-													value={c.hexa}
-												>
-													{c.color}
-												</Option>
-											);
-										})}
+										allColors.map((c, ii) => (
+											<Option
+												style={{ textTransform: "capitalize" }}
+												key={ii}
+												value={c.hexa}
+											>
+												{c.color}
+											</Option>
+										))}
 								</Select>
 								{chosenColors.length > 0 && chosenSizes.length > 0 ? (
 									<button

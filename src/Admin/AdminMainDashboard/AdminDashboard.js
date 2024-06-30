@@ -109,7 +109,7 @@ export default AdminDashboard;
 
 const AdminDashboardWrapper = styled.div`
 	overflow-x: hidden;
-	margin-top: 20px;
+	margin-top: 80px;
 	min-height: 715px;
 
 	.grid-container-main {

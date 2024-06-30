@@ -93,7 +93,7 @@ export default ProductMain;
 const ProductMainWrapper = styled.div`
 	overflow-x: hidden;
 	/* background: #ededed; */
-	margin-top: 20px;
+	margin-top: 80px;
 	min-height: 715px;
 
 	.grid-container-main {

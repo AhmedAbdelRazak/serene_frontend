@@ -1740,17 +1740,17 @@ export const createNewSupportCase = async (data) => {
 		});
 };
 
-export const getSupportCases = () => {
-	return fetch(`${process.env.REACT_APP_API_URL}/support-cases`, {
+export const getSupportCases = (status, token) => {
+	const url = `${process.env.REACT_APP_API_URL}/support-cases?status=${status}`;
+	return fetch(url, {
 		method: "GET",
 		headers: {
 			Accept: "application/json",
 			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
 		},
 	})
-		.then((response) => {
-			return response.json();
-		})
+		.then((response) => response.json())
 		.catch((err) => console.log(err));
 };
 
@@ -1798,4 +1798,130 @@ export const updateSupportCase = (caseId, data, token) => {
 			return response.json();
 		})
 		.catch((err) => console.log(err));
+};
+
+export const getUnassignedSupportCasesCount = (token) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/support-cases/unassigned/count`,
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};
+
+export const updateSeenByAdmin = (caseId, token) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/support-cases-admin/${caseId}/seen`,
+		{
+			method: "PUT",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((response) => response.json())
+		.then((data) => {
+			console.log(`Response from updateSeenByAdmin:`, data);
+			return data;
+		})
+		.catch((err) => console.log(err));
+};
+
+export const getUnseenMessagesCountByAdmin = async (token) => {
+	try {
+		const response = await fetch(
+			`${process.env.REACT_APP_API_URL}/support-cases/unseen/count`,
+			{
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+		return await response.json();
+	} catch (error) {
+		console.error("Error fetching unseen messages count", error);
+		throw error;
+	}
+};
+
+export const getUnseenMessagesDetails = async (token) => {
+	try {
+		const response = await fetch(
+			`${process.env.REACT_APP_API_URL}/support-cases/unseen/details`,
+			{
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+		return await response.json();
+	} catch (error) {
+		console.error("Error fetching unseen messages count", error);
+		throw error;
+	}
+};
+
+export const getUnseenMessagesDetailsByCustomer = async (token) => {
+	try {
+		const response = await fetch(
+			`${process.env.REACT_APP_API_URL}/support-cases-customer/unseen/details`,
+			{
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+		return await response.json();
+	} catch (error) {
+		console.error("Error fetching unseen messages count", error);
+		throw error;
+	}
+};
+
+export const getUnseenMessagesCountByCustomer = async (caseId) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/support-cases-customer/${caseId}/unseen-count`,
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+		}
+	)
+		.then((response) => response.json())
+		.catch((err) => {
+			console.error("API error: ", err);
+		});
+};
+
+export const updateSeenByCustomer = async (caseId) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/support-cases-customer/${caseId}/seen`,
+		{
+			method: "PUT",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+		}
+	)
+		.then((response) => response.json())
+		.catch((err) => {
+			console.error("API error: ", err);
+		});
 };

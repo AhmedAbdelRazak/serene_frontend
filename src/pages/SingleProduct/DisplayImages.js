@@ -1,4 +1,3 @@
-// DisplayImages.js
 import React from "react";
 import styled from "styled-components";
 import { Carousel } from "antd";
@@ -20,15 +19,11 @@ export default DisplayImages;
 const ImageCarousel = styled.div`
 	img {
 		width: 100%;
-		height: 700px;
-		object-fit: cover;
+		height: 500px; /* Adjust this height as necessary */
+		object-fit: contain; /* Ensure the whole image is displayed without distortion */
 		border-radius: 5px;
 	}
 
-	img {
-		object-fit: cover;
-		border-radius: 5px;
-	}
 	.ant-carousel .slick-dots li {
 		width: 30px; /* Line width */
 		height: 2px; /* Line height */

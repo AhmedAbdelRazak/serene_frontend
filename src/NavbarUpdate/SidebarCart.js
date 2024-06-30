@@ -169,34 +169,39 @@ const SidebarCart = ({ from }) => {
 															);
 														})}
 												</AttributeSelect>
-												<AttributeSelect
-													value={item.size}
-													onChange={(e) => {
-														var chosenAttribute2 =
-															item.allProductDetailsIncluded.productAttributes.filter(
-																(iii) =>
-																	iii.size.toLowerCase() ===
-																	e.target.value.toLowerCase()
-															)[0];
+												{uniqueProductSizes &&
+												uniqueProductSizes &&
+												uniqueProductSizes.length > 0 &&
+												uniqueProductSizes[0] !== "nosizes" ? (
+													<AttributeSelect
+														value={item.size}
+														onChange={(e) => {
+															var chosenAttribute2 =
+																item.allProductDetailsIncluded.productAttributes.filter(
+																	(iii) =>
+																		iii.size.toLowerCase() ===
+																		e.target.value.toLowerCase()
+																)[0];
 
-														changeSize(
-															item.id,
-															e.target.value,
-															item.color,
-															chosenAttribute2.quantity,
-															item.size
-														);
-													}}
-												>
-													{uniqueProductSizes &&
-														uniqueProductSizes.map((ss, iii) => {
-															return (
-																<option key={iii} value={ss}>
-																	{ss}
-																</option>
+															changeSize(
+																item.id,
+																e.target.value,
+																item.color,
+																chosenAttribute2.quantity,
+																item.size
 															);
-														})}
-												</AttributeSelect>
+														}}
+													>
+														{uniqueProductSizes &&
+															uniqueProductSizes.map((ss, iii) => {
+																return (
+																	<option key={iii} value={ss}>
+																		{ss}
+																	</option>
+																);
+															})}
+													</AttributeSelect>
+												) : null}
 											</AttributeWrapper>
 										)}
 										<RemoveButton

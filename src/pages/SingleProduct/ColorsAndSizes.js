@@ -26,20 +26,22 @@ const ColorsAndSizes = ({
 					))}
 				</OptionsWrapper>
 			</ColorsWrapper>
-			<SizesWrapper>
-				<Label>Sizes:</Label>
-				<OptionsWrapper>
-					{sizes.map((size) => (
-						<SizeOption
-							key={size}
-							onClick={() => handleSizeChange(size)}
-							selected={selectedSize === size}
-						>
-							{size}
-						</SizeOption>
-					))}
-				</OptionsWrapper>
-			</SizesWrapper>
+			{sizes && sizes.length === 1 && sizes[0] === "nosizes" ? null : (
+				<SizesWrapper>
+					<Label>Sizes:</Label>
+					<OptionsWrapper>
+						{sizes.map((size) => (
+							<SizeOption
+								key={size}
+								onClick={() => handleSizeChange(size)}
+								selected={selectedSize === size}
+							>
+								{size}
+							</SizeOption>
+						))}
+					</OptionsWrapper>
+				</SizesWrapper>
+			)}
 		</ColorsAndSizesWrapper>
 	);
 };

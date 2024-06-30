@@ -90,7 +90,7 @@ export default SubcategoryMain;
 const SubcategoryMainWrapper = styled.div`
 	overflow-x: hidden;
 	/* background: #ededed; */
-	margin-top: 20px;
+	margin-top: 80px;
 	min-height: 715px;
 	padding-bottom: 100px;
 

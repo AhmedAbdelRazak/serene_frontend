@@ -102,6 +102,13 @@ const UpdateProductSingle = ({ productId }) => {
 	const [mainSize, setMainSize] = useState("");
 	const [allProducts, setAllProducts] = useState([]);
 
+	const [geodata, setGeodata] = useState({
+		length: "",
+		width: "",
+		height: "",
+		weight: "",
+	});
+
 	let productAttributes = [];
 
 	const { user, token } = isAuthenticated();
@@ -205,6 +212,7 @@ const UpdateProductSingle = ({ productId }) => {
 					data.filter((e) => e._id === productId)[0].policy_Arabic
 				);
 				setDNA(data.filter((e) => e._id === productId)[0].DNA);
+				setGeodata(data.filter((e) => e._id === productId)[0].geodata);
 				setDNA_Arabic(data.filter((e) => e._id === productId)[0].DNA_Arabic);
 				setSpecs(data.filter((e) => e._id === productId)[0].Specs);
 				setSpecs_Arabic(
@@ -321,6 +329,8 @@ const UpdateProductSingle = ({ productId }) => {
 				setMainSize={setMainSize}
 				allColors={allColors}
 				allSizes={allSizes}
+				geodata={geodata}
+				setGeodata={setGeodata}
 			/>
 		</React.Fragment>
 	);
@@ -718,12 +728,13 @@ const UpdateProductSingle = ({ productId }) => {
 			chosenSeason: chosenSeason,
 			featuredProduct: featured,
 			activeBackorder: activeBackorder,
+			geodata: geodata,
 			policy: policy ? policy : "",
 			policy_Arabic: policy_Arabic ? policy_Arabic : "",
 			DNA: DNA ? DNA : DNA,
-			DNA_Arabic: DNA_Arabic ? DNA_Arabic : "",
+			DNA_Arabic: DNA_Arabic ? DNA : "",
 			Specs: Specs ? Specs : "",
-			Specs_Arabic: Specs_Arabic ? Specs_Arabic : "",
+			Specs_Arabic: Specs_Arabic ? Specs : "",
 			fitCare: fitCare ? fitCare : fitCare,
 			viewsCount: viewsCount,
 			sizeChart: sizeChart ? sizeChart : {},

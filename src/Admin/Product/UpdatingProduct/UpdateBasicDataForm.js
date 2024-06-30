@@ -1,7 +1,6 @@
 /** @format */
 
 import React from "react";
-
 import ReactQuill from "react-quill";
 
 const toolbarOptions = [
@@ -50,6 +49,8 @@ const UpdateBasicDataForm = ({
 	setMainSize,
 	allColors,
 	allSizes,
+	geodata,
+	setGeodata,
 }) => {
 	const handleChange1 = (e) => {
 		setProductName(e.target.value);
@@ -90,6 +91,14 @@ const UpdateBasicDataForm = ({
 
 	const handleChange14 = (e) => {
 		setMainSize(e.target.value);
+	};
+
+	const handleGeodataChange = (e) => {
+		const { name, value } = e.target;
+		setGeodata((prev) => ({
+			...prev,
+			[name]: value,
+		}));
 	};
 
 	function handlePaste(e) {
@@ -221,6 +230,79 @@ const UpdateBasicDataForm = ({
 											);
 										})}
 								</select>
+							</div>
+						</div>
+
+						<div className='col-md-3 mx-auto'>
+							<div className='form-group'>
+								<label
+									className='text-muted'
+									style={{ fontWeight: "bold", fontSize: "13px" }}
+								>
+									Length
+								</label>
+								<input
+									type='text'
+									className='form-control'
+									name='length'
+									onChange={handleGeodataChange}
+									value={geodata.length}
+									required
+								/>
+							</div>
+						</div>
+						<div className='col-md-3 mx-auto'>
+							<div className='form-group'>
+								<label
+									className='text-muted'
+									style={{ fontWeight: "bold", fontSize: "13px" }}
+								>
+									Width
+								</label>
+								<input
+									type='text'
+									className='form-control'
+									name='width'
+									onChange={handleGeodataChange}
+									value={geodata.width}
+									required
+								/>
+							</div>
+						</div>
+						<div className='col-md-3 mx-auto'>
+							<div className='form-group'>
+								<label
+									className='text-muted'
+									style={{ fontWeight: "bold", fontSize: "13px" }}
+								>
+									Height
+								</label>
+								<input
+									type='text'
+									className='form-control'
+									name='height'
+									onChange={handleGeodataChange}
+									value={geodata.height}
+									required
+								/>
+							</div>
+						</div>
+						<div className='col-md-3 mx-auto'>
+							<div className='form-group'>
+								<label
+									className='text-muted'
+									style={{ fontWeight: "bold", fontSize: "13px" }}
+								>
+									Weight
+								</label>
+								<input
+									type='text'
+									className='form-control'
+									name='weight'
+									onChange={handleGeodataChange}
+									value={geodata.weight}
+									required
+								/>
 							</div>
 						</div>
 					</>
@@ -356,10 +438,84 @@ const UpdateBasicDataForm = ({
 								checked={inheritParentSKU === true ? true : false}
 							/>
 						</div>
+						<div className='row'>
+							<div className='col-md-3 mx-auto'>
+								<div className='form-group'>
+									<label
+										className='text-muted'
+										style={{ fontWeight: "bold", fontSize: "13px" }}
+									>
+										Length
+									</label>
+									<input
+										type='text'
+										className='form-control'
+										name='length'
+										onChange={handleGeodataChange}
+										value={geodata.length}
+										required
+									/>
+								</div>
+							</div>
+							<div className='col-md-3 mx-auto'>
+								<div className='form-group'>
+									<label
+										className='text-muted'
+										style={{ fontWeight: "bold", fontSize: "13px" }}
+									>
+										Width
+									</label>
+									<input
+										type='text'
+										className='form-control'
+										name='width'
+										onChange={handleGeodataChange}
+										value={geodata.width}
+										required
+									/>
+								</div>
+							</div>
+							<div className='col-md-3 mx-auto'>
+								<div className='form-group'>
+									<label
+										className='text-muted'
+										style={{ fontWeight: "bold", fontSize: "13px" }}
+									>
+										Height
+									</label>
+									<input
+										type='text'
+										className='form-control'
+										name='height'
+										onChange={handleGeodataChange}
+										value={geodata.height}
+										required
+									/>
+								</div>
+							</div>
+							<div className='col-md-3 mx-auto'>
+								<div className='form-group'>
+									<label
+										className='text-muted'
+										style={{ fontWeight: "bold", fontSize: "13px" }}
+									>
+										Weight
+									</label>
+									<input
+										type='text'
+										className='form-control'
+										name='weight'
+										onChange={handleGeodataChange}
+										value={geodata.weight}
+										required
+									/>
+								</div>
+							</div>
+						</div>
 					</React.Fragment>
 				)}
 			</div>
-			<div className='row'>
+			<div className='row mt-3'>
 				<div className='col-md-11 mx-auto mb-5'>
 					<div className='form-group'>
 						<label

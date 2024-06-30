@@ -33,11 +33,13 @@ const LastAddedLogoImageWrapper = styled.div`
 	justify-content: center;
 	align-items: center;
 	padding: 10px;
-	margin-left: 20px;
-	background-color: white;
+	margin: 20px 0;
+	background-color: grey;
+	border-radius: 5px;
+
 	img {
-		width: 80%;
-		max-width: 150px;
+		width: 90%;
+		max-width: 200px;
 		object-fit: cover;
 	}
 `;

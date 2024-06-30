@@ -1,5 +1,3 @@
-/** @format */
-
 import React from "react";
 import styled from "styled-components";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -218,30 +216,25 @@ const MultipleImageCard = ({
 							) : null}
 							<br />
 							<br />
-							{productAttributesFinal[i] &&
-							productAttributesFinal[i].productImages &&
-							productAttributesFinal[i].productImages.length <= 0 ? (
-								<label
-									className='btn btn-raised'
-									style={{
-										cursor: "pointer",
-										fontSize: "0.95rem",
-										backgroundColor: c,
-										color: "white",
-										boxShadow: "2px 2px 2px 3px rgba(0,0,0,0.1)",
-									}}
-								>
-									<img src={imageImage} alt='imageUpload' />
-									<input
-										type='file'
-										hidden
-										multiple
-										accept='images/*'
-										onChange={(e) => ColorsImageUpload(e, c)}
-										required
-									/>
-								</label>
-							) : null}
+							<label
+								className='btn btn-raised'
+								style={{
+									cursor: "pointer",
+									fontSize: "0.95rem",
+									backgroundColor: c,
+									color: "white",
+									boxShadow: "2px 2px 2px 3px rgba(0,0,0,0.1)",
+								}}
+							>
+								<img src={imageImage} alt='imageUpload' />
+								<input
+									type='file'
+									hidden
+									multiple
+									accept='images/*'
+									onChange={(e) => ColorsImageUpload(e, c)}
+								/>
+							</label>
 						</div>
 						<div className='text-muted fs-7'>
 							Width: 1200px, Height: 1220px;
@@ -298,5 +291,12 @@ const MultipleImageCardWrapper = styled.div`
 
 	.image:hover {
 		cursor: pointer;
+	}
+
+	.btn-raised {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 10px;
 	}
 `;

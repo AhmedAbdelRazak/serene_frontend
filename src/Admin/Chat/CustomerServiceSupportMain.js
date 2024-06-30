@@ -85,7 +85,7 @@ export default CustomerServiceSupportMain;
 
 const CustomerServiceSupportMainWrapper = styled.div`
 	overflow-x: hidden;
-	margin-top: 20px;
+	margin-top: 70px;
 	min-height: 800px;
 	padding-bottom: 100px;
 

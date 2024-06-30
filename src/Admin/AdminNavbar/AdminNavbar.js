@@ -11,14 +11,14 @@ import {
 	CreditCardOutlined,
 	DollarCircleOutlined,
 	ShopOutlined,
-	TeamOutlined,
 	HomeOutlined,
 	TagOutlined,
 	ContainerOutlined,
 } from "@ant-design/icons";
 import { Button, Menu } from "antd";
-import LastAddedLogoImage from "./LastAddedLogoImage";
+import TopNavbar from "./TopNavbar";
 import { signout } from "../../auth";
+import { useCartContext } from "../../cart_context";
 
 function getItem(label, key, icon, children, type, className) {
 	return {
@@ -38,7 +38,6 @@ const handleSignout = (history) => {
 };
 
 const items = [
-	getItem(<LastAddedLogoImage />, "StoreLogo"),
 	getItem(
 		<Link to='/admin/dashboard'>Admin Dashboard</Link>,
 		"sub1",
@@ -105,14 +104,7 @@ const items = [
 		null,
 		"black-bg"
 	),
-	getItem(
-		"Employee Accounts",
-		"sub17",
-		<TeamOutlined />,
-		null,
-		null,
-		"black-bg"
-	),
+
 	getItem(
 		<div className='margin-divider'></div>,
 		"divider2",
@@ -140,71 +132,85 @@ const AdminNavbar = ({
 	setCollapsed,
 }) => {
 	const [clickedOn, setClickedOn] = useState(false);
+	const { chosenLanguage } = useCartContext();
+	const history = useHistory();
 
 	const toggleCollapsed = () => {
 		setCollapsed(!collapsed);
 		setAdminMenuStatus(!collapsed);
 	};
 
-	const history = useHistory();
-
 	return (
-		<AdminNavbarWrapper
-			show={collapsed}
-			show2={clickedOn}
-			style={{ width: 285 }}
-		>
-			<Button
-				type='primary'
-				onClick={toggleCollapsed}
-				style={{ marginBottom: 8, textAlign: "center" }}
-			>
-				{collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-			</Button>
-			<Menu
-				defaultSelectedKeys={
-					fromPage === "AdminDashboard"
-						? "sub1"
-						: fromPage === "Categories"
-							? "sub2"
-							: fromPage === "Subcategories"
-								? "sub3"
-								: fromPage === "Attributes"
-									? "sub4"
-									: fromPage === "Genders"
-										? "sub20"
-										: fromPage === "Products"
-											? "sub6"
-											: fromPage === "CustomerService"
-												? "sub7"
-												: fromPage === "Vendors"
-													? "sub8"
-													: fromPage === "StoreSettings"
-														? "sub10"
-														: fromPage === "Website"
-															? "sub21"
-															: "sub1"
-				}
-				defaultOpenKeys={["sub1"]}
-				mode='inline'
-				theme='dark'
-				inlineCollapsed={collapsed}
-				items={items}
-				onClick={(e) => {
-					if (e.key === "signout") {
-						handleSignout(history);
-					}
-
-					if (e.key === "StoreLogo") {
-						setClickedOn(true);
-					} else {
-						setClickedOn(false);
-					}
-
-					return <Redirect to={e.key} />;
+		<>
+			<TopNavbar chosenLanguage={chosenLanguage} collapsed={collapsed} />
+			<AdminNavbarWrapper
+				show={collapsed}
+				show2={clickedOn}
+				style={{
+					width: collapsed ? 80 : 285,
 				}}
-			/>
-		</AdminNavbarWrapper>
+				dir={chosenLanguage === "Arabic" ? "rtl" : "ltr"}
+			>
+				<Button
+					type='primary'
+					onClick={toggleCollapsed}
+					style={{
+						marginBottom: 8,
+						textAlign: "center",
+						marginLeft: chosenLanguage === "Arabic" ? 200 : 5,
+						marginTop: chosenLanguage === "Arabic" ? 10 : 10,
+						left: collapsed ? "10px" : "220px",
+						zIndex: collapsed ? "1000" : "",
+					}}
+				>
+					{collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+				</Button>
+				<Menu
+					dir={chosenLanguage === "Arabic" ? "rtl" : "ltr"}
+					defaultSelectedKeys={
+						fromPage === "AdminDashboard"
+							? "sub1"
+							: fromPage === "Categories"
+								? "sub2"
+								: fromPage === "Subcategories"
+									? "sub3"
+									: fromPage === "Attributes"
+										? "sub4"
+										: fromPage === "Genders"
+											? "sub20"
+											: fromPage === "Products"
+												? "sub6"
+												: fromPage === "CustomerService"
+													? "sub7"
+													: fromPage === "Vendors"
+														? "sub8"
+														: fromPage === "StoreSettings"
+															? "sub10"
+															: fromPage === "Website"
+																? "sub21"
+																: "sub1"
+					}
+					defaultOpenKeys={["sub1"]}
+					mode='inline'
+					theme='dark'
+					inlineCollapsed={collapsed}
+					items={items}
+					onClick={(e) => {
+						if (e.key === "signout") {
+							handleSignout(history);
+						}
+
+						if (e.key === "StoreLogo") {
+							setClickedOn(true);
+						} else {
+							setClickedOn(false);
+						}
+
+						return <Redirect to={e.key} />;
+					}}
+				/>
+			</AdminNavbarWrapper>
+		</>
 	);
 };
 
@@ -213,28 +219,30 @@ export default AdminNavbar;
 const AdminNavbarWrapper = styled.div`
 	margin-bottom: 15px;
 	background: ${(props) => (props.show ? "" : "#1e1e2d")};
-	top: 0px !important;
+	top: ${(props) => (props.show ? "20px" : "69px")} !important;
 	z-index: 20000;
 	overflow: auto;
 	position: absolute;
 	padding: 0px !important;
-	width: ${(props) => (props.show ? "5% !important" : "")};
-	position: fixed;
-	top: 0;
-	left: 0;
-	height: 100vh;
+
+	position: fixed; // Add this line
+	top: 0; // Adjust as needed
+	left: 0; // Since the menu is on the right hand side
+	height: 100vh; // Make it full height
 
 	ul {
 		height: 90vh !important;
+		padding-top: 20px;
 	}
 
 	.logoClass {
-		display: ${(props) => (props.show ? "none" : "block")} !important;
+		display: ${(props) => (props.show ? "none " : "block")} !important;
 	}
 
 	li {
-		font-size: 0.9rem;
-		margin-bottom: ${(props) => (props.show ? "20px" : "15px")};
+		/* margin: 20px auto; */
+		font-size: 1rem;
+		margin-bottom: ${(props) => (props.show ? "20px " : "15px")};
 	}
 
 	hr {
@@ -244,6 +252,7 @@ const AdminNavbarWrapper = styled.div`
 
 	.ant-menu.ant-menu-inline-collapsed {
 		min-height: 850px;
+		/* position: fixed; */
 	}
 
 	.ant-menu.ant-menu-dark,
@@ -251,6 +260,10 @@ const AdminNavbarWrapper = styled.div`
 	.ant-menu.ant-menu-dark .ant-menu-sub {
 		color: rgba(255, 255, 255, 0.65);
 		background: #1e1e2d !important;
+	}
+
+	.ant-menu.ant-menu-dark,
+	.ant-menu-dark {
 	}
 
 	.ant-menu-item-selected {
@@ -261,7 +274,7 @@ const AdminNavbarWrapper = styled.div`
 		background-color: #0e0e15 !important;
 
 		&:hover {
-			background-color: #001427 !important;
+			background-color: #001427 !important; // Or any other color for hover state
 		}
 	}
 
@@ -269,7 +282,7 @@ const AdminNavbarWrapper = styled.div`
 		background-color: #270000 !important;
 
 		&:hover {
-			background-color: #270000 !important;
+			background-color: #270000 !important; // Or any other color for hover state
 		}
 	}
 
@@ -301,6 +314,7 @@ const AdminNavbarWrapper = styled.div`
 		}
 
 		.ant-menu.ant-menu-dark {
+			/* position: fixed; */
 		}
 
 		button {

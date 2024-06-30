@@ -95,6 +95,12 @@ const AddProduct = () => {
 	const [allSizes, setAllSizes] = useState([]);
 	const [mainColor, setMainColor] = useState("");
 	const [mainSize, setMainSize] = useState("");
+	const [geodata, setGeodata] = useState({
+		length: "",
+		width: "",
+		height: "",
+		weight: "",
+	});
 
 	let productAttributes = [];
 
@@ -140,6 +146,8 @@ const AddProduct = () => {
 				setMainSize={setMainSize}
 				allColors={allColors}
 				allSizes={allSizes}
+				geodata={geodata}
+				setGeodata={setGeodata}
 			/>
 		</React.Fragment>
 	);
@@ -404,9 +412,8 @@ const AddProduct = () => {
 		);
 	};
 
-	const handleImageRemove = (public_id) => {
+	const handleImageRemove = (public_id, i) => {
 		setLoading(true);
-		// console.log("remove image", public_id);
 		axios
 			.post(
 				`${process.env.REACT_APP_API_URL}/admin/removeimage/${user._id}`,
@@ -418,20 +425,26 @@ const AddProduct = () => {
 				}
 			)
 			.then((res) => {
-				// eslint-disable-next-line
-				const { images } = addThumbnail;
-				let filteredImages = images.filter((item) => {
-					return item.public_id !== public_id;
-				});
-				setAddThumbnail({ ...addThumbnail, images: filteredImages });
+				const updatedProductAttributes = productAttributesFinal.map(
+					(attribute, index) => {
+						if (index === i) {
+							return {
+								...attribute,
+								productImages: attribute.productImages.filter(
+									(image) => image.public_id !== public_id
+								),
+							};
+						}
+						return attribute;
+					}
+				);
+
+				setProductAttributesFinal(updatedProductAttributes);
 				setLoading(false);
 			})
 			.catch((err) => {
 				console.log(err);
 				setLoading(false);
-				// setTimeout(function () {
-				// 	window.location.reload(false);
-				// }, 1000);
 			});
 	};
 
@@ -797,6 +810,7 @@ const AddProduct = () => {
 			featuredProduct: featured,
 			color: mainColor,
 			size: mainSize,
+			geodata: geodata,
 			policy: "",
 			policy_Arabic: "",
 			DNA: "",

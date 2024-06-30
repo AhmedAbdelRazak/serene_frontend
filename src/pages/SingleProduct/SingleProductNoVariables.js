@@ -213,6 +213,20 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 								<ProductDescription
 									dangerouslySetInnerHTML={{ __html: description }}
 								/>
+								<StyledGeoDataList>
+									{product.geodata && product.geodata.length && (
+										<li>Length: {product.geodata.length} in</li>
+									)}
+									{product.geodata && product.geodata.width && (
+										<li>Width: {product.geodata.width} in</li>
+									)}
+									{product.geodata && product.geodata.height && (
+										<li>Height: {product.geodata.height} in</li>
+									)}
+									{product.geodata && product.geodata.weight && (
+										<li>Weight: {product.geodata.weight} lbs</li>
+									)}
+								</StyledGeoDataList>
 							</Panel>
 						</Collapse>
 					</CollapseContainer>
@@ -280,9 +294,8 @@ const ProductImagesWrapper = styled.div`
 
 	img {
 		width: 100%;
-		height: auto;
-		max-height: 500px; /* Adjust max height as needed */
-		object-fit: cover; /* Ensure image maintains aspect ratio */
+		height: 500px; /* Ensure the height matches the height set in DisplayImages */
+		object-fit: contain; /* Ensure the whole image is displayed without distortion */
 		border-radius: 5px;
 	}
 
@@ -293,9 +306,8 @@ const ProductImagesWrapper = styled.div`
 
 		img {
 			width: 100%;
-			height: auto;
-			max-height: 400px; /* Adjust max height as needed */
-			object-fit: cover; /* Ensure image maintains aspect ratio */
+			height: 400px; /* Adjust max height as needed for smaller screens */
+			object-fit: contain; /* Ensure the whole image is displayed without distortion */
 		}
 	}
 `;
@@ -414,4 +426,17 @@ const ProductDescription = styled.div`
 const SubSKU = styled.div`
 	font-size: 16px;
 	color: var(--text-color-secondary);
+`;
+
+const StyledGeoDataList = styled.ul`
+	list-style: disc inside;
+	padding: 0;
+	margin-top: 10px;
+	color: var(--text-color-primary);
+	font-weight: bold;
+
+	li {
+		margin-bottom: 5px;
+		color: var(--text-color-secondary);
+	}
 `;

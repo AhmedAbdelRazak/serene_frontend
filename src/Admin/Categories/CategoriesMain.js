@@ -88,7 +88,7 @@ export default CategoriesMain;
 const CategoriesMainWrapper = styled.div`
 	overflow-x: hidden;
 	/* background: #ededed; */
-	margin-top: 20px;
+	margin-top: 80px;
 	min-height: 800px;
 	padding-bottom: 100px;
 

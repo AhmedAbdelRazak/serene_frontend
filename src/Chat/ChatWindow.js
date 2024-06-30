@@ -7,6 +7,7 @@ import {
 	createNewSupportCase,
 	getSupportCaseById,
 	updateSupportCase,
+	updateSeenByCustomer,
 } from "../Admin/apiAdmin";
 import socket from "./socket";
 import EmojiPicker from "emoji-picker-react";
@@ -31,7 +32,7 @@ const ChatWindow = ({ closeChatWindow }) => {
 	const [rating, setRating] = useState(0);
 	const [typingStatus, setTypingStatus] = useState("");
 	// eslint-disable-next-line
-	const [isMinimized, setIsMinimized] = useState(false); // Added this line
+	const [isMinimized, setIsMinimized] = useState(false);
 	const messagesEndRef = useRef(null);
 
 	useEffect(() => {
@@ -43,14 +44,22 @@ const ChatWindow = ({ closeChatWindow }) => {
 
 		const savedChat = JSON.parse(localStorage.getItem("currentChat"));
 		if (savedChat) {
-			setCaseId(savedChat.caseId);
-			setSubmitted(savedChat.submitted);
+			setCustomerName(savedChat.customerName || "");
+			setCustomerEmail(savedChat.customerEmail || "");
+			setInquiryAbout(savedChat.inquiryAbout || "");
+			setOrderNumber(savedChat.orderNumber || "");
+			setProductName(savedChat.productName || "");
+			setOtherInquiry(savedChat.otherInquiry || "");
+			setCaseId(savedChat.caseId || "");
+			setSubmitted(savedChat.submitted || false);
+			setMessages(savedChat.messages || []);
 			fetchSupportCase(savedChat.caseId);
 		}
 
 		socket.on("receiveMessage", (message) => {
 			if (message.caseId === caseId) {
 				setMessages((prevMessages) => [...prevMessages, message]);
+				markMessagesAsSeen(caseId);
 			}
 		});
 
@@ -81,6 +90,34 @@ const ChatWindow = ({ closeChatWindow }) => {
 		// eslint-disable-next-line
 	}, [caseId, customerEmail]);
 
+	useEffect(() => {
+		if (caseId) {
+			const saveChat = {
+				customerName,
+				customerEmail,
+				inquiryAbout,
+				orderNumber,
+				productName,
+				otherInquiry,
+				caseId,
+				messages,
+				submitted,
+			};
+			localStorage.setItem("currentChat", JSON.stringify(saveChat));
+			markMessagesAsSeen(caseId);
+		}
+	}, [
+		customerName,
+		customerEmail,
+		inquiryAbout,
+		orderNumber,
+		productName,
+		otherInquiry,
+		messages,
+		submitted,
+		caseId,
+	]);
+
 	const fetchSupportCase = async (id) => {
 		try {
 			const supportCase = await getSupportCaseById(id);
@@ -90,16 +127,13 @@ const ChatWindow = ({ closeChatWindow }) => {
 		}
 	};
 
-	useEffect(() => {
-		if (caseId) {
-			const saveChat = {
-				caseId,
-				messages,
-				submitted,
-			};
-			localStorage.setItem("currentChat", JSON.stringify(saveChat));
+	const markMessagesAsSeen = async (caseId) => {
+		try {
+			await updateSeenByCustomer(caseId);
+		} catch (err) {
+			console.error("Error marking messages as seen", err);
 		}
-	}, [messages, submitted, caseId]);
+	};
 
 	useEffect(() => {
 		scrollToBottom();
@@ -265,11 +299,12 @@ const ChatWindow = ({ closeChatWindow }) => {
 				<div>
 					<p>A representative will be with you shortly.</p>
 					<MessagesContainer>
-						{messages.map((msg, index) => (
-							<Message key={index}>
-								<strong>{msg.messageBy.customerName}:</strong> {msg.message}
-							</Message>
-						))}
+						{messages &&
+							messages.map((msg, index) => (
+								<Message key={index}>
+									<strong>{msg.messageBy.customerName}:</strong> {msg.message}
+								</Message>
+							))}
 						<div ref={messagesEndRef} />
 					</MessagesContainer>
 					{typingStatus && <TypingStatus>{typingStatus}</TypingStatus>}
@@ -417,7 +452,6 @@ const ChatWindowHeader = styled.div`
 
 const MessagesContainer = styled.div`
 	max-height: 55vh;
-	/* overflow-y: auto; */
 	margin-bottom: 10px;
 	overflow-x: hidden;
 `;
