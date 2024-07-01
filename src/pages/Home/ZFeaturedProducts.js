@@ -81,6 +81,9 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 									? product.priceAfterDiscount
 									: chosenProductAttributes.priceAfterDiscount;
 
+							const discountPercentage =
+								((originalPrice - discountedPrice) / originalPrice) * 100;
+
 							return (
 								<div key={i} className='slide'>
 									<ProductCard
@@ -93,6 +96,11 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 										}}
 										cover={
 											<ImageContainer>
+												{discountPercentage > 0 && (
+													<DiscountBadge>
+														{discountPercentage.toFixed(2)}% OFF!
+													</DiscountBadge>
+												)}
 												<CartIcon
 													onClick={(e) => {
 														e.stopPropagation(); // Prevent the card click event
@@ -270,6 +278,18 @@ const CartIcon = styled(ShoppingCartOutlined)`
 	&:hover {
 		color: var(--accent-color-3-dark);
 	}
+`;
+
+const DiscountBadge = styled.div`
+	position: absolute;
+	top: 15px;
+	left: 15px;
+	background-color: var(--secondary-color-darker);
+	color: var(--button-font-color);
+	padding: 5px 10px;
+	border-radius: 5px;
+	font-weight: bold;
+	z-index: 10;
 `;
 
 const OriginalPrice = styled.span`

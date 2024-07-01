@@ -184,6 +184,13 @@ const ShopPageMain = () => {
 		return [...new Set([...categoryKeywords, ...productKeywords])].join(", ");
 	};
 
+	const getTransformedImageUrl = (url, width, height) => {
+		if (!url) return "";
+		const parts = url.split("upload/");
+		const transformation = `upload/w_${width},h_${height},c_scale/`;
+		return parts[0] + transformation + parts[1];
+	};
+
 	// Generate structured data for products
 	const generateProductSchema = (products) => {
 		return products.map((product) => ({
@@ -331,7 +338,7 @@ const ShopPageMain = () => {
 										handleFilterChange("priceMin", value[0]);
 										handleFilterChange("priceMax", value[1]);
 									}}
-									onChangeComplete={fetchFilteredProducts} // Fetch data after dragging stops
+									onAfterChange={fetchFilteredProducts} // Fetch data after dragging stops
 									tooltip={{ formatter: (value) => `$${value}` }}
 								/>
 								<div
@@ -463,7 +470,7 @@ const ShopPageMain = () => {
 										handleFilterChange("priceMin", value[0]);
 										handleFilterChange("priceMax", value[1]);
 									}}
-									onChangeComplete={fetchFilteredProducts} // Fetch data after dragging stops
+									onAfterChange={fetchFilteredProducts} // Fetch data after dragging stops
 									tooltip={{ formatter: (value) => `$${value}` }}
 								/>
 								<div
@@ -526,12 +533,27 @@ const ShopPageMain = () => {
 										? product.priceAfterDiscount
 										: chosenProductAttributes.priceAfterDiscount;
 
+								const discountPercentage =
+									((originalPrice - discountedPrice) / originalPrice) * 100;
+
+								// eslint-disable-next-line
+								const transformedImageUrl = getTransformedImageUrl(
+									imageUrl,
+									1200, // Adjust width here
+									1220 // Adjust height here
+								);
+
 								return (
-									<Col key={index} xs={12} sm={12} md={8} lg={6} xl={4}>
+									<Col key={index} xs={12} sm={12} md={8} lg={6} xl={6}>
 										<ProductCard
 											hoverable
 											cover={
 												<ImageContainer>
+													{discountPercentage > 0 && (
+														<DiscountBadge>
+															{discountPercentage.toFixed(2)}% OFF!
+														</DiscountBadge>
+													)}
 													<CartIcon
 														onClick={(e) => {
 															e.stopPropagation();
@@ -553,6 +575,7 @@ const ShopPageMain = () => {
 													/>
 													<ProductImage
 														src={imageUrl}
+														// src={transformedImageUrl}
 														alt={product.productName}
 														onClick={() => {
 															window.scrollTo({ top: 0, behavior: "smooth" });
@@ -681,7 +704,8 @@ const ProductCard = styled(Card)`
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	min-height: 445px;
+	min-height: 600px;
+	max-height: 600px;
 	transition: var(--main-transition);
 	text-transform: capitalize;
 
@@ -691,25 +715,26 @@ const ProductCard = styled(Card)`
 	}
 
 	@media (max-width: 700px) {
-		min-height: 300px;
-		max-height: 300px;
+		min-height: 500px;
+		max-height: 500px;
 	}
 `;
 
 const ImageContainer = styled.div`
 	position: relative;
-	height: 80%;
+	height: 500px;
 	overflow: hidden;
 	border-radius: 10px 10px 0 0;
 
 	@media (max-width: 700px) {
-		height: 200px;
+		height: 400px;
 	}
 `;
 
 const ProductImage = styled.img`
 	width: 100%;
 	height: 100%;
+	object-fit: cover;
 	object-position: center;
 	cursor: pointer;
 `;
@@ -729,6 +754,18 @@ const CartIcon = styled(ShoppingCartOutlined)`
 	&:hover {
 		color: var(--secondary-color-light);
 	}
+`;
+
+const DiscountBadge = styled.div`
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	background-color: var(--secondary-color-darker);
+	color: var(--button-font-color);
+	padding: 5px 10px;
+	border-radius: 5px;
+	font-weight: bold;
+	z-index: 10;
 `;
 
 const PaginationWrapper = styled.div`

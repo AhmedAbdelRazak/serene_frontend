@@ -229,6 +229,7 @@ const AdminNavbarWrapper = styled.div`
 	top: 0; // Adjust as needed
 	left: 0; // Since the menu is on the right hand side
 	height: 100vh; // Make it full height
+	width: ${(props) => (props.show ? "5%" : "15%")} !important;
 
 	ul {
 		height: 90vh !important;
@@ -290,22 +291,26 @@ const AdminNavbarWrapper = styled.div`
 		background: black !important;
 	}
 
-	@media (max-width: 1650px) {
-		background: ${(props) => (props.show ? "" : "transparent")};
+	@media (max-width: 1200px) {
+		width: ${(props) => (props.show ? "20%" : "35%")} !important;
 
 		ul {
-			width: 250px;
-			padding: 0px !important;
-			margin: 0px !important;
+			display: ${(props) => (props.show ? "none" : "")};
+			margin-top: 0px !important;
+			top: 0px !important;
 		}
 
-		ul > li {
-			font-size: 0.8rem !important;
+		.ant-menu.ant-menu-dark {
+			/* position: fixed; */
+		}
+
+		button {
+			margin-top: 5px !important;
 		}
 	}
 
-	@media (max-width: 1200px) {
-		width: ${(props) => (props.show ? "20%" : "60%")} !important;
+	@media (max-width: 1600px) {
+		width: ${(props) => (props.show ? "5%" : "17%")} !important;
 
 		ul {
 			display: ${(props) => (props.show ? "none" : "")};
