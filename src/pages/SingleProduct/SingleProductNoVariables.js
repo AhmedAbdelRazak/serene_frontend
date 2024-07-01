@@ -199,7 +199,10 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 					<ProductPrice>{priceDisplay()}</ProductPrice>
 					{product.color && (
 						<ProductAttribute>
-							<strong>Color:</strong> {product.color}
+							<strong>Color:</strong>{" "}
+							<span style={{ textTransform: "capitalize" }}>
+								{product.color}
+							</span>
 						</ProductAttribute>
 					)}
 					{product.size && (

@@ -544,7 +544,7 @@ const ShopPageMain = () => {
 								);
 
 								return (
-									<Col key={index} xs={12} sm={12} md={8} lg={6} xl={6}>
+									<Col key={index} xs={24} sm={12} md={12} lg={6} xl={6}>
 										<ProductCard
 											hoverable
 											cover={
@@ -607,9 +607,13 @@ const ShopPageMain = () => {
 												}
 											/>
 											{colorName ? (
-												<p>Color: {colorName}</p>
+												<p style={{ textTransform: "capitalize" }}>
+													Color: {colorName}
+												</p>
 											) : product.color ? (
-												<p>Color: {product.color}</p>
+												<p style={{ textTransform: "capitalize" }}>
+													Color: {product.color}
+												</p>
 											) : null}
 										</ProductCard>
 									</Col>
