@@ -71,7 +71,16 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 				<Slider {...settings}>
 					{featuredProducts &&
 						featuredProducts.map((product, i) => {
-							var chosenProductAttributes = product.productAttributes[0];
+							const chosenProductAttributes = product.productAttributes[0];
+							const images =
+								product.productAttributes[0]?.productImages ||
+								product.thumbnailImage[0].images;
+							const originalPrice = product.price;
+							const discountedPrice =
+								product.priceAfterDiscount > 0
+									? product.priceAfterDiscount
+									: chosenProductAttributes.priceAfterDiscount;
+
 							return (
 								<div key={i} className='slide'>
 									<ProductCard
@@ -103,31 +112,45 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 														});
 													}}
 												/>
-												<Slider {...imageSettings}>
-													{(
-														(product.productAttributes &&
-															product.productAttributes.length > 0 &&
-															product.productAttributes[0].productImages) ||
-														product.thumbnailImage[0].images
-													).map((img, index) => (
-														<ImageWrapper key={index}>
-															<ProductImage
-																src={img.url}
-																alt={`${product.productName} - view ${index + 1}`}
-															/>
-														</ImageWrapper>
-													))}
-												</Slider>
+												{images.length > 1 ? (
+													<Slider {...imageSettings}>
+														{images.map((img, index) => (
+															<ImageWrapper key={index}>
+																<ProductImage
+																	src={img.url}
+																	alt={`${product.productName} - view ${index + 1}`}
+																/>
+															</ImageWrapper>
+														))}
+													</Slider>
+												) : (
+													<ImageWrapper>
+														<ProductImage
+															src={images[0].url}
+															alt={`${product.productName} - single view`}
+														/>
+													</ImageWrapper>
+												)}
 											</ImageContainer>
 										}
 									>
 										<Meta
 											title={product.productName}
-											description={`Price: $${
-												product.priceAfterDiscount > 0
-													? product.priceAfterDiscount
-													: product.productAttributes[0].priceAfterDiscount
-											}`}
+											description={
+												originalPrice > discountedPrice ? (
+													<span>
+														Price:{" "}
+														<OriginalPrice>${originalPrice}</OriginalPrice>{" "}
+														<DiscountedPrice>
+															${discountedPrice}
+														</DiscountedPrice>
+													</span>
+												) : (
+													<DiscountedPrice>
+														Price: ${discountedPrice}
+													</DiscountedPrice>
+												)
+											}
 										/>
 									</ProductCard>
 								</div>
@@ -197,6 +220,8 @@ const ProductCard = styled(Card)`
 	text-align: center;
 	position: relative;
 	text-transform: capitalize;
+	max-height: 400px;
+	min-height: 400px;
 
 	&:hover {
 		transform: translateY(-10px);
@@ -245,4 +270,14 @@ const CartIcon = styled(ShoppingCartOutlined)`
 	&:hover {
 		color: var(--accent-color-3-dark);
 	}
+`;
+
+const OriginalPrice = styled.span`
+	color: var(--secondary-color);
+	text-decoration: line-through;
+	margin-right: 8px;
+`;
+
+const DiscountedPrice = styled.span`
+	color: var(--text-color-primary);
 `;

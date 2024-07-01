@@ -520,6 +520,12 @@ const ShopPageMain = () => {
 									chosenProductAttributes &&
 									getColorName(chosenProductAttributes.color);
 
+								const originalPrice = product.price;
+								const discountedPrice =
+									product.priceAfterDiscount > 0
+										? product.priceAfterDiscount
+										: chosenProductAttributes.priceAfterDiscount;
+
 								return (
 									<Col key={index} xs={12} sm={12} md={8} lg={6} xl={4}>
 										<ProductCard
@@ -560,11 +566,22 @@ const ShopPageMain = () => {
 										>
 											<Meta
 												title={product.productName}
-												description={`$${
-													product.priceAfterDiscount > 0
-														? product.priceAfterDiscount
-														: product.productAttributes[0].priceAfterDiscount
-												}`}
+												description={
+													originalPrice > discountedPrice ? (
+														<span>
+															<OriginalPrice>
+																Price: ${originalPrice}
+															</OriginalPrice>{" "}
+															<DiscountedPrice>
+																${discountedPrice}
+															</DiscountedPrice>
+														</span>
+													) : (
+														<DiscountedPrice>
+															Price: ${discountedPrice}
+														</DiscountedPrice>
+													)
+												}
 											/>
 											{colorName ? (
 												<p>Color: {colorName}</p>
@@ -732,4 +749,16 @@ const StyledButton = styled(Button)`
 		background: var(--secondary-color-dark);
 		border-color: var(--secondary-color-dark);
 	}
+`;
+
+const OriginalPrice = styled.span`
+	color: var(--secondary-color);
+	text-decoration: line-through;
+	margin-right: 8px;
+	font-weight: bold;
+`;
+
+const DiscountedPrice = styled.span`
+	color: var(--text-color-primary);
+	font-weight: bold;
 `;
