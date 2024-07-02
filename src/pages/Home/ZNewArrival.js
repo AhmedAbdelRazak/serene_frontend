@@ -82,6 +82,12 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 									? product.priceAfterDiscount
 									: chosenProductAttributes.priceAfterDiscount;
 
+							const totalQuantity =
+								product.productAttributes.reduce(
+									(acc, attr) => acc + attr.quantity,
+									0
+								) || product.quantity;
+
 							return (
 								<div key={i} className='slide'>
 									<ProductCard
@@ -94,25 +100,29 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 										}}
 										cover={
 											<ImageContainer>
-												<CartIcon
-													onClick={(e) => {
-														e.stopPropagation();
-														readProduct(product._id).then((data3) => {
-															if (data3 && data3.error) {
-																console.log(data3.error);
-															} else {
-																openSidebar2();
-																addToCart(
-																	product._id,
-																	null,
-																	1,
-																	data3,
-																	chosenProductAttributes
-																);
-															}
-														});
-													}}
-												/>
+												{totalQuantity > 0 ? (
+													<CartIcon
+														onClick={(e) => {
+															e.stopPropagation();
+															readProduct(product._id).then((data3) => {
+																if (data3 && data3.error) {
+																	console.log(data3.error);
+																} else {
+																	openSidebar2();
+																	addToCart(
+																		product._id,
+																		null,
+																		1,
+																		data3,
+																		chosenProductAttributes
+																	);
+																}
+															});
+														}}
+													/>
+												) : (
+													<OutOfStockBadge>Out of Stock</OutOfStockBadge>
+												)}
 												{images.length > 1 ? (
 													<Slider {...imageSettings}>
 														{images.map((img, index) => (
@@ -206,9 +216,11 @@ const ZNewArrivalWrapper = styled.div`
 		display: none !important;
 	}
 
-	.slick-arrow,
-	.slick-prev {
-		display: none !important;
+	@media (max-width: 900px) {
+		.slick-arrow,
+		.slick-prev {
+			display: none !important;
+		}
 	}
 `;
 
@@ -231,7 +243,7 @@ const ProductCard = styled(Card)`
 	}
 
 	.ant-card-cover {
-		margin: -16px -16px 0 -16px; /* Remove the default padding */
+		margin: -16px -16px 0 -16px;
 	}
 
 	.ant-card-body {
@@ -272,6 +284,20 @@ const CartIcon = styled(ShoppingCartOutlined)`
 	&:hover {
 		color: var(--secondary-color-dark);
 	}
+`;
+
+const OutOfStockBadge = styled.div`
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	font-size: 13px;
+	color: grey;
+	background-color: #ffc6c6;
+	border-radius: 5px;
+	padding: 5px 10px;
+	z-index: 10;
+	font-style: italic;
+	font-weight: bold;
 `;
 
 const OriginalPrice = styled.span`

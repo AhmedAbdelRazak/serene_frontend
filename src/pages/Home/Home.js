@@ -27,7 +27,7 @@ const Home = () => {
 			if (data && data.error) {
 				console.log(data.error);
 			} else {
-				gettingSpecificProducts(1, 0, 0, 0, 5).then((data2) => {
+				gettingSpecificProducts(1, 0, 0, 0, 12).then((data2) => {
 					if (data2 && data2.error) {
 						console.log(data2.error);
 					} else {
@@ -37,7 +37,7 @@ const Home = () => {
 					}
 				});
 
-				gettingSpecificProducts(0, 1, 0, 0, 6).then((data3) => {
+				gettingSpecificProducts(0, 1, 0, 0, 8).then((data3) => {
 					if (data3 && data3.error) {
 						console.log(data3.error);
 					} else {

@@ -4,6 +4,8 @@ import { FaTimes, FaTrashAlt } from "react-icons/fa";
 import { useCartContext } from "../cart_context";
 import { useHistory } from "react-router-dom";
 import { getColors } from "../apiCore";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Add this import
 
 const SidebarCart = ({ from }) => {
 	const {
@@ -34,10 +36,22 @@ const SidebarCart = ({ from }) => {
 		});
 	}, []);
 
-	var checkingAvailability = [];
+	const checkingAvailability = cart.map((item) => {
+		const chosenAttribute =
+			item.allProductDetailsIncluded.productAttributes.find(
+				(attr) => attr.color === item.color && attr.size === item.size
+			);
+		return (
+			item.allProductDetailsIncluded.activeBackorder ||
+			(chosenAttribute && chosenAttribute.quantity >= item.amount)
+		);
+	});
+
+	const isStockAvailable = checkingAvailability.every(Boolean);
 
 	return (
 		<>
+			<ToastContainer className='toast-top-center' position='top-center' />{" "}
 			{isSidebarOpen2 && <Overlay onClick={() => closeSidebar2()} />}
 			<CartWrapper isOpen={isSidebarOpen2} fromPage={from === "NavbarBottom"}>
 				<CloseIcon onClick={() => closeSidebar2()} />
@@ -56,40 +70,35 @@ const SidebarCart = ({ from }) => {
 						</p>
 					) : (
 						cart.map((item, i) => {
-							var productColors =
+							const productColors =
 								item.allProductDetailsIncluded.productAttributes.map(
-									(iii) => iii.color
+									(attr) => attr.color
 								);
-							var uniqueProductColors = [
-								...new Map(productColors.map((item) => [item, item])).values(),
-							];
+							const uniqueProductColors = [...new Set(productColors)];
 
-							var productSizes =
+							const productSizes =
 								item.allProductDetailsIncluded.productAttributes.map(
-									(iii) => iii.size
+									(attr) => attr.size
 								);
-							var uniqueProductSizes = [
-								...new Map(productSizes.map((item) => [item, item])).values(),
-							];
+							const uniqueProductSizes = [...new Set(productSizes)];
 
-							var chosenAttribute =
-								item.allProductDetailsIncluded.productAttributes.filter(
-									(iii) => iii.color === item.color && iii.size === item.size
-								)[0];
-
-							if (item.allProductDetailsIncluded.activeBackorder) {
-								checkingAvailability.push(true);
-							} else {
-								checkingAvailability.push(
-									chosenAttribute && chosenAttribute.quantity >= item.amount
+							const chosenAttribute =
+								item.allProductDetailsIncluded.productAttributes.find(
+									(attr) => attr.color === item.color && attr.size === item.size
 								);
-							}
+
+							const isItemOutOfStock =
+								!item.allProductDetailsIncluded.activeBackorder &&
+								(!chosenAttribute || chosenAttribute.quantity < item.amount);
 
 							return (
 								<CartItem key={i}>
 									<ItemImage src={item.image} alt={item.name} />
 									<ItemDetails>
 										<ItemName>{item.name}</ItemName>
+										{isItemOutOfStock && (
+											<OutOfStockMessage>Out Of Stock</OutOfStockMessage>
+										)}
 										<QuantityWrapper>
 											<QuantityButton
 												onClick={() =>
@@ -126,24 +135,22 @@ const SidebarCart = ({ from }) => {
 												<AttributeSelect
 													value={item.color}
 													onChange={(e) => {
-														var chosenColorImageHelper =
-															item.allProductDetailsIncluded.productAttributes.filter(
-																(iii) => iii.color === e.target.value
-															)[0];
+														const chosenColorImageHelper =
+															item.allProductDetailsIncluded.productAttributes.find(
+																(attr) => attr.color === e.target.value
+															);
 
-														var chosenColorImage =
-															chosenColorImageHelper &&
-															chosenColorImageHelper.productImages &&
-															chosenColorImageHelper.productImages[0] &&
-															chosenColorImageHelper.productImages[0].url;
+														const chosenColorImage =
+															chosenColorImageHelper?.productImages?.[0]?.url;
 
-														var chosenAttribute2 =
-															item.allProductDetailsIncluded.productAttributes.filter(
-																(iii) =>
-																	iii.color.toLowerCase() ===
+														const chosenAttribute2 =
+															item.allProductDetailsIncluded.productAttributes.find(
+																(attr) =>
+																	attr.color.toLowerCase() ===
 																		e.target.value.toLowerCase() &&
-																	iii.size.toLowerCase() === item.size
-															)[0];
+																	attr.size.toLowerCase() ===
+																		item.size.toLowerCase()
+															);
 														changeColor(
 															item.id,
 															e.target.value,
@@ -154,34 +161,25 @@ const SidebarCart = ({ from }) => {
 														);
 													}}
 												>
-													{uniqueProductColors &&
-														uniqueProductColors.map((cc, ii) => {
-															return (
-																<option key={ii} value={cc}>
-																	{allColors &&
-																		allColors[
-																			allColors.map((ii) => ii.hexa).indexOf(cc)
-																		] &&
-																		allColors[
-																			allColors.map((ii) => ii.hexa).indexOf(cc)
-																		].color}
-																</option>
-															);
-														})}
+													{uniqueProductColors.map((color, ii) => (
+														<option key={ii} value={color}>
+															{
+																allColors.find((clr) => clr.hexa === color)
+																	?.color
+															}
+														</option>
+													))}
 												</AttributeSelect>
-												{uniqueProductSizes &&
-												uniqueProductSizes &&
-												uniqueProductSizes.length > 0 &&
-												uniqueProductSizes[0] !== "nosizes" ? (
+												{uniqueProductSizes[0] !== "nosizes" && (
 													<AttributeSelect
 														value={item.size}
 														onChange={(e) => {
-															var chosenAttribute2 =
-																item.allProductDetailsIncluded.productAttributes.filter(
-																	(iii) =>
-																		iii.size.toLowerCase() ===
+															const chosenAttribute2 =
+																item.allProductDetailsIncluded.productAttributes.find(
+																	(attr) =>
+																		attr.size.toLowerCase() ===
 																		e.target.value.toLowerCase()
-																)[0];
+																);
 
 															changeSize(
 																item.id,
@@ -192,16 +190,13 @@ const SidebarCart = ({ from }) => {
 															);
 														}}
 													>
-														{uniqueProductSizes &&
-															uniqueProductSizes.map((ss, iii) => {
-																return (
-																	<option key={iii} value={ss}>
-																		{ss}
-																	</option>
-																);
-															})}
+														{uniqueProductSizes.map((size, iii) => (
+															<option key={iii} value={size}>
+																{size}
+															</option>
+														))}
 													</AttributeSelect>
-												) : null}
+												)}
 											</AttributeWrapper>
 										)}
 										<RemoveButton
@@ -223,17 +218,29 @@ const SidebarCart = ({ from }) => {
 						<ButtonsWrapper>
 							<CheckoutButton
 								onClick={() => {
-									window.scrollTo({ top: 50, behavior: "smooth" });
-									closeSidebar2();
-									handleCheckout();
+									if (isStockAvailable) {
+										window.scrollTo({ top: 50, behavior: "smooth" });
+										closeSidebar2();
+										handleCheckout();
+									} else {
+										const outOfStockItems = cart.filter(
+											(item, index) => !checkingAvailability[index]
+										);
+										outOfStockItems.forEach((item) => {
+											toast.error(
+												`Please remove product ${item.name} so you can checkout`
+											);
+										});
+									}
 								}}
 							>
-								Continue To Check Out
+								{isStockAvailable ? "Continue To Check Out" : "No Enough Stock"}
 							</CheckoutButton>
 							<ClearCartButton onClick={clearCart}>Clear Cart</ClearCartButton>
 						</ButtonsWrapper>
 					)}
 				</CartContent>
+				{/* Add this */}
 			</CartWrapper>
 		</>
 	);
@@ -307,6 +314,10 @@ const CloseIcon = styled(FaTimes)`
 	cursor: pointer;
 	color: var(--text-color-dark);
 	font-size: 24px;
+
+	@media (max-width: 900px) {
+		right: 20px;
+	}
 `;
 
 const CartContent = styled.div`
@@ -398,16 +409,23 @@ const AttributeSelect = styled.select`
 	border: 1px solid var(--border-color-dark);
 	border-radius: 5px;
 	cursor: pointer;
+	max-width: 80% !important;
+	text-transform: capitalize;
+	font-size: 14px;
 
 	&:hover {
 		border-color: var(--border-color-light);
+	}
+
+	@media (max-width: 900px) {
+		max-width: 80% !important;
 	}
 `;
 
 const RemoveButton = styled.button`
 	position: absolute;
-	right: 0;
-	top: 0;
+	right: 50px;
+	top: 20px;
 	background: none;
 	border: none;
 	color: var(--secondary-color);
@@ -416,6 +434,11 @@ const RemoveButton = styled.button`
 
 	&:hover {
 		color: var(--secondary-color-dark);
+	}
+
+	@media (max-width: 900px) {
+		right: 50px;
+		top: 20px;
 	}
 `;
 
@@ -465,4 +488,11 @@ const CheckoutButton = styled.button`
 	&:hover {
 		background: var(--primary-color-darker);
 	}
+`;
+
+const OutOfStockMessage = styled.p`
+	color: red;
+	font-weight: bold;
+	margin-top: 5px;
+	font-size: 12px;
 `;

@@ -215,7 +215,7 @@ const BannerText = styled.h1`
 	white-space: nowrap; /* Prevent text from wrapping */
 
 	@media (max-width: 1000px) {
-		font-size: 1.5rem;
+		font-size: 1.8rem;
 		max-width: 100%; /* Ensure the text doesn't wrap unnecessarily */
 		white-space: normal; /* Allow wrapping if text can't fit within 80% */
 	}

@@ -4,9 +4,9 @@ import { useHistory } from "react-router-dom";
 import { Collapse } from "antd";
 import { useCartContext } from "../../cart_context";
 import { toast } from "react-toastify";
-import { getColors, like, unlike, userlike, userunlike } from "../../apiCore"; // Adjust the path as necessary
+import { getColors, like, unlike, userlike, userunlike } from "../../apiCore";
 import ColorsAndSizes from "./ColorsAndSizes";
-import DisplayImages from "./DisplayImages"; // Adjust the path as necessary
+import DisplayImages from "./DisplayImages";
 import {
 	HeartOutlined,
 	ShoppingCartOutlined,
@@ -35,7 +35,6 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 	const user = isAuthenticated() && isAuthenticated().user;
 
 	useEffect(() => {
-		// Fetch colors from the API
 		getColors().then((data) => {
 			if (data.error) {
 				console.error(data.error);
@@ -52,7 +51,6 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 			);
 			setChosenAttributes(attributes);
 
-			// Update chosen images based on color only
 			const images = product.productAttributes
 				.filter((attr) => attr.color === color && attr.productImages.length > 0)
 				.flatMap((attr) => attr.productImages.map((img) => img.url));
@@ -71,14 +69,13 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 			updateChosenAttributes(initialColor, initialSize);
 		}
 
-		// Check if the product is already in the wishlist
 		const isProductLiked = product.likes.some(
 			(like) => like.toString() === user._id
 		);
 		setLikee(isProductLiked);
 		setLikes(product.likes.length);
-		// eslint-disable-next-line
-	}, [product, updateChosenAttributes, setLikee]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [product, updateChosenAttributes, setLikee, user._id]);
 
 	const handleColorChange = (color) => {
 		setSelectedColor(color);
@@ -95,6 +92,10 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 			toast.error("Please select valid color and size");
 			return;
 		}
+		if (chosenAttributes.quantity <= 0) {
+			toast.error("No enough stock available");
+			return;
+		}
 		addToCart(product._id, null, 1, product, chosenAttributes);
 		openSidebar2();
 	};
@@ -109,7 +110,6 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 			return;
 		}
 
-		// Update the state immediately
 		setLikee(!likee);
 		setLikes(likee ? likes - 1 : likes + 1);
 		toast.info(likee ? "Removed from wishlist!" : "Added to wishlist!");
@@ -117,12 +117,10 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 		const callApi = likee ? unlike : like;
 		callApi(user._id, token, product._id).then((data) => {
 			if (data.error) {
-				// Revert state change if API call fails
 				setLikee(likee);
 				setLikes(likee ? likes + 1 : likes - 1);
 				toast.error(data.error);
 			} else {
-				// Sync state with backend response
 				setLikee(!likee);
 				setLikes(data.likes.length);
 
@@ -134,7 +132,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 	};
 
 	const getColorName = (hex) => {
-		if (!hex) return hex; // Return the hex if it's undefined or null
+		if (!hex) return hex;
 		const color = allColors.find(
 			(c) => c.hexa.toLowerCase() === hex.toLowerCase()
 		);
@@ -210,6 +208,8 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 
 		return totalQuantity;
 	};
+
+	const isOutOfStock = chosenAttributes.quantity <= 0;
 
 	return (
 		<div>
@@ -291,6 +291,9 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 				</ProductImagesWrapper>
 				<ProductDetailsWrapper>
 					<ProductTitle>{product.productName}</ProductTitle>
+					{isOutOfStock && (
+						<OutOfStockMessage>🚚 No Enough Stock</OutOfStockMessage>
+					)}
 					<ProductPrice>{priceDisplay()}</ProductPrice>
 					<ColorsAndSizes
 						colors={uniqueColors}
@@ -340,8 +343,10 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 						<ActionButton
 							onClick={handleAddToCart}
 							color='var(--primary-color-darker)'
+							disabled={isOutOfStock}
 						>
-							<ShoppingCartOutlined /> Add to Cart
+							<ShoppingCartOutlined />{" "}
+							{isOutOfStock ? "No Enough Stock" : "Add to Cart"}
 						</ActionButton>
 						<ActionButton
 							onClick={handleAddToWishlist}
@@ -393,8 +398,8 @@ const ProductImagesWrapper = styled.div`
 
 	img {
 		width: 100%;
-		height: 500px; /* Ensure the height matches the height set in DisplayImages */
-		object-fit: contain; /* Ensure the whole image is displayed without distortion */
+		height: 500px;
+		object-fit: contain;
 		border-radius: 5px;
 	}
 
@@ -405,8 +410,7 @@ const ProductImagesWrapper = styled.div`
 
 		img {
 			width: 100%;
-			height: 400px; /* Adjust max height as needed for smaller screens */
-			object-fit: contain; /* Ensure the whole image is displayed without distortion */
+			height: 400px;
 		}
 	}
 `;
@@ -415,7 +419,7 @@ const ProductDetailsWrapper = styled.div`
 	flex: 6;
 	display: flex;
 	flex-direction: column;
-	gap: 10px; /* Ensure even spacing between elements */
+	gap: 10px;
 
 	@media (max-width: 768px) {
 		flex: 1 1 100%;
@@ -438,6 +442,15 @@ const ProductPrice = styled.h2`
 	font-weight: bold;
 `;
 
+const OutOfStockMessage = styled.p`
+	color: darkred;
+	font-weight: bold;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+`;
+
 const StrikethroughPrice = styled.span`
 	font-size: 18px;
 	color: var(--secondary-color-dark);
@@ -451,13 +464,6 @@ const DiscountedPrice = styled.span`
 	font-weight: bold;
 `;
 
-// eslint-disable-next-line
-const ProductAttribute = styled.div`
-	font-size: 16px;
-	margin-bottom: 10px;
-	color: var(--text-color-secondary);
-`;
-
 const CollapseContainer = styled.div`
 	margin-bottom: 20px;
 `;
@@ -466,7 +472,7 @@ const ButtonContainer = styled.div`
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
-	gap: 10px; /* Ensure even spacing between buttons */
+	gap: 10px;
 
 	@media (max-width: 768px) {
 		flex-direction: column;
@@ -486,10 +492,10 @@ const ActionButton = styled.button`
 	font-size: 16px;
 	display: flex;
 	align-items: center;
-	justify-content: center; /* Center align button content */
-	width: 100%; /* Ensure buttons have the same width */
-	max-width: 300px; /* Set a max width to control button size */
-	text-align: center; /* Center align text in button */
+	justify-content: center;
+	width: 100%;
+	max-width: 300px;
+	text-align: center;
 	margin: auto;
 	transition: var(--main-transition);
 
@@ -497,10 +503,14 @@ const ActionButton = styled.button`
 		background: ${(props) => darkenColor(props.color)};
 		transition: var(--main-transition);
 	}
+
+	&:disabled {
+		background: var(--neutral-medium);
+		cursor: not-allowed;
+	}
 `;
 
 const darkenColor = (color) => {
-	// Function to darken the button color on hover
 	switch (color) {
 		case "var(--primary-color)":
 			return "var(--primary-color-dark)";

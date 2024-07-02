@@ -75,6 +75,7 @@ const NavbarTop = () => {
 					)}
 				</NavLinks>
 				<CartIcon onClick={() => openSidebar2()} /> {/* Open SidebarCart */}
+				{total_items > 0 && <Badge>{total_items}</Badge>}
 			</NavbarTopWrapper>
 			<Sidebar
 				isSidebarOpen={isSidebarOpen}
@@ -179,4 +180,20 @@ const Overlay = styled.div`
 	bottom: 0;
 	background-color: rgba(0, 0, 0, 0.5);
 	z-index: 5;
+`;
+
+const Badge = styled.span`
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	background: var(--primary-color-darker);
+	color: var(--neutral-light);
+	border-radius: 50%;
+	padding: 1px 6px;
+	font-size: 12px;
+	font-weight: bold;
+
+	@media (min-width: 769px) {
+		display: none;
+	}
 `;

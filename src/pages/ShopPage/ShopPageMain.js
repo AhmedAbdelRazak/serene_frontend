@@ -506,119 +506,134 @@ const ShopPageMain = () => {
 					</FiltersDrawer>
 					<ProductsSection>
 						<Row gutter={[16, 16]}>
-							{products.map((product, index) => {
-								const productImages =
-									product.productAttributes &&
-									product.productAttributes.length > 0
-										? product.productAttributes[0].productImages
-										: product.thumbnailImage[0].images;
-								const imageUrl =
-									productImages && productImages.length > 0
-										? productImages[0].url
-										: "";
+							{products &&
+								products.map((product, index) => {
+									console.log(product, index, "Product map");
+									const productImages =
+										product.productAttributes &&
+										product.productAttributes.length > 0
+											? product.productAttributes[0].productImages
+											: product.thumbnailImage[0].images;
+									const imageUrl =
+										productImages && productImages.length > 0
+											? productImages[0].url
+											: "";
 
-								const chosenProductAttributes =
-									product.productAttributes &&
-									product.productAttributes.length > 0
-										? product.productAttributes[0]
-										: null;
+									const chosenProductAttributes =
+										product.productAttributes &&
+										product.productAttributes.length > 0
+											? product.productAttributes[0]
+											: null;
 
-								const colorName =
-									chosenProductAttributes &&
-									getColorName(chosenProductAttributes.color);
+									const colorName =
+										chosenProductAttributes &&
+										getColorName(chosenProductAttributes.color);
 
-								const originalPrice = product.price;
-								const discountedPrice =
-									product.priceAfterDiscount > 0
-										? product.priceAfterDiscount
-										: chosenProductAttributes.priceAfterDiscount;
+									const originalPrice =
+										chosenProductAttributes && chosenProductAttributes.price
+											? chosenProductAttributes.price
+											: product.price;
+									const discountedPrice =
+										product.priceAfterDiscount > 0
+											? product.priceAfterDiscount
+											: chosenProductAttributes.priceAfterDiscount;
 
-								const discountPercentage =
-									((originalPrice - discountedPrice) / originalPrice) * 100;
+									const discountPercentage =
+										((originalPrice - discountedPrice) / originalPrice) * 100;
 
-								// eslint-disable-next-line
-								const transformedImageUrl = getTransformedImageUrl(
-									imageUrl,
-									1200, // Adjust width here
-									1220 // Adjust height here
-								);
+									// eslint-disable-next-line
+									const transformedImageUrl = getTransformedImageUrl(
+										imageUrl,
+										1200, // Adjust width here
+										1220 // Adjust height here
+									);
 
-								return (
-									<Col key={index} xs={24} sm={12} md={12} lg={6} xl={6}>
-										<ProductCard
-											hoverable
-											cover={
-												<ImageContainer>
-													{discountPercentage > 0 && (
-														<DiscountBadge>
-															{discountPercentage.toFixed(2)}% OFF!
-														</DiscountBadge>
-													)}
-													<CartIcon
-														onClick={(e) => {
-															e.stopPropagation();
-															readProduct(product._id).then((data3) => {
-																if (data3 && data3.error) {
-																	console.log(data3.error);
-																} else {
-																	openSidebar2();
-																	addToCart(
-																		product._id,
-																		null,
-																		1,
-																		data3,
-																		chosenProductAttributes
-																	);
-																}
-															});
-														}}
-													/>
-													<ProductImage
-														src={imageUrl}
-														// src={transformedImageUrl}
-														alt={product.productName}
-														onClick={() => {
-															window.scrollTo({ top: 0, behavior: "smooth" });
-															history.push(
-																`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`
-															);
-														}}
-													/>
-												</ImageContainer>
-											}
-										>
-											<Meta
-												title={product.productName}
-												description={
-													originalPrice > discountedPrice ? (
-														<span>
-															<OriginalPrice>
-																Price: ${originalPrice}
-															</OriginalPrice>{" "}
-															<DiscountedPrice>
-																${discountedPrice}
-															</DiscountedPrice>
-														</span>
-													) : (
-														<DiscountedPrice>
-															Price: ${discountedPrice}
-														</DiscountedPrice>
-													)
+									const totalQuantity =
+										product.productAttributes.reduce(
+											(acc, attr) => acc + attr.quantity,
+											0
+										) || product.quantity;
+
+									return (
+										<Col key={index} xs={24} sm={12} md={12} lg={6} xl={6}>
+											<ProductCard
+												hoverable
+												cover={
+													<ImageContainer>
+														{discountPercentage > 0 && (
+															<DiscountBadge>
+																{discountPercentage.toFixed(2)}% OFF!
+															</DiscountBadge>
+														)}
+														{totalQuantity > 0 ? (
+															<CartIcon
+																onClick={(e) => {
+																	e.stopPropagation();
+																	readProduct(product._id).then((data3) => {
+																		if (data3 && data3.error) {
+																			console.log(data3.error);
+																		} else {
+																			openSidebar2();
+																			addToCart(
+																				product._id,
+																				null,
+																				1,
+																				data3,
+																				chosenProductAttributes
+																			);
+																		}
+																	});
+																}}
+															/>
+														) : (
+															<OutOfStockBadge>Out of Stock</OutOfStockBadge>
+														)}
+														<ProductImage
+															src={imageUrl}
+															// src={transformedImageUrl}
+															alt={product.productName}
+															onClick={() => {
+																window.scrollTo({ top: 0, behavior: "smooth" });
+																history.push(
+																	`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`
+																);
+															}}
+														/>
+													</ImageContainer>
 												}
-											/>
-											{colorName ? (
-												<p style={{ textTransform: "capitalize" }}>
-													Color: {colorName}
-												</p>
-											) : product.color ? (
-												<p style={{ textTransform: "capitalize" }}>
-													Color: {product.color}
-												</p>
-											) : null}
-										</ProductCard>
-									</Col>
-								);
-							})}
+											>
+												<Meta
+													title={product.productName}
+													description={
+														originalPrice > discountedPrice ? (
+															<span>
+																<OriginalPrice>
+																	Price: ${originalPrice}
+																</OriginalPrice>{" "}
+																<DiscountedPrice>
+																	${discountedPrice}
+																</DiscountedPrice>
+															</span>
+														) : (
+															<DiscountedPrice>
+																Price: ${discountedPrice}
+															</DiscountedPrice>
+														)
+													}
+												/>
+												{colorName ? (
+													<p style={{ textTransform: "capitalize" }}>
+														Color: {colorName}
+													</p>
+												) : product.color ? (
+													<p style={{ textTransform: "capitalize" }}>
+														Color: {product.color}
+													</p>
+												) : null}
+											</ProductCard>
+										</Col>
+									);
+								})}
 						</Row>
 						<PaginationWrapper>
 							<Pagination
@@ -758,6 +773,20 @@ const CartIcon = styled(ShoppingCartOutlined)`
 	&:hover {
 		color: var(--secondary-color-light);
 	}
+`;
+
+const OutOfStockBadge = styled.div`
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	font-size: 13px;
+	color: grey;
+	background-color: #ffc6c6;
+	border-radius: 5px;
+	padding: 5px 10px;
+	z-index: 10;
+	font-style: italic;
+	font-weight: bold;
 `;
 
 const DiscountBadge = styled.div`
