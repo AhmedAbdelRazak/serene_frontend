@@ -226,7 +226,7 @@ const Z4StepThree = ({
 				setTimeout(() => {
 					clearCart(); // Clear the cart after order is created
 					setIsLoading(false);
-					history.push("/dashboard");
+					window.location.href = "/dashboard";
 				}, 3000);
 			}
 		} catch (error) {

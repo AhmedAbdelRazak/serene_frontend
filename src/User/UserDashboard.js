@@ -6,7 +6,6 @@ import { Layout, Menu } from "antd";
 import {
 	UserOutlined,
 	ShoppingCartOutlined,
-	// CustomerServiceOutlined,
 	HeartOutlined,
 } from "@ant-design/icons";
 import OrdersPage from "./OrdersPage";
@@ -39,7 +38,16 @@ const UserDashboard = () => {
 				setOrders(data);
 			}
 		});
-	}, [location.search, user._id, token]);
+
+		// Check if the user came from the cart page and if the page hasn't been refreshed yet
+		const cameFromCart = location.state && location.state.from === "/cart";
+		const hasRefreshed = localStorage.getItem("hasRefreshed");
+
+		if (cameFromCart && !hasRefreshed) {
+			localStorage.setItem("hasRefreshed", "true");
+			window.location.reload();
+		}
+	}, [location.search, location.state, user._id, token]);
 
 	const toggleCollapse = () => {
 		setCollapsed(!collapsed);
