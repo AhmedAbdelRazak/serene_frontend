@@ -10,16 +10,19 @@ const Z3StepTwo = ({
 	handleShippingOptionChange,
 	handleStateChange,
 	handleAddressChange,
+	handleCityChange,
 	allShippingOptions,
 	handlePreviousStep,
 	handleNextStep,
 	state,
 	address,
+	city,
 	comments,
 	handleCommentsChange,
 	shipmentChosen,
 	zipcode,
 	handleZipCodeChange,
+	setCity,
 }) => {
 	return (
 		<>
@@ -43,7 +46,7 @@ const Z3StepTwo = ({
 					</ShippingOption>
 					<ShippingOptionRow>
 						<div className='row'>
-							<div className='col-md-10'>
+							<div className='col-md-6'>
 								<ShippingOption>
 									<label className='mb-0 mt-3'>Ship To Address</label>
 									<Input
@@ -52,6 +55,18 @@ const Z3StepTwo = ({
 										placeholder='Enter shipping address'
 										value={address}
 										onChange={handleAddressChange}
+									/>
+								</ShippingOption>
+							</div>
+							<div className='col-md-4'>
+								<ShippingOption>
+									<label className='mb-0 mt-3'>City</label>
+									<Input
+										type='text'
+										name='city'
+										placeholder='Enter city'
+										value={city}
+										onChange={handleCityChange}
 									/>
 								</ShippingOption>
 							</div>

@@ -20,6 +20,7 @@ const Z4StepThree = ({
 	customerDetails,
 	state,
 	address,
+	city,
 	handlePreviousStep,
 	zipcode,
 	shipmentChosen,
@@ -39,33 +40,69 @@ const Z4StepThree = ({
 	const handleProceedToCheckout = () => {
 		if (
 			!address ||
+			!city ||
 			!state ||
 			!/^\d{5}$/.test(zipcode) ||
 			!shipmentChosen ||
 			!shipmentChosen.carrierName
 		) {
-			toast.error("Please complete all required fields.");
-			setStep(2);
-			return;
+			if (!address) {
+				setStep(2);
+				return toast.error("Please provide a valid address.");
+			} else if (!city) {
+				setStep(2);
+
+				return toast.error("Please provide your city.");
+			} else if (!state) {
+				setStep(2);
+
+				return toast.error("Please select your state.");
+			} else if (!/^\d{5}$/.test(zipcode)) {
+				setStep(2);
+
+				return toast.error("Please enter a valid 5-digit zipcode.");
+			} else if (!shipmentChosen || !shipmentChosen.carrierName) {
+				setStep(2);
+
+				return toast.error("Please choose a shipping option.");
+			}
 		}
 
 		if (!user) {
 			const { name, email, phone, password, confirmPassword } = customerDetails;
-			if (
-				!name ||
-				!email ||
-				!phone ||
-				!password ||
-				!confirmPassword ||
-				!/^\S+\s+\S+$/.test(name) ||
-				!/\S+@\S+\.\S+/.test(email) ||
-				!/^\d{10}$/.test(phone) ||
-				password.length < 6 ||
-				password !== confirmPassword
-			) {
-				toast.error("Please complete all required fields.");
+			if (!name) {
 				setStep(1);
-				return;
+				return toast.error("Please enter your name.");
+			} else if (!email) {
+				setStep(1);
+				return toast.error("Please enter your email.");
+			} else if (!phone) {
+				setStep(1);
+				return toast.error("Please enter your phone number.");
+			} else if (!password) {
+				setStep(1);
+				return toast.error("Please enter your password.");
+			} else if (!confirmPassword) {
+				setStep(1);
+				return toast.error("Please confirm your password.");
+			} else if (name.trim().split(" ").length < 2) {
+				setStep(1);
+				return toast.error("First and Last names are required.");
+			} else if (!/\S+@\S+\.\S+/.test(email)) {
+				setStep(1);
+				return toast.error("Please enter a valid email address.");
+			} else if (!/^\d{10}$/.test(phone)) {
+				setStep(1);
+				return toast.error("Please enter a valid 10-digit phone number.");
+			} else if (password.length < 6) {
+				setStep(1);
+				return toast.error("Password should be at least 6 characters long.");
+			} else if (password !== confirmPassword) {
+				setStep(1);
+				return toast.error("Passwords do not match.");
+			} else if (!/\s/.test(address)) {
+				setStep(2);
+				return toast.error("Please ensure that the address is correct.");
 			}
 		}
 
@@ -76,40 +113,64 @@ const Z4StepThree = ({
 		const { name, email, phone, password, confirmPassword } = customerDetails;
 
 		if (!user) {
-			if (!name || !email || !phone || !password || !confirmPassword) {
-				toast.error("Please fill in all fields.");
+			if (!name) {
+				toast.error("Please enter your name.");
 				setStep(1);
-				return;
+				return false;
 			}
 
-			if (!/^\S+\s+\S+$/.test(name)) {
-				toast.error("Please enter both first and last names.");
+			if (!email) {
+				toast.error("Please enter your email.");
 				setStep(1);
-				return;
+				return false;
+			}
+
+			if (!phone) {
+				toast.error("Please enter your phone number.");
+				setStep(1);
+				return false;
+			}
+
+			if (!password) {
+				toast.error("Please enter your password.");
+				setStep(1);
+				return false;
+			}
+
+			if (!confirmPassword) {
+				toast.error("Please confirm your password.");
+				setStep(1);
+				return false;
+			}
+
+			if (name.trim().split(" ").length < 2) {
+				toast.error("First and Last names are required.");
+				setStep(1);
+				return false;
 			}
 
 			if (!/\S+@\S+\.\S+/.test(email)) {
 				toast.error("Please enter a valid email address.");
 				setStep(1);
-				return;
+				return false;
 			}
 
 			if (!/^\d{10}$/.test(phone)) {
 				toast.error("Please enter a valid 10-digit phone number.");
 				setStep(1);
-				return;
+				return false;
 			}
 
 			if (password.length < 6) {
 				toast.error("Password should be at least 6 characters long.");
 				setStep(1);
-				return;
+				return false;
 			}
 
 			if (password !== confirmPassword) {
 				toast.error("Passwords do not match.");
 				setStep(1);
-				return;
+				return false;
 			}
 
 			try {
@@ -121,14 +182,17 @@ const Z4StepThree = ({
 
 					if (signupResponse.error) {
 						toast.error(signupResponse.error);
-						return;
+						return false;
 					}
 
-					const newSigninResponse = await signin({ email, password });
+					const newSigninResponse = await signin({
+						emailOrPhone: email,
+						password,
+					});
 
 					if (newSigninResponse.error) {
 						toast.error(newSigninResponse.error);
-						return;
+						return false;
 					}
 
 					authenticate(newSigninResponse, () => {
@@ -142,8 +206,11 @@ const Z4StepThree = ({
 			} catch (error) {
 				console.error("Error during signup/signin:", error);
 				toast.error("An error occurred during the signup/signin process.");
+				return false;
 			}
 		}
+
+		return true;
 	};
 
 	const handlePayment = async (paymentToken) => {
@@ -180,6 +247,7 @@ const Z4StepThree = ({
 				email: customerDetails.email,
 				phone: customerDetails.phone,
 				address: address,
+				city: city,
 				state: state,
 				zipcode: zipcode,
 				userId: userId,
@@ -238,8 +306,13 @@ const Z4StepThree = ({
 	};
 
 	const handlePaymentSuccess = async (paymentToken) => {
-		await handleSignupAndSignin();
-		await handlePayment(paymentToken);
+		const isSignupSigninSuccessful = await handleSignupAndSignin();
+
+		if (isSignupSigninSuccessful) {
+			await handlePayment(paymentToken);
+		} else {
+			console.log("Signup/Signin failed, payment not processed.");
+		}
 	};
 
 	return (
@@ -259,6 +332,9 @@ const Z4StepThree = ({
 						</ReviewItem>
 						<ReviewItem>
 							<strong>Ship to Address:</strong> {address}
+						</ReviewItem>
+						<ReviewItem>
+							<strong>Ship to City:</strong> {city}
 						</ReviewItem>
 						<ReviewItem>
 							<strong>Zipcode:</strong> {zipcode}

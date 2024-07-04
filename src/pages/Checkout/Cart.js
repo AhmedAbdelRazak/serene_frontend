@@ -9,6 +9,7 @@ import Z4StepThree from "./Z4StepThree";
 import { useHistory } from "react-router-dom";
 import { isAuthenticated } from "../../auth";
 import { Modal } from "antd";
+import { toast } from "react-toastify";
 
 const Cart = () => {
 	const { cart, total_amount, addShipmentDetails, shipmentChosen, removeItem } =
@@ -26,6 +27,7 @@ const Cart = () => {
 	const [coupon, setCoupon] = useState("");
 	const [state, setState] = useState("");
 	const [address, setAddress] = useState("");
+	const [city, setCity] = useState("");
 	const [zipcode, setZipCode] = useState("");
 	const [comments, setComments] = useState("");
 	const [isModalVisible, setIsModalVisible] = useState(false);
@@ -69,6 +71,65 @@ const Cart = () => {
 		setStep(step - 1);
 	};
 
+	// eslint-disable-next-line
+	const handleProceedToCheckout = () => {
+		if (
+			!address ||
+			!city ||
+			!state ||
+			!/^\d{5}$/.test(zipcode) ||
+			!shipmentChosen ||
+			!shipmentChosen.carrierName
+		) {
+			if (!address) {
+				toast.error("Please provide a valid address.");
+			} else if (!city) {
+				toast.error("Please provide a valid city.");
+			} else if (!state) {
+				toast.error("Please select your state.");
+			} else if (!/^\d{5}$/.test(zipcode)) {
+				toast.error("Please enter a valid 5-digit zipcode.");
+			} else if (!shipmentChosen || !shipmentChosen.carrierName) {
+				toast.error("Please choose a shipping option.");
+			}
+			setStep(2);
+			return;
+		}
+
+		if (!user) {
+			const { name, email, phone, password, confirmPassword } = customerDetails;
+			if (!name) {
+				toast.error("Please enter your name.");
+			} else if (!email) {
+				toast.error("Please enter your email.");
+			} else if (!phone) {
+				toast.error("Please enter your phone number.");
+			} else if (!password) {
+				toast.error("Please enter your password.");
+			} else if (!confirmPassword) {
+				toast.error("Please confirm your password.");
+			} else if (!/^\S+\s+\S+$/.test(name)) {
+				toast.error("Please enter both first and last names.");
+			} else if (!/\S+@\S+\.\S+/.test(email)) {
+				toast.error("Please enter a valid email address.");
+			} else if (!/^\d{10}$/.test(phone)) {
+				toast.error("Please enter a valid 10-digit phone number.");
+			} else if (password.length < 6) {
+				toast.error("Password should be at least 6 characters long.");
+			} else if (password !== confirmPassword) {
+				toast.error("Passwords do not match.");
+			} else if (!/\s/.test(address)) {
+				toast.error("Please ensure that the address is correct.");
+			} else {
+				toast.error("Please complete all required fields.");
+			}
+			setStep(1);
+			return;
+		}
+
+		setIsModalVisible(true);
+	};
+
 	return (
 		<CartWrapper>
 			<StepIndicator>Step {step} of 3</StepIndicator>
@@ -105,11 +166,14 @@ const Cart = () => {
 					}}
 					handleStateChange={(value) => setState(value)}
 					handleAddressChange={(e) => setAddress(e.target.value)}
+					handleCityChange={(e) => setCity(e.target.value)}
 					allShippingOptions={allShippingOptions}
 					handlePreviousStep={handlePreviousStep}
 					handleNextStep={handleNextStep}
 					state={state}
 					address={address}
+					city={city}
+					setCity={setCity}
 					comments={comments}
 					handleCommentsChange={(e) => setComments(e.target.value)}
 					shipmentChosen={shipmentChosen}
@@ -121,6 +185,7 @@ const Cart = () => {
 					customerDetails={customerDetails}
 					state={state}
 					address={address}
+					city={city}
 					// handleCheckout={handleCheckout}
 					handlePreviousStep={handlePreviousStep}
 					zipcode={zipcode}
