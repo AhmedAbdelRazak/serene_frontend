@@ -364,7 +364,7 @@ const ShippingOptions = () => {
 									<tr key={s._id}>
 										<td>{i + 1}</td>
 										<td>{s.carrierName}</td>
-										<td>{s.shippingPrice} KD</td>
+										<td>${s.shippingPrice}</td>
 
 										<td>{s.estimatedDays} (Days)</td>
 										<td>

@@ -6,7 +6,7 @@ import { Layout, Menu } from "antd";
 import {
 	UserOutlined,
 	ShoppingCartOutlined,
-	CustomerServiceOutlined,
+	// CustomerServiceOutlined,
 	HeartOutlined,
 } from "@ant-design/icons";
 import OrdersPage from "./OrdersPage";
@@ -96,9 +96,9 @@ const UserDashboard = () => {
 						<Menu.Item key='profile' icon={<UserOutlined />}>
 							Update Profile
 						</Menu.Item>
-						<Menu.Item key='contact' icon={<CustomerServiceOutlined />}>
+						{/* <Menu.Item key='contact' icon={<CustomerServiceOutlined />}>
 							Contact Customer Service
-						</Menu.Item>
+						</Menu.Item> */}
 						<Menu.Item key='wishlist' icon={<HeartOutlined />}>
 							Wish List
 						</Menu.Item>

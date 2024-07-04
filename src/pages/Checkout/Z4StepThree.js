@@ -113,7 +113,7 @@ const Z4StepThree = ({
 			}
 
 			try {
-				const signinResponse = await signin({ email, password });
+				const signinResponse = await signin({ emailOrPhone: email, password });
 
 				if (signinResponse.error) {
 					// If signin fails, proceed with signup
@@ -146,13 +146,9 @@ const Z4StepThree = ({
 		}
 	};
 
-	console.log(cart, "cart");
-
 	const handlePayment = async (paymentToken) => {
 		const token = isAuthenticated().token;
 		const userId = isAuthenticated().user._id;
-
-		console.log("handlePayment triggered");
 
 		// Prepare order data
 		const orderData = {
@@ -296,8 +292,10 @@ const Z4StepThree = ({
 					<TotalAmount>
 						Total Amount: $
 						{shipmentChosen && shipmentChosen.shippingPrice
-							? Number(total_amount) + Number(shipmentChosen.shippingPrice)
-							: total_amount}
+							? Number(
+									Number(total_amount) + Number(shipmentChosen.shippingPrice)
+								).toFixed(2)
+							: Number(total_amount).toFixed(2)}
 					</TotalAmount>
 					<ButtonWrapper>
 						<BackButton onClick={handlePreviousStep}>Back</BackButton>

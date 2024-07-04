@@ -37,14 +37,24 @@ const SidebarCart = ({ from }) => {
 	}, []);
 
 	const checkingAvailability = cart.map((item) => {
-		const chosenAttribute =
-			item.allProductDetailsIncluded.productAttributes.find(
-				(attr) => attr.color === item.color && attr.size === item.size
-			);
-		return (
-			item.allProductDetailsIncluded.activeBackorder ||
-			(chosenAttribute && chosenAttribute.quantity >= item.amount)
-		);
+		// Check if the product has attributes
+		const hasAttributes =
+			item.allProductDetailsIncluded.productAttributes &&
+			item.allProductDetailsIncluded.productAttributes.length > 0;
+
+		// Find the chosen attribute if it exists
+		const chosenAttribute = hasAttributes
+			? item.allProductDetailsIncluded.productAttributes.find(
+					(attr) => attr.color === item.color && attr.size === item.size
+				)
+			: null;
+
+		// Determine availability based on attributes or directly on the product
+		return hasAttributes
+			? item.allProductDetailsIncluded.activeBackorder ||
+					(chosenAttribute && chosenAttribute.quantity >= item.amount)
+			: item.allProductDetailsIncluded.activeBackorder ||
+					item.allProductDetailsIncluded.quantity >= item.amount;
 	});
 
 	const isStockAvailable = checkingAvailability.every(Boolean);
@@ -88,8 +98,10 @@ const SidebarCart = ({ from }) => {
 								);
 
 							const isItemOutOfStock =
-								!item.allProductDetailsIncluded.activeBackorder &&
-								(!chosenAttribute || chosenAttribute.quantity < item.amount);
+								(!item.allProductDetailsIncluded.activeBackorder &&
+									chosenAttribute &&
+									chosenAttribute.quantity < item.amount) ||
+								item.allProductDetailsIncluded.quantity <= 0;
 
 							return (
 								<CartItem key={i}>
@@ -211,7 +223,8 @@ const SidebarCart = ({ from }) => {
 					)}
 					{cart.length > 0 && (
 						<TotalAmount>
-							Total Amount: ${total_amount} <hr className='col-md-6' />
+							Total Amount: ${Number(total_amount).toFixed(2)}{" "}
+							<hr className='col-md-6' />
 						</TotalAmount>
 					)}
 					{cart.length > 0 && (
@@ -234,7 +247,9 @@ const SidebarCart = ({ from }) => {
 									}
 								}}
 							>
-								{isStockAvailable ? "Continue To Check Out" : "No Enough Stock"}
+								{isStockAvailable
+									? "Continue To Check Out"
+									: "No Stock Available"}
 							</CheckoutButton>
 							<ClearCartButton onClick={clearCart}>Clear Cart</ClearCartButton>
 						</ButtonsWrapper>

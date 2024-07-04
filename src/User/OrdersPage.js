@@ -65,7 +65,8 @@ const OrdersPage = ({ orders }) => {
 							</div>
 
 							<CenteredText>
-								<strong>Total Amount:</strong> ${order.totalAmount}
+								<strong>Total Amount:</strong> $
+								{Number(order.totalAmount).toFixed(2)}
 							</CenteredText>
 							<SectionTitle>Payment Details</SectionTitle>
 
