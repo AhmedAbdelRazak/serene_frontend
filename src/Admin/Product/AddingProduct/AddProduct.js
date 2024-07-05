@@ -732,7 +732,7 @@ const AddProduct = () => {
 		setClickedLink("MainData");
 		window.scrollTo({ top: 0, behavior: "smooth" });
 
-		if (allProducts && allProducts.length >= 30) {
+		if (allProducts && allProducts.length >= 300) {
 			setClickedLink("MainData");
 			return toast.error("Database is full, Please contact your adminstrator");
 		}
