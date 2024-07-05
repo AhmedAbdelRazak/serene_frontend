@@ -16,6 +16,7 @@ const Z1CartDetails = () => {
 		toggleAmount,
 		changeColor,
 		changeSize,
+		// eslint-disable-next-line
 		shipmentChosen,
 	} = useCartContext();
 	const [allColors, setAllColors] = useState([]);
@@ -168,9 +169,10 @@ const Z1CartDetails = () => {
 						})}
 						<TotalAmount>
 							Total Amount: $
-							{shipmentChosen && shipmentChosen.shippingPrice
+							{/* {shipmentChosen && shipmentChosen.shippingPrice
 								? Number(total_amount) + Number(shipmentChosen.shippingPrice)
-								: total_amount}
+								: total_amount} */}
+							{Number(total_amount).toFixed(2)}
 							<hr className='col-md-6' />
 						</TotalAmount>
 						<ClearCartButton onClick={clearCart}>Clear Cart</ClearCartButton>

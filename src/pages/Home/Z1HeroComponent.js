@@ -187,7 +187,7 @@ const Overlay = styled.div`
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0, 0, 0, 0.5); /* Dark overlay with opacity */
+	background-color: rgba(0, 0, 0, 0.25); /* Dark overlay with opacity */
 	z-index: 1;
 `;
 

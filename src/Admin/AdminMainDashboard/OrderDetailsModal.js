@@ -151,6 +151,15 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 									onClick={handleEditTrackingClick}
 								/>
 							</StyledText>
+							<div>
+								<FaTruck style={{ marginRight: "5px" }} />
+								<strong>Ship To Address:</strong>{" "}
+								{order.customerDetails.address}
+								{", "}
+								{order.customerDetails.city}
+								{", "}
+								{order.customerDetails.state} {order.customerDetails.zipcode}
+							</div>
 							<StyledText>
 								<FaBoxOpen style={{ marginRight: "5px" }} />
 								<strong>Shipment Status:</strong> {order.status}{" "}
@@ -201,7 +210,8 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 							</div>
 
 							<CenteredText>
-								<strong>Total Amount:</strong> ${order.totalAmount}
+								<strong>Total Amount:</strong> $
+								{Number(order.totalAmount).toFixed(2)}
 							</CenteredText>
 
 							<SectionTitle>Payment Details</SectionTitle>

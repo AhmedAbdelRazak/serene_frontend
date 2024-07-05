@@ -240,10 +240,20 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 					)}
 					<ButtonContainer>
 						<ActionButton
+							disabled={product && product.quantity <= 0}
 							onClick={handleAddToCart}
 							color='var(--primary-color-darker)'
 						>
-							<ShoppingCartOutlined /> Add to Cart
+							<ShoppingCartOutlined />{" "}
+							{(product &&
+								product.productAttributes &&
+								product.productAttributes.reduce(
+									(acc, attr) => acc + attr.quantity,
+									0
+								)) ||
+							(product && product.quantity <= 0)
+								? "Out Of Stock"
+								: "Add to Cart"}
 						</ActionButton>
 						<ActionButton
 							onClick={handleAddToWishlist}

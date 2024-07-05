@@ -28,7 +28,15 @@ const OrdersPage = ({ orders }) => {
 								<strong>Tracking Number:</strong>{" "}
 								{order.trackingNumber || "No Tracking # Yet"}
 							</StyledText>
-
+							<div>
+								<FaTruck style={{ marginRight: "5px" }} />
+								<strong>Ship To Address:</strong>{" "}
+								{order.customerDetails.address}
+								{", "}
+								{order.customerDetails.city}
+								{", "}
+								{order.customerDetails.state} {order.customerDetails.zipcode}
+							</div>
 							<div className='row'>
 								<div className='col-md-6'>
 									<span>

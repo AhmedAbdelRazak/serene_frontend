@@ -255,14 +255,17 @@ const Z4StepThree = ({
 			totalOrderQty: cart.reduce((sum, item) => sum + item.amount, 0),
 			status: "In Process",
 			onHoldStatus: "None",
-			totalAmount:
-				shipmentChosen && shipmentChosen.shippingPrice
-					? Number(total_amount) + Number(shipmentChosen.shippingPrice)
-					: total_amount,
-			totalAmountAfterDiscount:
-				shipmentChosen && shipmentChosen.shippingPrice
-					? Number(total_amount) + Number(shipmentChosen.shippingPrice)
-					: total_amount, // Adjust if discount logic is added
+			// totalAmount:
+			// 	shipmentChosen && shipmentChosen.shippingPrice
+			// 		? Number(total_amount) + Number(shipmentChosen.shippingPrice)
+			// 		: total_amount,
+			totalAmount: total_amount,
+			// totalAmountAfterDiscount:
+			// 	shipmentChosen && shipmentChosen.shippingPrice
+			// 		? Number(total_amount) + Number(shipmentChosen.shippingPrice)
+			// 		: total_amount, // Adjust if discount logic is added
+
+			totalAmountAfterDiscount: total_amount, // Adjust if discount logic is added
 			chosenShippingOption: shipmentChosen,
 			orderSource: "Website",
 			appliedCoupon: coupon ? { code: coupon, discount: 10 } : {}, // Adjust discount as needed
@@ -367,11 +370,12 @@ const Z4StepThree = ({
 					</CartItems>
 					<TotalAmount>
 						Total Amount: $
-						{shipmentChosen && shipmentChosen.shippingPrice
+						{/* {shipmentChosen && shipmentChosen.shippingPrice
 							? Number(
 									Number(total_amount) + Number(shipmentChosen.shippingPrice)
 								).toFixed(2)
-							: Number(total_amount).toFixed(2)}
+							: Number(total_amount).toFixed(2)} */}
+						{Number(total_amount).toFixed(2)}
 					</TotalAmount>
 					<ButtonWrapper>
 						<BackButton onClick={handlePreviousStep}>Back</BackButton>

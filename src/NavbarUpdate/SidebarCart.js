@@ -49,12 +49,40 @@ const SidebarCart = ({ from }) => {
 				)
 			: null;
 
+		// Log details for debugging
+		console.log("Item:", item.name);
+		console.log("Has Attributes:", hasAttributes);
+		console.log("Chosen Attribute:", chosenAttribute);
+		console.log(
+			"Active Product:",
+			item.allProductDetailsIncluded.activeProduct
+		);
+		console.log(
+			"Active Backorder:",
+			item.allProductDetailsIncluded.activeBackorder
+		);
+		console.log(
+			"Chosen Attribute Quantity:",
+			chosenAttribute ? chosenAttribute.quantity : "N/A"
+		);
+		console.log("Item Amount:", item.amount);
+		console.log("Product Quantity:", item.allProductDetailsIncluded.quantity);
+
 		// Determine availability based on attributes or directly on the product
-		return hasAttributes
-			? item.allProductDetailsIncluded.activeBackorder ||
-					(chosenAttribute && chosenAttribute.quantity >= item.amount)
-			: item.allProductDetailsIncluded.activeBackorder ||
-					item.allProductDetailsIncluded.quantity >= item.amount;
+		if (hasAttributes) {
+			return (
+				item.allProductDetailsIncluded.activeProduct &&
+				chosenAttribute &&
+				chosenAttribute.quantity >= item.amount &&
+				item.amount > 0
+			);
+		} else {
+			return (
+				item.allProductDetailsIncluded.activeProduct &&
+				item.allProductDetailsIncluded.quantity >= item.amount &&
+				item.amount > 0
+			);
+		}
 	});
 
 	const isStockAvailable = checkingAvailability.every(Boolean);
