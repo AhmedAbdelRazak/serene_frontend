@@ -240,17 +240,11 @@ const LanguageText = styled.span`
 	color: #fff;
 	margin-left: 5px;
 	font-size: 14px;
-	@media (max-width: 750px) {
-		display: none !important;
-	}
 `;
 
 const ProfileMenu = styled.div`
 	display: flex;
 	align-items: center;
-	@media (max-width: 750px) {
-		display: none !important;
-	}
 `;
 
 const Profile = styled.div`
