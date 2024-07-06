@@ -167,7 +167,6 @@ const AdminNavbar = ({
 						marginLeft: chosenLanguage === "Arabic" ? 200 : 5,
 						marginTop: chosenLanguage === "Arabic" ? 10 : 10,
 						left: collapsed ? "10px" : "220px",
-						zIndex: collapsed ? "1000" : "",
 					}}
 				>
 					{collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -333,6 +332,7 @@ const AdminNavbarWrapper = styled.div`
 
 		button {
 			margin-top: 5px !important;
+			margin-left: -10px !important;
 		}
 	}
 `;

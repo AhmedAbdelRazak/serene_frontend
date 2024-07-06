@@ -54,7 +54,7 @@ const StorePOSMain = () => {
 	const [customerAddress, setCustomerAddress] = useState("674 Rocky Loop");
 	const [customerCity, setCustomerCity] = useState("Crestline");
 	const [customerState, setCustomerState] = useState("California");
-	const [customerZipcode, setCustomerZipcode] = useState("92325");
+	const [customerZipcode, setCustomerZipcode] = useState("");
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [paymentStatus, setPaymentStatus] = useState("");
@@ -62,6 +62,9 @@ const StorePOSMain = () => {
 	const records = 200;
 	const location = useLocation();
 	const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+	const [editableTotalAmount, setEditableTotalAmount] = useState(null); // New state for editable total amount
+	const [isEditingTotalAmount, setIsEditingTotalAmount] = useState(false); // New state for editing mode
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -284,11 +287,13 @@ const StorePOSMain = () => {
 					0
 				) + (shipmentChosen ? shipmentChosen.shippingPrice : 0),
 			totalAmountAfterDiscount:
-				selectedProducts.reduce(
-					(total, item) =>
-						total + item.quantity * (item.priceAfterDiscount || item.price),
-					0
-				) + (shipmentChosen ? shipmentChosen.shippingPrice : 0),
+				editableTotalAmount !== null
+					? editableTotalAmount
+					: selectedProducts.reduce(
+							(total, item) =>
+								total + item.quantity * (item.priceAfterDiscount || item.price),
+							0
+						) + (shipmentChosen ? shipmentChosen.shippingPrice : 0),
 			chosenShippingOption: shipmentChosen
 				? shipmentChosen
 				: {
@@ -406,6 +411,16 @@ const StorePOSMain = () => {
 	};
 
 	const handleCancel = () => {
+		setIsModalVisible(false);
+	};
+
+	const handleEditTotalAmount = () => {
+		setIsEditingTotalAmount(true);
+		setEditableTotalAmount(totalAmount);
+	};
+
+	const handleSaveTotalAmount = () => {
+		setIsEditingTotalAmount(false);
 		setIsModalVisible(false);
 	};
 
@@ -809,7 +824,26 @@ const StorePOSMain = () => {
 														/>
 													)}
 													<TotalAmount>
-														Total Amount: ${totalAmount.toFixed(2)}
+														Total Amount: $
+														{editableTotalAmount ? (
+															<>
+																<s style={{ color: "red", fontSize: "1.2rem" }}>
+																	${totalAmount.toFixed(2)}
+																</s>{" "}
+																$
+																{editableTotalAmount?.toFixed(2) ||
+																	totalAmount.toFixed(2)}
+															</>
+														) : (
+															totalAmount.toFixed(2)
+														)}
+														<FaEdit
+															style={{
+																marginLeft: "10px",
+																cursor: "pointer",
+															}}
+															onClick={handleEditTotalAmount}
+														/>
 													</TotalAmount>
 													{paymentMethod === "Generate Payment Link" && (
 														<Button
@@ -938,11 +972,27 @@ const StorePOSMain = () => {
 					</div>
 				</div>
 			</Modal>
+			<Modal
+				title='Edit Total Amount'
+				visible={isEditingTotalAmount}
+				onOk={handleSaveTotalAmount}
+				onCancel={() => setIsEditingTotalAmount(false)}
+			>
+				<InputNumber
+					value={editableTotalAmount}
+					onChange={setEditableTotalAmount}
+					style={{ width: "100%" }}
+				/>
+				<p>
+					The customer should pay: <s>${totalAmount.toFixed(2)}</s> $
+					{editableTotalAmount?.toFixed(2) || totalAmount.toFixed(2)}
+				</p>
+			</Modal>
 			{loading && (
 				<Overlay>
 					<Spin size='large' />
 					<LoadingText>
-						User still not paid<span>...</span>
+						Pending Customer's Payment<span>...</span>
 					</LoadingText>
 				</Overlay>
 			)}

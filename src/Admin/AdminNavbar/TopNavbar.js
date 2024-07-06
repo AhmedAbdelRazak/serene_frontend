@@ -187,7 +187,6 @@ const NavbarWrapper = styled.div`
 	align-items: center;
 	padding: 0 20px;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-	z-index: 100;
 	direction: ${(props) => (props.isArabic ? "rtl" : "")} !important;
 `;
 

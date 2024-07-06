@@ -62,7 +62,7 @@ const StorePOSMobile = () => {
 	const [customerAddress, setCustomerAddress] = useState("674 Rocky Loop");
 	const [customerCity, setCustomerCity] = useState("Crestline");
 	const [customerState, setCustomerState] = useState("California");
-	const [customerZipcode, setCustomerZipcode] = useState("92325");
+	const [customerZipcode, setCustomerZipcode] = useState("");
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [paymentStatus, setPaymentStatus] = useState("");
@@ -898,7 +898,7 @@ const StorePOSMobile = () => {
 				<Overlay>
 					<Spin size='large' />
 					<LoadingText>
-						User still not paid<span>...</span>
+						Pending Customer's Payment<span>...</span>
 					</LoadingText>
 				</Overlay>
 			)}
