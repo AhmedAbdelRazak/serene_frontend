@@ -4,35 +4,43 @@ import {
 	Select,
 	InputNumber,
 	Divider,
-	Row,
-	Col,
 	Checkbox,
 	Input,
 	Radio,
 	Button,
 	Modal,
 	Spin,
+	Drawer,
+	Badge,
 } from "antd";
 import { createOrderPOS, getColors } from "../apiAdmin";
 import { gettingFilteredProducts, getShippingOptions } from "../../apiCore";
 import { useLocation } from "react-router-dom";
 import AdminNavbar from "../AdminNavbar/AdminNavbar";
 import { ToastContainer, toast } from "react-toastify";
-import { FaTrashAlt, FaEdit, FaCheckCircle } from "react-icons/fa";
+import {
+	FaTrashAlt,
+	FaEdit,
+	FaCheckCircle,
+	FaShoppingCart,
+	FaTimes,
+} from "react-icons/fa";
 import { isAuthenticated } from "../../auth";
 import socket from "../../Chat/socket";
-import StorePOSMobile from "./StorePOSMobile";
 
 const { Option } = Select;
 
-const StorePOSMain = () => {
+const StorePOSMobile = () => {
 	const [AdminMenuStatus, setAdminMenuStatus] = useState(false);
 	const [collapsed, setCollapsed] = useState(false);
 	const [products, setProducts] = useState([]);
 	const [selectedProducts, setSelectedProducts] = useState([]);
+	// eslint-disable-next-line
 	const [categories, setCategories] = useState([]);
 	const [allColors, setAllColors] = useState([]);
+	// eslint-disable-next-line
 	const [colors, setColors] = useState([]);
+	// eslint-disable-next-line
 	const [sizes, setSizes] = useState([]);
 	const [filters, setFilters] = useState({
 		color: "",
@@ -58,19 +66,10 @@ const StorePOSMain = () => {
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [paymentStatus, setPaymentStatus] = useState("");
+	const [drawerVisible, setDrawerVisible] = useState(false);
 	const page = 1;
 	const records = 200;
 	const location = useLocation();
-	const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
-	useEffect(() => {
-		const handleResize = () => {
-			setIsMobile(window.innerWidth <= 768);
-		};
-
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
 
 	const { user, token } = isAuthenticated();
 
@@ -164,6 +163,7 @@ const StorePOSMain = () => {
 					p._id === product._id ? { ...p, quantity: p.quantity + 1 } : p
 				);
 			} else {
+				setDrawerVisible(true); // Open drawer when a product is added
 				return [...prev, { ...product, quantity: 1 }];
 			}
 		});
@@ -193,6 +193,7 @@ const StorePOSMain = () => {
 		);
 	};
 
+	// eslint-disable-next-line
 	const handleFilterChange = (key, value) => {
 		setFilters((prevFilters) => ({
 			...prevFilters,
@@ -409,6 +410,14 @@ const StorePOSMain = () => {
 		setIsModalVisible(false);
 	};
 
+	const showDrawer = () => {
+		setDrawerVisible(true);
+	};
+
+	const closeDrawer = () => {
+		setDrawerVisible(false);
+	};
+
 	useEffect(() => {
 		// Listen for payment status updates via WebSocket
 		socket.on("orderUpdated", (updatedOrder) => {
@@ -428,414 +437,312 @@ const StorePOSMain = () => {
 	}, []);
 
 	return (
-		<StorePOSMainWrapper show={collapsed}>
+		<StorePOSMobileWrapper show={collapsed}>
 			<ToastContainer className='toast-top-center' position='top-center' />
+			<div className='navcontent'>
+				<AdminNavbar
+					fromPage='StorePOS'
+					AdminMenuStatus={AdminMenuStatus}
+					setAdminMenuStatus={setAdminMenuStatus}
+					collapsed={collapsed}
+					setCollapsed={setCollapsed}
+				/>
+			</div>
+			<CartIcon onClick={showDrawer}>
+				<Badge count={selectedProducts.length}>
+					<FaShoppingCart size={30} />
+				</Badge>
+			</CartIcon>
+			<ProductsSection>
+				{products.map((product) => {
+					const originalPrice = product.price;
+					const discountedPrice =
+						product.priceAfterDiscount > 0 &&
+						product.priceAfterDiscount < originalPrice
+							? product.priceAfterDiscount
+							: null;
+					const totalQuantity =
+						product.productAttributes?.reduce(
+							(acc, attr) => acc + attr.quantity,
+							0
+						) || product.quantity;
 
-			<div className='grid-container-main'>
-				<div className='navcontent'>
-					<AdminNavbar
-						fromPage='StorePOS'
-						AdminMenuStatus={AdminMenuStatus}
-						setAdminMenuStatus={setAdminMenuStatus}
-						collapsed={collapsed}
-						setCollapsed={setCollapsed}
-					/>
-				</div>
-				<div className='otherContentWrapper'>
-					<div className='container-wrapper'>
-						<TitleWrapper>Serene Jannat (POS)</TitleWrapper>
+					return (
+						<ProductCard
+							key={product._id}
+							onClick={() => addProductToOrder(product)}
+						>
+							{totalQuantity > 0 ? null : (
+								<OutOfStockBadge>Out of Stock</OutOfStockBadge>
+							)}
+							<img
+								src={product.thumbnailImage[0].images[0].url}
+								alt={product.productName}
+							/>
+							<div>
+								<h3>{product.productName}</h3>
+								{discountedPrice ? (
+									<>
+										<OriginalPrice>${originalPrice}</OriginalPrice>
+										<DiscountedPrice>${discountedPrice}</DiscountedPrice>
+									</>
+								) : (
+									<p>${originalPrice}</p>
+								)}
+								{product.color && (
+									<p
+										style={{
+											fontSize: "12px",
+											color: "grey",
+											fontWeight: "bold",
+											textTransform: "capitalize",
+										}}
+									>
+										Color: {product.color}
+									</p>
+								)}
+								{product.size && (
+									<p
+										style={{
+											fontSize: "12px",
+											color: "grey",
+											fontWeight: "bold",
+											textTransform: "capitalize",
+										}}
+									>
+										Size: {product.size}
+									</p>
+								)}
+							</div>
+							{product.productAttributes &&
+								product.productAttributes.map((attr, i) => (
+									<ColorDisplay key={i} color={attr.color}>
+										{allColors.find((clr) => clr.hexa === attr.color)?.color ||
+											attr.color}
+									</ColorDisplay>
+								))}
+						</ProductCard>
+					);
+				})}
+			</ProductsSection>
+			<Drawer
+				title='Your Order'
+				placement='right'
+				closable={true}
+				onClose={closeDrawer}
+				visible={drawerVisible}
+				width='80%'
+				closeIcon={<FaTimes />}
+			>
+				<OrderSection>
+					{selectedProducts.length === 0 ? (
+						<NoProductsMessage>
+							No products added to the order
+						</NoProductsMessage>
+					) : (
 						<>
-							{isMobile ? (
-								<StorePOSMobile />
-							) : (
-								<>
-									<FilterWrapper>
-										<Row gutter={[16, 16]}>
-											<Col span={4}>
-												<Select
-													placeholder='Color'
-													style={{ width: "100%" }}
-													onChange={(value) =>
-														handleFilterChange("color", value)
-													}
-												>
-													<Option value=''>All Colors</Option>
-													{colors.map((color, index) => (
-														<Option key={index} value={color}>
-															{allColors.find((clr) => clr.hexa === color)
-																?.color || color}
-														</Option>
-													))}
-												</Select>
-											</Col>
-											<Col span={4}>
-												<Select
-													placeholder='Size'
-													style={{ width: "100%" }}
-													onChange={(value) =>
-														handleFilterChange("size", value)
-													}
-												>
-													<Option value=''>All Sizes</Option>
-													{sizes.map((size, index) => (
-														<Option key={index} value={size}>
-															{size}
-														</Option>
-													))}
-												</Select>
-											</Col>
-											<Col span={4}>
-												<Select
-													placeholder='Category'
-													style={{ width: "100%" }}
-													onChange={(value) =>
-														handleFilterChange("category", value)
-													}
-												>
-													<Option value=''>All Categories</Option>
-													{categories &&
-														categories.map((category, index) => (
-															<Option key={index} value={category.id}>
-																{category.name}
-															</Option>
-														))}
-												</Select>
-											</Col>
-										</Row>
-									</FilterWrapper>
-									<ContentGrid>
-										<ProductsSection>
-											{products.map((product) => {
-												const originalPrice = product.price;
-												const discountedPrice =
-													product.priceAfterDiscount > 0 &&
-													product.priceAfterDiscount < originalPrice
-														? product.priceAfterDiscount
-														: null;
-												const totalQuantity =
-													product.productAttributes?.reduce(
-														(acc, attr) => acc + attr.quantity,
-														0
-													) || product.quantity;
+							{selectedProducts.map((product) => {
+								const productColors = product.productAttributes?.map(
+									(attr) => attr.color
+								);
+								const uniqueProductColors = [...new Set(productColors)];
 
-												return (
-													<ProductCard
-														key={product._id}
-														onClick={() => addProductToOrder(product)}
-													>
-														{totalQuantity > 0 ? null : (
-															<OutOfStockBadge>Out of Stock</OutOfStockBadge>
-														)}
-														<img
-															src={product.thumbnailImage[0].images[0].url}
-															alt={product.productName}
-														/>
-														<div>
-															<h3>{product.productName}</h3>
-															{discountedPrice ? (
-																<>
-																	<OriginalPrice>
-																		${originalPrice}
-																	</OriginalPrice>
-																	<DiscountedPrice>
-																		${discountedPrice}
-																	</DiscountedPrice>
-																</>
-															) : (
-																<p>${originalPrice}</p>
-															)}
-															{product.color && (
-																<p
-																	style={{
-																		fontSize: "12px",
-																		color: "grey",
-																		fontWeight: "bold",
-																		textTransform: "capitalize",
-																	}}
-																>
-																	Color: {product.color}
-																</p>
-															)}
-															{product.size && (
-																<p
-																	style={{
-																		fontSize: "12px",
-																		color: "grey",
-																		fontWeight: "bold",
-																		textTransform: "capitalize",
-																	}}
-																>
-																	Size: {product.size}
-																</p>
-															)}
-														</div>
-														{product.productAttributes &&
-															product.productAttributes.map((attr, i) => (
-																<ColorDisplay key={i} color={attr.color}>
-																	{allColors.find(
-																		(clr) => clr.hexa === attr.color
-																	)?.color || attr.color}
-																</ColorDisplay>
-															))}
-													</ProductCard>
-												);
-											})}
-										</ProductsSection>
-										<Divider type='vertical' />
-										<OrderSection>
-											{selectedProducts.length === 0 ? (
-												<NoProductsMessage>
-													No products added to the order
-												</NoProductsMessage>
-											) : (
+								const productSizes = product.productAttributes?.map(
+									(attr) => attr.size
+								);
+								const uniqueProductSizes = [...new Set(productSizes)];
+
+								const handleProductColorChange = (productId, value) => {
+									handleColorChange(productId, value);
+									const updatedProduct = products.find(
+										(p) => p._id === productId
+									);
+									const newColorAttribute =
+										updatedProduct.productAttributes.find(
+											(attr) => attr.color === value
+										);
+									setSelectedProducts((prev) =>
+										prev.map((p) =>
+											p._id === productId
+												? {
+														...p,
+														thumbnailImage: newColorAttribute.productImages,
+													}
+												: p
+										)
+									);
+								};
+
+								return (
+									<OrderItem key={product._id}>
+										<OrderItemImage
+											src={product.thumbnailImage[0].images[0].url}
+											alt={product.productName}
+										/>
+										<h3>{product.productName}</h3>
+										<p>Price: ${product.priceAfterDiscount || product.price}</p>
+										<div>
+											<span>Quantity: </span>
+											<InputNumber
+												min={1}
+												value={product.quantity}
+												onChange={(value) =>
+													handleQuantityChange(product._id, value)
+												}
+											/>
+										</div>
+										{product.productAttributes &&
+											product.productAttributes.length > 0 && (
 												<>
-													<h2>Your Order</h2>
-													{selectedProducts.map((product) => {
-														const productColors =
-															product.productAttributes?.map(
-																(attr) => attr.color
-															);
-														const uniqueProductColors = [
-															...new Set(productColors),
-														];
-
-														const productSizes = product.productAttributes?.map(
-															(attr) => attr.size
-														);
-														const uniqueProductSizes = [
-															...new Set(productSizes),
-														];
-
-														const handleProductColorChange = (
-															productId,
-															value
-														) => {
-															handleColorChange(productId, value);
-															const updatedProduct = products.find(
-																(p) => p._id === productId
-															);
-															const newColorAttribute =
-																updatedProduct.productAttributes.find(
-																	(attr) => attr.color === value
-																);
-															setSelectedProducts((prev) =>
-																prev.map((p) =>
-																	p._id === productId
-																		? {
-																				...p,
-																				thumbnailImage:
-																					newColorAttribute.productImages,
-																			}
-																		: p
-																)
-															);
-														};
-
-														return (
-															<OrderItem key={product._id}>
-																<OrderItemImage
-																	src={product.thumbnailImage[0].images[0].url}
-																	alt={product.productName}
-																/>
-																<h3>{product.productName}</h3>
-																<p>
-																	Price: $
-																	{product.priceAfterDiscount || product.price}
-																</p>
-																<div>
-																	<span>Quantity: </span>
-																	<InputNumber
-																		min={1}
-																		value={product.quantity}
-																		onChange={(value) =>
-																			handleQuantityChange(product._id, value)
-																		}
-																	/>
-																</div>
-																{product.productAttributes &&
-																	product.productAttributes.length > 0 && (
-																		<>
-																			<div>
-																				<span>Color: </span>
-																				<Select
-																					value={product.color}
-																					onChange={(value) =>
-																						handleProductColorChange(
-																							product._id,
-																							value
-																						)
-																					}
-																				>
-																					{uniqueProductColors.map((color) => (
-																						<Option key={color} value={color}>
-																							{allColors.find(
-																								(clr) => clr.hexa === color
-																							)?.color || color}
-																						</Option>
-																					))}
-																				</Select>
-																			</div>
-																			<div>
-																				<span>Size: </span>
-																				<Select
-																					value={product.size}
-																					onChange={(value) =>
-																						handleSizeChange(product._id, value)
-																					}
-																				>
-																					{uniqueProductSizes.map((size) => (
-																						<Option key={size} value={size}>
-																							{size}
-																						</Option>
-																					))}
-																				</Select>
-																			</div>
-																		</>
-																	)}
-																<StyledGeoDataList>
-																	{product.geodata &&
-																		product.geodata.length && (
-																			<li>
-																				Length: {product.geodata.length} in
-																			</li>
-																		)}
-																	{product.geodata && product.geodata.width && (
-																		<li>Width: {product.geodata.width} in</li>
-																	)}
-																	{product.geodata &&
-																		product.geodata.height && (
-																			<li>
-																				Height: {product.geodata.height} in
-																			</li>
-																		)}
-																	{product.geodata &&
-																		product.geodata.weight && (
-																			<li>
-																				Weight: {product.geodata.weight} lbs
-																			</li>
-																		)}
-																</StyledGeoDataList>
-																<RemoveButton
-																	onClick={() =>
-																		removeProductFromOrder(product._id)
-																	}
-																>
-																	<FaTrashAlt />
-																</RemoveButton>
-															</OrderItem>
-														);
-													})}
-													<Divider />
-													<CustomerDetailsWrapper>
-														<h5
-															style={{ fontSize: "1rem", fontWeight: "bold" }}
+													<div>
+														<span>Color: </span>
+														<Select
+															value={product.color}
+															onChange={(value) =>
+																handleProductColorChange(product._id, value)
+															}
 														>
-															Customer Details:{" "}
-															<FaEdit
-																style={{
-																	marginLeft: "10px",
-																	cursor: "pointer",
-																}}
-																onClick={showModal}
-															/>
-														</h5>
-
-														<br />
-													</CustomerDetailsWrapper>
-													<Label>
-														Do you want to charge the client for shipping?
-													</Label>
-													<Radio.Group
-														onChange={(e) => setShippingCharge(e.target.value)}
-														value={shippingCharge}
-														style={{ marginBottom: "10px" }}
-													>
-														<Radio value={"yes"}>Yes</Radio>
-														<Radio value={"no"}>No</Radio>
-													</Radio.Group>
-													{shippingCharge === "yes" && (
-														<>
-															<Label>Choose a carrier:</Label>
-															{allShippingOptions.map((option) => (
-																<ShippingOption key={option._id}>
-																	<ShippingLabel>
-																		<input
-																			type='radio'
-																			name='shippingOption'
-																			value={option._id}
-																			checked={
-																				shipmentChosen?._id === option._id
-																			}
-																			onChange={handleShippingOptionChange}
-																		/>
-																		{option.carrierName} - $
-																		{option.shippingPrice}
-																	</ShippingLabel>
-																</ShippingOption>
+															{uniqueProductColors.map((color) => (
+																<Option key={color} value={color}>
+																	{allColors.find((clr) => clr.hexa === color)
+																		?.color || color}
+																</Option>
 															))}
-														</>
-													)}
-													<Divider />
-													<Label>Payment Method:</Label>
-													<Select
-														className='my-3'
-														placeholder='Select Payment Method'
-														style={{ width: "100%", marginBottom: "10px" }}
-														onChange={(value) => setPaymentMethod(value)}
-													>
-														<Option value='Cash'>Cash</Option>
-														<Option value='Venmo'>Venmo</Option>
-														<Option value='Generate Payment Link'>
-															Generate Payment Link
-														</Option>
-														<Option value='Pay On Delivery'>
-															Pay On Delivery
-														</Option>
-													</Select>
-
-													<Checkbox
-														checked={sendReceipt}
-														onChange={(e) => setSendReceipt(e.target.checked)}
-													>
-														Do you want to send a receipt?
-													</Checkbox>
-													{sendReceipt && (
-														<Input
-															type='email'
-															placeholder='Enter email'
-															value={customerEmail}
-															onChange={(e) => setCustomerEmail(e.target.value)}
-															style={{ marginTop: "10px" }}
-														/>
-													)}
-													<TotalAmount>
-														Total Amount: ${totalAmount.toFixed(2)}
-													</TotalAmount>
-													{paymentMethod === "Generate Payment Link" && (
-														<Button
-															type='primary'
-															style={{ marginBottom: "10px" }}
-															onClick={handleGeneratePaymentLink}
+														</Select>
+													</div>
+													<div>
+														<span>Size: </span>
+														<Select
+															value={product.size}
+															onChange={(value) =>
+																handleSizeChange(product._id, value)
+															}
 														>
-															Generate Payment Link
-														</Button>
-													)}
-
-													{paymentMethod !== "Generate Payment Link" && (
-														<Button type='primary' onClick={handleCreateOrder}>
-															Create Order
-														</Button>
-													)}
+															{uniqueProductSizes.map((size) => (
+																<Option key={size} value={size}>
+																	{size}
+																</Option>
+															))}
+														</Select>
+													</div>
 												</>
 											)}
-										</OrderSection>
-									</ContentGrid>
+										<StyledGeoDataList>
+											{product.geodata && product.geodata.length && (
+												<li>Length: {product.geodata.length} in</li>
+											)}
+											{product.geodata && product.geodata.width && (
+												<li>Width: {product.geodata.width} in</li>
+											)}
+											{product.geodata && product.geodata.height && (
+												<li>Height: {product.geodata.height} in</li>
+											)}
+											{product.geodata && product.geodata.weight && (
+												<li>Weight: {product.geodata.weight} lbs</li>
+											)}
+										</StyledGeoDataList>
+										<RemoveButton
+											onClick={() => removeProductFromOrder(product._id)}
+										>
+											<FaTrashAlt />
+										</RemoveButton>
+									</OrderItem>
+								);
+							})}
+							<Divider />
+							<CustomerDetailsWrapper>
+								<h5 style={{ fontSize: "1rem", fontWeight: "bold" }}>
+									Customer Details:{" "}
+									<FaEdit
+										style={{
+											marginLeft: "10px",
+											cursor: "pointer",
+										}}
+										onClick={showModal}
+									/>
+								</h5>
+
+								<br />
+							</CustomerDetailsWrapper>
+							<Label>Do you want to charge the client for shipping?</Label>
+							<Radio.Group
+								onChange={(e) => setShippingCharge(e.target.value)}
+								value={shippingCharge}
+								style={{ marginBottom: "10px" }}
+							>
+								<Radio value={"yes"}>Yes</Radio>
+								<Radio value={"no"}>No</Radio>
+							</Radio.Group>
+							{shippingCharge === "yes" && (
+								<>
+									<Label>Choose a carrier:</Label>
+									{allShippingOptions.map((option) => (
+										<ShippingOption key={option._id}>
+											<ShippingLabel>
+												<input
+													type='radio'
+													name='shippingOption'
+													value={option._id}
+													checked={shipmentChosen?._id === option._id}
+													onChange={handleShippingOptionChange}
+												/>
+												{option.carrierName} - ${option.shippingPrice}
+											</ShippingLabel>
+										</ShippingOption>
+									))}
 								</>
 							)}
+							<Divider />
+							<Label>Payment Method:</Label>
+							<Select
+								className='my-3'
+								placeholder='Select Payment Method'
+								style={{ width: "100%", marginBottom: "10px" }}
+								onChange={(value) => setPaymentMethod(value)}
+							>
+								<Option value='Cash'>Cash</Option>
+								<Option value='Venmo'>Venmo</Option>
+								<Option value='Generate Payment Link'>
+									Generate Payment Link
+								</Option>
+								<Option value='Pay On Delivery'>Pay On Delivery</Option>
+							</Select>
+
+							<Checkbox
+								checked={sendReceipt}
+								onChange={(e) => setSendReceipt(e.target.checked)}
+							>
+								Do you want to send a receipt?
+							</Checkbox>
+							{sendReceipt && (
+								<Input
+									type='email'
+									placeholder='Enter email'
+									value={customerEmail}
+									onChange={(e) => setCustomerEmail(e.target.value)}
+									style={{ marginTop: "10px" }}
+								/>
+							)}
+							<TotalAmount>Total Amount: ${totalAmount.toFixed(2)}</TotalAmount>
+							{paymentMethod === "Generate Payment Link" && (
+								<Button
+									type='primary'
+									style={{ marginBottom: "10px" }}
+									onClick={handleGeneratePaymentLink}
+								>
+									Generate Payment Link
+								</Button>
+							)}
+
+							{paymentMethod !== "Generate Payment Link" && (
+								<Button type='primary' onClick={handleCreateOrder}>
+									Create Order
+								</Button>
+							)}
 						</>
-					</div>
-				</div>
-			</div>
+					)}
+				</OrderSection>
+			</Drawer>
 			<Modal
 				title='Edit Customer Details'
 				visible={isModalVisible}
@@ -954,11 +861,11 @@ const StorePOSMain = () => {
 					</SuccessMessage>
 				</Overlay>
 			)}
-		</StorePOSMainWrapper>
+		</StorePOSMobileWrapper>
 	);
 };
 
-export default StorePOSMain;
+export default StorePOSMobile;
 
 const clearCart = () => {
 	localStorage.removeItem("cart");
@@ -1007,57 +914,26 @@ const SuccessMessage = styled.div`
 	}
 `;
 
-const StorePOSMainWrapper = styled.div`
+const StorePOSMobileWrapper = styled.div`
 	overflow-x: hidden;
 	margin-top: 80px;
 	min-height: 800px;
 	padding-bottom: 100px;
 
-	.grid-container-main {
-		display: grid;
-		grid-template-columns: ${(props) => (props.show ? "5% 95%" : "17% 83%")};
+	.navcontent {
+		margin-bottom: 10px;
 	}
-
-	.container-wrapper {
-		border: 2px solid lightgrey;
-		padding: 20px;
-		border-radius: 20px;
-		background: white;
-		margin: 0px 10px;
-	}
-
-	@media (max-width: 1400px) {
-		background: white;
-	}
-`;
-
-const TitleWrapper = styled.h1`
-	font-size: 1.8rem;
-	font-weight: bold;
-	text-align: center;
-	margin-bottom: 20px;
-`;
-
-const FilterWrapper = styled.div`
-	width: 100%;
-	margin-bottom: 20px;
-`;
-
-const ContentGrid = styled.div`
-	display: flex;
-	height: 80vh; /* Adjust height as needed */
 `;
 
 const ProductsSection = styled.div`
-	width: 60%;
 	display: flex;
 	flex-wrap: wrap;
 	overflow-y: auto;
 `;
 
 const ProductCard = styled.div`
-	width: 200px;
-	margin: 10px;
+	width: 48%;
+	margin: 1%;
 	padding: 10px;
 	border: 1px solid #ddd;
 	border-radius: 5px;
@@ -1066,7 +942,7 @@ const ProductCard = styled.div`
 	position: relative;
 
 	img {
-		width: 80%;
+		width: 100%;
 		height: 150px; /* Adjust height as needed */
 		object-fit: cover;
 		object-position: center;
@@ -1122,9 +998,7 @@ const DiscountedPrice = styled.span`
 `;
 
 const OrderSection = styled.div`
-	width: 40%;
 	padding: 20px;
-	border-left: 1px solid #ddd;
 	overflow-y: auto;
 
 	h2 {
@@ -1242,4 +1116,16 @@ const ShippingOption = styled.div`
 
 const ShippingLabel = styled.label`
 	font-size: 1rem;
+`;
+
+const CartIcon = styled.div`
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	z-index: 1000;
+	cursor: pointer;
+
+	svg {
+		color: var(--primary-color);
+	}
 `;

@@ -37,9 +37,16 @@ const LastAddedLogoImageWrapper = styled.div`
 	background-color: grey;
 	border-radius: 5px;
 
+	@media (max-width: 750px) {
+		display: none !important;
+	}
+
 	img {
 		width: 90%;
 		max-width: 200px;
 		object-fit: cover;
+		@media (max-width: 750px) {
+			display: none !important;
+		}
 	}
 `;

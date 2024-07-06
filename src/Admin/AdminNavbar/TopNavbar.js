@@ -187,7 +187,7 @@ const NavbarWrapper = styled.div`
 	align-items: center;
 	padding: 0 20px;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-	z-index: 1000;
+	z-index: 100;
 	direction: ${(props) => (props.isArabic ? "rtl" : "")} !important;
 `;
 
@@ -200,6 +200,9 @@ const Logo = styled.div`
 	display: flex;
 	align-items: center;
 	margin-left: ${(props) => (props.show ? "50px" : "")} !important;
+	@media (max-width: 750px) {
+		display: none;
+	}
 `;
 
 const RightSection = styled.div`
@@ -238,11 +241,17 @@ const LanguageText = styled.span`
 	color: #fff;
 	margin-left: 5px;
 	font-size: 14px;
+	@media (max-width: 750px) {
+		display: none !important;
+	}
 `;
 
 const ProfileMenu = styled.div`
 	display: flex;
 	align-items: center;
+	@media (max-width: 750px) {
+		display: none !important;
+	}
 `;
 
 const Profile = styled.div`
