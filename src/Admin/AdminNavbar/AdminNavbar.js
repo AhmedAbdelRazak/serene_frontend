@@ -95,7 +95,14 @@ const items = [
 		"black-bg"
 	),
 	getItem("CRM", "sub14", <CustomerServiceOutlined />, null, null, "black-bg"),
-	getItem("POS & Products", "sub15", <ShopOutlined />, null, null, "black-bg"),
+	getItem(
+		<Link to='/admin/store-pos'>Store POS</Link>,
+		"sub15",
+		<ShopOutlined />,
+		null,
+		null,
+		"black-bg"
+	),
 	getItem(
 		"Financials",
 		"sub16",
@@ -188,7 +195,9 @@ const AdminNavbar = ({
 															? "sub10"
 															: fromPage === "Website"
 																? "sub21"
-																: "sub1"
+																: fromPage === "StorePOS"
+																	? "sub15"
+																	: "sub1"
 					}
 					defaultOpenKeys={["sub1"]}
 					mode='inline'

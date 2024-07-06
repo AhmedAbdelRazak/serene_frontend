@@ -1925,3 +1925,27 @@ export const updateSeenByCustomer = async (caseId) => {
 			console.error("API error: ", err);
 		});
 };
+
+export const createOrderPOS = (
+	token,
+	createOrderData,
+	paymentToken,
+	userId
+) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/pos-order/creation/${userId}`,
+		{
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({ orderData: createOrderData, paymentToken }),
+		}
+	)
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};

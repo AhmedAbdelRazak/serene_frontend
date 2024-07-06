@@ -36,6 +36,8 @@ import AttributesMain from "./Admin/Attributes/AttributesMain";
 import ProductMain from "./Admin/Product/ProductMain";
 import StoreSettingsMain from "./Admin/StoreSettings/StoreSettingsMain";
 import EditWebsiteMain from "./Admin/EditingWebsite/EditWebsiteMain";
+import CustomerServiceSupportMain from "./Admin/Chat/CustomerServiceSupportMain";
+import StorePOSMain from "./Admin/StorePOS/StorePOSMain";
 
 //Client Routes
 import PrivateRoute from "./auth/PrivateRoute";
@@ -44,7 +46,7 @@ import SingleProductMain from "./pages/SingleProduct/SingleProductMain";
 import ShopPageMain from "./pages/ShopPage/ShopPageMain";
 import ContactUs from "./pages/Contact/ContactUs";
 import ChatIcon from "./Chat/ChatIcon";
-import CustomerServiceSupportMain from "./Admin/Chat/CustomerServiceSupportMain";
+import LinkGenerated from "./Admin/StorePOS/LinkGenerated";
 
 const App = () => {
 	// eslint-disable-next-line
@@ -138,6 +140,7 @@ const App = () => {
 				<Route path='/signup' exact component={Register} />
 				<Route path='/signin' exact component={Login} />
 				<Route path='/cart' exact component={Cart} />
+				<Route path='/payment-link/:orderId' exact component={LinkGenerated} />
 
 				<AdminRoute path='/admin/dashboard' exact component={AdminDashboard} />
 				<AdminRoute path='/admin/categories' exact component={CategoriesMain} />
@@ -165,6 +168,9 @@ const App = () => {
 					exact
 					component={EditWebsiteMain}
 				/>
+
+				<AdminRoute path='/admin/store-pos' exact component={StorePOSMain} />
+
 				<PrivateRoute path='/dashboard' exact component={UserDashboard} />
 			</Switch>
 			{window.location.pathname.includes("admin") ? null : (
