@@ -67,6 +67,8 @@ const StorePOSMobile = () => {
 	const [loading, setLoading] = useState(false);
 	const [paymentStatus, setPaymentStatus] = useState("");
 	const [drawerVisible, setDrawerVisible] = useState(false);
+	const [editableTotalAmount, setEditableTotalAmount] = useState(null); // New state for editable total amount
+	const [isEditingTotalAmount, setIsEditingTotalAmount] = useState(false); // New state for editing mode
 	const page = 1;
 	const records = 200;
 	const location = useLocation();
@@ -285,11 +287,13 @@ const StorePOSMobile = () => {
 					0
 				) + (shipmentChosen ? shipmentChosen.shippingPrice : 0),
 			totalAmountAfterDiscount:
-				selectedProducts.reduce(
-					(total, item) =>
-						total + item.quantity * (item.priceAfterDiscount || item.price),
-					0
-				) + (shipmentChosen ? shipmentChosen.shippingPrice : 0),
+				editableTotalAmount !== null
+					? editableTotalAmount
+					: selectedProducts.reduce(
+							(total, item) =>
+								total + item.quantity * (item.priceAfterDiscount || item.price),
+							0
+						) + (shipmentChosen ? shipmentChosen.shippingPrice : 0),
 			chosenShippingOption: shipmentChosen
 				? shipmentChosen
 				: {
@@ -416,6 +420,16 @@ const StorePOSMobile = () => {
 
 	const closeDrawer = () => {
 		setDrawerVisible(false);
+	};
+
+	const handleEditTotalAmount = () => {
+		setIsEditingTotalAmount(true);
+		setEditableTotalAmount(totalAmount);
+	};
+
+	const handleSaveTotalAmount = () => {
+		setIsEditingTotalAmount(false);
+		setIsModalVisible(false);
 	};
 
 	useEffect(() => {
@@ -723,7 +737,26 @@ const StorePOSMobile = () => {
 									style={{ marginTop: "10px" }}
 								/>
 							)}
-							<TotalAmount>Total Amount: ${totalAmount.toFixed(2)}</TotalAmount>
+							<TotalAmount>
+								Total Amount: $
+								{editableTotalAmount ? (
+									<>
+										<s style={{ color: "red", fontSize: "1.2rem" }}>
+											${totalAmount.toFixed(2)}
+										</s>{" "}
+										${editableTotalAmount?.toFixed(2) || totalAmount.toFixed(2)}
+									</>
+								) : (
+									totalAmount.toFixed(2)
+								)}
+								<FaEdit
+									style={{
+										marginLeft: "10px",
+										cursor: "pointer",
+									}}
+									onClick={handleEditTotalAmount}
+								/>
+							</TotalAmount>
 							{paymentMethod === "Generate Payment Link" && (
 								<Button
 									type='primary'
@@ -743,6 +776,22 @@ const StorePOSMobile = () => {
 					)}
 				</OrderSection>
 			</Drawer>
+			<Modal
+				title='Edit Total Amount'
+				visible={isEditingTotalAmount}
+				onOk={handleSaveTotalAmount}
+				onCancel={() => setIsEditingTotalAmount(false)}
+			>
+				<InputNumber
+					value={editableTotalAmount}
+					onChange={setEditableTotalAmount}
+					style={{ width: "100%" }}
+				/>
+				<p>
+					The customer should pay: <s>${totalAmount.toFixed(2)}</s> $
+					{editableTotalAmount?.toFixed(2) || totalAmount.toFixed(2)}
+				</p>
+			</Modal>
 			<Modal
 				title='Edit Customer Details'
 				visible={isModalVisible}

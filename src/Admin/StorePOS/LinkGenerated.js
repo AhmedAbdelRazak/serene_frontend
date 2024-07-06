@@ -111,14 +111,15 @@ const LinkGenerated = () => {
 				</ProductSection> */}
 				<TotalAmount>
 					<p>
-						<strong>Total Amount:</strong> ${order.totalAmount.toFixed(2)}
+						<strong>Total Amount:</strong> $
+						{order.totalAmountAfterDiscount.toFixed(2)}
 					</p>
 				</TotalAmount>
 				{order.paymentStatus === "Paid Via Link" ? (
 					<PaymentSuccess>Thank you for your payment!</PaymentSuccess>
 				) : (
 					<SquarePaymentForm
-						amount={order.totalAmount}
+						amount={order.totalAmountAfterDiscount}
 						currency='USD'
 						handlePaymentSuccess={handlePaymentSuccess}
 						zipCode={order.customerDetails.zipcode}
