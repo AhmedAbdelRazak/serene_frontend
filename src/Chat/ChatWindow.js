@@ -12,6 +12,7 @@ import {
 import socket from "./socket";
 import EmojiPicker from "emoji-picker-react";
 import StarRatings from "react-star-ratings";
+import ReactGA from "react-ga4";
 
 const { Option } = Select;
 
@@ -289,7 +290,16 @@ const ChatWindow = ({ closeChatWindow }) => {
 						starSpacing='2px'
 					/>
 					<RatingButtons>
-						<Button type='primary' onClick={() => handleRateService(rating)}>
+						<Button
+							type='primary'
+							onClick={() => {
+								ReactGA.event({
+									category: "User Rated Chat",
+									action: "User Rated Chat",
+								});
+								handleRateService(rating);
+							}}
+						>
 							Submit Rating
 						</Button>
 						<Button onClick={handleSkipRating}>Skip</Button>
@@ -397,7 +407,14 @@ const ChatWindow = ({ closeChatWindow }) => {
 							/>
 						</Form.Item>
 					)}
-					<Form.Item>
+					<Form.Item
+						onClick={() => {
+							ReactGA.event({
+								category: "User Started Chat",
+								action: "User Started Chat",
+							});
+						}}
+					>
 						<Button type='primary' htmlType='submit'>
 							Start Chat
 						</Button>

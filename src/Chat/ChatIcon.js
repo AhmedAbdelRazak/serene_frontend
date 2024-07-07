@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { getUnseenMessagesCountByCustomer } from "../Admin/apiAdmin"; // Import the function to fetch unseen messages count
 import notificationSound from "./Notification.wav"; // Import the notification sound
 import socket from "./socket"; // Ensure this is correctly imported
+import ReactGA from "react-ga4";
 
 const ChatIconWrapper = styled.div`
 	position: fixed;
@@ -25,6 +26,10 @@ const ChatIcon = () => {
 	const [hasInteracted, setHasInteracted] = useState(false); // Track user interaction
 
 	const toggleChatWindow = () => {
+		ReactGA.event({
+			category: "User Open Chat Window",
+			action: "User Open Chat Window",
+		});
 		setIsOpen(!isOpen);
 		if (isOpen) {
 			// Reset unseen count when chat window is opened
