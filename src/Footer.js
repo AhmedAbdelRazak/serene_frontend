@@ -11,13 +11,22 @@ import {
 } from "react-icons/fa";
 
 const Footer = () => {
+	const handleNavigation = (url) => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+		window.location.href = url;
+	};
+
 	return (
 		<Wrapper>
 			<ContentWrapper>
 				<MenuWrapper>
-					<MenuItem>About</MenuItem>
-					<MenuItem>Contact</MenuItem>
-					<MenuItem>Blog</MenuItem>
+					<MenuItem onClick={() => handleNavigation("/about")}>About</MenuItem>
+					<MenuItem onClick={() => handleNavigation("/contact")}>
+						Contact
+					</MenuItem>
+					<MenuItem onClick={() => handleNavigation("/our-products")}>
+						Shop
+					</MenuItem>
 				</MenuWrapper>
 
 				<SocialIcons>
@@ -51,7 +60,7 @@ const Footer = () => {
 				</SocialIcons>
 
 				<ContactInfo>
-					support@serenejannat.com <br />
+					sally@serenejannat.com <br />
 					(951) 565-7568
 				</ContactInfo>
 
@@ -59,6 +68,12 @@ const Footer = () => {
 					loading='lazy'
 					src='https://cdn.builder.io/api/v1/image/assets/TEMP/86ecccb2d8ca05a9530882de2f3aca37eb788e4c92d3bfb3274eac36bbc892d7?apiKey=cdf657c2c4874b31988402beb4ed56ad&'
 				/>
+
+				<Terms
+					onClick={() => handleNavigation("/privacy-policy-terms-conditions")}
+				>
+					Check Terms & Conditions
+				</Terms>
 
 				<Copyright>Copyright© Serene Jannat All Rights Reserved.</Copyright>
 			</ContentWrapper>
@@ -130,6 +145,20 @@ const ContactInfo = styled.div`
 const Image = styled.img`
 	width: 132px;
 	margin-bottom: 20px;
+`;
+
+const Terms = styled.div`
+	color: var(--text-color-primary);
+	font-family: "SF Pro Display", sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: color 0.3s;
+	margin-bottom: 20px;
+
+	&:hover {
+		color: var(--accent-color-1);
+	}
 `;
 
 const Copyright = styled.div`

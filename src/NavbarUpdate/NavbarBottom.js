@@ -59,7 +59,9 @@ const NavbarBottom = () => {
 	return (
 		<>
 			<NavbarBottomWrapper className={isSticky ? "sticky" : ""}>
-				<NavLinks>
+				<NavLinks
+					onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+				>
 					<NavLink
 						isSticky={isSticky}
 						to='/'

@@ -111,7 +111,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 										hoverable
 										onClick={() => {
 											ReactGA.event({
-												category: "Navigate to Single Product New Arrivals",
+												category: "New Arrival Product Clicked",
 												action:
 													"User Navigated To Single Product From New Arrivals",
 												label: `User Navigated to ${product.productName} single page`,

@@ -349,7 +349,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 							onClick={() => {
 								handleAddToCart();
 								ReactGA.event({
-									category: "User Added To The Cart From Single Product",
+									category: "SingleProduct Add To Cart",
 									action: "User Added To The Cart From Single Product",
 								});
 							}}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { FaTrashAlt } from "react-icons/fa";
 import { useHistory } from "react-router-dom";
-import { Modal, Spin } from "antd";
+import { Modal, Spin, Checkbox } from "antd";
 import { toast } from "react-toastify";
 import SquarePaymentForm from "./SquarePaymentForm";
 import ReactGA from "react-ga4";
@@ -14,7 +14,6 @@ import {
 } from "../../auth/index";
 import { createOrder } from "../../apiCore";
 import { useCartContext } from "../../cart_context";
-//Clear cart after checking out successfully
 
 const Z4StepThree = ({
 	step,
@@ -35,6 +34,7 @@ const Z4StepThree = ({
 }) => {
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+	const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 	const history = useHistory();
 	const { clearCart } = useCartContext();
 
@@ -52,19 +52,15 @@ const Z4StepThree = ({
 				return toast.error("Please provide a valid address.");
 			} else if (!city) {
 				setStep(2);
-
 				return toast.error("Please provide your city.");
 			} else if (!state) {
 				setStep(2);
-
 				return toast.error("Please select your state.");
 			} else if (!/^\d{5}$/.test(zipcode)) {
 				setStep(2);
-
 				return toast.error("Please enter a valid 5-digit zipcode.");
 			} else if (!shipmentChosen || !shipmentChosen.carrierName) {
 				setStep(2);
-
 				return toast.error("Please choose a shipping option.");
 			}
 		}
@@ -256,17 +252,8 @@ const Z4StepThree = ({
 			totalOrderQty: cart.reduce((sum, item) => sum + item.amount, 0),
 			status: "In Process",
 			onHoldStatus: "None",
-			// totalAmount:
-			// 	shipmentChosen && shipmentChosen.shippingPrice
-			// 		? Number(total_amount) + Number(shipmentChosen.shippingPrice)
-			// 		: total_amount,
 			totalAmount: total_amount,
-			// totalAmountAfterDiscount:
-			// 	shipmentChosen && shipmentChosen.shippingPrice
-			// 		? Number(total_amount) + Number(shipmentChosen.shippingPrice)
-			// 		: total_amount, // Adjust if discount logic is added
-
-			totalAmountAfterDiscount: total_amount, // Adjust if discount logic is added
+			totalAmountAfterDiscount: total_amount,
 			chosenShippingOption: shipmentChosen,
 			orderSource: "Website",
 			appliedCoupon: coupon ? { code: coupon, discount: 10 } : {}, // Adjust discount as needed
@@ -280,6 +267,7 @@ const Z4StepThree = ({
 					: 10, // Adjust shipping fees as needed
 			paymentStatus: "In Process",
 			orderComment: comments,
+			privacyPolicyAgreement: isTermsAccepted, // Include the agreement state
 		};
 
 		try {
@@ -375,13 +363,7 @@ const Z4StepThree = ({
 						))}
 					</CartItems>
 					<TotalAmount>
-						Total Amount: $
-						{/* {shipmentChosen && shipmentChosen.shippingPrice
-							? Number(
-									Number(total_amount) + Number(shipmentChosen.shippingPrice)
-								).toFixed(2)
-							: Number(total_amount).toFixed(2)} */}
-						{Number(total_amount).toFixed(2)}
+						Total Amount: ${Number(total_amount).toFixed(2)}
 					</TotalAmount>
 					<ButtonWrapper>
 						<BackButton onClick={handlePreviousStep}>Back</BackButton>
@@ -401,13 +383,39 @@ const Z4StepThree = ({
 						{isLoading ? (
 							<Spin />
 						) : (
-							<SquarePaymentForm
-								amount={total_amount + (shipmentChosen?.shippingPrice || 0)}
-								currency='USD'
-								handlePaymentSuccess={handlePaymentSuccess}
-								zipCode={zipcode} // Pass the ZIP code to the payment form
-								onError={() => setIsModalVisible(false)} // Pass onError function
-							/>
+							<>
+								{isTermsAccepted ? (
+									<SquarePaymentForm
+										amount={total_amount + (shipmentChosen?.shippingPrice || 0)}
+										currency='USD'
+										handlePaymentSuccess={handlePaymentSuccess}
+										zipCode={zipcode} // Pass the ZIP code to the payment form
+										onError={() => setIsModalVisible(false)} // Pass onError function
+										isTermsAccepted={isTermsAccepted}
+									/>
+								) : (
+									<TermsWrapper>
+										<Checkbox
+											checked={isTermsAccepted}
+											onChange={(e) => {
+												ReactGA.event({
+													category: "User Accepted Terms And Conditions",
+													action: "User Accepted Terms And Conditions",
+												});
+												setIsTermsAccepted(e.target.checked);
+											}}
+										>
+											I agree to the terms and conditions
+										</Checkbox>
+										<TermsLink
+											href='/privacy-policy-terms-conditions'
+											target='_blank'
+										>
+											Click here to read our terms and conditions
+										</TermsLink>
+									</TermsWrapper>
+								)}
+							</>
 						)}
 					</Modal>
 				</Step>
@@ -599,4 +607,22 @@ const ReviewDetails = styled.div`
 const ReviewItem = styled.p`
 	font-size: 1rem;
 	color: #333;
+`;
+
+const TermsWrapper = styled.div`
+	margin-top: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+`;
+
+const TermsLink = styled.a`
+	color: var(--primary-color);
+	text-decoration: underline;
+	margin-top: 10px;
+	cursor: pointer;
+
+	&:hover {
+		color: var(--primary-color-dark);
+	}
 `;

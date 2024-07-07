@@ -134,7 +134,11 @@ const App = () => {
 				<Route path='/our-products' exact component={ShopPageMain} />
 				<Route path='/contact' exact component={ContactUs} />
 
-				<Route path='/privacy-policy' exact component={PrivacyPolicy} />
+				<Route
+					path='/privacy-policy-terms-conditions'
+					exact
+					component={PrivacyPolicy}
+				/>
 				<Route path='/cookie-policy' exact component={CookiePolicy} />
 				<Route path='/return-exchange-policy' exact component={RetExchPolicy} />
 				<Route path='/signup' exact component={Register} />

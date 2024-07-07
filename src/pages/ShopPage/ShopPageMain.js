@@ -608,8 +608,7 @@ const ShopPageMain = () => {
 															alt={product.productName}
 															onClick={() => {
 																ReactGA.event({
-																	category:
-																		"Navigate to Single Product From Products Page",
+																	category: "Single Product Clicked",
 																	action:
 																		"User Navigated To Single Product From Products Page",
 																	label: `User Navigated to ${product.productName} single page`,

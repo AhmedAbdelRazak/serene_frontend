@@ -116,8 +116,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 										hoverable
 										onClick={() => {
 											ReactGA.event({
-												category:
-													"Navigate to Single Product Featured Products",
+												category: "Featured Product Clicked",
 												action:
 													"User Navigated To Single Product From Featured Products",
 												label: `User Navigated to ${product.productName} single page`,

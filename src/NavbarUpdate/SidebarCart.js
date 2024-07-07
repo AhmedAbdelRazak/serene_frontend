@@ -265,7 +265,7 @@ const SidebarCart = ({ from }) => {
 										closeSidebar2();
 										handleCheckout();
 										ReactGA.event({
-											category: "User Clicked Continue To Checkout From Cart",
+											category: "Continue To Checkout",
 											action: "User Clicked Continue To Checkout From Cart",
 										});
 									} else {

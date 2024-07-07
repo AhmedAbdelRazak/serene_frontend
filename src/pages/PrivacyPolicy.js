@@ -2,415 +2,302 @@
 
 import React from "react";
 import styled from "styled-components";
+import { Helmet } from "react-helmet";
 
 const PrivacyPolicy = () => {
+	const title = "Privacy Policy | Terms & Conditions | Serene Jannat";
+	const description =
+		"Learn about the privacy practices of Serene Jannat, your trusted online gift store for candles, glass items, and more.";
+	const url = "https://serenejannat.com/privacy-policy-terms-conditions";
+	const keywords =
+		"Privacy Policy, Terms and Conditions, Serene Jannat, Online Shop, Candles, Gifts, blown glasses, decoration";
+
 	return (
-		<PrivacyPolicyWrapper>
-			<div className='container'>
-				<h1>Next Day PRIVACY AND DATA PROTECTION POLICY</h1>
-				<p>
-					<strong>Next Day LLC </strong>, a company registered and functioning
-					under the Egyptian laws, with headquarters in Egypt, commercial
-					register number 095478, and whose principal office is located at ABou
-					Youssef Idustrial Zone, El Agami, Alexandria, Arab Republic of Egypt,
-					having fiscal registration and VAT no. 379-456-249,
-					gqshop2021@gmail.com , part of the international GOLDS GYM Elite group
-					of companies under the organization of Next Day LLC. (the “Company” or
-					“We”),respects the privacy of its customers' and uses its best effort
-					to ensure the protection of their personal data and information, by
-					complying with all applicable legislation relating to the protection
-					of personal data.
-				</p>
-				<p>
-					For this purpose, we implement the following Privacy and Data
-					Protection Policy (“Policy”), which sets out the main aspects in
-					relation to which personal data NEXTDAYEGY.com collect and process on
-					our Website, for what purposes we collect and process such data, how
-					we use such information, how you can change such information, your
-					preferences for our communication with you as well as how we ensure
-					the protection of such personal data and NEXTDAYEGY.com rights
-					relating to your personal data.
-				</p>
-				<p>
-					We comply with the applicable legal provisions and the personal data
-					we receive and/or collect from you, process, store or keep are
-					processed according to the applicable legislation and exclusively for
-					the purposes provided within this Policy .
-				</p>
-
-				<p>
-					It is important to mention that this Policy applies to you
-					irrespective of the manner how you access our website, respectively it
-					covers any device through which NEXTDAYEGY.com is made accessed by you
-					(via phone, tablet, PC etc.).
-				</p>
-
-				<p>
-					Mention should be made that NEXTDAYEGY.com cookies policy is part of
-					this Policy.
-				</p>
-				<p>
-					<strong>
-						A. Acceptance of NEXTDAYEGY.com Privacy and Data Protection Policy
-					</strong>
-				</p>
-				<p>
-					Before further action on NEXTDAYEGY.com Website, we strongly recommend
-					you to read this Policy carefully.
-				</p>
-				<p>
-					If you do not agree with this Policy and you do not want your personal
-					data to be used as it is detailed herein, you should not continue to
-					use NEXTDAYEGY.com and not provide us with your personal data.
-				</p>
-				<p>
-					We underline that every time you use NEXTDAYEGY.com, you are subject
-					to our Policy and by further accessing, browsing and otherwise using
-					our Website, you confirm that you have read, understood and consented
-					to this Policy.
-				</p>
-
-				<p>
-					<strong>B. What Personal Data We Collect</strong>
-				</p>
-
-				<p>
-					Personal data <br />
-					When you access or browse NEXTDAYEGY.com, as well as when you make
-					online purchases through our Website, when you subscribe to
-					NEXTDAYEGY.com e-bulletins and website which announce our services and
-					campaigns, we will collect some of your personal data to serve you
-					better, such as:
-				</p>
-
-				<p>
-					- your name, family name, gender, date of birth,
+		<Wrapper>
+			<Helmet>
+				<title>{title}</title>
+				<meta name='description' content={description} />
+				<meta name='keywords' content={keywords} />
+				<meta property='og:title' content={title} />
+				<meta property='og:description' content={description} />
+				<meta property='og:url' content={url} />
+				<meta property='og:type' content='website' />
+			</Helmet>
+			<ContentWrapper>
+				<Title>Privacy Policy | Terms & Conditions</Title>
+				{/* <SubTitle>Type of website: Gift Store Online Shop</SubTitle> */}
+				<SectionTitle>Consent</SectionTitle>
+				<Text>By using our Site users agree that they consent to:</Text>
+				<List>
+					<li>The conditions set out in this Privacy Policy; and</li>
+					<li>
+						The collection, use, and retention of the data listed in this
+						Privacy Policy.
+					</li>
+				</List>
+				<SectionTitle>Personal Data We Collect</SectionTitle>
+				<Text>
+					We only collect data that helps us achieve the purpose set out in this
+					Privacy Policy. We will not collect any additional data beyond the
+					data listed below without notifying you first.
+				</Text>
+				<SectionSubTitle>Data Collected in a Non-Automatic Way</SectionSubTitle>
+				<Text>
+					We may also collect the following data when you perform certain
+					functions on our Site:
+				</Text>
+				<List>
+					<li>First and last name;</li>
+					<li>Email address; and</li>
+					<li>Address.</li>
+				</List>
+				<Text>This data may be collected using the following methods:</Text>
+				<List>
+					<li>Creating an account.</li>
+				</List>
+				<SectionTitle>How We Use Personal Data</SectionTitle>
+				<Text>
+					Data collected on our Site will only be used for the purposes
+					specified in this Privacy Policy or indicated on the relevant pages of
+					our Site. We will not use your data beyond what we disclose in this
+					Privacy Policy.
+				</Text>
+				<Text>
+					The data we collect when the user performs certain functions may be
+					used for the following purposes:
+				</Text>
+				<List>
+					<li>For order processing.</li>
+				</List>
+				<SectionTitle>Who We Share Personal Data With</SectionTitle>
+				<SectionSubTitle>Employees</SectionSubTitle>
+				<Text>
+					We may disclose user data to any member of our organization who
+					reasonably needs access to user data to achieve the purposes set out
+					in this Privacy Policy.
+				</Text>
+				<SectionSubTitle>Third Parties</SectionSubTitle>
+				<Text>We may share user data with the following third parties:</Text>
+				<List>
+					<li>Square-Payment Processor.</li>
+				</List>
+				<Text>We may share the following user data with third parties:</Text>
+				<List>
+					<li>Credit Card information.</li>
+				</List>
+				<Text>
+					We may share user data with third parties for the following purposes:
+				</Text>
+				<List>
+					<li>Order processing secure payment gateway.</li>
+				</List>
+				<Text>
+					Third parties will not be able to access user data beyond what is
+					reasonably necessary to achieve the given purpose.
+				</Text>
+				<SectionSubTitle>Other Disclosures</SectionSubTitle>
+				<Text>
+					We will not sell or share your data with other third parties, except
+					in the following cases:
+				</Text>
+				<List>
+					<li>If the law requires it;</li>
+					<li>If it is required for any legal proceeding;</li>
+					<li>To prove or protect our legal rights; and</li>
+					<li>
+						To buyers or potential buyers of this company in the event that we
+						seek to sell the company.
+					</li>
+				</List>
+				<Text>
+					If you follow hyperlinks from our Site to another Site, please note
+					that we are not responsible for and have no control over their privacy
+					policies and practices.
+				</Text>
+				<SectionTitle>How Long We Store Personal Data</SectionTitle>
+				<Text>
+					User data will be stored for one year. You will be notified if your
+					data is kept for longer than this period.
+				</Text>
+				<SectionTitle>How We Protect Your Personal Data</SectionTitle>
+				<Text>
+					In order to protect your security, we use the strongest available
+					browser encryption and store all of our data on servers in secure
+					facilities. In order to secure our payment processing, we use Square
+					payment gateway virtual terminal to process payments so no payment
+					information is stored locally.
+				</Text>
+				<Text>
+					While we take all reasonable precautions to ensure that user data is
+					secure and that users are protected, there always remains the risk of
+					harm. The Internet as a whole can be insecure at times and therefore
+					we are unable to guarantee the security of user data beyond what is
+					reasonably practical.
+				</Text>
+				<SectionTitle>Children</SectionTitle>
+				<Text>
+					We do not knowingly collect or use personal data from children under
+					13 years of age. If we learn that we have collected personal data from
+					a child under 13 years of age, the personal data will be deleted as
+					soon as possible. If a child under 13 years of age has provided us
+					with personal data their parent or guardian may contact our privacy
+					officer.
+				</Text>
+				<SectionTitle>
+					How to Access, Modify, Delete, or Challenge the Data Collected
+				</SectionTitle>
+				<Text>
+					If you would like to know if we have collected your personal data, how
+					we have used your personal data, if we have disclosed your personal
+					data and to who we disclosed your personal data, or if you would like
+					your data to be deleted or modified in any way, please contact our
+					privacy officer here:
+				</Text>
+				<ContactInfo>
+					Sally Abdelrazak
 					<br />
-					- e-mail address, phone number,
+					sally@serenejannat.com
 					<br />
-					- billing details and delivery addresses,
+					(951) 565-7568
 					<br />
-					- personal interests, feedback, browsing and shopping preferences,
-					<br />- your location.
-				</p>
-
-				<p>
-					Please note that, order for you to be able to create a personal
-					account on NEXTDAYEGY.com Website and to make any online purchase, it
-					is minimalized for you to provide us with most of the personal data
-					mentioned above. If you do not agree to provide us such personal data,
-					you will also be able to create your own personal account and/or make
-					purchases on NEXTDAYEGY.com. As you can make your orders without the
-					long data time entry like in another websites.
-				</p>
-
-				<p>
-					Technical and statistical data and information <br />
-					We mention that, beside the personal data detailed above, we can
-					collect information about your device, as well as other statistical
-					and technical data and information, such as frequency and duration of
-					your visit of the Website, times of ordering and IP address at the
-					time of ordering, statistics about product pages visited and ordered
-					products.
-				</p>
-
-				<p>
-					These data are collected and used by us in order to analyze your
-					visitor actions and preferences, to administer the website, for
-					statistical purposes and for security reasons.
-				</p>
-
-				<p>
-					The statistical and technical data provided by your browser and/or
-					device can also be used for marketing and advertising purposes, with
-					the mention that these data will not be connected with your personal
-					data and will not be used to identify you.
-				</p>
-
-				<p>
-					Data and information regarding the payment (bank information and/or
-					payment card details) are Guranteed By PAYMOB (Payment Processor){" "}
+					PO Box 322 674 Rocky Loop Crestline, CA 92325
+				</ContactInfo>
+				<SectionTitle>Do Not Track Notice</SectionTitle>
+				<Text>
+					Do Not Track ("DNT") is a privacy preference that you can set in
+					certain web browsers. We do not track the users of our Site over time
+					and across third party websites and therefore do not respond to
+					browser-initiated DNT signals. We are not responsible for and cannot
+					guarantee how any third parties who interact with our Site and your
+					data will respond to DNT signals.
+				</Text>
+				<SectionTitle>Cookie Policy</SectionTitle>
+				<Text>
+					A cookie is a small file, stored on a user's hard drive by a website.
+					Its purpose is to collect data relating to the user's browsing habits.
+					You can choose to be notified each time a cookie is transmitted. You
+					can also choose to disable cookies entirely in your internet browser,
+					but this may decrease the quality of your user experience.
+				</Text>
+				<Text>We use the following types of cookies on our Site:</Text>
+				<List>
+					<li>Functional cookies</li>
+				</List>
+				<Text>
+					Functional cookies are used to remember the selections you make on our
+					Site so that your selections are saved for your next visits.
+				</Text>
+				<SectionTitle>Modifications</SectionTitle>
+				<Text>
+					This Privacy Policy may be amended from time to time in order to
+					maintain compliance with the law and to reflect any changes to our
+					data collection process. When we amend this Privacy Policy we will
+					update the "Effective Date" at the top of this Privacy Policy. We
+					recommend that our users periodically review our Privacy Policy to
+					ensure that they are notified of any updates. If necessary, we may
+					notify users by email of changes to this Privacy Policy.
+				</Text>
+				<SectionTitle>Contact Information</SectionTitle>
+				<Text>
+					If you have any questions, concerns or complaints, you can contact our
+					privacy officer, Sally Abdelrazak, at:
+				</Text>
+				<ContactInfo>
+					sally@serenejannat.com
 					<br />
-					As part of the processing of any order, and depending on the payment
-					method selected by you when placing your order, All Payment Data are
-					Guranteed by Paymob as our payment partner in Egypt. As Paymob will
-					handel all your card Payments through their Systems and on
-					NEXTDAYEGY.com's Own Resposibility.
-				</p>
-
-				<p>
-					We mention that, you will offer your payment data directly to the
-					payment processor (PAYMOB) and not to us and therefore, you will be
-					subject to the privacy policy of the payment processor.
-				</p>
-
-				<p>
-					We recommend you to read these terms and conditions before selecting
-					this payment method. The credit card information used for placing your
-					order shall never be kept or stored in NEXTDAYEGY.com system.
-				</p>
-
-				<p>
-					<strong>C. How We Use Collected Personal Data</strong>
-				</p>
-
-				<p>
-					Accordingly, we collect your personal data for the following purposes:
-				</p>
-
-				<p>
-					- To create a private account for you on NEXTDAYEGY.com website (e.g.
-					your name, email),
+					(951) 565-7568
 					<br />
-					- To process your orders through online services (e.g. your name,
-					address, date of birth),
-					<br />
-					- To send SMS notifications to inform you about deliveries (e.g. your
-					cell phone number),
-					<br />
-					- To inform you about delivery problems relating to your ordered
-					products (e.g. your phone number, street address),
-					<br />
-					- To respond to your queries and inform you about new or changed
-					services (e.g. your e-mail address),
-					<br />
-					- To analyze your personal information so that we can provide you with
-					marketing offers and information that fits your preferences (e.g. your
-					e-mail address, shopping habits, other technical and statistical
-					data),
-					<br />
-					- To verify that you are of legal age for online shopping (e.g. your
-					date of birth)
-					<br />
-				</p>
-				<p>
-					Please note that, we do not and will not knowingly collect information
-					from any unsupervised person under the age of 18. If you are under the
-					age of 18, you must not use this website or submit any personal data
-					to us.
-				</p>
-
-				<p>
-					Moreover, the personal data collected by the Website shall be used
-					also for the following purposes:
-				</p>
-				<p>
-					- To process and complete ordering processes and to ensure
-					communication with NEXTDAYEGY.com customers, in order for us to fulfil
-					our obligations deriving from any transaction concluded between our
-					customers and us,
-					<br />
-					- To provide you with information about NEXTDAYEGY.com products,
-					services, campaigns, promotions and other notices and/or information,
-					<br />
-					- To gain a better understanding of our customers' shopping
-					preferences and to further offer them a personalised experience on
-					NEXTDAYEGY.com,
-					<br />
-					- To carry out trend and statistical analyses, including for marketing
-					and other intern purposes of the company,
-					<br />- To reinforce website security.
-				</p>
-
-				<p>
-					<strong>D. How Next Day Share Collected Personal Data</strong>
-				</p>
-
-				<p>
-					The personal data collected on the website may be shared with,
-					disclosed to or processed by our personnel or partner companies that
-					provide related services (such as companies providing cargo and
-					delivery services, call centres, database services, advertising and
-					marketing agencies etc.).
-				</p>
-
-				<p>
-					However, your personal data is in any case protected by the Company
-					and we also make sure that such companies with which your personal
-					data is shared to protect and ensure privacy of the same level for
-					your personal data.
-				</p>
-
-				<p>
-					Other than that, your personal data is never disclosed to any third
-					parties, whether real persons or legal entities, that have no
-					commercial relationship with NEXTDAYEGY.com for the purposes of this
-					Website and is not used or sold for any commercial purpose.
-				</p>
-
-				<p>
-					In the event another company is interest to acquire all or a part of
-					NEXTDAYEGY.com business, NEXTDAYEGY.com reserve the right to disclose
-					your personal data and other information to that company, solely in
-					connection with and for the purposes of the envisaged acquisition.
-				</p>
-
-				<p>
-					NEXTDAYEGY.com have no control and assume no liability for the
-					transfers of your personal data and other information performed by
-					other partner companies that provide related services on
-					NEXTDAYEGY.com or in connection hereto.
-				</p>
-
-				<p>
-					<strong>E. Next Day Security and Protection of Data</strong>
-				</p>
-
-				<p>
-					The Company respects the privacy of its customers' personal
-					information and uses its best efforts using the latest technology to
-					ensure the same. <br />
-					<br />
-					All physical, electronic and managerial measures are adopted to ensure
-					the security of NEXTDAYEGY.com system. All data is stored and backed
-					up in secure servers at home and abroad. The data obtained through our
-					website our transferred via SSL (Secure Socket Layer) technology that
-					ensures secure transfer of data. <br />
-					<br />
-					On pages where you provide your payment details on our website, you
-					will notice that its all guranteed and secured by our Payment
-					Processor ( PAYMOB ) <br />
-					<br />
-					I. The rights of NEXTDAYEGY.com customers and visitors regarding their
-					personal data <br />
-					<br />
-					It is important for us to insure you all your rights in connection
-					with your personal data, reason for which NEXTDAYEGY.com would like to
-					inform you that, according to the applicable, you have the following
-					rights: <br />
-					<br />
-					- The access right to the personal data: you have the right to obtain
-					from us, at request and free of any charge (for a request per year)
-					the confirmation that the personal data concerning you are or not
-					collected and processed by us, together with all the other mandatory
-					information provided by law. You can exercise this right by sending us
-					a written and dated request, signed by you and by indicating if you
-					would like to send you this information to a certain address or
-					through a correspondence service. <br />
-					<br />
-					- The right of intervention of the personal data: you have the right
-					to obtain, at request and free of charge, the rectification, update,
-					blocking or erasure of the personal data which do not comply with the
-					legal requirements, specifically the incomplete or inaccurate personal
-					data, as well as the conversion of such personal data in anonymous
-					data. Any of these operations will also imply the notification of the
-					third parties to whom your personal data have been disclosed of any of
-					these operations. You can exercise this right by sending us a written
-					and dated request, signed by you and by indicating if you would like
-					to send you this information to a certain address or through a
-					correspondence service. <br />
-					<br />
-					- The right of opposition: you have the right to oppose, at any
-					moment, based on grounded and legitimate reasons regarding your
-					specific situation, any personal data concerning you to be object of
-					any processing. In case your opposition is justified, NEXTDAYEGY.com
-					will no longer process such data. Also, you have the right to oppose
-					in any moment, free of any charge and without any justification, that
-					the personal data concerning you to be processed for marketing
-					purposes directly or to be disclosed to a third party for this purpose
-					hereof. You can exercise this right by sending us a written and dated
-					request, signed by you and by indicating if you would like to send you
-					this information to a certain address or through a correspondence
-					service. <br />
-					<br />
-					- The right to not be submitted to an individual decision: you have
-					the right to request and to obtain the withdrawal or cancellation of
-					any decision that produces legal for you, decision adopted exclusively
-					based on a processing of the personal data performed through automatic
-					means, with the purpose to evaluate some aspects of your personality
-					or the re-evaluation of such decision. <br />
-					<br />
-					- The right to address to the justice: without any limitation of the
-					right to address a complaint to the supervisory authority, you have
-					the right to address to the justice for the defence of any rights
-					guaranteed by law that have been violated. <br />
-					<br />
-					- The right to erasure (”right to be forgotten”): you have the right
-					to request, at any moment, free of charge, the erasure of your
-					personal data if such the personal data are no longer necessary in
-					relation to the purposes for which they were collected or otherwise
-					processed and in any other cases provided by the applicable
-					legislation. <br />
-					<br />
-				</p>
-
-				<p>
-					<strong>
-						F. Next Day Newsletters, messages and alerts. Opting out of
-						e-Bulletin Subscription
-					</strong>
-				</p>
-				<p>
-					<strong>NEXTDAYEGY.com</strong> offer you the right to control whether
-					or not to receive during your whole experience on our Website.
-				</p>
-				<p>
-					In this respect, please be informed that, for the purposes of direct
-					marketing, since we initially collect your personal data in the
-					context of the sale of our products through our Website, we require
-					your consent to further use your personal data, as offered by you, for
-					our commercial purposes.
-					<br />
-					<br />
-					However, you can always revoke your consent for the personal
-					information used for marketing purposes (e.g. Sending news bulletins
-					or sending offers to your e-mail address), including when we initially
-					collect your personal data or on each of the occasions you receive one
-					of our messages and unsolicited communication.
-					<br />
-					<br />
-					If you choose to opt out of e-bulletin subscription continuously and
-					at any time, you can easily opt out, free of charge and in an easy
-					manner from the e-bulletin subscription, by clicking on the link "If
-					you do not wish to receive such emails, please click to unsubscribe"
-					appearing in e-bulletins which we send to you on a regular basis or by
-					submitting a notice to info@NEXTDAYEGY.com with your membership email.
-					<br />
-					<br />
-					You can get in touch with us using the following contact details:
-					<br />
-					<br />
-					Address: The Industrial Zon, 15 BH, Abou youssef, AL Agami,
-					Alexandria, Arab Republic of Egypt.
-				</p>
-
-				<p>
-					<strong>G. Cookies Policy</strong>
-				</p>
-				<p>
-					This section refers to the cookies and web pages operated by
-					NEXTDAYEGY.com. Please note that in order to insure the proper
-					functioning of this Website, we sometimes place small data files
-					called cookies on your device.
-					<br />
-					<br />A cookie is a small text file (letters and numbers) that a
-					website places on your computer, telephone or any other device when
-					you visit the website, with information about your navigation on that
-					website. The cookies are installed by request issued by the web-server
-					to a browser (e.g.: Internet Explorer, Chrome) and does not contain
-					any software, spyware or virus programs and cannot access information
-					from the hardware of the user. The function of the cookie is to enable
-					our website to remember your actions and preferences (such as login,
-					language, font size and other display preferences) over a period of
-					time, so you don’t have to keep re-entering them whenever you come
-					back to the site or browse from one page to another.
-				</p>
-				<br />
-				<br />
-				<br />
-			</div>
-		</PrivacyPolicyWrapper>
+					PO Box 322 674 Rocky Loop Crestline, CA 92325
+				</ContactInfo>
+			</ContentWrapper>
+		</Wrapper>
 	);
 };
 
-export default PrivacyPolicy;
+const Wrapper = styled.div`
+	background-color: var(--neutral-light);
+	display: flex;
+	justify-content: center;
+	padding: 40px 20px;
+	box-sizing: border-box;
+	min-height: 100vh;
+`;
 
-const PrivacyPolicyWrapper = styled.div`
-	padding-bottom: 50px;
+const ContentWrapper = styled.div`
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 800px;
+	background: white;
+	padding: 40px;
+	box-shadow: var(--box-shadow-light);
+	border-radius: 8px;
+`;
 
-	h1 {
-		font-size: 1rem;
-		font-weight: bold;
-		margin-top: 30px;
+const Title = styled.h1`
+	color: var(--text-color-dark);
+	font-family: "SF Pro Display", sans-serif;
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 20px;
+	text-align: center;
+`;
+
+// eslint-disable-next-line
+const SubTitle = styled.h2`
+	color: var(--text-color-secondary);
+	font-family: "SF Pro Display", sans-serif;
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 10px;
+	text-align: center;
+`;
+
+const SectionTitle = styled.h3`
+	color: var(--text-color-primary);
+	font-family: "SF Pro Display", sans-serif;
+	font-size: 20px;
+	font-weight: 600;
+	margin-top: 20px;
+	margin-bottom: 10px;
+`;
+
+const SectionSubTitle = styled.h4`
+	color: var(--text-color-secondary);
+	font-family: "SF Pro Display", sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+	margin-top: 15px;
+	margin-bottom: 10px;
+`;
+
+const Text = styled.p`
+	color: var(--text-color-primary);
+	font-family: "SF Pro Display", sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+	margin-bottom: 20px;
+`;
+
+const List = styled.ul`
+	color: var(--text-color-primary);
+	font-family: "SF Pro Display", sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+	margin-bottom: 20px;
+	padding-left: 20px;
+
+	li {
+		margin-bottom: 10px;
 	}
 `;
+
+const ContactInfo = styled.div`
+	color: var(--text-color-primary);
+	font-family: "SF Pro Display", sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+	margin-bottom: 20px;
+`;
+
+export default PrivacyPolicy;

@@ -44,10 +44,12 @@ const NavbarTop = () => {
 				<MenuIcon onClick={() => setIsSidebarOpen(true)} />
 				<Logo
 					src={storeLogo}
-					alt='Serene Janat Shop'
+					alt='Serene Jannat Shop'
 					onClick={() => (window.location.href = "/")}
 				/>
-				<NavLinks>
+				<NavLinks
+					onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+				>
 					{user && user.name && user.role === 1 ? (
 						<>
 							<NavLink href='/admin/dashboard'>
