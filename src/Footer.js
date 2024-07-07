@@ -72,10 +72,13 @@ const Footer = () => {
 				<Terms
 					onClick={() => handleNavigation("/privacy-policy-terms-conditions")}
 				>
-					Check Terms & Conditions
+					Serene Jannat | Terms & Conditions
 				</Terms>
 
-				<Copyright>Copyright© Serene Jannat All Rights Reserved.</Copyright>
+				<Copyright>
+					Copyright©{new Date().getFullYear()} Serene Jannat All Rights
+					Reserved.
+				</Copyright>
 			</ContentWrapper>
 		</Wrapper>
 	);

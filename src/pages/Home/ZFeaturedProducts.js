@@ -117,8 +117,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 										onClick={() => {
 											ReactGA.event({
 												category: "Featured Product Clicked",
-												action:
-													"User Navigated To Single Product From Featured Products",
+												action: "Featured Product Clicked",
 												label: `User Navigated to ${product.productName} single page`,
 											});
 											window.scrollTo({ top: 0, behavior: "smooth" });
