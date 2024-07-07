@@ -158,7 +158,11 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 				<meta property='og:title' content={product.productName} />
 				<meta property='og:description' content={plainDescription} />
 				<meta property='og:image' content={chosenImages[0]} />
-				<meta property='og:url' content={window.location.href} />
+				<meta
+					property='og:url'
+					content={`https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`}
+				/>
+
 				<meta property='og:type' content='product' />
 				<meta
 					property='product:price:amount'
