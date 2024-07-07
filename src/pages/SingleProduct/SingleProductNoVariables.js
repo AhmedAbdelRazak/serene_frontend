@@ -16,6 +16,7 @@ import { like, unlike, userlike, userunlike } from "../../apiCore"; // Import AP
 import RelatedProductsCarousel from "./RelatedProductsCarousel";
 import SigninModal from "./SigninModal/SigninModal";
 import { Helmet } from "react-helmet";
+import ReactGA from "react-ga4";
 
 const { Panel } = Collapse;
 
@@ -241,7 +242,13 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 					<ButtonContainer>
 						<ActionButton
 							disabled={product && product.quantity <= 0}
-							onClick={handleAddToCart}
+							onClick={() => {
+								handleAddToCart();
+								ReactGA.event({
+									category: "User Added To The Cart From Single Product",
+									action: "User Added To The Cart From Single Product",
+								});
+							}}
 							color='var(--primary-color-darker)'
 						>
 							<ShoppingCartOutlined />{" "}

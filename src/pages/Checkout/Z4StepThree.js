@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 import { Modal, Spin } from "antd";
 import { toast } from "react-toastify";
 import SquarePaymentForm from "./SquarePaymentForm";
+import ReactGA from "react-ga4";
 import {
 	signup,
 	signin,
@@ -292,6 +293,11 @@ const Z4StepThree = ({
 				toast.error(orderResponse.error);
 				setIsModalVisible(false);
 			} else {
+				ReactGA.event({
+					category: "User Successfully Paid",
+					action: "User Successfully Paid",
+				});
+
 				toast.success("Order successfully created.");
 
 				setTimeout(() => {

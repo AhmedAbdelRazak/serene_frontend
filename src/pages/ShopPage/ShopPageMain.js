@@ -21,6 +21,7 @@ import {
 import { gettingFilteredProducts, readProduct, getColors } from "../../apiCore";
 import { useCartContext } from "../../cart_context";
 import { Helmet } from "react-helmet";
+import ReactGA from "react-ga4";
 
 const { Meta } = Card;
 const { Option } = Select;
@@ -51,6 +52,13 @@ const ShopPageMain = () => {
 	const history = useHistory();
 	const location = useLocation();
 	const { openSidebar2, addToCart } = useCartContext();
+
+	useEffect(() => {
+		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
+		ReactGA.send(window.location.pathname + window.location.search);
+
+		// eslint-disable-next-line
+	}, [window.location.pathname]);
 
 	useEffect(() => {
 		// Fetch all colors
@@ -568,6 +576,12 @@ const ShopPageMain = () => {
 														{totalQuantity > 0 ? (
 															<CartIcon
 																onClick={(e) => {
+																	ReactGA.event({
+																		category: "Add To The Cart Products Page",
+																		action:
+																			"User Added Product From The Products Page",
+																		label: `User added ${product.productName} to the cart from Products Page`,
+																	});
 																	e.stopPropagation();
 																	readProduct(product._id).then((data3) => {
 																		if (data3 && data3.error) {
@@ -593,6 +607,13 @@ const ShopPageMain = () => {
 															// src={transformedImageUrl}
 															alt={product.productName}
 															onClick={() => {
+																ReactGA.event({
+																	category:
+																		"Navigate to Single Product From Products Page",
+																	action:
+																		"User Navigated To Single Product From Products Page",
+																	label: `User Navigated to ${product.productName} single page`,
+																});
 																window.scrollTo({ top: 0, behavior: "smooth" });
 																history.push(
 																	`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`

@@ -1,5 +1,5 @@
 /** @format */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { Form, Input, Button, Typography, Row, Col, Card } from "antd";
 import {
@@ -12,6 +12,7 @@ import { signup, authenticate, isAuthenticated, signin } from "../auth";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import Helmet from "react-helmet";
+import ReactGA from "react-ga4";
 
 const { Title } = Typography;
 
@@ -148,6 +149,13 @@ const Register = () => {
 			return <Redirect to='/' />;
 		}
 	};
+
+	useEffect(() => {
+		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
+		ReactGA.send(window.location.pathname + window.location.search);
+
+		// eslint-disable-next-line
+	}, [window.location.pathname]);
 
 	const signUpForm = () => (
 		<Row justify='center' style={{ marginTop: "50px" }}>

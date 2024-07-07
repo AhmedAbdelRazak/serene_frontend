@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { getColors, like, unlike, userlike, userunlike } from "../../apiCore";
 import ColorsAndSizes from "./ColorsAndSizes";
 import DisplayImages from "./DisplayImages";
+import ReactGA from "react-ga4";
 import {
 	HeartOutlined,
 	ShoppingCartOutlined,
@@ -341,12 +342,18 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 					)}
 					<ButtonContainer>
 						<ActionButton
-							onClick={handleAddToCart}
+							onClick={() => {
+								handleAddToCart();
+								ReactGA.event({
+									category: "User Added To The Cart From Single Product",
+									action: "User Added To The Cart From Single Product",
+								});
+							}}
 							color='var(--primary-color-darker)'
 							disabled={isOutOfStock}
 						>
 							<ShoppingCartOutlined />{" "}
-							{isOutOfStock ? "No Enough Stock" : "Add to Cart"}
+							{isOutOfStock ? "Out Of Stock" : "Add to Cart"}
 						</ActionButton>
 						<ActionButton
 							onClick={handleAddToWishlist}

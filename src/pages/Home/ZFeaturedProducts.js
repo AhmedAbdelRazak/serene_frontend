@@ -8,6 +8,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { useCartContext } from "../../cart_context";
 import { readProduct } from "../../apiCore";
 import { useHistory } from "react-router-dom";
+import ReactGA from "react-ga4";
 
 const { Meta } = Card;
 
@@ -64,6 +65,22 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 		autoplaySpeed: 4000,
 	};
 
+	const handleCartIconClick = (product) => {
+		ReactGA.event({
+			category: "Add To The Cart Featured Products",
+			action: "User Added Featured Product To The Cart",
+			label: `User added ${product.productName} to the cart from Featured Products`,
+		});
+		readProduct(product._id).then((data3) => {
+			if (data3 && data3.error) {
+				console.log(data3.error);
+			} else {
+				openSidebar2();
+				addToCart(product._id, null, 1, data3, product.productAttributes[0]);
+			}
+		});
+	};
+
 	return (
 		<Container>
 			<ZFeaturedProductsWrapper>
@@ -98,6 +115,13 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 									<ProductCard
 										hoverable
 										onClick={() => {
+											ReactGA.event({
+												category:
+													"Navigate to Single Product Featured Products",
+												action:
+													"User Navigated To Single Product From Featured Products",
+												label: `User Navigated to ${product.productName} single page`,
+											});
 											window.scrollTo({ top: 0, behavior: "smooth" });
 											history.push(
 												`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`
@@ -114,20 +138,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 													<CartIcon
 														onClick={(e) => {
 															e.stopPropagation();
-															readProduct(product._id).then((data3) => {
-																if (data3 && data3.error) {
-																	console.log(data3.error);
-																} else {
-																	openSidebar2();
-																	addToCart(
-																		product._id,
-																		null,
-																		1,
-																		data3,
-																		chosenProductAttributes
-																	);
-																}
-															});
+															handleCartIconClick(product);
 														}}
 													/>
 												) : (

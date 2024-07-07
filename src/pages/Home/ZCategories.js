@@ -1,10 +1,9 @@
-/** @format */
-
 import React from "react";
 import Slider from "react-slick";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { Card } from "antd";
+import ReactGA from "react-ga4";
 
 const ZCategories = ({ allCategories }) => {
 	// Settings for the slider
@@ -48,6 +47,15 @@ const ZCategories = ({ allCategories }) => {
 		],
 	};
 
+	const handleCategoryClick = (categoryName) => {
+		ReactGA.event({
+			category: "Category Clicked Home Page",
+			action: "User Clicked On Category In Home Page",
+			label: `User Clicked on ${categoryName} In The Home Page`,
+		});
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	};
+
 	return (
 		<Container>
 			<ZCategoriesWrapper>
@@ -55,7 +63,7 @@ const ZCategories = ({ allCategories }) => {
 					{allCategories.map((category) => (
 						<CategoryCard
 							key={category.categorySlug}
-							onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+							onClick={() => handleCategoryClick(category.categoryName)}
 						>
 							<Link to={`/our-products?category=${category.categorySlug}`}>
 								{/* Ensure thumbnail exists and has at least one item */}

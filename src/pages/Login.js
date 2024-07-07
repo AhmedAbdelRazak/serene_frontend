@@ -10,6 +10,7 @@ import { Helmet } from "react-helmet";
 import ReactPixel from "react-facebook-pixel";
 import { Form, Input, Button, Typography, Row, Col, Card } from "antd";
 import { MailOutlined, PhoneOutlined, LockOutlined } from "@ant-design/icons";
+import ReactGA from "react-ga4";
 
 const { Title } = Typography;
 
@@ -124,6 +125,13 @@ const Login = ({ history }) => {
 		ReactPixel.init(process.env.REACT_APP_FACEBOOK_PIXEL_ID, options);
 		ReactPixel.pageView();
 	}, []);
+
+	useEffect(() => {
+		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
+		ReactGA.send(window.location.pathname + window.location.search);
+
+		// eslint-disable-next-line
+	}, [window.location.pathname]);
 
 	const signinForm = () => (
 		<Row justify='center' style={{ marginTop: "50px" }}>

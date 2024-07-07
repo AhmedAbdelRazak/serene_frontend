@@ -3,7 +3,7 @@ import styled from "styled-components";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 import Z1HeroComponent from "./Z1HeroComponent";
-import ZSearch from "./Z2Search";
+// import ZSearch from "./Z2Search";
 import {
 	gettingCategoriesAndSubcategories,
 	gettingSpecificProducts,
@@ -155,9 +155,9 @@ const Home = () => {
 			<div>
 				<Z1HeroComponent />
 			</div>
-			<div className='pt-3'>
+			{/* <div className='pt-3'>
 				<ZSearch />
-			</div>
+			</div> */}
 			{!loading && allCategories && allCategories.length > 0 ? (
 				<div data-aos='fade-down'>
 					<ZCategories

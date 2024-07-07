@@ -9,6 +9,7 @@ import "aos/dist/aos.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { getHomes } from "../../Admin/apiAdmin";
+import ReactGA from "react-ga4";
 
 const Z1HeroComponent = () => {
 	const [homePage, setHomePage] = useState({});
@@ -64,7 +65,17 @@ const Z1HeroComponent = () => {
 							<BannerText>
 								{homePage && homePage.header1 ? homePage.header1 : ""}
 							</BannerText>
-							<BannerButton to='/our-products'>Shop Now!</BannerButton>
+							<BannerButton
+								to='/our-products'
+								onClick={() => {
+									ReactGA.event({
+										category: "Shop Now Clicked From Hero Component",
+										action: "Shop Now Clicked From Hero Component",
+									});
+								}}
+							>
+								Shop Now!
+							</BannerButton>
 						</BannerContent>
 					</Banner>
 				)}

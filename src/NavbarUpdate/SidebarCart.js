@@ -6,6 +6,7 @@ import { useHistory } from "react-router-dom";
 import { getColors } from "../apiCore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Add this import
+import ReactGA from "react-ga4";
 
 const SidebarCart = ({ from }) => {
 	const {
@@ -263,6 +264,10 @@ const SidebarCart = ({ from }) => {
 										window.scrollTo({ top: 50, behavior: "smooth" });
 										closeSidebar2();
 										handleCheckout();
+										ReactGA.event({
+											category: "User Clicked Continue To Checkout From Cart",
+											action: "User Clicked Continue To Checkout From Cart",
+										});
 									} else {
 										const outOfStockItems = cart.filter(
 											(item, index) => !checkingAvailability[index]

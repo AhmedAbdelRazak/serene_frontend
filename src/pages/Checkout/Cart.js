@@ -10,6 +10,7 @@ import { useHistory } from "react-router-dom";
 import { isAuthenticated } from "../../auth";
 import { Modal } from "antd";
 import { toast } from "react-toastify";
+import ReactGA from "react-ga4";
 
 const Cart = () => {
 	const { cart, total_amount, addShipmentDetails, shipmentChosen, removeItem } =
@@ -64,6 +65,27 @@ const Cart = () => {
 			setPasswordError("Passwords do not match");
 		} else {
 			setStep(step + 1);
+		}
+
+		if (step === 1) {
+			ReactGA.event({
+				category: "Checkout Page Customer Added Info",
+				action: "Checkout Page Customer Added Info",
+			});
+		}
+
+		if (step === 2) {
+			ReactGA.event({
+				category: "Checkout Page Customer Added Shipping Details",
+				action: "Checkout Page Customer Added Shipping Details",
+			});
+		}
+
+		if (step === 3) {
+			ReactGA.event({
+				category: "Checkout Page Customer Reviewing Order",
+				action: "Checkout Page Customer Reviewing Order",
+			});
 		}
 	};
 
@@ -129,6 +151,13 @@ const Cart = () => {
 
 		setIsModalVisible(true);
 	};
+
+	useEffect(() => {
+		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
+		ReactGA.send(window.location.pathname + window.location.search);
+
+		// eslint-disable-next-line
+	}, [window.location.pathname]);
 
 	return (
 		<CartWrapper>
