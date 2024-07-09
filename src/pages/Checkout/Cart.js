@@ -11,6 +11,7 @@ import { isAuthenticated } from "../../auth";
 import { Modal } from "antd";
 import { toast } from "react-toastify";
 import ReactGA from "react-ga4";
+import { Helmet } from "react-helmet";
 
 const Cart = () => {
 	const { cart, total_amount, addShipmentDetails, shipmentChosen, removeItem } =
@@ -161,73 +162,108 @@ const Cart = () => {
 
 	return (
 		<CartWrapper>
-			<StepIndicator>Step {step} of 3</StepIndicator>
-			<Z1CartDetails />
-			<CouponWrapper>
-				<Input
-					type='text'
-					name='coupon'
-					placeholder='Enter Coupon Code'
-					value={coupon}
-					onChange={(e) => setCoupon(e.target.value)}
+			<Helmet>
+				<title>Checkout - Serene Jannat</title>
+				<meta
+					name='description'
+					content='Complete your purchase at Serene Jannat. Review your cart, provide shipping details, and proceed to checkout for the best online shopping experience.'
 				/>
-			</CouponWrapper>
-			<StepTransition step={step}>
-				<Z2StepOne
-					step={step}
-					customerDetails={customerDetails}
-					handleCustomerDetailChange={(e) =>
-						setCustomerDetails({
-							...customerDetails,
-							[e.target.name]: e.target.value,
-						})
-					}
-					handleNextStep={handleNextStep}
-					passwordError={passwordError}
+				<meta
+					name='keywords'
+					content='Serene Jannat, checkout, cart, online shopping, shipping details, purchase, best gifts'
 				/>
-				<Z3StepTwo
-					step={step}
-					handleShippingOptionChange={(e) => {
-						const chosenOption = allShippingOptions.find(
-							(option) => option._id === e.target.value
-						);
-						addShipmentDetails(chosenOption);
-					}}
-					handleStateChange={(value) => setState(value)}
-					handleAddressChange={(e) => setAddress(e.target.value)}
-					handleCityChange={(e) => setCity(e.target.value)}
-					allShippingOptions={allShippingOptions}
-					handlePreviousStep={handlePreviousStep}
-					handleNextStep={handleNextStep}
-					state={state}
-					address={address}
-					city={city}
-					setCity={setCity}
-					comments={comments}
-					handleCommentsChange={(e) => setComments(e.target.value)}
-					shipmentChosen={shipmentChosen}
-					zipcode={zipcode}
-					handleZipCodeChange={(e) => setZipCode(e.target.value)}
+				<meta property='og:title' content='Checkout - Serene Jannat' />
+				<meta
+					property='og:description'
+					content='Complete your purchase at Serene Jannat. Review your cart, provide shipping details, and proceed to checkout for the best online shopping experience.'
 				/>
-				<Z4StepThree
-					step={step}
-					customerDetails={customerDetails}
-					state={state}
-					address={address}
-					city={city}
-					// handleCheckout={handleCheckout}
-					handlePreviousStep={handlePreviousStep}
-					zipcode={zipcode}
-					shipmentChosen={shipmentChosen}
-					cart={cart}
-					total_amount={total_amount}
-					removeItem={(id, size, color) => removeItem(id, size, color)}
-					user={user}
-					setStep={setStep}
-					comments={comments}
-					coupon={coupon}
-				/>
-			</StepTransition>
+				<meta property='og:url' content='https://serenejannat.com/cart' />
+				<meta property='og:type' content='website' />
+			</Helmet>
+			{cart && cart.length === 0 ? (
+				<div>
+					<h3
+						style={{
+							textAlign: "center",
+							marginTop: "20px",
+							fontWeight: "bold",
+						}}
+					>
+						Your Cart Is Empty...
+					</h3>
+				</div>
+			) : (
+				<>
+					<StepIndicator>Step {step} of 3</StepIndicator>
+					<Z1CartDetails />
+					<CouponWrapper>
+						<Input
+							type='text'
+							name='coupon'
+							placeholder='Enter Coupon Code'
+							value={coupon}
+							onChange={(e) => setCoupon(e.target.value)}
+						/>
+					</CouponWrapper>
+					<StepTransition step={step}>
+						<Z2StepOne
+							step={step}
+							customerDetails={customerDetails}
+							handleCustomerDetailChange={(e) =>
+								setCustomerDetails({
+									...customerDetails,
+									[e.target.name]: e.target.value,
+								})
+							}
+							handleNextStep={handleNextStep}
+							passwordError={passwordError}
+						/>
+						<Z3StepTwo
+							step={step}
+							handleShippingOptionChange={(e) => {
+								const chosenOption = allShippingOptions.find(
+									(option) => option._id === e.target.value
+								);
+								addShipmentDetails(chosenOption);
+							}}
+							handleStateChange={(value) => setState(value)}
+							handleAddressChange={(e) => setAddress(e.target.value)}
+							handleCityChange={(e) => setCity(e.target.value)}
+							allShippingOptions={allShippingOptions}
+							handlePreviousStep={handlePreviousStep}
+							handleNextStep={handleNextStep}
+							state={state}
+							address={address}
+							city={city}
+							setCity={setCity}
+							comments={comments}
+							handleCommentsChange={(e) => setComments(e.target.value)}
+							shipmentChosen={shipmentChosen}
+							zipcode={zipcode}
+							handleZipCodeChange={(e) => setZipCode(e.target.value)}
+						/>
+						<Z4StepThree
+							step={step}
+							customerDetails={customerDetails}
+							state={state}
+							address={address}
+							city={city}
+							// handleCheckout={handleCheckout}
+							handlePreviousStep={handlePreviousStep}
+							zipcode={zipcode}
+							shipmentChosen={shipmentChosen}
+							cart={cart}
+							total_amount={total_amount}
+							removeItem={(id, size, color) => removeItem(id, size, color)}
+							user={user}
+							setStep={setStep}
+							comments={comments}
+							coupon={coupon}
+						/>
+					</StepTransition>
+				</>
+			)}
+
 			<Modal
 				title='Thank You for Your Order!'
 				open={isModalVisible}
@@ -278,6 +314,7 @@ const CartWrapper = styled.div`
 	background-color: #ffffff;
 	border-radius: 10px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	min-height: 500px;
 
 	@media (max-width: 768px) {
 		padding: 10px;

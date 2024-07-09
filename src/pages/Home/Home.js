@@ -90,7 +90,7 @@ const Home = () => {
 			image: product.thumbnailImage[0].images[0]?.url || "",
 			description: product.description.replace(/<[^>]+>/g, ""),
 			brand: {
-				"@type": "Thing",
+				"@type": "Brand",
 				name: product.category.categoryName,
 			},
 			offers: {
@@ -108,6 +108,45 @@ const Home = () => {
 						? "http://schema.org/InStock"
 						: "http://schema.org/OutOfStock",
 				itemCondition: "http://schema.org/NewCondition",
+				hasMerchantReturnPolicy: {
+					"@type": "MerchantReturnPolicy",
+					returnPolicyCategory:
+						"https://serenejannat.com/privacy-policy-terms-conditions",
+					merchantReturnDays: "7",
+					merchantReturnLink:
+						"https://serenejannat.com/privacy-policy-terms-conditions",
+				},
+				shippingDetails: {
+					"@type": "OfferShippingDetails",
+					shippingRate: {
+						"@type": "MonetaryAmount",
+						value: "0.00",
+						currency: "USD",
+					},
+					deliveryTime: {
+						"@type": "ShippingDeliveryTime",
+						handlingTime: {
+							"@type": "QuantitativeValue",
+							minValue: 0,
+							maxValue: 1,
+							unitCode: "d",
+						},
+						transitTime: {
+							"@type": "QuantitativeValue",
+							minValue: 3,
+							maxValue: 7,
+							unitCode: "d",
+						},
+					},
+					shippingDestination: {
+						"@type": "DefinedRegion",
+						geoMidpoint: {
+							"@type": "GeoCoordinates",
+							latitude: 37.7749,
+							longitude: -122.4194,
+						},
+					},
+				},
 			},
 			productID: product._id,
 		}));

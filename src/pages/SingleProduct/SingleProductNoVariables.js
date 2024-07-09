@@ -134,26 +134,63 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 			<Helmet itemscope itemtype='http://schema.org/Product'>
 				<script type='application/ld+json'>
 					{`
-      {
-        "@context": "http://schema.org/",
-        "@type": "Product",
-        "name": "${product.productName}",
-        "image": ${chosenImages[0]},
-        "description": "${plainDescription}",
-        "brand": {
-          "@type": "Thing",
-          "name": "${product.category.categoryName}"
-        },
-        "offers": {
-          "@type": "Offer",
-          "priceCurrency": "USD",
-          "price": "${Number(product.priceAfterDiscount)}",
-          "availability": "${Number(product.quantity) > 0 ? "http://schema.org/InStock" : "http://schema.org/OutOfStock"}",
-          "itemCondition": "http://schema.org/NewCondition"
-        },
-        "productID": "${product._id}"
-      }
-    `}
+			{
+				"@context": "http://schema.org/",
+				"@type": "Product",
+				"name": "${product.productName}",
+				"image": "${chosenImages[0]}",
+				"description": "${plainDescription}",
+				"brand": {
+					"@type": "Brand",
+					"name": "${product.category.categoryName}"
+				},
+				"offers": {
+					"@type": "Offer",
+					"priceCurrency": "USD",
+					"price": "${Number(product.priceAfterDiscount)}",
+					"availability": "${Number(product.quantity) > 0 ? "http://schema.org/InStock" : "http://schema.org/OutOfStock"}",
+					"itemCondition": "http://schema.org/NewCondition",
+					"hasMerchantReturnPolicy": {
+						"@type": "MerchantReturnPolicy",
+						"returnPolicyCategory": "https://serenejannat.com/privacy-policy-terms-conditions",
+						"merchantReturnDays": "7",
+						"merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions"
+					},
+					"shippingDetails": {
+						"@type": "OfferShippingDetails",
+						"shippingRate": {
+							"@type": "MonetaryAmount",
+							"value": "0.00",
+							"currency": "USD"
+						},
+						"deliveryTime": {
+							"@type": "ShippingDeliveryTime",
+							"handlingTime": {
+								"@type": "QuantitativeValue",
+								"minValue": 0,
+								"maxValue": 1,
+								"unitCode": "d"
+							},
+							"transitTime": {
+							        "@type": "QuantitativeValue",
+							        "minValue": 3,
+							        "maxValue": 7,
+							        "unitCode": "d"
+							}
+						},
+						"shippingDestination": {
+							"@type": "DefinedRegion",
+							"geoMidpoint": {
+								"@type": "GeoCoordinates",
+								"latitude": 37.7749,
+								"longitude": -122.4194
+							}
+						}
+					}
+				},
+				"productID": "${product._id}"
+			}
+		`}
 				</script>
 				<meta property='og:title' content={product.productName} />
 				<meta property='og:description' content={plainDescription} />
@@ -162,7 +199,6 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 					property='og:url'
 					content={`https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`}
 				/>
-
 				<meta property='og:type' content='product' />
 				<meta
 					property='product:price:amount'
