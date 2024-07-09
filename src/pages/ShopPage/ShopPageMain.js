@@ -216,7 +216,7 @@ const ShopPageMain = () => {
 					)
 				: product.quantity;
 
-			const priceValidUntil = "2024-12-31";
+			const priceValidUntil = "2026-12-31";
 
 			const aggregateRating = {
 				"@type": "AggregateRating",
