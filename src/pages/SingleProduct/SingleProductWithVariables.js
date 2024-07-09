@@ -231,6 +231,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 					"@type": "Offer",
 					"priceCurrency": "USD",
 					"price": "${Number(chosenAttributes.priceAfterDiscount || product.productAttributes[0].priceAfterDiscount)}",
+					"priceValidUntil": "2026-12-31",
 					"availability": "${gettingTotalProductQty() > 0 ? "http://schema.org/InStock" : "http://schema.org/OutOfStock"}",
 					"itemCondition": "http://schema.org/NewCondition",
 					"hasMerchantReturnPolicy": {
@@ -243,7 +244,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 						"@type": "OfferShippingDetails",
 						"shippingRate": {
 							"@type": "MonetaryAmount",
-							"value": "0.00",
+							"value": "5.00",
 							"currency": "USD"
 						},
 						"deliveryTime": {
@@ -271,6 +272,26 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 						}
 					}
 				},
+				"aggregateRating": {
+					"@type": "AggregateRating",
+					"ratingValue": "${(product.ratings.reduce((acc, rating) => acc + rating.star, 0) / product.ratings.length).toFixed(1)}",
+					"reviewCount": "${product.ratings.length}"
+				},
+				"review": ${JSON.stringify(
+					product.comments.map((comment) => ({
+						"@type": "Review",
+						reviewRating: {
+							"@type": "Rating",
+							ratingValue: comment.rating || 5, // Default to 5 if no rating provided
+						},
+						author: {
+							"@type": "Person",
+							name: comment.postedBy ? comment.postedBy.name : "Anonymous",
+						},
+						reviewBody: comment.text,
+						datePublished: new Date(comment.created).toISOString(),
+					}))
+				)},
 				"productID": "${product._id}"
 			}
 		`}
@@ -322,6 +343,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 					href='http://fonts.googleapis.com/earlyaccess/droidarabickufi.css'
 				/>
 			</Helmet>
+
 			<SigninModal
 				modalVisible3={modalVisible3}
 				setModalVisible3={setModalVisible3}

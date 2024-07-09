@@ -201,73 +201,111 @@ const ShopPageMain = () => {
 
 	// Generate structured data for products
 	const generateProductSchema = (products) => {
-		return products.map((product) => ({
-			"@context": "http://schema.org",
-			"@type": "Product",
-			name: capitalizeWords(product.productName),
-			image: product.thumbnailImage[0].images[0]?.url || "",
-			description: product.description.replace(/<[^>]+>/g, ""),
-			brand: {
-				"@type": "Brand",
-				name: product.category.categoryName,
-			},
-			offers: {
-				"@type": "Offer",
-				priceCurrency: "USD",
-				price:
-					product.priceAfterDiscount > 0
-						? product.priceAfterDiscount
-						: product.productAttributes[0].priceAfterDiscount,
-				availability:
-					product.productAttributes.reduce(
+		return products.map((product) => {
+			const hasVariables =
+				product.productAttributes && product.productAttributes.length > 0;
+
+			const price = hasVariables
+				? product.productAttributes[0].priceAfterDiscount
+				: product.priceAfterDiscount;
+
+			const quantity = hasVariables
+				? product.productAttributes.reduce(
 						(acc, attr) => acc + attr.quantity,
 						0
-					) > 0
-						? "http://schema.org/InStock"
-						: "http://schema.org/OutOfStock",
-				itemCondition: "http://schema.org/NewCondition",
-				hasMerchantReturnPolicy: {
-					"@type": "MerchantReturnPolicy",
-					returnPolicyCategory:
-						"https://serenejannat.com/privacy-policy-terms-conditions",
-					merchantReturnDays: "7",
-					merchantReturnLink:
-						"https://serenejannat.com/privacy-policy-terms-conditions",
+					)
+				: product.quantity;
+
+			const priceValidUntil = "2024-12-31";
+
+			const aggregateRating = {
+				"@type": "AggregateRating",
+				ratingValue: (
+					product.ratings.reduce((acc, rating) => acc + rating.star, 0) /
+					product.ratings.length
+				).toFixed(1),
+				reviewCount: product.ratings.length,
+			};
+
+			const reviews = product.comments.map((comment) => ({
+				"@type": "Review",
+				reviewRating: {
+					"@type": "Rating",
+					ratingValue: comment.rating || 5,
 				},
-				shippingDetails: {
-					"@type": "OfferShippingDetails",
-					shippingRate: {
-						"@type": "MonetaryAmount",
-						value: "0.00",
-						currency: "USD",
+				author: {
+					"@type": "Person",
+					name: comment.postedBy ? comment.postedBy.name : "Anonymous",
+				},
+				reviewBody: comment.text,
+				datePublished: new Date(comment.created).toISOString(),
+			}));
+
+			return {
+				"@context": "http://schema.org",
+				"@type": "Product",
+				name: capitalizeWords(product.productName),
+				image: product.thumbnailImage[0].images[0]?.url || "",
+				description: product.description.replace(/<[^>]+>/g, ""),
+				brand: {
+					"@type": "Brand",
+					name: product.category.categoryName,
+				},
+				offers: {
+					"@type": "Offer",
+					priceCurrency: "USD",
+					price: Number(price),
+					priceValidUntil,
+					availability:
+						quantity > 0
+							? "http://schema.org/InStock"
+							: "http://schema.org/OutOfStock",
+					itemCondition: "http://schema.org/NewCondition",
+					hasMerchantReturnPolicy: {
+						"@type": "MerchantReturnPolicy",
+						returnPolicyCategory:
+							"https://serenejannat.com/privacy-policy-terms-conditions",
+						merchantReturnDays: "7",
+						merchantReturnLink:
+							"https://serenejannat.com/privacy-policy-terms-conditions",
 					},
-					deliveryTime: {
-						"@type": "ShippingDeliveryTime",
-						handlingTime: {
-							"@type": "QuantitativeValue",
-							minValue: 0,
-							maxValue: 1,
-							unitCode: "d",
+					shippingDetails: {
+						"@type": "OfferShippingDetails",
+						shippingRate: {
+							"@type": "MonetaryAmount",
+							value: "5.00",
+							currency: "USD",
 						},
-						transitTime: {
-							"@type": "QuantitativeValue",
-							minValue: 3,
-							maxValue: 7,
-							unitCode: "d",
+						deliveryTime: {
+							"@type": "ShippingDeliveryTime",
+							handlingTime: {
+								"@type": "QuantitativeValue",
+								minValue: 0,
+								maxValue: 1,
+								unitCode: "d",
+							},
+							transitTime: {
+								"@type": "QuantitativeValue",
+								minValue: 3,
+								maxValue: 7,
+								unitCode: "d",
+							},
 						},
-					},
-					shippingDestination: {
-						"@type": "DefinedRegion",
-						geoMidpoint: {
-							"@type": "GeoCoordinates",
-							latitude: 37.7749,
-							longitude: -122.4194,
+						shippingDestination: {
+							"@type": "DefinedRegion",
+							geoMidpoint: {
+								"@type": "GeoCoordinates",
+								latitude: 37.7749,
+								longitude: -122.4194,
+							},
 						},
 					},
 				},
-			},
-			productID: product._id,
-		}));
+				aggregateRating,
+				review: reviews,
+				productID: product._id,
+			};
+		});
 	};
 
 	const ShopPageHelmet = ({ products }) => {

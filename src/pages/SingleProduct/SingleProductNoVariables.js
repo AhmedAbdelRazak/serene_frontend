@@ -148,6 +148,7 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 					"@type": "Offer",
 					"priceCurrency": "USD",
 					"price": "${Number(product.priceAfterDiscount)}",
+					"priceValidUntil": "2026-12-31",
 					"availability": "${Number(product.quantity) > 0 ? "http://schema.org/InStock" : "http://schema.org/OutOfStock"}",
 					"itemCondition": "http://schema.org/NewCondition",
 					"hasMerchantReturnPolicy": {
@@ -160,7 +161,7 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 						"@type": "OfferShippingDetails",
 						"shippingRate": {
 							"@type": "MonetaryAmount",
-							"value": "0.00",
+							"value": "5.00",
 							"currency": "USD"
 						},
 						"deliveryTime": {
@@ -172,10 +173,10 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 								"unitCode": "d"
 							},
 							"transitTime": {
-							        "@type": "QuantitativeValue",
-							        "minValue": 3,
-							        "maxValue": 7,
-							        "unitCode": "d"
+								"@type": "QuantitativeValue",
+								"minValue": 3,
+								"maxValue": 7,
+								"unitCode": "d"
 							}
 						},
 						"shippingDestination": {
@@ -188,6 +189,27 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 						}
 					}
 				},
+				"aggregateRating": {
+					"@type": "AggregateRating",
+					"ratingValue": "${(product.ratings.reduce((acc, rating) => acc + rating.star, 0) / product.ratings.length).toFixed(1)}",
+					"reviewCount": "${product.ratings.length}"
+				},
+				"review": ${JSON.stringify(
+					product.comments &&
+						product.comments.map((comment) => ({
+							"@type": "Review",
+							reviewRating: {
+								"@type": "Rating",
+								ratingValue: comment.rating || 5, // Default to 5 if no rating provided
+							},
+							author: {
+								"@type": "Person",
+								name: comment.postedBy ? comment.postedBy.name : "Anonymous",
+							},
+							reviewBody: comment.text,
+							datePublished: comment.created.toISOString(),
+						}))
+				)},
 				"productID": "${product._id}"
 			}
 		`}
