@@ -178,6 +178,7 @@ const Cart = () => {
 					content='Complete your purchase at Serene Jannat. Review your cart, provide shipping details, and proceed to checkout for the best online shopping experience.'
 				/>
 				<meta property='og:url' content='https://serenejannat.com/cart' />
+				<link rel='canonical' href='https://serenejannat.com/cart' />
 				<meta property='og:type' content='website' />
 			</Helmet>
 			{cart && cart.length === 0 ? (

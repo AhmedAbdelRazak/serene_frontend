@@ -296,6 +296,10 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 			}
 		`}
 				</script>
+				<link
+					rel='canonical'
+					href={`https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`}
+				/>
 				<meta
 					property='og:title'
 					content={capitalizeWords(product.productName)}

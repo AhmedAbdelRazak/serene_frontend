@@ -198,10 +198,7 @@ const Login = ({ history }) => {
 					<hr />
 					<p style={{ textAlign: "center" }}>
 						Forgot Your Password? Please{" "}
-						<Link
-							to='/auth/password/forgot'
-							className='btn btn-sm btn-outline-danger'
-						>
+						<Link to='#' className='btn btn-sm btn-outline-danger'>
 							Reset Your Password
 						</Link>
 					</p>

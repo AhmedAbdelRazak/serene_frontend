@@ -104,7 +104,6 @@ const Home = () => {
 
 			const priceValidUntil = "2026-12-31";
 
-			// Calculate ratingValue and reviewCount, defaulting to 5.0 and 1 if there are no ratings
 			const ratingValue =
 				product.ratings.length > 0
 					? (
@@ -116,7 +115,6 @@ const Home = () => {
 			const reviewCount =
 				product.ratings.length > 0 ? product.ratings.length : 1;
 
-			// Generate reviews, defaulting to one 5-star review if there are no comments
 			const reviews =
 				product.comments.length > 0
 					? product.comments.map((comment) => ({
@@ -249,6 +247,7 @@ const Home = () => {
 				/>
 				<meta property='og:url' content='https://serenejannat.com' />
 				<meta property='og:type' content='website' />
+				<link rel='canonical' href='https://serenejannat.com' />
 				<script type='application/ld+json'>
 					{JSON.stringify(productSchema)}
 				</script>

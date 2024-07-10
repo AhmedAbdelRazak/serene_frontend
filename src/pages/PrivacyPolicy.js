@@ -21,6 +21,10 @@ const PrivacyPolicy = () => {
 				<meta property='og:title' content={title} />
 				<meta property='og:description' content={description} />
 				<meta property='og:url' content={url} />
+				<link
+					rel='canonical'
+					href='https://serenejannat.com/privacy-policy-terms-conditions'
+				/>
 				<meta property='og:type' content='website' />
 			</Helmet>
 			<ContentWrapper>
