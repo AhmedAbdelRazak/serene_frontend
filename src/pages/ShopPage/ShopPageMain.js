@@ -444,7 +444,6 @@ const ShopPageMain = () => {
 						<Row gutter={[16, 16]}>
 							{products &&
 								products.map((product, index) => {
-									console.log(product, index, "Product map");
 									const productImages =
 										product.productAttributes &&
 										product.productAttributes.length > 0

@@ -4,13 +4,24 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import SquarePaymentForm from "./SquarePaymentForm";
+import { getColors } from "../apiAdmin";
 
 const LinkGenerated = () => {
 	const { orderId } = useParams();
 	const [order, setOrder] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
+	const [allColors, setAllColors] = useState([]);
 
 	useEffect(() => {
+		const fetchColors = async () => {
+			try {
+				const colors = await getColors();
+				setAllColors(colors);
+			} catch (error) {
+				console.error("Failed to fetch colors", error);
+			}
+		};
+
 		const fetchOrder = async () => {
 			try {
 				const response = await axios.get(
@@ -24,6 +35,7 @@ const LinkGenerated = () => {
 			}
 		};
 
+		fetchColors();
 		fetchOrder();
 	}, [orderId]);
 
@@ -51,6 +63,11 @@ const LinkGenerated = () => {
 		}
 	};
 
+	const getColorName = (hexa) => {
+		const colorObject = allColors.find((color) => color.hexa === hexa);
+		return colorObject ? colorObject.color : hexa;
+	};
+
 	if (isLoading) {
 		return <div>Loading...</div>;
 	}
@@ -75,40 +92,53 @@ const LinkGenerated = () => {
 					<h3 style={{ fontSize: "1.3rem", fontWeight: "bold" }}>Products:</h3>
 					{order.productsNoVariable.map((product) => (
 						<Product key={product.productId}>
-							<p>
-								<strong>Name:</strong> {product.name}
-							</p>
-							<p>
-								<strong>Quantity:</strong> {product.ordered_quantity}
-							</p>
-							<p>
-								<strong>Price:</strong> ${product.price}
-							</p>
+							<div className='row'>
+								<div className='col-md-2'>
+									<img src={product.image} alt={product.name} />
+								</div>
+
+								<div className='col-md-7'>
+									<p>
+										<strong>Name:</strong> {product.name}
+									</p>
+									<p>
+										<strong>Quantity:</strong> {product.ordered_quantity}
+									</p>
+									<p>
+										<strong>Price:</strong> ${product.price}
+									</p>
+								</div>
+							</div>
+						</Product>
+					))}
+					{order.chosenProductQtyWithVariables.map((product) => (
+						<Product key={product.productId}>
+							<div className='row'>
+								<div className='col-md-2'>
+									<img src={product.image} alt={product.name} />
+								</div>
+								<div className='col-md-7'>
+									<p>
+										<strong>Name:</strong> {product.name}
+									</p>
+									<p>
+										<strong>Color:</strong>{" "}
+										{getColorName(product.chosenAttributes.color)}
+									</p>
+									<p style={{ textTransform: "uppercase" }}>
+										<strong>Size:</strong> {product.chosenAttributes.size}
+									</p>
+									<p>
+										<strong>Quantity:</strong> {product.ordered_quantity}
+									</p>
+									<p>
+										<strong>Price:</strong> ${product.price}
+									</p>
+								</div>
+							</div>
 						</Product>
 					))}
 				</ProductSection>
-				{/* <ProductSection>
-					<h3>Products with Variables:</h3>
-					{order.chosenProductQtyWithVariables.map((product) => (
-						<Product key={product.productId}>
-							<p>
-								<strong>Name:</strong> {product.name}
-							</p>
-							<p>
-								<strong>Color:</strong> {product.chosenAttributes.color}
-							</p>
-							<p>
-								<strong>Size:</strong> {product.chosenAttributes.size}
-							</p>
-							<p>
-								<strong>Quantity:</strong> {product.ordered_quantity}
-							</p>
-							<p>
-								<strong>Price:</strong> ${product.price}
-							</p>
-						</Product>
-					))}
-				</ProductSection> */}
 				<TotalAmount>
 					<p>
 						<strong>Total Amount:</strong> $
@@ -190,6 +220,13 @@ const Product = styled.div`
 	padding: 10px;
 	border: 1px solid #ddd;
 	border-radius: 5px;
+
+	img {
+		width: 100px;
+		height: 100px;
+		object-fit: cover;
+		margin-bottom: 10px;
+	}
 
 	p {
 		margin: 5px 0;

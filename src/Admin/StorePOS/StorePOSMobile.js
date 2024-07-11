@@ -158,41 +158,156 @@ const StorePOSMobile = () => {
 	};
 
 	const addProductToOrder = (product) => {
+		const defaultAttributes = product.productAttributes?.[0] || {};
+		const defaultColor = defaultAttributes.color || "";
+		const defaultSize = defaultAttributes.size || "";
+
 		setSelectedProducts((prev) => {
-			const existingProduct = prev.find((p) => p._id === product._id);
-			if (existingProduct) {
-				return prev.map((p) =>
-					p._id === product._id ? { ...p, quantity: p.quantity + 1 } : p
+			if (product.productAttributes && product.productAttributes.length > 0) {
+				const existingProduct = prev.find(
+					(p) =>
+						p._id === product._id &&
+						p.chosenAttributes?.color === defaultColor &&
+						p.chosenAttributes?.size === defaultSize
 				);
+
+				if (existingProduct) {
+					return prev.map((p) =>
+						p._id === product._id &&
+						p.chosenAttributes?.color === defaultColor &&
+						p.chosenAttributes?.size === defaultSize
+							? { ...p, quantity: p.quantity + 1 }
+							: p
+					);
+				} else {
+					setDrawerVisible(true); // Open drawer when a product is added
+					return [
+						...prev,
+						{
+							...product,
+							quantity: 1,
+							chosenAttributes: defaultAttributes,
+							priceAfterDiscount: defaultAttributes.priceAfterDiscount,
+							imageUrl:
+								defaultAttributes.productImages?.[0]?.url ||
+								product.thumbnailImage?.[0]?.images?.[0]?.url ||
+								"",
+						},
+					];
+				}
 			} else {
-				setDrawerVisible(true); // Open drawer when a product is added
-				return [...prev, { ...product, quantity: 1 }];
+				const existingProduct = prev.find((p) => p._id === product._id);
+
+				if (existingProduct) {
+					return prev.map((p) =>
+						p._id === product._id ? { ...p, quantity: p.quantity + 1 } : p
+					);
+				} else {
+					setDrawerVisible(true); // Open drawer when a product is added
+					return [
+						...prev,
+						{
+							...product,
+							quantity: 1,
+							priceAfterDiscount: product.priceAfterDiscount,
+							imageUrl: product.thumbnailImage?.[0]?.images?.[0]?.url || "",
+						},
+					];
+				}
 			}
 		});
 	};
 
-	const handleQuantityChange = (productId, value) => {
+	const handleQuantityChange = (productId, value, chosenAttributes) => {
 		setSelectedProducts((prev) =>
-			prev.map((product) =>
-				product._id === productId ? { ...product, quantity: value } : product
-			)
+			prev.map((product) => {
+				if (product._id === productId) {
+					if (chosenAttributes) {
+						if (
+							product.chosenAttributes &&
+							product.chosenAttributes.color === chosenAttributes.color &&
+							product.chosenAttributes.size === chosenAttributes.size
+						) {
+							return { ...product, quantity: value };
+						}
+					} else {
+						return { ...product, quantity: value };
+					}
+				}
+				return product;
+			})
 		);
 	};
 
-	const handleColorChange = (productId, value) => {
-		setSelectedProducts((prev) =>
-			prev.map((product) =>
-				product._id === productId ? { ...product, color: value } : product
-			)
-		);
+	const handleColorChange = (productId, newColor, productIndex) => {
+		setSelectedProducts((prev) => {
+			return prev.map((product, index) => {
+				if (product._id === productId && index === productIndex) {
+					if (!product.overallProductAttributes) {
+						console.error("No productAttributes found for product:", product);
+						return product;
+					}
+
+					const chosenAttribute = product.overallProductAttributes.find(
+						(attr) =>
+							attr.color === newColor &&
+							attr.size === product.chosenAttributes.size
+					);
+
+					if (chosenAttribute) {
+						const updatedProduct = {
+							...product,
+							chosenAttributes: {
+								...product.chosenAttributes,
+								color: newColor,
+							},
+							priceAfterDiscount: chosenAttribute.priceAfterDiscount,
+							imageUrl:
+								chosenAttribute.productImages?.[0]?.url || product.imageUrl,
+						};
+
+						return updatedProduct;
+					} else {
+						console.error("No matching attribute found for color:", newColor);
+					}
+				}
+				return product;
+			});
+		});
 	};
 
-	const handleSizeChange = (productId, value) => {
-		setSelectedProducts((prev) =>
-			prev.map((product) =>
-				product._id === productId ? { ...product, size: value } : product
-			)
-		);
+	const handleSizeChange = (productId, newSize, productIndex) => {
+		setSelectedProducts((prev) => {
+			return prev.map((product, index) => {
+				if (product._id === productId && index === productIndex) {
+					if (!product.overallProductAttributes) {
+						console.error("No productAttributes found for product:", product);
+						return product;
+					}
+
+					const chosenAttribute = product.overallProductAttributes.find(
+						(attr) =>
+							attr.size === newSize &&
+							attr.color === product.chosenAttributes.color
+					);
+
+					if (chosenAttribute) {
+						const updatedProduct = {
+							...product,
+							chosenAttributes: { ...product.chosenAttributes, size: newSize },
+							priceAfterDiscount: chosenAttribute.priceAfterDiscount,
+							imageUrl:
+								chosenAttribute.productImages?.[0]?.url || product.imageUrl,
+						};
+
+						return updatedProduct;
+					} else {
+						console.error("No matching attribute found for size:", newSize);
+					}
+				}
+				return product;
+			});
+		});
 	};
 
 	// eslint-disable-next-line
@@ -203,10 +318,23 @@ const StorePOSMobile = () => {
 		}));
 	};
 
-	const removeProductFromOrder = (productId) => {
-		setSelectedProducts((prev) =>
-			prev.filter((product) => product._id !== productId)
-		);
+	const removeProductFromOrder = (productId, color, size) => {
+		if (color) {
+			setSelectedProducts((prev) =>
+				prev.filter(
+					(product) =>
+						!(
+							product._id === productId &&
+							product.chosenAttributes?.color === color &&
+							product.chosenAttributes?.size === size
+						)
+				)
+			);
+		} else {
+			setSelectedProducts((prev) =>
+				prev.filter((product) => !(product._id === productId))
+			);
+		}
 	};
 
 	const handleShippingOptionChange = (e) => {
@@ -216,13 +344,12 @@ const StorePOSMobile = () => {
 		setShipmentChosen(chosenOption);
 	};
 
+	// Adjust total amount calculation to reflect chosen attributes
 	const totalAmount =
-		selectedProducts.reduce(
-			(total, product) =>
-				total +
-				product.quantity * (product.priceAfterDiscount || product.price),
-			0
-		) + (shipmentChosen ? shipmentChosen.shippingPrice : 0);
+		selectedProducts.reduce((total, product) => {
+			const price = product.priceAfterDiscount || product.price;
+			return total + product.quantity * price;
+		}, 0) + (shipmentChosen ? shipmentChosen.shippingPrice : 0);
 
 	const prepareOrderData = (
 		selectedProducts,
@@ -235,7 +362,7 @@ const StorePOSMobile = () => {
 		const productList = products;
 
 		const productsNoVariable = selectedProducts
-			.filter((item) => !item.chosenProductAttributes)
+			.filter((item) => !item.chosenAttributes)
 			.map((item) => {
 				const product = productList.find((prod) => prod._id === item._id);
 				const imageUrl = product?.thumbnailImage?.[0]?.images?.[0]?.url || ""; // Adjust path as necessary
@@ -243,24 +370,34 @@ const StorePOSMobile = () => {
 					productId: item._id,
 					name: product?.productName || "Product Name",
 					ordered_quantity: item.quantity,
-					price: item.priceAfterDiscount,
+					price: item.priceAfterDiscount || item.price,
 					image: imageUrl,
 				};
 			});
 
 		const chosenProductQtyWithVariables = selectedProducts
-			.filter((item) => item.chosenProductAttributes)
+			.filter((item) => item.chosenAttributes)
 			.map((item) => {
 				const product = productList.find((prod) => prod._id === item._id);
+				const chosenAttributes = item.chosenAttributes;
 				const imageUrl =
-					item.chosenProductAttributes?.productImages?.[0]?.url || "";
+					chosenAttributes.productImages?.[0]?.url ||
+					product.thumbnailImage?.[0]?.images?.[0]?.url ||
+					"";
 				return {
 					productId: item._id,
 					name: product?.productName || "Product Name",
 					ordered_quantity: item.quantity,
-					price: item.priceAfterDiscount,
+					price:
+						chosenAttributes.priceAfterDiscount ||
+						item.priceAfterDiscount ||
+						item.price,
 					image: imageUrl,
-					chosenAttributes: item.chosenProductAttributes,
+					chosenAttributes: {
+						color: chosenAttributes.color,
+						size: chosenAttributes.size,
+						SubSKU: chosenAttributes.SubSKU,
+					},
 				};
 			});
 
@@ -307,9 +444,7 @@ const StorePOSMobile = () => {
 				paymentMethod === "Generate Payment Link"
 					? "Generate Payment Link"
 					: paymentMethod,
-
 			status: shipmentChosen ? "In Process" : "Delivered",
-
 			// other fields like appliedCoupon, orderComment, etc., can be added here
 		};
 	};
@@ -450,6 +585,12 @@ const StorePOSMobile = () => {
 		};
 	}, []);
 
+	const getColorName = (hexa) => {
+		const colorObject =
+			allColors && allColors.find((color) => color.hexa === hexa);
+		return colorObject ? colorObject.color : "Unknown Color";
+	};
+
 	return (
 		<StorePOSMobileWrapper show={collapsed}>
 			<ToastContainer className='toast-top-center' position='top-center' />
@@ -468,76 +609,95 @@ const StorePOSMobile = () => {
 				</Badge>
 			</CartIcon>
 			<ProductsSection>
-				{products.map((product) => {
-					const originalPrice = product.price;
-					const discountedPrice =
-						product.priceAfterDiscount > 0 &&
-						product.priceAfterDiscount < originalPrice
-							? product.priceAfterDiscount
-							: null;
-					const totalQuantity =
-						product.productAttributes?.reduce(
-							(acc, attr) => acc + attr.quantity,
-							0
-						) || product.quantity;
+				{products &&
+					products.map((product) => {
+						const totalQuantity =
+							product.productAttributes?.reduce(
+								(acc, attr) => acc + attr.quantity,
+								0
+							) || product.quantity;
 
-					return (
-						<ProductCard
-							key={product._id}
-							onClick={() => addProductToOrder(product)}
-						>
-							{totalQuantity > 0 ? null : (
-								<OutOfStockBadge>Out of Stock</OutOfStockBadge>
-							)}
-							<img
-								src={product.thumbnailImage[0].images[0].url}
-								alt={product.productName}
-							/>
-							<div>
-								<h3>{product.productName}</h3>
-								{discountedPrice ? (
-									<>
-										<OriginalPrice>${originalPrice}</OriginalPrice>
-										<DiscountedPrice>${discountedPrice}</DiscountedPrice>
-									</>
-								) : (
-									<p>${originalPrice}</p>
+						const productImages =
+							product.productAttributes && product.productAttributes.length > 0
+								? product.productAttributes[0].productImages
+								: product.thumbnailImage[0].images;
+						const imageUrl =
+							productImages && productImages.length > 0
+								? productImages[0].url
+								: "";
+
+						const chosenProductAttributes =
+							product.productAttributes && product.productAttributes.length > 0
+								? product.productAttributes[0]
+								: null;
+
+						const originalPrice =
+							chosenProductAttributes && chosenProductAttributes.price
+								? chosenProductAttributes.price
+								: product.price;
+						const discountedPrice =
+							product.priceAfterDiscount > 0
+								? product.priceAfterDiscount
+								: chosenProductAttributes.priceAfterDiscount;
+
+						const colorName =
+							(chosenProductAttributes &&
+								getColorName(chosenProductAttributes.color)) ||
+							product.color ||
+							"";
+
+						const sizeName =
+							(chosenProductAttributes && chosenProductAttributes.size) ||
+							product.size ||
+							"";
+
+						return (
+							<ProductCard
+								key={product._id}
+								onClick={() => addProductToOrder(product)}
+							>
+								{totalQuantity > 0 ? null : (
+									<OutOfStockBadge>Out of Stock</OutOfStockBadge>
 								)}
-								{product.color && (
-									<p
-										style={{
-											fontSize: "12px",
-											color: "grey",
-											fontWeight: "bold",
-											textTransform: "capitalize",
-										}}
-									>
-										Color: {product.color}
-									</p>
-								)}
-								{product.size && (
-									<p
-										style={{
-											fontSize: "12px",
-											color: "grey",
-											fontWeight: "bold",
-											textTransform: "capitalize",
-										}}
-									>
-										Size: {product.size}
-									</p>
-								)}
-							</div>
-							{product.productAttributes &&
-								product.productAttributes.map((attr, i) => (
-									<ColorDisplay key={i} color={attr.color}>
-										{allColors.find((clr) => clr.hexa === attr.color)?.color ||
-											attr.color}
-									</ColorDisplay>
-								))}
-						</ProductCard>
-					);
-				})}
+								<img src={imageUrl} alt={product.productName} />
+								<div>
+									<h3>{product.productName}</h3>
+									{discountedPrice < originalPrice ? (
+										<>
+											<OriginalPrice>${originalPrice}</OriginalPrice>
+											<DiscountedPrice>${discountedPrice}</DiscountedPrice>
+										</>
+									) : (
+										<p>${originalPrice}</p>
+									)}
+									{colorName && (
+										<p
+											style={{
+												fontSize: "12px",
+												color: "grey",
+												fontWeight: "bold",
+												textTransform: "capitalize",
+											}}
+										>
+											Color: {colorName}
+										</p>
+									)}
+									{sizeName && (
+										<p
+											style={{
+												fontSize: "12px",
+												color: "grey",
+												fontWeight: "bold",
+												textTransform: "capitalize",
+											}}
+										>
+											Size: {sizeName}
+										</p>
+									)}
+								</div>
+							</ProductCard>
+						);
+					})}
 			</ProductsSection>
 			<Drawer
 				title='Your Order'
@@ -555,114 +715,124 @@ const StorePOSMobile = () => {
 						</NoProductsMessage>
 					) : (
 						<>
-							{selectedProducts.map((product) => {
-								const productColors = product.productAttributes?.map(
-									(attr) => attr.color
-								);
-								const uniqueProductColors = [...new Set(productColors)];
+							{selectedProducts &&
+								selectedProducts.map((product, index) => {
+									const productColors =
+										product.overallProductAttributes?.map(
+											(attr) => attr.color
+										) || [];
+									const uniqueProductColors = [...new Set(productColors)];
 
-								const productSizes = product.productAttributes?.map(
-									(attr) => attr.size
-								);
-								const uniqueProductSizes = [...new Set(productSizes)];
+									const productSizes =
+										product.overallProductAttributes?.map(
+											(attr) => attr.size
+										) || [];
+									const uniqueProductSizes = [...new Set(productSizes)];
 
-								const handleProductColorChange = (productId, value) => {
-									handleColorChange(productId, value);
-									const updatedProduct = products.find(
-										(p) => p._id === productId
-									);
-									const newColorAttribute =
-										updatedProduct.productAttributes.find(
-											(attr) => attr.color === value
+									const chosenAttributes = product.chosenAttributes || {};
+
+									const chosenAttribute =
+										product.overallProductAttributes?.find(
+											(attr) =>
+												attr.color === chosenAttributes.color &&
+												attr.size === chosenAttributes.size
 										);
-									setSelectedProducts((prev) =>
-										prev.map((p) =>
-											p._id === productId
-												? {
-														...p,
-														thumbnailImage: newColorAttribute.productImages,
-													}
-												: p
-										)
-									);
-								};
 
-								return (
-									<OrderItem key={product._id}>
-										<OrderItemImage
-											src={product.thumbnailImage[0].images[0].url}
-											alt={product.productName}
-										/>
-										<h3>{product.productName}</h3>
-										<p>Price: ${product.priceAfterDiscount || product.price}</p>
-										<div>
-											<span>Quantity: </span>
-											<InputNumber
-												min={1}
-												value={product.quantity}
-												onChange={(value) =>
-													handleQuantityChange(product._id, value)
-												}
+									const price = chosenAttribute
+										? chosenAttribute.priceAfterDiscount
+										: product.priceAfterDiscount || product.price;
+
+									const imageUrl =
+										chosenAttribute?.productImages?.[0]?.url ||
+										product.thumbnailImage?.[0]?.images?.[0]?.url ||
+										"";
+
+									return (
+										<OrderItem key={`${product._id}-${index}`}>
+											<OrderItemImage
+												src={imageUrl}
+												alt={product.productName}
 											/>
-										</div>
-										{product.productAttributes &&
-											product.productAttributes.length > 0 && (
-												<>
-													<div>
-														<span>Color: </span>
-														<Select
-															value={product.color}
-															onChange={(value) =>
-																handleProductColorChange(product._id, value)
-															}
-														>
-															{uniqueProductColors.map((color) => (
-																<Option key={color} value={color}>
-																	{allColors.find((clr) => clr.hexa === color)
-																		?.color || color}
-																</Option>
-															))}
-														</Select>
-													</div>
-													<div>
-														<span>Size: </span>
-														<Select
-															value={product.size}
-															onChange={(value) =>
-																handleSizeChange(product._id, value)
-															}
-														>
-															{uniqueProductSizes.map((size) => (
-																<Option key={size} value={size}>
-																	{size}
-																</Option>
-															))}
-														</Select>
-													</div>
-												</>
-											)}
-										<StyledGeoDataList>
-											{product.geodata && product.geodata.length && (
-												<li>Length: {product.geodata.length} in</li>
-											)}
-											{product.geodata && product.geodata.width && (
-												<li>Width: {product.geodata.width} in</li>
-											)}
-											{product.geodata && product.geodata.height && (
-												<li>Height: {product.geodata.height} in</li>
-											)}
-											{product.geodata && product.geodata.weight && (
-												<li>Weight: {product.geodata.weight} lbs</li>
-											)}
-										</StyledGeoDataList>
-										<RemoveButton
-											onClick={() => removeProductFromOrder(product._id)}
-										>
-											<FaTrashAlt />
-										</RemoveButton>
-									</OrderItem>
-								);
-							})}
+											<h3>{product.productName}</h3>
+											<p>Price: ${price}</p>
+											<div>
+												<span>Quantity: </span>
+												<InputNumber
+													min={1}
+													value={product.quantity}
+													onChange={(value) =>
+														handleQuantityChange(
+															product._id,
+															value,
+															product.chosenAttributes
+														)
+													}
+												/>
+											</div>
+											{product.overallProductAttributes &&
+												product.overallProductAttributes.length > 0 && (
+													<>
+														<div>
+															<span>Color: </span>
+															<Select
+																value={chosenAttributes.color}
+																onChange={(value) =>
+																	handleColorChange(product._id, value, index)
+																}
+															>
+																{uniqueProductColors.map((color) => (
+																	<Option key={color} value={color}>
+																		{allColors.find((clr) => clr.hexa === color)
+																			?.color || color}
+																	</Option>
+																))}
+															</Select>
+														</div>
+														<div>
+															<span>Size: </span>
+															<Select
+																value={chosenAttributes.size}
+																onChange={(value) =>
+																	handleSizeChange(product._id, value, index)
+																}
+															>
+																{uniqueProductSizes.map((size) => (
+																	<Option key={size} value={size}>
+																		{size}
+																	</Option>
+																))}
+															</Select>
+														</div>
+													</>
+												)}
+											<StyledGeoDataList>
+												{product.geodata && product.geodata.length && (
+													<li>Length: {product.geodata.length} in</li>
+												)}
+												{product.geodata && product.geodata.width && (
+													<li>Width: {product.geodata.width} in</li>
+												)}
+												{product.geodata && product.geodata.height && (
+													<li>Height: {product.geodata.height} in</li>
+												)}
+												{product.geodata && product.geodata.weight && (
+													<li>Weight: {product.geodata.weight} lbs</li>
+												)}
+											</StyledGeoDataList>
+											<RemoveButton
+												onClick={() =>
+													removeProductFromOrder(
+														product._id,
+														chosenAttributes.color,
+														chosenAttributes.size
+													)
+												}
+											>
+												<FaTrashAlt />
+											</RemoveButton>
+										</OrderItem>
+									);
+								})}
 							<Divider />
 							<CustomerDetailsWrapper>
 								<h5 style={{ fontSize: "1rem", fontWeight: "bold" }}>
@@ -1010,16 +1180,6 @@ const ProductCard = styled.div`
 	p {
 		margin: 0;
 	}
-`;
-
-const ColorDisplay = styled.div`
-	background-color: ${(props) => props.color || "transparent"};
-	color: ${(props) => (props.color ? "#fff" : "initial")};
-	padding: 5px;
-	border-radius: 3px;
-	margin-top: 5px;
-	font-size: 0.8rem;
-	text-transform: capitalize;
 `;
 
 const OutOfStockBadge = styled.div`
