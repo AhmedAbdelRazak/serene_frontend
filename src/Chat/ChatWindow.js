@@ -167,7 +167,7 @@ const ChatWindow = ({ closeChatWindow }) => {
 		}
 
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!emailRegex.test(customerEmail)) {
+		if (customerEmail && !emailRegex.test(customerEmail)) {
 			message.error("Please enter a valid email address.");
 			return;
 		}
@@ -276,6 +276,11 @@ const ChatWindow = ({ closeChatWindow }) => {
 		<ChatWindowWrapper isMinimized={isMinimized}>
 			<ChatWindowHeader>
 				<h3>Customer Support</h3>
+				<Button
+					type='text'
+					icon={<CloseOutlined />}
+					onClick={closeChatWindow}
+				/>
 			</ChatWindowHeader>
 			{isRatingVisible ? (
 				<RatingSection>
@@ -366,7 +371,7 @@ const ChatWindow = ({ closeChatWindow }) => {
 							disabled={isAuthenticated()}
 						/>
 					</Form.Item>
-					<Form.Item label='Email' required>
+					<Form.Item label='Email'>
 						<Input
 							value={customerEmail}
 							onChange={(e) => setCustomerEmail(e.target.value)}

@@ -13,6 +13,10 @@ const ChatIconWrapper = styled.div`
 	bottom: 20px;
 	right: 20px;
 	z-index: 1000;
+
+	@media (max-width: 750px) {
+		bottom: 70px;
+	}
 `;
 
 const StyledButton = styled(Button)`
