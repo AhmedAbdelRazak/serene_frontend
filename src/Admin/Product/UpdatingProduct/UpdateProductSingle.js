@@ -661,13 +661,7 @@ const UpdateProductSingle = ({ productId }) => {
 		setClickedLink("MainData");
 		window.scrollTo({ top: 0, behavior: "smooth" });
 
-		if (
-			!productName ||
-			!productName_Arabic ||
-			!productSKU ||
-			!description ||
-			!description_Arabic
-		) {
+		if (!productName || !productSKU || !description) {
 			setClickedLink("MainData");
 			return toast.error("Please Add Product Main Data");
 		}
@@ -680,7 +674,7 @@ const UpdateProductSingle = ({ productId }) => {
 		if (!addVariables) {
 			if (!price || !priceAfterDiscount || !stock) {
 				setClickedLink("AddPrices");
-				return toast.error("Please Add Product Categories & Subcategories");
+				return toast.error("Please add Price & Price After Discount");
 			}
 		}
 

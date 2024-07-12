@@ -1949,3 +1949,18 @@ export const createOrderPOS = (
 		})
 		.catch((err) => console.log(err));
 };
+
+export const gettingPrintifyProducts = () => {
+	return fetch(`${process.env.REACT_APP_API_URL}/add-printify-products`, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+			// Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};

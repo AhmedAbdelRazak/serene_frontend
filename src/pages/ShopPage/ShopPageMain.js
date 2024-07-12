@@ -568,7 +568,8 @@ const ShopPageMain = () => {
 														)
 													}
 												/>
-												{colorName ? (
+												{colorName &&
+												product.category.categoryName !== "candles" ? (
 													<p style={{ textTransform: "capitalize" }}>
 														Color: {colorName}
 													</p>
@@ -577,12 +578,23 @@ const ShopPageMain = () => {
 														Color: {product.color}
 													</p>
 												) : null}
+
+												{product.category.categoryName === "candles" &&
+													product.scent && (
+														<p style={{ textTransform: "capitalize" }}>
+															Scent: {product.scent}
+														</p>
+													)}
 											</ProductCard>
 										</Col>
 									);
 								})}
 						</Row>
-						<PaginationWrapper>
+						<PaginationWrapper
+							onClick={() => {
+								window.scrollTo({ top: 0, behavior: "smooth" });
+							}}
+						>
 							<Pagination
 								current={page}
 								pageSize={records}

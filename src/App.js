@@ -118,7 +118,6 @@ const App = () => {
 					exact
 					component={() => <Home chosenLanguage={language} />}
 				/>
-
 				<Route
 					path='/about'
 					exact

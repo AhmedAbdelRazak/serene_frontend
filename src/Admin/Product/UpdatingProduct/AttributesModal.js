@@ -72,6 +72,9 @@ const AttributesModal = ({ product, modalVisible, setModalVisible }) => {
 										<td>
 											{allColors &&
 												allColors[0] &&
+												allColors[
+													allColors.map((i) => i.hexa).indexOf(s.color)
+												] &&
 												allColors[allColors.map((i) => i.hexa).indexOf(s.color)]
 													.color}
 										</td>

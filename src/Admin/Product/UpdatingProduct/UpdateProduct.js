@@ -8,14 +8,19 @@ import CountUp from "react-countup";
 import AttributesModal from "./AttributesModal";
 import { isAuthenticated } from "../../../auth";
 import UpdateProductSingle from "./UpdateProductSingle";
+import { Button, Modal, Spin } from "antd";
+import { gettingPrintifyProducts } from "../../apiAdmin";
 
 const UpdateProduct = () => {
 	const [allProducts, setAllProducts] = useState([]);
 	const [modalVisible, setModalVisible] = useState(false);
+	const [printifyModalVisible, setPrintifyModalVisible] = useState(false);
 	const [clickedProduct, setClickedProduct] = useState({});
 	const [selectedProductToUpdate, setSelectedProductToUpdate] =
 		useState(undefined);
 	const [q, setQ] = useState("");
+	const [loading, setLoading] = useState(false);
+	const [printifyResponse, setPrintifyResponse] = useState(null);
 
 	const gettingAllProducts = () => {
 		getProducts().then((data) => {
@@ -31,6 +36,59 @@ const UpdateProduct = () => {
 		gettingAllProducts();
 		// eslint-disable-next-line
 	}, []);
+
+	const fetchPrintifyProducts = async () => {
+		setLoading(true);
+		setPrintifyResponse(null);
+		setPrintifyModalVisible(true);
+
+		try {
+			const response = await gettingPrintifyProducts();
+			setPrintifyResponse(response);
+		} catch (error) {
+			console.log(error);
+			setPrintifyResponse({ error: "Failed to fetch Printify products" });
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const renderPrintifyResponse = () => {
+		if (!printifyResponse) return null;
+
+		const { addedProducts, failedProducts, message } = printifyResponse;
+
+		return (
+			<div>
+				<p>{message}</p>
+				{addedProducts && addedProducts.length > 0 && (
+					<div>
+						<h3>Added Products</h3>
+						<ul>
+							{addedProducts.map((product, index) => (
+								<li key={index}>{product}</li>
+							))}
+						</ul>
+					</div>
+				)}
+				{failedProducts && failedProducts.length > 0 && (
+					<div>
+						<h3>Failed Products</h3>
+						<ul>
+							{failedProducts.map((product, index) => (
+								<li
+									key={index}
+									style={{ color: "darkred", fontWeight: "bold" }}
+								>
+									{product.title}: {product.reason}
+								</li>
+							))}
+						</ul>
+					</div>
+				)}
+			</div>
+		);
+	};
 
 	function search(orders) {
 		return orders.filter((row) => {
@@ -60,6 +118,7 @@ const UpdateProduct = () => {
 				createdAt: i.createdAt,
 				addVariables: i.addVariables,
 				productAttributes: i.productAttributes,
+				isPrintifyProduct: i.isPrintifyProduct,
 			};
 		});
 
@@ -165,7 +224,7 @@ const UpdateProduct = () => {
 										{s.productQty}
 									</td>
 									<td>{new Date(s.createdAt).toLocaleDateString()}</td>
-									<td>{s.addedBy.name}</td>
+									<td>{s.isPrintifyProduct ? "Printify" : s.addedBy.name}</td>
 									<td style={{ width: "15%", textAlign: "center" }}>
 										<img
 											width='30%'
@@ -443,8 +502,29 @@ const UpdateProduct = () => {
 							</div>
 						</div>
 					) : (
-						<div>{dataTable()}</div>
+						<div>
+							<div className='mt-5 text-center'>
+								<Button
+									style={{ fontWeight: "bold", fontSize: "1rem" }}
+									type='primary'
+									onClick={fetchPrintifyProducts}
+								>
+									Update Website With Printify Products
+								</Button>
+							</div>
+
+							{dataTable()}
+						</div>
 					)}
+
+					<Modal
+						title='Printify Product Sync'
+						open={printifyModalVisible}
+						onCancel={() => setPrintifyModalVisible(false)}
+						footer={null}
+					>
+						{loading ? <Spin /> : renderPrintifyResponse()}
+					</Modal>
 				</div>
 			</div>
 		</UpdateProductWrapper>
