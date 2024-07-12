@@ -7,7 +7,8 @@ import { getAbouts } from "../../apiCore";
 
 const About = () => {
 	const [aboutus, setAboutUs] = useState({});
-	const [description, setDescription] = useState("");
+	const [cleanedDescription, setCleanedDescription] = useState("");
+	const [plainDescription, setPlainDescription] = useState("");
 	const location = useLocation();
 
 	const gettingAllAbouts = () => {
@@ -31,77 +32,88 @@ const About = () => {
 
 	useEffect(() => {
 		if (aboutus.description_1) {
-			// Extract and clean the first paragraph
-			const cleanedDescription = aboutus.description_1
-				.split("</p>")[0] // Get the first paragraph
-				.replace(/<[^>]+>/g, ""); // Remove HTML tags
-
-			setDescription(cleanedDescription);
+			const cleanedDescription = aboutus.description_1.replace(/<br>/g, "");
+			setCleanedDescription(cleanedDescription);
+			const plainTextDescription = cleanedDescription.replace(/<[^>]+>/g, "");
+			setPlainDescription(plainTextDescription);
 		}
 	}, [aboutus]);
 
 	return (
 		<AboutPageWrapper>
-			<Helmet>
-				<meta charSet='utf-8' />
-				<title>Serene Jannat | About Us - Learn About Our Gift Shop</title>
-				<meta
-					name='description'
-					content={`Discover the story behind Serene Jannat Gift Shop. Learn about our commitment to providing the best gifts, candles, and glass items to show love to your loved ones. Our customer-first approach ensures the highest level of satisfaction. ${description}`}
-				/>
-				<meta
-					name='keywords'
-					content='Serene Jannat, about us, gift shop, candles, glass items, customer-first, best gifts, gift store, our story, commitment, satisfaction'
-				/>
-				<meta
-					property='og:title'
-					content='Serene Jannat | About Us - Learn About Our Gift Shop'
-				/>
-				<meta
-					property='og:description'
-					content={`Discover the story behind Serene Jannat Gift Shop. Learn about our commitment to providing the best gifts, candles, and glass items to show love to your loved ones. Our customer-first approach ensures the highest level of satisfaction. ${description}`}
-				/>
-				<meta property='og:image' content='%PUBLIC_URL%/logo192.png' />
-				<meta property='og:url' content='https://serenejannat.com/about' />
-				<meta property='og:type' content='website' />
-				<meta property='og:locale' content='en_US' />
-				<link rel='icon' href='gq_frontend/src/GeneralImgs/favicon.ico' />
-				<link rel='canonical' href='https://serenejannat.com/about' />
-			</Helmet>
-			<div className='my-5'>
-				<ImageWrapper>
-					{aboutus &&
-					aboutus.thumbnail &&
-					aboutus.thumbnail[0] &&
-					aboutus.thumbnail[0].url ? (
-						<img
-							src={aboutus.thumbnail[0].url}
-							decoding='async'
-							alt='Powered By infinite-apps.com'
-							style={{ marginTop: "0px", objectFit: "cover", padding: "0px" }}
+			{aboutus && aboutus.header_1 ? (
+				<>
+					<Helmet>
+						<meta charSet='utf-8' />
+						<title>Serene Jannat | About Us - {aboutus.header_1}</title>
+						<meta
+							name='description'
+							content={`Discover the story behind Serene Jannat Gift Shop. Learn about our commitment to providing the best gifts, candles, and glass items to show love to your loved ones. Our customer-first approach ensures the highest level of satisfaction. ${plainDescription}`}
 						/>
-					) : (
-						<img
-							decoding='async'
-							alt='Powered By infinite-apps.com'
-							style={{ marginTop: "0px", objectFit: "cover", padding: "0px" }}
-							src='https://reydemos.b-cdn.net/london/wp-content/uploads/sites/8/2019/04/our-story-01.jpg'
+						<meta
+							name='keywords'
+							content='Serene Jannat, about us, gift shop, candles, glass items, customer-first, best gifts, gift store, our story, commitment, satisfaction'
 						/>
-					)}
-				</ImageWrapper>
-				<TitleWrapper>
-					<h1 className='title text-center mt-5'>ABOUT US</h1>
-				</TitleWrapper>
+						<meta
+							property='og:title'
+							content={`Serene Jannat | About Us - ${aboutus.header_1}`}
+						/>
+						<meta
+							property='og:description'
+							content={`Discover the story behind Serene Jannat Gift Shop. Learn about our commitment to providing the best gifts, candles, and glass items to show love to your loved ones. Our customer-first approach ensures the highest level of satisfaction. ${plainDescription}`}
+						/>
+						<meta property='og:image' content='%PUBLIC_URL%/logo192.png' />
+						<meta property='og:url' content='https://serenejannat.com/about' />
+						<meta property='og:type' content='website' />
+						<meta property='og:locale' content='en_US' />
+						<link rel='icon' href='gq_frontend/src/GeneralImgs/favicon.ico' />
+						<link rel='canonical' href='https://serenejannat.com/about' />
+					</Helmet>
+					<div className='my-4'>
+						<ImageWrapper>
+							{aboutus &&
+							aboutus.thumbnail &&
+							aboutus.thumbnail[0] &&
+							aboutus.thumbnail[0].url ? (
+								<img
+									src={aboutus.thumbnail[0].url}
+									decoding='async'
+									alt='Powered By infinite-apps.com'
+									style={{
+										marginTop: "0px",
+										objectFit: "cover",
+										padding: "0px",
+									}}
+								/>
+							) : (
+								<img
+									decoding='async'
+									alt='Powered By infinite-apps.com'
+									style={{
+										marginTop: "0px",
+										objectFit: "cover",
+										padding: "0px",
+									}}
+									src='https://reydemos.b-cdn.net/london/wp-content/uploads/sites/8/2019/04/our-story-01.jpg'
+								/>
+							)}
+						</ImageWrapper>
 
-				<DescriptionWrapper>
-					<div className='about-us'>
-						<p className='about-title'>{aboutus.header_1}</p>
-						<CollapseContainer>
-							<div dangerouslySetInnerHTML={{ __html: description }} />
-						</CollapseContainer>
+						<DescriptionWrapper>
+							<div className='about-us'>
+								<p className='about-title' style={{ textAlign: "center" }}>
+									{aboutus.header_1}
+								</p>
+								<CollapseContainer>
+									<div
+										dangerouslySetInnerHTML={{ __html: cleanedDescription }}
+									/>
+								</CollapseContainer>
+							</div>
+						</DescriptionWrapper>
 					</div>
-				</DescriptionWrapper>
-			</div>
+				</>
+			) : null}
 		</AboutPageWrapper>
 	);
 };
@@ -111,7 +123,6 @@ export default About;
 const AboutPageWrapper = styled.section`
 	background: var(--neutral-light);
 	padding-bottom: 200px;
-	padding-top: 50px;
 	overflow: hidden;
 
 	.title {
@@ -123,7 +134,6 @@ const AboutPageWrapper = styled.section`
 	.about-title {
 		font-size: 40px;
 		font-weight: 600;
-		margin-top: 15px;
 		color: var(--accent-color-2);
 		margin-left: 55px;
 
@@ -170,10 +180,6 @@ const ImageWrapper = styled.div`
 	}
 `;
 
-const TitleWrapper = styled.div`
-	margin-bottom: 15px;
-`;
-
 const DescriptionWrapper = styled.div`
 	display: flex;
 	justify-content: center;
@@ -182,7 +188,7 @@ const DescriptionWrapper = styled.div`
 
 const CollapseContainer = styled.div`
 	width: 100%;
-	max-width: 800px;
+	max-width: 900px;
 	margin: 15px auto;
 
 	.ant-collapse-header {
@@ -200,5 +206,11 @@ const CollapseContainer = styled.div`
 
 	.ant-collapse-arrow {
 		color: var (--primary-color);
+	}
+
+	/* Add styles to reduce the spacing between paragraphs */
+	p {
+		margin: 0; /* Remove default margin */
+		padding: 0.5em 0; /* Add some padding for space between paragraphs */
 	}
 `;

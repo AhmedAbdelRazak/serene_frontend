@@ -41,7 +41,7 @@ const Home = () => {
 					}
 				});
 
-				gettingSpecificProducts(0, 1, 0, 0, 10).then((data3) => {
+				gettingSpecificProducts(0, 1, 0, 0, 20).then((data3) => {
 					if (data3 && data3.error) {
 						console.log(data3.error);
 					} else {
