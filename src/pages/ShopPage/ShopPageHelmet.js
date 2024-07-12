@@ -25,9 +25,11 @@ const generateProductSchema = (products) => {
 		const price = hasVariables
 			? product.productAttributes[0].priceAfterDiscount
 			: product.priceAfterDiscount;
+
 		const quantity = hasVariables
 			? product.productAttributes.reduce((acc, attr) => acc + attr.quantity, 0)
 			: product.quantity;
+
 		const priceValidUntil = "2026-12-31";
 
 		const ratingValue =
@@ -37,6 +39,7 @@ const generateProductSchema = (products) => {
 						product.ratings.length
 					).toFixed(1)
 				: "5.0";
+
 		const reviewCount = product.ratings.length > 0 ? product.ratings.length : 1;
 
 		const reviews =
@@ -74,16 +77,24 @@ const generateProductSchema = (products) => {
 						},
 					];
 
+		const mpn = hasVariables
+			? product.productAttributes
+					.map((attr) => `${product.productSKU}-${attr.SubSKU}`)
+					.join(", ")
+			: product.productSKU;
+
 		return {
 			"@context": "http://schema.org",
 			"@type": "Product",
 			name: capitalizeWords(product.productName),
-			image: product.thumbnailImage[0].images[0]?.url || "",
+			image: product.thumbnailImage[0]?.images[0]?.url || "",
 			description: product.description.replace(/<[^>]+>/g, ""),
 			brand: {
 				"@type": "Brand",
-				name: product.category.categoryName,
+				name: "Serene Jannat",
 			},
+			gtin: mpn,
+			mpn,
 			offers: {
 				"@type": "Offer",
 				priceCurrency: "USD",

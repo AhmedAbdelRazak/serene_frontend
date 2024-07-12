@@ -3,7 +3,6 @@ import styled from "styled-components";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 import Z1HeroComponent from "./Z1HeroComponent";
-// import ZSearch from "./Z2Search";
 import {
 	gettingCategoriesAndSubcategories,
 	gettingSpecificProducts,
@@ -150,16 +149,24 @@ const Home = () => {
 							},
 						];
 
+			const mpn = hasVariables
+				? product.productAttributes
+						.map((attr) => `${product.productSKU}-${attr.SubSKU}`)
+						.join(", ")
+				: product.productSKU;
+
 			return {
 				"@context": "http://schema.org",
 				"@type": "Product",
 				name: capitalizeWords(product.productName),
-				image: product.thumbnailImage[0].images[0]?.url || "",
+				image: product.thumbnailImage[0]?.images[0]?.url || "",
 				description: product.description.replace(/<[^>]+>/g, ""),
 				brand: {
 					"@type": "Brand",
-					name: product.category.categoryName,
+					name: "Serene Jannat",
 				},
+				gtin: mpn,
+				mpn,
 				offers: {
 					"@type": "Offer",
 					priceCurrency: "USD",
@@ -243,7 +250,7 @@ const Home = () => {
 				<meta property='og:description' content={description} />
 				<meta
 					property='og:image'
-					content={featuredProducts[0]?.thumbnailImage[0].images[0]?.url || ""}
+					content={featuredProducts[0]?.thumbnailImage[0]?.images[0]?.url || ""}
 				/>
 				<meta property='og:url' content='https://serenejannat.com' />
 				<meta property='og:type' content='website' />
