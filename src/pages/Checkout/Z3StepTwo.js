@@ -95,9 +95,9 @@ const Z3StepTwo = ({
 							Comments
 						</label>
 						<div className='commentNote'>
-							You can add special instructions here, such as requesting a
-							handwritten message for a birthday card, ship to address comment,
-							etc...
+							Add special instructions here such as requesting a handwritten
+							card for a special occasion or any other details we would need to
+							know to best fulfill your order
 							<br />
 							<span className='noteMessage'>
 								Please note: We currently do not offer cards for candle and

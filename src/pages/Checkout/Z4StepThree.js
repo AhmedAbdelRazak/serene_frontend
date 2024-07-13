@@ -224,6 +224,8 @@ const Z4StepThree = ({
 					ordered_quantity: item.amount,
 					price: item.priceAfterDiscount,
 					image: item.image,
+					isPrintifyProduct: item.isPrintifyProduct,
+					printifyProductDetails: item.printifyProductDetails,
 				})),
 			chosenProductQtyWithVariables: cart
 				.filter((item) => item.chosenProductAttributes)
@@ -237,6 +239,8 @@ const Z4StepThree = ({
 						price: item.priceAfterDiscount,
 						image: imageUrl,
 						chosenAttributes: item.chosenProductAttributes,
+						isPrintifyProduct: item.isPrintifyProduct,
+						printifyProductDetails: item.printifyProductDetails,
 					};
 				}),
 			customerDetails: {

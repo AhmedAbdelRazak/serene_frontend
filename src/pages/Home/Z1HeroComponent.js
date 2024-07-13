@@ -219,14 +219,14 @@ const BannerContent = styled.div`
 `;
 
 const BannerText = styled.h1`
-	font-family: "Great Vibes", cursive; /* Update the font family */
-	font-size: 3.9rem;
+	font-family: "Allison", cursive; /* Update the font family */
+	font-size: 5rem;
 	font-weight: bolder;
 	max-width: 80%;
 	white-space: nowrap;
 
 	@media (max-width: 1000px) {
-		font-size: 2.5rem;
+		font-size: 3rem;
 		max-width: 100%;
 		white-space: normal;
 	}

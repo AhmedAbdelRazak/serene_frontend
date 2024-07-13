@@ -94,6 +94,8 @@ const cart_reducer = (state, action) => {
 					relatedProducts: product.relatedProducts,
 					allProductDetailsIncluded: product,
 					chosenProductAttributes: chosenProductAttributes,
+					isPrintifyProduct: product.isPrintifyProduct,
+					printifyProductDetails: product.printifyProductDetails,
 				};
 				return { ...state, cart: [...state.cart, newItem] };
 			}
@@ -132,6 +134,8 @@ const cart_reducer = (state, action) => {
 					categoryNameArabic: product.category.categoryName_Arabic,
 					relatedProducts: product.relatedProducts,
 					allProductDetailsIncluded: product,
+					isPrintifyProduct: product.isPrintifyProduct,
+					printifyProductDetails: product.printifyProductDetails,
 				};
 				return { ...state, cart: [...state.cart, newItem] };
 			}
