@@ -65,17 +65,17 @@ const Z1HeroComponent = () => {
 							<BannerText>
 								{homePage && homePage.header1 ? homePage.header1 : ""}
 							</BannerText>
-							<BannerButton
-								to='/our-products'
+							<BannerButton2
+								to='/our-products?offers=jannatoffers'
 								onClick={() => {
 									ReactGA.event({
-										category: "Shop Now Clicked From Hero Component",
-										action: "Shop Now Clicked From Hero Component",
+										category: "Check Our Offers",
+										action: "Check Our Offers",
 									});
 								}}
 							>
-								Shop Now!
-							</BannerButton>
+								CHECK OUR OFFERS!
+							</BannerButton2>
 						</BannerContent>
 					</Banner>
 				)}
@@ -96,7 +96,7 @@ const Z1HeroComponent = () => {
 							<BannerText>
 								{homePage && homePage.header2 ? homePage.header2 : ""}
 							</BannerText>
-							<BannerButton to='/our-products'>Shop Now!</BannerButton>
+							<BannerButton to='/our-products'>SHOP NOW!</BannerButton>
 						</BannerContent>
 					</Banner>
 				)}
@@ -117,7 +117,7 @@ const Z1HeroComponent = () => {
 							<BannerText>
 								{homePage && homePage.header3 ? homePage.header3 : ""}
 							</BannerText>
-							<BannerButton to='/our-products'>Shop Now!</BannerButton>
+							<BannerButton to='/our-products'>SHOP NOW!</BannerButton>
 						</BannerContent>
 					</Banner>
 				)}
@@ -219,22 +219,46 @@ const BannerContent = styled.div`
 `;
 
 const BannerText = styled.h1`
-	font-size: 3.5rem;
+	font-family: "Great Vibes", cursive; /* Update the font family */
+	font-size: 3.9rem;
 	font-weight: bolder;
-	font-family: "Pacifico", cursive;
-	max-width: 80%; /* Ensure the text doesn't wrap unnecessarily */
-	white-space: nowrap; /* Prevent text from wrapping */
+	max-width: 80%;
+	white-space: nowrap;
 
 	@media (max-width: 1000px) {
-		font-size: 1.8rem;
-		max-width: 100%; /* Ensure the text doesn't wrap unnecessarily */
-		white-space: normal; /* Allow wrapping if text can't fit within 80% */
+		font-size: 2.5rem;
+		max-width: 100%;
+		white-space: normal;
 	}
 `;
 
 const BannerButton = styled(Link)`
 	display: inline-block;
 	background-color: var(--primary-color-darker);
+	color: var(--button-font-color);
+	padding: 10px 20px;
+	margin-top: 10px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 1rem;
+	font-weight: bold;
+	text-align: center;
+	text-decoration: none;
+	transition: var(--main-transition);
+
+	&:hover {
+		background-color: var(--primary-color-dark);
+		padding: 12px 22px;
+		text-decoration: none;
+		transition: var(--main-transition);
+		color: var(--text-color-light);
+	}
+`;
+
+const BannerButton2 = styled(Link)`
+	display: inline-block;
+	background-color: var(--background-dark);
 	color: var(--button-font-color);
 	padding: 10px 20px;
 	margin-top: 10px;

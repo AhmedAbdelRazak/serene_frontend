@@ -28,6 +28,8 @@ const { Option } = Select;
 const { Search } = Input;
 
 const ShopPageMain = () => {
+	const history = useHistory();
+	const location = useLocation();
 	const [products, setProducts] = useState([]);
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [colors, setColors] = useState([]);
@@ -43,14 +45,13 @@ const ShopPageMain = () => {
 		size: "",
 		gender: "",
 		searchTerm: "",
+		offers: new URLSearchParams(location.search).get("offers"), // Add offers filter
 	});
 	const [page, setPage] = useState(1);
 	const [allColors, setAllColors] = useState([]);
 	const [drawerVisible, setDrawerVisible] = useState(false);
 	const records = 60;
 
-	const history = useHistory();
-	const location = useLocation();
 	const { openSidebar2, addToCart } = useCartContext();
 
 	useEffect(() => {
@@ -164,6 +165,7 @@ const ShopPageMain = () => {
 			size: "",
 			gender: "",
 			searchTerm: "",
+			offers: "", // Reset offers filter
 		});
 		setPage(1);
 	};
@@ -500,7 +502,7 @@ const ShopPageMain = () => {
 													<ImageContainer>
 														{discountPercentage > 0 && (
 															<DiscountBadge>
-																{discountPercentage.toFixed(2)}% OFF!
+																{discountPercentage.toFixed(0)}% OFF!
 															</DiscountBadge>
 														)}
 														{totalQuantity > 0 ? (

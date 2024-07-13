@@ -60,14 +60,14 @@ const Footer = () => {
 				</SocialIcons>
 
 				<ContactInfo>
-					sally@serenejannat.com <br />
+					support@serenejannat.com <br />
 					(951) 565-7568
 				</ContactInfo>
 
-				<Image
+				{/* <Image
 					loading='lazy'
 					src='https://cdn.builder.io/api/v1/image/assets/TEMP/86ecccb2d8ca05a9530882de2f3aca37eb788e4c92d3bfb3274eac36bbc892d7?apiKey=cdf657c2c4874b31988402beb4ed56ad&'
-				/>
+				/> */}
 
 				<Terms
 					onClick={() => handleNavigation("/privacy-policy-terms-conditions")}
@@ -145,6 +145,7 @@ const ContactInfo = styled.div`
 	margin-bottom: 30px;
 `;
 
+// eslint-disable-next-line
 const Image = styled.img`
 	width: 132px;
 	margin-bottom: 20px;

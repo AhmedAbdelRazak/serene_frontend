@@ -129,7 +129,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 											<ImageContainer>
 												{discountPercentage > 0 && (
 													<DiscountBadge>
-														{discountPercentage.toFixed(2)}% OFF!
+														{discountPercentage.toFixed(0)}% OFF!
 													</DiscountBadge>
 												)}
 												{totalQuantity > 0 ? (

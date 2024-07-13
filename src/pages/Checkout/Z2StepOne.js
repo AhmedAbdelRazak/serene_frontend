@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { isAuthenticated } from "../../auth";
 
@@ -9,6 +9,14 @@ const Z2StepOne = ({
 	handleNextStep,
 	passwordError,
 }) => {
+	const [errors, setErrors] = useState({
+		name: false,
+		email: false,
+		phone: false,
+		password: false,
+		confirmPassword: false,
+	});
+
 	return (
 		<>
 			{step === 1 && (
@@ -20,6 +28,7 @@ const Z2StepOne = ({
 						placeholder='Name'
 						value={customerDetails.name}
 						onChange={handleCustomerDetailChange}
+						className={errors.name ? "error" : ""}
 					/>
 					<Input
 						type='email'
@@ -27,6 +36,7 @@ const Z2StepOne = ({
 						placeholder='Email'
 						value={customerDetails.email}
 						onChange={handleCustomerDetailChange}
+						className={errors.email ? "error" : ""}
 					/>
 					<Input
 						type='tel'
@@ -34,13 +44,14 @@ const Z2StepOne = ({
 						placeholder='Phone'
 						value={customerDetails.phone}
 						onChange={handleCustomerDetailChange}
+						className={errors.phone ? "error" : ""}
 					/>
 					{isAuthenticated() &&
 					isAuthenticated().user &&
 					isAuthenticated().user.name ? null : (
 						<PasswordWrapper>
 							<Input
-								className='w-50'
+								className={`w-50 ${errors.password ? "error" : ""}`}
 								type='password'
 								name='password'
 								placeholder='Password'
@@ -48,7 +59,7 @@ const Z2StepOne = ({
 								onChange={handleCustomerDetailChange}
 							/>
 							<Input
-								className='w-50'
+								className={`w-50 ${errors.confirmPassword ? "error" : ""}`}
 								type='password'
 								name='confirmPassword'
 								placeholder='Confirm Password'
@@ -60,7 +71,9 @@ const Z2StepOne = ({
 
 					{passwordError && <Error>{passwordError}</Error>}
 					<ButtonWrapper>
-						<ContinueButton onClick={handleNextStep}>Continue</ContinueButton>
+						<ContinueButton onClick={() => handleNextStep(errors, setErrors)}>
+							Continue
+						</ContinueButton>
 					</ButtonWrapper>
 				</Step>
 			)}
@@ -109,6 +122,10 @@ const Input = styled.input`
 	border: 1px solid #ccc;
 	border-radius: 5px;
 	font-size: 1rem;
+
+	&.error {
+		border-color: #ff6b6b; // Light reddish color for error
+	}
 `;
 
 const ButtonWrapper = styled.div`

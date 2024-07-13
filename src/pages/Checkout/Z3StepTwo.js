@@ -22,7 +22,8 @@ const Z3StepTwo = ({
 	shipmentChosen,
 	zipcode,
 	handleZipCodeChange,
-	setCity,
+	customerDetails,
+	handleCustomerDetailChange,
 }) => {
 	return (
 		<>
@@ -30,7 +31,17 @@ const Z3StepTwo = ({
 				<Step>
 					<StepTitle>Shipping Options</StepTitle>
 					<ShippingOption>
-						<label className='mb-0 mt-3'>Choose State</label>
+						<label className='mb-0 mt-3'>Ship To Name</label>
+						<Input
+							type='text'
+							name='shipToName'
+							placeholder='Enter recipient name'
+							value={customerDetails.shipToName}
+							onChange={handleCustomerDetailChange}
+						/>
+					</ShippingOption>
+					<ShippingOption>
+						<label className='mb-0 mt-3'>Ship To State</label>
 						<Select
 							placeholder='Select a state'
 							value={state}
@@ -45,49 +56,54 @@ const Z3StepTwo = ({
 						</Select>
 					</ShippingOption>
 					<ShippingOptionRow>
-						<div className='row'>
-							<div className='col-md-6'>
-								<ShippingOption>
-									<label className='mb-0 mt-3'>Ship To Address</label>
-									<Input
-										type='text'
-										name='address'
-										placeholder='Enter shipping address'
-										value={address}
-										onChange={handleAddressChange}
-									/>
-								</ShippingOption>
-							</div>
-							<div className='col-md-4'>
-								<ShippingOption>
-									<label className='mb-0 mt-3'>City</label>
-									<Input
-										type='text'
-										name='city'
-										placeholder='Enter city'
-										value={city}
-										onChange={handleCityChange}
-									/>
-								</ShippingOption>
-							</div>
-							<div className='col-md-2'>
-								<ShippingOption>
-									<label className='mb-0 mt-3'>Zip Code</label>
-									<Input
-										type='text'
-										className='w-100'
-										name='zipcode'
-										placeholder='Enter zip code'
-										value={zipcode}
-										onChange={handleZipCodeChange}
-										width='15%' // Ensure zip code takes 15%
-									/>
-								</ShippingOption>
-							</div>
-						</div>
+						<ShippingOptionWrapper>
+							<label className='mb-0 mt-3'>Ship To Address</label>
+							<Input
+								type='text'
+								name='address'
+								placeholder='Enter shipping address'
+								value={address}
+								onChange={handleAddressChange}
+							/>
+						</ShippingOptionWrapper>
+						<ShippingOptionWrapper>
+							<label className='mb-0 mt-3'>Ship To City</label>
+							<Input
+								type='text'
+								name='city'
+								placeholder='Enter city'
+								value={city}
+								onChange={handleCityChange}
+							/>
+						</ShippingOptionWrapper>
+						<ShippingOptionWrapper>
+							<label className='mb-0 mt-3'>Zip Code</label>
+							<Input
+								type='text'
+								name='zipcode'
+								placeholder='Enter zip code'
+								value={zipcode}
+								onChange={handleZipCodeChange}
+							/>
+						</ShippingOptionWrapper>
 					</ShippingOptionRow>
 					<ShippingOption>
-						<label className='mb-0 mt-3'>Comments</label>
+						<label
+							className='mb-0 mt-3'
+							style={{ fontWeight: "bold", fontSize: "1.1rem" }}
+						>
+							Comments
+						</label>
+						<div className='commentNote'>
+							You can add special instructions here, such as requesting a
+							handwritten message for a birthday card, ship to address comment,
+							etc...
+							<br />
+							<span className='noteMessage'>
+								Please note: We currently do not offer cards for candle and
+								t-shirt shipments.
+							</span>
+						</div>
 						<TextArea
 							rows={4}
 							placeholder='Enter any additional comments'
@@ -96,7 +112,12 @@ const Z3StepTwo = ({
 						/>
 					</ShippingOption>
 					<>
-						<label className='mt-3'>Choose a carrier</label>
+						<label
+							className='mt-3'
+							style={{ fontWeight: "bold", fontSize: "1.2rem" }}
+						>
+							Choose a carrier
+						</label>
 					</>
 					{allShippingOptions &&
 						allShippingOptions.map((option) => (
@@ -164,7 +185,7 @@ const Input = styled.input`
 	border: 1px solid #ccc;
 	border-radius: 5px;
 	font-size: 1rem;
-	width: ${(props) => props.width || "100%"};
+	width: 100%;
 `;
 
 const TextArea = styled.textarea`
@@ -182,12 +203,21 @@ const ShippingOption = styled.div`
 	align-items: flex-start;
 	margin-bottom: 10px;
 
-	.zipcodeInput {
-		width: 20% !important;
+	.noteMessage {
+		color: lightcoral;
+		text-transform: capitalize;
 	}
 
-	.zipcodeAddress {
-		width: 85% !important;
+	.commentNote {
+		font-size: 0.75rem;
+		width: 80%;
+		padding: 2px;
+		color: darkgrey;
+		font-weight: bolder;
+
+		@media (max-width: 750px) {
+			width: 95%;
+		}
 	}
 
 	input {
@@ -202,10 +232,22 @@ const ShippingOption = styled.div`
 const ShippingOptionRow = styled.div`
 	display: flex;
 	width: 100%;
-	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px; // Add gap between columns
 
-	& > div {
-		flex: 1;
+	@media (max-width: 768px) {
+		flex-direction: column;
+	}
+`;
+
+const ShippingOptionWrapper = styled.div`
+	flex: 1; // Evenly distribute space among children
+	min-width: 200px; // Minimum width to prevent collapsing
+	display: flex;
+	flex-direction: column;
+
+	@media (max-width: 768px) {
+		width: 100%;
 	}
 `;
 

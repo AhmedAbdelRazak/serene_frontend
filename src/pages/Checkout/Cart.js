@@ -23,6 +23,7 @@ const Cart = () => {
 		phone: "",
 		password: "",
 		confirmPassword: "",
+		shipToName: "", // Added on 2024-07-13
 	});
 	const [passwordError, setPasswordError] = useState("");
 	const [allShippingOptions, setAllShippingOptions] = useState([]);
@@ -60,23 +61,75 @@ const Cart = () => {
 	}, []);
 
 	const handleNextStep = () => {
-		if (
-			step === 1 &&
-			customerDetails.password !== customerDetails.confirmPassword
-		) {
-			setPasswordError("Passwords do not match");
-		} else {
-			setStep(step + 1);
-		}
-
+		// Step 1 validation
 		if (step === 1) {
+			const { name, email, phone, password, confirmPassword } = customerDetails;
+
+			if (
+				!name ||
+				!email ||
+				!phone ||
+				(!isAuthenticated() && (!password || !confirmPassword))
+			) {
+				toast.error("Please fill in all required fields.");
+				return;
+			}
+
+			if (name.split(" ").length < 2) {
+				toast.error("Please enter both first and last names.");
+				return;
+			}
+
+			if (!/\S+@\S+\.\S+/.test(email)) {
+				toast.error("Please enter a valid email address.");
+				return;
+			}
+
+			if (!/^\d{10}$/.test(phone)) {
+				toast.error("Please enter a valid 10-digit phone number.");
+				return;
+			}
+
+			if (!isAuthenticated() && password !== confirmPassword) {
+				setPasswordError("Passwords do not match");
+				return;
+			}
+
+			setPasswordError("");
+
 			ReactGA.event({
 				category: "Checkout Page Customer Added Info",
 				action: "Checkout Page Customer Added Info",
 			});
 		}
 
+		// Step 2 validation
 		if (step === 2) {
+			if (
+				!customerDetails.shipToName ||
+				!address ||
+				!city ||
+				!state ||
+				!/^\d{5}$/.test(zipcode) ||
+				!shipmentChosen ||
+				!shipmentChosen.carrierName
+			) {
+				if (!customerDetails.shipToName) {
+					toast.error("Please enter the recipient's name.");
+				} else if (!address) {
+					toast.error("Please provide a valid address.");
+				} else if (!city) {
+					toast.error("Please provide a valid city.");
+				} else if (!state) {
+					toast.error("Please select your state.");
+				} else if (!/^\d{5}$/.test(zipcode)) {
+					toast.error("Please enter a valid 5-digit zipcode.");
+				} else if (!shipmentChosen || !shipmentChosen.carrierName) {
+					toast.error("Please choose a shipping option.");
+				}
+				return;
+			}
+
 			ReactGA.event({
 				category: "Checkout Page Customer Added Shipping Details",
 				action: "Checkout Page Customer Added Shipping Details",
@@ -89,6 +142,8 @@ const Cart = () => {
 				action: "Checkout Page Customer Reviewing Order",
 			});
 		}
+
+		setStep(step + 1);
 	};
 
 	const handlePreviousStep = () => {
@@ -243,6 +298,13 @@ const Cart = () => {
 							shipmentChosen={shipmentChosen}
 							zipcode={zipcode}
 							handleZipCodeChange={(e) => setZipCode(e.target.value)}
+							customerDetails={customerDetails} // Pass customerDetails
+							handleCustomerDetailChange={(e) =>
+								setCustomerDetails({
+									...customerDetails,
+									[e.target.name]: e.target.value,
+								})
+							}
 						/>
 						<Z4StepThree
 							step={step}
@@ -250,7 +312,6 @@ const Cart = () => {
 							state={state}
 							address={address}
 							city={city}
-							// handleCheckout={handleCheckout}
 							handlePreviousStep={handlePreviousStep}
 							zipcode={zipcode}
 							shipmentChosen={shipmentChosen}
