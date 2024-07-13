@@ -279,6 +279,11 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 							<strong>Size:</strong> {product.size}
 						</ProductAttribute>
 					)}
+					{product.scent && (
+						<ProductAttribute>
+							<strong>Scent:</strong> {product.scent}
+						</ProductAttribute>
+					)}
 					<CollapseContainer>
 						<Collapse defaultActiveKey={["1"]}>
 							<Panel header='Product Description' key='1'>

@@ -6,9 +6,14 @@ const DisplayImages = ({ images }) => {
 	return (
 		<ImageCarousel>
 			<Carousel>
-				{images.map((img, index) => (
-					<img key={index} src={img} alt={`Product view ${index + 1}`} />
-				))}
+				{images.slice(0, 5).map(
+					(
+						img,
+						index // Ensure no more than 5 images are displayed
+					) => (
+						<img key={index} src={img} alt={`Product view ${index + 1}`} />
+					)
+				)}
 			</Carousel>
 		</ImageCarousel>
 	);

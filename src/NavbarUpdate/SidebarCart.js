@@ -66,8 +66,6 @@ const SidebarCart = ({ from }) => {
 			"Chosen Attribute Quantity:",
 			chosenAttribute ? chosenAttribute.quantity : "N/A"
 		);
-		console.log("Item Amount:", item.amount);
-		console.log("Product Quantity:", item.allProductDetailsIncluded.quantity);
 
 		// Determine availability based on attributes or directly on the product
 		if (hasAttributes) {

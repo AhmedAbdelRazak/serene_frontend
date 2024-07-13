@@ -53,10 +53,15 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 			setChosenAttributes(attributes);
 
 			const images = product.productAttributes
-				.filter((attr) => attr.color === color && attr.productImages.length > 0)
+				.filter(
+					(attr) =>
+						attr.color === color &&
+						attr.size === size &&
+						attr.productImages.length > 0
+				)
 				.flatMap((attr) => attr.productImages.map((img) => img.url));
 
-			setChosenImages(images);
+			setChosenImages(images.slice(0, 5)); // Limit to 5 images
 		},
 		[product.productAttributes]
 	);
