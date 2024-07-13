@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { FaTimes, FaTrashAlt } from "react-icons/fa";
 import { useCartContext } from "../cart_context";
-import { useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { getColors } from "../apiCore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Add this import
@@ -21,11 +21,6 @@ const SidebarCart = ({ from }) => {
 		total_amount,
 	} = useCartContext();
 	const [allColors, setAllColors] = useState([]);
-	const history = useHistory();
-
-	const handleCheckout = () => {
-		history.push("/cart");
-	};
 
 	useEffect(() => {
 		getColors().then((data) => {
@@ -257,11 +252,12 @@ const SidebarCart = ({ from }) => {
 					{cart.length > 0 && (
 						<ButtonsWrapper>
 							<CheckoutButton
+								to='/cart'
 								onClick={() => {
 									if (isStockAvailable) {
-										window.scrollTo({ top: 50, behavior: "smooth" });
+										window.scrollTo({ top: 0, behavior: "smooth" });
 										closeSidebar2();
-										handleCheckout();
+										// handleCheckout();
 										ReactGA.event({
 											category: "Continue To Checkout",
 											action: "User Clicked Continue To Checkout From Cart",
@@ -520,7 +516,7 @@ const ButtonsWrapper = styled.div`
 	margin-top: 10px;
 `;
 
-const CheckoutButton = styled.button`
+const CheckoutButton = styled(Link)`
 	margin-top: 10px;
 	padding: 10px 40px;
 	background: var(--primary-color-dark);

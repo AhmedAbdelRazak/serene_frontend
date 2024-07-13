@@ -55,6 +55,7 @@ const Home = () => {
 
 	useEffect(() => {
 		distinctCategoriesAndSubcategories();
+		window.scrollTo({ top: 0, behavior: "smooth" });
 		// eslint-disable-next-line
 	}, []);
 

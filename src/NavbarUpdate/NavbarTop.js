@@ -14,8 +14,8 @@ const NavbarTop = () => {
 	const [activeLink, setActiveLink] = useState("");
 	const [storeLogo, setStoreLogo] = useState("");
 	const { user } = isAuthenticated();
-	// eslint-disable-next-line
 	const { openSidebar2, total_items } = useCartContext();
+	const [isSticky, setIsSticky] = useState(false); // State for sticky navbar
 
 	const handleNavLinkClick = (link) => {
 		setActiveLink(link);
@@ -31,6 +31,21 @@ const NavbarTop = () => {
 		fetchData();
 	}, []);
 
+	useEffect(() => {
+		const handleScroll = () => {
+			if (window.scrollY > 40) {
+				setIsSticky(true);
+			} else {
+				setIsSticky(false);
+			}
+		};
+
+		window.addEventListener("scroll", handleScroll);
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+		};
+	}, []);
+
 	const handleSignout = () => {
 		signout(() => {
 			window.location.href = "/";
@@ -40,7 +55,7 @@ const NavbarTop = () => {
 	return (
 		<>
 			{isSidebarOpen && <Overlay onClick={() => setIsSidebarOpen(false)} />}
-			<NavbarTopWrapper>
+			<NavbarTopWrapper className={isSticky ? "sticky" : ""}>
 				<MenuIcon onClick={() => setIsSidebarOpen(true)} />
 				<Logo
 					src={storeLogo}
@@ -104,6 +119,18 @@ const NavbarTopWrapper = styled.nav`
 	padding: 0.5rem 5rem;
 	background-color: var(--neutral-light);
 	box-shadow: var(--box-shadow-light);
+	transition: all 0.3s ease;
+	overflow: hidden !important;
+
+	&.sticky {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 1000;
+		/* background-color: var(--primary-color-darker); */
+		box-shadow: var(--box-shadow-dark);
+	}
 
 	@media (min-width: 769px) {
 		.menu-icon,
@@ -148,6 +175,7 @@ const CartIcon = styled(AiOutlineShoppingCart)`
 	height: 30px;
 	cursor: pointer;
 	color: var(--primary-color-dark);
+
 	@media (min-width: 769px) {
 		display: none;
 	}
@@ -158,6 +186,7 @@ const NavLinks = styled.div`
 	gap: 1rem;
 	align-items: center;
 	font-weight: bold;
+
 	@media (max-width: 769px) {
 		display: none;
 	}

@@ -55,6 +55,7 @@ const Cart = () => {
 				phone: user.phone,
 			});
 		}
+
 		// eslint-disable-next-line
 	}, []);
 
@@ -315,7 +316,8 @@ const CartWrapper = styled.div`
 	background-color: #ffffff;
 	border-radius: 10px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-	min-height: 500px;
+	min-height: 1000px;
+	overflow: hidden !important;
 
 	@media (max-width: 768px) {
 		padding: 10px;

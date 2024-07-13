@@ -142,6 +142,9 @@ const ShopPageMain = () => {
 
 	useEffect(() => {
 		fetchFilteredProducts();
+		window.setTimeout(() => {
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		}, 500);
 	}, [filters, page, fetchFilteredProducts]);
 
 	const handleFilterChange = (key, value) => {
@@ -614,6 +617,7 @@ export default ShopPageMain;
 const ShopPageMainOverallWrapper = styled.div`
 	background: white;
 	margin: auto;
+	overflow: hidden !important;
 `;
 
 const ShopPageMainWrapper = styled.div`
