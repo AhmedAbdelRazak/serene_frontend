@@ -145,7 +145,17 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 							<StyledText>
 								<FaTruck style={{ marginRight: "5px" }} />
 								<strong>Tracking Number:</strong>{" "}
-								{order.trackingNumber || "No Tracking # Yet"}{" "}
+								{order.trackingNumber ? (
+									<a
+										href={order.trackingNumber}
+										target='_blank'
+										rel='noopener noreferrer'
+									>
+										Click Here...
+									</a>
+								) : (
+									"No Tracking # Yet"
+								)}{" "}
 								<FaEdit
 									style={{ cursor: "pointer", marginLeft: "10px" }}
 									onClick={handleEditTrackingClick}
@@ -162,7 +172,9 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 							</div>
 							<StyledText>
 								<FaBoxOpen style={{ marginRight: "5px" }} />
-								<strong>Shipment Status:</strong> {order.status}{" "}
+								<strong>Shipment Status:</strong>{" "}
+								{order.status.charAt(0).toUpperCase() +
+									order.status.slice(1).toLowerCase()}{" "}
 								<FaEdit
 									style={{ cursor: "pointer", marginLeft: "10px" }}
 									onClick={handleEditStatusClick}
@@ -292,7 +304,6 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 										<strong>Total Amount:</strong> $
 										{(product.ordered_quantity * product.price).toFixed(2)}
 									</StyledText>
-									Edit:{" "}
 									<FaEdit
 										style={{ cursor: "pointer", marginLeft: "10px" }}
 										onClick={() => handleEditProductClick(product)}
@@ -398,7 +409,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 					onChange={(value) => setStatus(value)}
 					style={{ width: "100%" }}
 				>
-					<Option value='In processing'>In processing</Option>
+					<Option value='In processing'>In Processing</Option>
 					<Option value='Ready To Ship'>Ready To Ship</Option>
 					<Option value='Shipped'>Shipped</Option>
 					<Option value='Delivered'>Delivered</Option>

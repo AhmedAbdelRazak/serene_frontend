@@ -10,7 +10,7 @@ import { useHistory } from "react-router-dom";
 const AdminDashboard = () => {
 	const [AdminMenuStatus, setAdminMenuStatus] = useState(false);
 	const [collapsed, setCollapsed] = useState(false);
-	const [activeTab, setActiveTab] = useState("OrdersOverview");
+	const [activeTab, setActiveTab] = useState("OrdersInProgress");
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [selectedOrder, setSelectedOrder] = useState(null);
 	const history = useHistory(); // Initialize the history object
@@ -63,10 +63,10 @@ const AdminDashboard = () => {
 					<div className='container-wrapper'>
 						<TabGrid>
 							<Tab
-								isActive={activeTab === "OrdersOverview"}
-								onClick={() => handleTabChange("OrdersOverview")}
+								isActive={activeTab === "OrdersInProgress"}
+								onClick={() => handleTabChange("OrdersInProgress")}
 							>
-								Orders Overview
+								Orders In Progress
 							</Tab>
 							<Tab
 								isActive={activeTab === "OrdersHistory"}
@@ -75,10 +75,10 @@ const AdminDashboard = () => {
 								Orders History
 							</Tab>
 							<Tab
-								isActive={activeTab === "OrdersInProgress"}
-								onClick={() => handleTabChange("OrdersInProgress")}
+								isActive={activeTab === "OrdersOverview"}
+								onClick={() => handleTabChange("OrdersOverview")}
 							>
-								Orders In Progress
+								Orders Overview
 							</Tab>
 						</TabGrid>
 

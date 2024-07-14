@@ -26,7 +26,17 @@ const OrdersPage = ({ orders }) => {
 							<StyledText>
 								<FaTruck style={{ marginRight: "5px" }} />
 								<strong>Tracking Number:</strong>{" "}
-								{order.trackingNumber || "No Tracking # Yet"}
+								{order.trackingNumber ? (
+									<a
+										href={order.trackingNumber}
+										target='_blank'
+										rel='noopener noreferrer'
+									>
+										Click To Check Tracking Number
+									</a>
+								) : (
+									"No Tracking # Yet"
+								)}
 							</StyledText>
 							<div>
 								<FaTruck style={{ marginRight: "5px" }} />
@@ -41,7 +51,9 @@ const OrdersPage = ({ orders }) => {
 								<div className='col-md-6'>
 									<span>
 										<FaBoxOpen style={{ marginRight: "5px" }} />
-										<strong>Shipment Status:</strong> {order.status}
+										<strong>Shipment Status:</strong>{" "}
+										{order.status.charAt(0).toUpperCase() +
+											order.status.slice(1).toLowerCase()}
 									</span>
 								</div>
 
@@ -132,6 +144,11 @@ const OrdersPage = ({ orders }) => {
 											<strong>Size:</strong> {product.size}
 										</span>
 									</StyledText>
+									{product.isPrintifyProduct && (
+										<StyledText>
+											<strong>Source:</strong> Printify
+										</StyledText>
+									)}
 									<StyledText>
 										<strong>Total Amount:</strong> $
 										{(product.ordered_quantity * product.price).toFixed(2)}
@@ -179,6 +196,11 @@ const OrdersPage = ({ orders }) => {
 												))}
 											</div>
 										)}
+									{product.isPrintifyProduct && (
+										<StyledText>
+											<strong>Source:</strong> Printify
+										</StyledText>
+									)}
 									<StyledText>
 										<strong>Total Amount:</strong> $
 										{(product.ordered_quantity * product.price).toFixed(2)}

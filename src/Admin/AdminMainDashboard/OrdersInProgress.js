@@ -122,6 +122,7 @@ const OrdersInProgress = ({ showModal }) => {
 			title: "Status",
 			dataIndex: "status",
 			key: "status",
+			render: (text) => text.charAt(0).toUpperCase() + text.slice(1),
 		},
 		{
 			title: "Invoice Number",
@@ -132,7 +133,22 @@ const OrdersInProgress = ({ showModal }) => {
 			title: "Tracking Number",
 			dataIndex: "trackingNumber",
 			key: "trackingNumber",
-			render: (text) => (text ? text : "No Tracking #"),
+			render: (_, record) => {
+				if (record.printifyOrderDetails && record.printifyOrderDetails.id) {
+					return record.trackingNumber ? (
+						<a
+							href={record.trackingNumber}
+							target='_blank'
+							rel='noopener noreferrer'
+						>
+							Click Here...
+						</a>
+					) : (
+						"No Tracking #"
+					);
+				}
+				return record.trackingNumber ? record.trackingNumber : "No Tracking #";
+			},
 		},
 		{
 			title: "Order Details",

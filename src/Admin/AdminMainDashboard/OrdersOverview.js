@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
+// eslint-disable-next-line
 import { DatePicker, Table } from "antd";
 import styled from "styled-components";
 import CountUp from "react-countup";
 import { getListOfOrdersAggregated } from "../apiAdmin";
 import { isAuthenticated } from "../../auth";
-import moment from "moment"; // Ensure you have moment.js installed
+import moment from "moment";
 
 const OrdersOverview = ({ showModal }) => {
 	const [data, setData] = useState([]);
 	const [totalOrders, setTotalOrders] = useState(0);
 	const [totalQuantity, setTotalQuantity] = useState(0);
 	const [totalAmount, setTotalAmount] = useState(0);
+	// eslint-disable-next-line
 	const [date, setDate] = useState(moment()); // Initialize with current date
 	const [loading, setLoading] = useState(false);
 	const [expandedRowKeys, setExpandedRowKeys] = useState([]);
@@ -128,6 +130,7 @@ const OrdersOverview = ({ showModal }) => {
 			title: "Status",
 			dataIndex: "status",
 			key: "status",
+			render: (text) => text.charAt(0).toUpperCase() + text.slice(1),
 		},
 		{
 			title: "Invoice Number",
@@ -138,7 +141,22 @@ const OrdersOverview = ({ showModal }) => {
 			title: "Tracking Number",
 			dataIndex: "trackingNumber",
 			key: "trackingNumber",
-			render: (text) => (text ? text : "No Tracking #"),
+			render: (_, record) => {
+				if (record.printifyOrderDetails && record.printifyOrderDetails.id) {
+					return record.trackingNumber ? (
+						<a
+							href={record.trackingNumber}
+							target='_blank'
+							rel='noopener noreferrer'
+						>
+							Click Here...
+						</a>
+					) : (
+						"No Tracking #"
+					);
+				}
+				return record.trackingNumber ? record.trackingNumber : "No Tracking #";
+			},
 		},
 		{
 			title: "Order Details",
@@ -192,7 +210,7 @@ const OrdersOverview = ({ showModal }) => {
 					</Count>
 				</Card>
 			</ScoreCardsWrapper>
-			<StyledDatePickerContainer>
+			{/* <StyledDatePickerContainer>
 				<span style={{ fontWeight: "bold" }}>
 					Selected Date: {date.format("YYYY-MM-DD")}
 				</span>
@@ -200,8 +218,9 @@ const OrdersOverview = ({ showModal }) => {
 					style={{ marginTop: 16, width: "100%" }}
 					onChange={(date) => setDate(date || moment())}
 					value={date}
+					disabledDate={(current) => current && current > moment().endOf("day")}
 				/>
-			</StyledDatePickerContainer>
+			</StyledDatePickerContainer> */}
 			<Table
 				columns={columns}
 				dataSource={data}
@@ -257,6 +276,7 @@ const DetailsLink = styled.div`
 	text-decoration: underline;
 `;
 
+// eslint-disable-next-line
 const StyledDatePickerContainer = styled.div`
 	display: flex;
 	flex-direction: column;
