@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled, { css, keyframes } from "styled-components";
 import { useCartContext } from "../../cart_context";
-import { getShippingOptions } from "../../apiCore";
+import { getShippingOptions, readSingleCoupon } from "../../apiCore";
 import Z1CartDetails from "./Z1CartDetails";
 import Z2StepOne from "./Z2StepOne";
 import Z3StepTwo from "./Z3StepTwo";
@@ -14,8 +14,6 @@ import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 
 const Cart = () => {
-	const { cart, total_amount, addShipmentDetails, shipmentChosen, removeItem } =
-		useCartContext();
 	const [step, setStep] = useState(1);
 	const [customerDetails, setCustomerDetails] = useState({
 		name: "",
@@ -27,16 +25,43 @@ const Cart = () => {
 	});
 	const [passwordError, setPasswordError] = useState("");
 	const [allShippingOptions, setAllShippingOptions] = useState([]);
-	const [coupon, setCoupon] = useState("");
+	const [goodCoupon, setGoodCoupon] = useState(false);
+	const [appliedCoupon, setAppliedCoupon] = useState(null);
 	const [state, setState] = useState("");
 	const [address, setAddress] = useState("");
 	const [city, setCity] = useState("");
 	const [zipcode, setZipCode] = useState("");
 	const [comments, setComments] = useState("");
+	const [coupon, setCoupon] = useState("");
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	// eslint-disable-next-line
 	const history = useHistory();
 	const { user } = isAuthenticated();
+	const { cart, total_amount, addShipmentDetails, shipmentChosen, removeItem } =
+		useCartContext();
+
+	const handleApplyCoupon = () => {
+		readSingleCoupon(coupon)
+			.then((data) => {
+				if (data.error) {
+					toast.error("Coupon is not available, please try another one");
+					setGoodCoupon(false);
+				} else if (new Date(data.expiry) < new Date()) {
+					toast.error("Coupon Expired. Please Try Another One");
+					setGoodCoupon(false);
+				} else if (data && data.length === 0) {
+					toast.error("Coupon is not available, please try another one");
+					setGoodCoupon(false);
+				} else {
+					setGoodCoupon(true);
+					setAppliedCoupon(data[0]);
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+				toast.error("An error occurred while applying the coupon");
+			});
+	};
 
 	useEffect(() => {
 		getShippingOptions().then((data) => {
@@ -252,15 +277,40 @@ const Cart = () => {
 			) : (
 				<>
 					<StepIndicator>Step {step} of 3</StepIndicator>
-					<Z1CartDetails />
+					<Z1CartDetails
+						appliedCoupon={appliedCoupon}
+						goodCoupon={goodCoupon}
+					/>
 					<CouponWrapper>
-						<Input
-							type='text'
-							name='coupon'
-							placeholder='Enter Coupon Code'
-							value={coupon}
-							onChange={(e) => setCoupon(e.target.value)}
-						/>
+						<div className='row'>
+							<div className='col-md-6 my-auto'>
+								<Input
+									type='text'
+									name='coupon'
+									placeholder='Enter Coupon Code'
+									value={coupon}
+									onChange={(e) => setCoupon(e.target.value)}
+								/>
+							</div>
+
+							<div className='col-md-6 mx-auto text-center my-auto'>
+								<ApplyCouponButton onClick={handleApplyCoupon}>
+									Apply Coupon
+								</ApplyCouponButton>
+							</div>
+							{goodCoupon ? (
+								<div
+									style={{
+										fontSize: "0.78rem",
+										fontWeight: "bold",
+										color: "darkgreen",
+									}}
+								>
+									Congrats! You got {appliedCoupon && appliedCoupon.discount}%
+									OFF of your purchase.
+								</div>
+							) : null}
+						</div>
 					</CouponWrapper>
 					<StepTransition step={step}>
 						<Z2StepOne
@@ -322,6 +372,8 @@ const Cart = () => {
 							setStep={setStep}
 							comments={comments}
 							coupon={coupon}
+							appliedCoupon={appliedCoupon}
+							goodCoupon={goodCoupon}
 						/>
 					</StepTransition>
 				</>
@@ -403,7 +455,7 @@ const CouponWrapper = styled.div`
 	display: flex;
 	justify-content: center;
 	input {
-		width: 50%;
+		width: 100%;
 	}
 
 	@media (max-width: 670px) {
@@ -419,4 +471,24 @@ const Input = styled.input`
 	border: 1px solid #ccc;
 	border-radius: 5px;
 	font-size: 1rem;
+`;
+
+const ApplyCouponButton = styled.button`
+	padding: 5px 10px;
+	background-color: #005f4e;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	&:hover {
+		background-color: #00493e;
+	}
+
+	@media (max-width: 700px) {
+		padding: 5px;
+		font-size: 13px;
+		width: 50%;
+		text-align: center;
+		margin: auto;
+	}
 `;

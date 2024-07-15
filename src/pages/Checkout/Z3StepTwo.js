@@ -136,7 +136,20 @@ const Z3StepTwo = ({
 						))}
 					<ButtonWrapper>
 						<BackButton onClick={handlePreviousStep}>Back</BackButton>
-						<ContinueButton onClick={handleNextStep}>Continue</ContinueButton>
+						<ContinueButton
+							onClick={handleNextStep}
+							disabled={
+								!customerDetails.shipToName ||
+								!address ||
+								!city ||
+								!state ||
+								!/^\d{5}$/.test(zipcode) ||
+								!shipmentChosen ||
+								!shipmentChosen.carrierName
+							}
+						>
+							Continue
+						</ContinueButton>
 					</ButtonWrapper>
 				</Step>
 			)}
@@ -267,16 +280,16 @@ const ButtonWrapper = styled.div`
 
 const ContinueButton = styled.button`
 	padding: 10px 20px;
-	background: black;
-	color: white;
+	background: ${(props) => (props.disabled ? "#ccc" : "black")};
+	color: ${(props) => (props.disabled ? "#666" : "white")};
 	border: none;
 	font-size: 14px;
 	transition: 0.3s;
 	width: 25%;
 	border-radius: 5px;
-	cursor: pointer;
+	cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
 	&:hover {
-		background: #005f4e;
+		background: ${(props) => (props.disabled ? "#ccc" : "#005f4e")};
 	}
 	@media (max-width: 768px) {
 		width: 100%;

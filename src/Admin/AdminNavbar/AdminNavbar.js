@@ -14,6 +14,8 @@ import {
 	HomeOutlined,
 	TagOutlined,
 	ContainerOutlined,
+	HeatMapOutlined,
+	CarryOutOutlined,
 } from "@ant-design/icons";
 import { Button, Menu } from "antd";
 import TopNavbar from "./TopNavbar";
@@ -62,22 +64,28 @@ const items = [
 	getItem(
 		<Link to='/admin/products'>Products</Link>,
 		"sub6",
-		<SettingOutlined />
+		<DollarCircleOutlined />
 	),
 	getItem(
 		<Link to='/admin/store-management'>Store Settings</Link>,
 		"sub10",
-		<DollarCircleOutlined />
+		<SettingOutlined />
 	),
 	getItem(
 		<Link to='/admin/customer-service'>Customer Service</Link>,
 		"sub7",
+
 		<CustomerServiceOutlined />
 	),
 	getItem(
 		<Link to='/admin/website-management'>Website Adjustment</Link>,
 		"sub21",
-		<SettingOutlined />
+		<HeatMapOutlined />
+	),
+	getItem(
+		<Link to='/admin/coupon-management'>Manage Coupons</Link>,
+		"sub23",
+		<CarryOutOutlined />
 	),
 	getItem(
 		<div className='margin-divider'></div>,
@@ -196,7 +204,9 @@ const AdminNavbar = ({
 																? "sub21"
 																: fromPage === "StorePOS"
 																	? "sub15"
-																	: "sub1"
+																	: fromPage === "Coupons"
+																		? "sub23"
+																		: "sub1"
 					}
 					defaultOpenKeys={["sub1"]}
 					mode='inline'

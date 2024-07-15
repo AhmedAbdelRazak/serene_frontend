@@ -47,6 +47,7 @@ import ShopPageMain from "./pages/ShopPage/ShopPageMain";
 import ContactUs from "./pages/Contact/ContactUs";
 import ChatIcon from "./Chat/ChatIcon";
 import LinkGenerated from "./Admin/StorePOS/LinkGenerated";
+import CouponManagement from "./Admin/CouponManagement/CouponManagement";
 
 const App = () => {
 	// eslint-disable-next-line
@@ -173,6 +174,12 @@ const App = () => {
 				/>
 
 				<AdminRoute path='/admin/store-pos' exact component={StorePOSMain} />
+
+				<AdminRoute
+					path='/admin/coupon-management'
+					exact
+					component={CouponManagement}
+				/>
 
 				<PrivateRoute path='/dashboard' exact component={UserDashboard} />
 			</Switch>

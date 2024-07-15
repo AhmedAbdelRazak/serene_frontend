@@ -219,11 +219,28 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 								<div className='col-md-6'>
 									<strong>Customer Comment:</strong> {order.orderComment}
 								</div>
+								{order &&
+									order.appliedCoupon &&
+									order.appliedCoupon.discount && (
+										<>
+											<div className='col-md-6' style={{ color: "darkgreen" }}>
+												<FaDollarSign style={{ marginRight: "5px" }} />
+												<strong>Applied Coupon:</strong>
+												{order.appliedCoupon && order.appliedCoupon.discount}%
+												OFF!
+											</div>
+											<div className='col-md-6' style={{ color: "darkred" }}>
+												<FaDollarSign style={{ marginRight: "5px" }} />
+												<strong>Before Discount Total:</strong> $
+												{order.totalAmount && order.totalAmount.toFixed(2)}
+											</div>
+										</>
+									)}
 							</div>
 
 							<CenteredText>
 								<strong>Total Amount:</strong> $
-								{Number(order.totalAmount).toFixed(2)}
+								{Number(order.totalAmountAfterDiscount).toFixed(2)}
 							</CenteredText>
 
 							<SectionTitle>Payment Details</SectionTitle>

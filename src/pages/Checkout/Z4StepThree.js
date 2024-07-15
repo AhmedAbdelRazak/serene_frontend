@@ -30,7 +30,8 @@ const Z4StepThree = ({
 	user,
 	setStep,
 	comments,
-	coupon,
+	appliedCoupon,
+	goodCoupon,
 }) => {
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -210,6 +211,13 @@ const Z4StepThree = ({
 		return true;
 	};
 
+	const totalAmountAdjusted = goodCoupon
+		? (
+				total_amount -
+				Number(total_amount) * (appliedCoupon.discount / 100)
+			).toFixed(2)
+		: total_amount;
+
 	const handlePayment = async (paymentToken) => {
 		const token = isAuthenticated().token;
 		const userId = isAuthenticated().user._id;
@@ -257,10 +265,10 @@ const Z4StepThree = ({
 			status: "In Process",
 			onHoldStatus: "None",
 			totalAmount: total_amount,
-			totalAmountAfterDiscount: total_amount,
+			totalAmountAfterDiscount: totalAmountAdjusted, // Adjust totalAmountAfterDiscount
 			chosenShippingOption: shipmentChosen,
 			orderSource: "Website",
-			appliedCoupon: coupon ? { code: coupon, discount: 10 } : {}, // Adjust discount as needed
+			appliedCoupon: goodCoupon ? appliedCoupon : {}, // Adjust discount as needed
 			shipDate: new Date(),
 			orderCreationDate: new Date(),
 			sendSMS: true,
@@ -367,7 +375,20 @@ const Z4StepThree = ({
 						))}
 					</CartItems>
 					<TotalAmount>
-						Total Amount: ${Number(total_amount).toFixed(2)}
+						{goodCoupon ? (
+							<>
+								<DiscountedTotal>
+									Total Amount:{" "}
+									<s style={{ color: "red" }}>
+										${Number(total_amount).toFixed(2)}
+									</s>
+									<DiscountedPrice>${totalAmountAdjusted}</DiscountedPrice>
+								</DiscountedTotal>
+							</>
+						) : (
+							`Total Amount: $${Number(total_amount).toFixed(2)}`
+						)}
+						<hr className='col-md-6' />
 					</TotalAmount>
 					<ButtonWrapper>
 						<BackButton onClick={handlePreviousStep}>Back</BackButton>
@@ -390,7 +411,7 @@ const Z4StepThree = ({
 							<>
 								{isTermsAccepted ? (
 									<SquarePaymentForm
-										amount={total_amount + (shipmentChosen?.shippingPrice || 0)}
+										amount={totalAmountAdjusted} // Adjust amount
 										currency='USD'
 										handlePaymentSuccess={handlePaymentSuccess}
 										zipCode={zipcode} // Pass the ZIP code to the payment form
@@ -629,4 +650,18 @@ const TermsLink = styled.a`
 	&:hover {
 		color: var(--primary-color-dark);
 	}
+`;
+
+const DiscountedTotal = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #0c1d2d;
+`;
+
+const DiscountedPrice = styled.span`
+	margin-left: 10px;
+	font-weight: bold;
 `;

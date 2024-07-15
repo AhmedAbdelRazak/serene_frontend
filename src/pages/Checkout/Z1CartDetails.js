@@ -7,7 +7,7 @@ import { getColors } from "../../apiCore"; // Ensure the path is correct
 
 const { Panel } = Collapse;
 
-const Z1CartDetails = () => {
+const Z1CartDetails = ({ appliedCoupon, goodCoupon }) => {
 	const {
 		cart,
 		total_amount,
@@ -31,6 +31,13 @@ const Z1CartDetails = () => {
 			}
 		});
 	}, []);
+
+	const totalAmountAdjusted = goodCoupon
+		? (
+				total_amount -
+				Number(total_amount) * (appliedCoupon.discount / 100)
+			).toFixed(2)
+		: total_amount;
 
 	return (
 		<>
@@ -168,11 +175,19 @@ const Z1CartDetails = () => {
 							);
 						})}
 						<TotalAmount>
-							Total Amount: $
-							{/* {shipmentChosen && shipmentChosen.shippingPrice
-								? Number(total_amount) + Number(shipmentChosen.shippingPrice)
-								: total_amount} */}
-							{Number(total_amount).toFixed(2)}
+							{goodCoupon ? (
+								<>
+									<DiscountedTotal>
+										Total Amount:{" "}
+										<s style={{ color: "red" }}>
+											${Number(total_amount).toFixed(2)}
+										</s>
+										<DiscountedPrice>${totalAmountAdjusted}</DiscountedPrice>
+									</DiscountedTotal>
+								</>
+							) : (
+								`Total Amount: $${Number(total_amount).toFixed(2)}`
+							)}
 							<hr className='col-md-6' />
 						</TotalAmount>
 						<ClearCartButton onClick={clearCart}>Clear Cart</ClearCartButton>
@@ -311,4 +326,18 @@ const ClearCartButton = styled.button`
 	@media (max-width: 768px) {
 		width: 100%;
 	}
+`;
+
+const DiscountedTotal = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #0c1d2d;
+`;
+
+const DiscountedPrice = styled.span`
+	margin-left: 10px;
+	font-weight: bold;
 `;
