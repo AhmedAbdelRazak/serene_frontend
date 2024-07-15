@@ -92,10 +92,13 @@ const UpdateProduct = () => {
 
 	function search(orders) {
 		return orders.filter((row) => {
+			const productName = row.productName ? row.productName.toLowerCase() : "";
+			const description = row.description ? row.description.toLowerCase() : "";
+			const productSKU = row.productSKU ? row.productSKU.toLowerCase() : "";
 			return (
-				row.productName.toLowerCase().indexOf(q) > -1 ||
-				row.productName_Arabic.toLowerCase().indexOf(q) > -1 ||
-				row.productSKU.toLowerCase().indexOf(q) > -1
+				productName.indexOf(q) > -1 ||
+				description.indexOf(q) > -1 ||
+				productSKU.indexOf(q) > -1
 			);
 		});
 	}
