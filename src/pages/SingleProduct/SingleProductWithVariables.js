@@ -21,6 +21,18 @@ import { Helmet } from "react-helmet";
 
 const { Panel } = Collapse;
 
+// Utility function to escape JSON strings
+const escapeJsonString = (str) => {
+	return str
+		.replace(/\\/g, "\\\\")
+		.replace(/"/g, '\\"')
+		.replace(/\n/g, "\\n")
+		.replace(/\r/g, "\\r")
+		.replace(/\t/g, "\\t")
+		.replace(/\b/g, "\\b")
+		.replace(/\f/g, "\\f");
+};
+
 const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 	const { addToCart, openSidebar2 } = useCartContext();
 	const [selectedColor, setSelectedColor] = useState("");
@@ -225,15 +237,15 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 		{
 			"@context": "http://schema.org/",
 			"@type": "Product",
-			"name": "${capitalizeWords(product.productName)}",
+			"name": "${capitalizeWords(escapeJsonString(product.productName))}",
 			"image": "${chosenImages[0]}",
-			"description": "${product.description.replace(/<[^>]+>/g, "")}",
+			"description": "${escapeJsonString(product.description.replace(/<[^>]+>/g, ""))}",
 			"brand": {
 				"@type": "Brand",
 				"name": "Serene Jannat"
 			},
 			"gtin": "${product.productSKU}",
-			"mpn": "${product.productAttributes.map((attr) => `${product.productSKU}-${attr.SubSKU}`).join(", ")}",
+			"mpn": "${escapeJsonString(product.productAttributes.map((attr) => `${product.productSKU}-${attr.SubSKU}`).join(", "))}",
 			"offers": {
 				"@type": "Offer",
 				"priceCurrency": "USD",
@@ -293,9 +305,11 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 					},
 					author: {
 						"@type": "Person",
-						name: comment.postedBy ? comment.postedBy.name : "Anonymous",
+						name: escapeJsonString(
+							comment.postedBy ? comment.postedBy.name : "Anonymous"
+						),
 					},
-					reviewBody: comment.text,
+					reviewBody: escapeJsonString(comment.text),
 					datePublished: new Date(comment.created).toISOString(),
 				}))
 			)},
@@ -309,11 +323,13 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 				/>
 				<meta
 					property='og:title'
-					content={capitalizeWords(product.productName)}
+					content={capitalizeWords(escapeJsonString(product.productName))}
 				/>
 				<meta
 					property='og:description'
-					content={product.description.replace(/<[^>]+>/g, "")}
+					content={escapeJsonString(
+						product.description.replace(/<[^>]+>/g, "")
+					)}
 				/>
 				<meta property='og:image' content={chosenImages[0]} />
 				<meta
@@ -347,7 +363,9 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 				</title>
 				<meta
 					name='description'
-					content={product.description.replace(/<[^>]+>/g, "")}
+					content={escapeJsonString(
+						product.description.replace(/<[^>]+>/g, "")
+					)}
 				/>
 			</Helmet>
 

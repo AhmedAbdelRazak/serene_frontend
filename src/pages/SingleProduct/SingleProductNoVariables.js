@@ -20,6 +20,18 @@ import ReactGA from "react-ga4";
 
 const { Panel } = Collapse;
 
+// Utility function to escape JSON strings
+const escapeJsonString = (str) => {
+	return str
+		.replace(/\\/g, "\\\\")
+		.replace(/"/g, '\\"')
+		.replace(/\n/g, "\\n")
+		.replace(/\r/g, "\\r")
+		.replace(/\t/g, "\\t")
+		.replace(/\b/g, "\\b")
+		.replace(/\f/g, "\\f");
+};
+
 const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 	const { addToCart, openSidebar2 } = useCartContext();
 	const [chosenImages, setChosenImages] = useState([]);
@@ -137,9 +149,9 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 		{
 			"@context": "http://schema.org",
 			"@type": "Product",
-			"name": "${product.productName}",
+			"name": "${escapeJsonString(product.productName)}",
 			"image": "${chosenImages[0]}",
-			"description": "${plainDescription}",
+			"description": "${escapeJsonString(plainDescription)}",
 			"brand": {
 				"@type": "Brand",
 				"name": "Serene Jannat"
@@ -208,7 +220,7 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 								"@type": "Person",
 								name: comment.postedBy ? comment.postedBy.name : "Anonymous",
 							},
-							reviewBody: comment.text,
+							reviewBody: escapeJsonString(comment.text),
 							datePublished: new Date(comment.created).toISOString(),
 						}))
 					: []

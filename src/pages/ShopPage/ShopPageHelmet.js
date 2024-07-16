@@ -7,6 +7,18 @@ const capitalizeWords = (str) => {
 	return str.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
+// Utility function to escape JSON strings
+const escapeJsonString = (str) => {
+	return str
+		.replace(/\\/g, "\\\\")
+		.replace(/"/g, '\\"')
+		.replace(/\n/g, "\\n")
+		.replace(/\r/g, "\\r")
+		.replace(/\t/g, "\\t")
+		.replace(/\b/g, "\\b")
+		.replace(/\f/g, "\\f");
+};
+
 // Generate keywords from products array
 const generateKeywords = (products) => {
 	const categoryKeywords = products.map(
@@ -56,7 +68,7 @@ const generateProductSchema = (products) => {
 							"@type": "Person",
 							name: comment.postedBy ? comment.postedBy.name : "Anonymous",
 						},
-						reviewBody: comment.text,
+						reviewBody: escapeJsonString(comment.text),
 						datePublished: new Date(comment.created).toISOString(),
 					}))
 				: [
@@ -88,7 +100,9 @@ const generateProductSchema = (products) => {
 			"@type": "Product",
 			name: capitalizeWords(product.productName),
 			image: product.thumbnailImage[0]?.images[0]?.url || "",
-			description: product.description.replace(/<[^>]+>/g, ""),
+			description: escapeJsonString(
+				product.description.replace(/<[^>]+>/g, "")
+			),
 			brand: {
 				"@type": "Brand",
 				name: "Serene Jannat",
