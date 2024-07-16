@@ -66,7 +66,9 @@ const generateProductSchema = (products) => {
 						},
 						author: {
 							"@type": "Person",
-							name: comment.postedBy ? comment.postedBy.name : "Anonymous",
+							name: escapeJsonString(
+								comment.postedBy ? comment.postedBy.name : "Anonymous"
+							),
 						},
 						reviewBody: escapeJsonString(comment.text),
 						datePublished: new Date(comment.created).toISOString(),
@@ -98,7 +100,7 @@ const generateProductSchema = (products) => {
 		return {
 			"@context": "http://schema.org",
 			"@type": "Product",
-			name: capitalizeWords(product.productName),
+			name: capitalizeWords(escapeJsonString(product.productName)),
 			image: product.thumbnailImage[0]?.images[0]?.url || "",
 			description: escapeJsonString(
 				product.description.replace(/<[^>]+>/g, "")

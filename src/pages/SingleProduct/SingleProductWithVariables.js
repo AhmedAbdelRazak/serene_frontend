@@ -293,8 +293,8 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 			},
 			"aggregateRating": {
 				"@type": "AggregateRating",
-				"ratingValue": "${(product.ratings.reduce((acc, rating) => acc + rating.star, 0) / product.ratings.length).toFixed(1)}",
-				"reviewCount": "${product.ratings.length}"
+				"ratingValue": "${product.ratings.length > 0 ? (product.ratings.reduce((acc, rating) => acc + rating.star, 0) / product.ratings.length).toFixed(1) : 5.0}",
+				"reviewCount": "${product.ratings.length > 0 ? product.ratings.length : 1}"
 			},
 			"review": ${JSON.stringify(
 				product.comments.map((comment) => ({
@@ -315,7 +315,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 			)},
 			"productID": "${product._id}"
 		}
-	`}
+		`}
 				</script>
 				<link
 					rel='canonical'

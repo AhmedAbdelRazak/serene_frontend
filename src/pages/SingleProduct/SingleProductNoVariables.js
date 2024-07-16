@@ -205,8 +205,8 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 			},
 			"aggregateRating": {
 				"@type": "AggregateRating",
-				"ratingValue": "${(product.ratings.reduce((acc, rating) => acc + rating.star, 0) / product.ratings.length).toFixed(1)}",
-				"reviewCount": "${product.ratings.length}"
+				"ratingValue": "${product.ratings.length > 0 ? (product.ratings.reduce((acc, rating) => acc + rating.star, 0) / product.ratings.length).toFixed(1) : 5.0}",
+				"reviewCount": "${product.ratings.length > 0 ? product.ratings.length : 1}"
 			},
 			"review": ${JSON.stringify(
 				product.comments && product.comments.length > 0
@@ -218,7 +218,9 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 							},
 							author: {
 								"@type": "Person",
-								name: comment.postedBy ? comment.postedBy.name : "Anonymous",
+								name: escapeJsonString(
+									comment.postedBy ? comment.postedBy.name : "Anonymous"
+								),
 							},
 							reviewBody: escapeJsonString(comment.text),
 							datePublished: new Date(comment.created).toISOString(),
