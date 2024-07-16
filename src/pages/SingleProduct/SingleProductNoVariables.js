@@ -131,11 +131,11 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 
 	return (
 		<div>
-			<Helmet itemscope itemtype='http://schema.org/Product'>
+			<Helmet>
 				<script type='application/ld+json'>
 					{`
 		{
-			"@context": "http://schema.org/",
+			"@context": "http://schema.org",
 			"@type": "Product",
 			"name": "${product.productName}",
 			"image": "${chosenImages[0]}",
@@ -197,20 +197,21 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 				"reviewCount": "${product.ratings.length}"
 			},
 			"review": ${JSON.stringify(
-				product.comments &&
-					product.comments.map((comment) => ({
-						"@type": "Review",
-						reviewRating: {
-							"@type": "Rating",
-							ratingValue: comment.rating || 5, // Default to 5 if no rating provided
-						},
-						author: {
-							"@type": "Person",
-							name: comment.postedBy ? comment.postedBy.name : "Anonymous",
-						},
-						reviewBody: comment.text,
-						datePublished: comment.created.toISOString(),
-					}))
+				product.comments && product.comments.length > 0
+					? product.comments.map((comment) => ({
+							"@type": "Review",
+							reviewRating: {
+								"@type": "Rating",
+								ratingValue: comment.rating || 5, // Default to 5 if no rating provided
+							},
+							author: {
+								"@type": "Person",
+								name: comment.postedBy ? comment.postedBy.name : "Anonymous",
+							},
+							reviewBody: comment.text,
+							datePublished: new Date(comment.created).toISOString(),
+						}))
+					: []
 			)},
 			"productID": "${product._id}"
 		}
@@ -241,7 +242,7 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 				<meta property='product:id' content={product._id} />
 				<meta
 					name='keywords'
-					content={`${product.category.categoryName}, ${product.productName}, ${product.subcategory && product.subcategory[0].SubcategoryName}, ${product.subcategory && product.subcategory[1] && product.subcategory[1].SubcategoryName}`}
+					content={`${product.category.categoryName}, ${product.productName}, ${product.subcategory && product.subcategory[0] ? product.subcategory[0].SubcategoryName : ""}, ${product.subcategory && product.subcategory[1] ? product.subcategory[1].SubcategoryName : ""}`}
 				/>
 				<meta charSet='utf-8' />
 				<title>
@@ -250,11 +251,8 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 					)}
 				</title>
 				<meta name='description' content={plainDescription} />
-				<link
-					rel='stylesheet'
-					href='http://fonts.googleapis.com/earlyaccess/droidarabickufi.css'
-				/>
 			</Helmet>
+
 			<SigninModal
 				modalVisible3={modalVisible3}
 				setModalVisible3={setModalVisible3}

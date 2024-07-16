@@ -219,7 +219,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 
 	return (
 		<div>
-			<Helmet itemscope itemtype='http://schema.org/Product'>
+			<Helmet>
 				<script type='application/ld+json'>
 					{`
 		{
@@ -348,10 +348,6 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 				<meta
 					name='description'
 					content={product.description.replace(/<[^>]+>/g, "")}
-				/>
-				<link
-					rel='stylesheet'
-					href='http://fonts.googleapis.com/earlyaccess/droidarabickufi.css'
 				/>
 			</Helmet>
 
