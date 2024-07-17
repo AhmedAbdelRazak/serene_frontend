@@ -141,6 +141,21 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 		return str.replace(/\b\w/g, (char) => char.toUpperCase());
 	};
 
+	const formatGTIN = (sku) => {
+		let formattedSKU = sku.toString();
+		if (formattedSKU.length > 12) {
+			// If SKU is greater than 12, take the first 12 digits
+			formattedSKU = formattedSKU.substring(0, 12);
+		} else if (formattedSKU.length < 12) {
+			// If SKU is less than 12, repeat the SKU until it is 12 digits long
+			while (formattedSKU.length < 12) {
+				formattedSKU += sku.toString();
+			}
+			formattedSKU = formattedSKU.substring(0, 12);
+		}
+		return formattedSKU;
+	};
+
 	return (
 		<div>
 			<Helmet>
@@ -156,7 +171,7 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 				"@type": "Brand",
 				"name": "Serene Jannat"
 			},
-			"gtin": "${product.productSKU}",
+			"gtin": "${formatGTIN(product.productSKU)}",
 			"mpn": "${product.productSKU}",
 			"offers": {
 				"@type": "Offer",

@@ -19,6 +19,22 @@ const escapeJsonString = (str) => {
 		.replace(/\f/g, "\\f");
 };
 
+// Utility function to format the GTIN
+const formatGTIN = (sku) => {
+	let formattedSKU = sku.toString();
+	if (formattedSKU.length > 12) {
+		// If SKU is greater than 12, take the first 12 digits
+		formattedSKU = formattedSKU.substring(0, 12);
+	} else if (formattedSKU.length < 12) {
+		// If SKU is less than 12, repeat the SKU until it is 12 digits long
+		while (formattedSKU.length < 12) {
+			formattedSKU += sku.toString();
+		}
+		formattedSKU = formattedSKU.substring(0, 12);
+	}
+	return formattedSKU;
+};
+
 // Generate keywords from products array
 const generateKeywords = (products) => {
 	const categoryKeywords = products.map(
@@ -109,7 +125,7 @@ const generateProductSchema = (products) => {
 				"@type": "Brand",
 				name: "Serene Jannat",
 			},
-			gtin: mpn,
+			gtin: formatGTIN(product.productSKU), // Use the formatGTIN function here
 			mpn,
 			offers: {
 				"@type": "Offer",

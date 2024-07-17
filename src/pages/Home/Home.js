@@ -67,13 +67,41 @@ const Home = () => {
 	}, [window.location.pathname]);
 
 	useEffect(() => {
-		AOS.init({ duration: 2000 }); // Initializes AOS; 1000 is the animation duration in milliseconds
+		AOS.init({ duration: 2000 }); // Initializes AOS; 2000 is the animation duration in milliseconds
 		// Optionally, you can add settings for offset, delay, etc.
 	}, []);
 
 	// Utility function to capitalize the first letter of each word
 	const capitalizeWords = (str) => {
 		return str.replace(/\b\w/g, (char) => char.toUpperCase());
+	};
+
+	// Utility function to escape JSON strings
+	const escapeJsonString = (str) => {
+		return str
+			.replace(/\\/g, "\\\\")
+			.replace(/"/g, '\\"')
+			.replace(/\n/g, "\\n")
+			.replace(/\r/g, "\\r")
+			.replace(/\t/g, "\\t")
+			.replace(/\b/g, "\\b")
+			.replace(/\f/g, "\\f");
+	};
+
+	// Utility function to format the GTIN
+	const formatGTIN = (sku) => {
+		let formattedSKU = sku.toString();
+		if (formattedSKU.length > 12) {
+			// If SKU is greater than 12, take the first 12 digits
+			formattedSKU = formattedSKU.substring(0, 12);
+		} else if (formattedSKU.length < 12) {
+			// If SKU is less than 12, repeat the SKU until it is 12 digits long
+			while (formattedSKU.length < 12) {
+				formattedSKU += sku.toString();
+			}
+			formattedSKU = formattedSKU.substring(0, 12);
+		}
+		return formattedSKU;
 	};
 
 	// Generate keywords from products array
@@ -127,9 +155,11 @@ const Home = () => {
 							},
 							author: {
 								"@type": "Person",
-								name: comment.postedBy ? comment.postedBy.name : "Anonymous",
+								name: escapeJsonString(
+									comment.postedBy ? comment.postedBy.name : "Anonymous"
+								),
 							},
-							reviewBody: comment.text,
+							reviewBody: escapeJsonString(comment.text),
 							datePublished: new Date(comment.created).toISOString(),
 						}))
 					: [
@@ -159,14 +189,16 @@ const Home = () => {
 			return {
 				"@context": "http://schema.org",
 				"@type": "Product",
-				name: capitalizeWords(product.productName),
+				name: capitalizeWords(escapeJsonString(product.productName)),
 				image: product.thumbnailImage[0]?.images[0]?.url || "",
-				description: product.description.replace(/<[^>]+>/g, ""),
+				description: escapeJsonString(
+					product.description.replace(/<[^>]+>/g, "")
+				),
 				brand: {
 					"@type": "Brand",
 					name: "Serene Jannat",
 				},
-				gtin: mpn,
+				gtin: formatGTIN(product.productSKU), // Use the formatGTIN function here
 				mpn,
 				offers: {
 					"@type": "Offer",
