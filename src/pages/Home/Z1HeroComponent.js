@@ -1,11 +1,9 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Slider from "react-slick";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { getHomes } from "../../Admin/apiAdmin";
@@ -26,9 +24,7 @@ const Z1HeroComponent = () => {
 
 	useEffect(() => {
 		gettingAllHomes();
-		AOS.init({
-			duration: 1000, // Animation duration in milliseconds
-		});
+		import("aos").then((AOS) => AOS.init({ duration: 1000 }));
 		localStorage.removeItem("Cleared");
 		// eslint-disable-next-line
 	}, []);
@@ -38,91 +34,63 @@ const Z1HeroComponent = () => {
 		infinite: true,
 		autoplay: true,
 		arrows: true,
-		speed: 3000,
+		speed: 2000,
 		slidesToShow: 1,
 		slidesToScroll: 1,
-		autoplaySpeed: 7000,
+		autoplaySpeed: 5000,
 		pauseOnHover: true,
 		adaptiveHeight: true,
 	};
 
 	return (
-		<HeroComponentWrapper className='mx-auto text-center'>
-			<Slider {...settingsHero}>
-				{homePage && homePage.thumbnail && homePage.thumbnail[0] && (
-					<Banner>
-						<Img
-							loading='lazy'
-							srcSet={
-								homePage &&
-								homePage.thumbnail &&
-								homePage.thumbnail[0] &&
-								homePage.thumbnail[0].url
-							}
-						/>
-						<Overlay />
-						<BannerContent data-aos='fade-in' data-aos-delay='1000'>
-							<BannerText>
-								{homePage && homePage.header1 ? homePage.header1 : ""}
-							</BannerText>
-							<BannerButton2
-								to='/our-products?offers=jannatoffers'
-								onClick={() => {
-									ReactGA.event({
-										category: "Check Our Offers",
-										action: "Check Our Offers",
-									});
-								}}
-							>
-								CHECK OUR OFFERS!
-							</BannerButton2>
-						</BannerContent>
-					</Banner>
-				)}
+		<Suspense fallback={<div>Loading...</div>}>
+			<HeroComponentWrapper className='mx-auto text-center'>
+				<Slider {...settingsHero}>
+					{homePage && homePage.thumbnail && homePage.thumbnail[0] && (
+						<Banner>
+							<Img loading='lazy' srcSet={homePage.thumbnail[0].url} />
+							<Overlay />
+							<BannerContent data-aos='fade-in' data-aos-delay='1000'>
+								<BannerText>{homePage.header1 || ""}</BannerText>
+								<BannerButton2
+									to='/our-products?offers=jannatoffers'
+									onClick={() => {
+										ReactGA.event({
+											category: "Check Our Offers",
+											action: "Check Our Offers",
+										});
+									}}
+								>
+									CHECK OUR OFFERS!
+								</BannerButton2>
+							</BannerContent>
+						</Banner>
+					)}
 
-				{homePage && homePage.thumbnail2 && homePage.thumbnail2[0] && (
-					<Banner>
-						<Img
-							loading='lazy'
-							srcSet={
-								homePage &&
-								homePage.thumbnail2 &&
-								homePage.thumbnail2[0] &&
-								homePage.thumbnail2[0].url
-							}
-						/>
-						<Overlay />
-						<BannerContent data-aos='fade-in' data-aos-delay='1000'>
-							<BannerText>
-								{homePage && homePage.header2 ? homePage.header2 : ""}
-							</BannerText>
-							<BannerButton to='/our-products'>SHOP NOW!</BannerButton>
-						</BannerContent>
-					</Banner>
-				)}
+					{homePage && homePage.thumbnail2 && homePage.thumbnail2[0] && (
+						<Banner>
+							<Img loading='lazy' srcSet={homePage.thumbnail2[0].url} />
+							<Overlay />
+							<BannerContent data-aos='fade-in' data-aos-delay='1000'>
+								<BannerText>{homePage.header2 || ""}</BannerText>
+								<BannerButton to='/our-products'>SHOP NOW!</BannerButton>
+							</BannerContent>
+						</Banner>
+					)}
 
-				{homePage && homePage.thumbnail3 && homePage.thumbnail3[0] && (
-					<Banner>
-						<Img
-							loading='lazy'
-							srcSet={
-								homePage &&
-								homePage.thumbnail3 &&
-								homePage.thumbnail3[0] &&
-								homePage.thumbnail3[0].url
-							}
-						/>
-						<Overlay />
-						<BannerContent data-aos='fade-in' data-aos-delay='1000'>
-							<BannerText>
-								{homePage && homePage.header3 ? homePage.header3 : ""}
-							</BannerText>
-							<BannerButton to='/our-products'>SHOP NOW!</BannerButton>
-						</BannerContent>
-					</Banner>
-				)}
-			</Slider>
-		</HeroComponentWrapper>
+					{homePage && homePage.thumbnail3 && homePage.thumbnail3[0] && (
+						<Banner>
+							<Img loading='lazy' srcSet={homePage.thumbnail3[0].url} />
+							<Overlay />
+							<BannerContent data-aos='fade-in' data-aos-delay='1000'>
+								<BannerText>{homePage.header3 || ""}</BannerText>
+								<BannerButton to='/our-products'>SHOP NOW!</BannerButton>
+							</BannerContent>
+						</Banner>
+					)}
+				</Slider>
+			</HeroComponentWrapper>
+		</Suspense>
 	);
 };
 

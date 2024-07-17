@@ -66,10 +66,10 @@ const ZCategories = ({ allCategories }) => {
 							onClick={() => handleCategoryClick(category.categoryName)}
 						>
 							<Link to={`/our-products?category=${category.categorySlug}`}>
-								{/* Ensure thumbnail exists and has at least one item */}
 								{category.thumbnail && category.thumbnail.length > 0 && (
 									<CategoryImageWrapper>
 										<CategoryImage
+											loading='lazy'
 											src={category.thumbnail[0].url}
 											alt={category.categoryName}
 										/>
@@ -148,7 +148,7 @@ const CategoryImageWrapper = styled.div`
 const CategoryImage = styled.img`
 	width: 100%;
 	height: 100%;
-	object-fit: fill;
+	object-fit: cover;
 	object-position: center;
 `;
 

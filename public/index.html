@@ -28,20 +28,27 @@
 		<meta property="og:type" content="website" />
 		<meta property="og:locale" content="en_US" />
 
-		<!-- <meta
-			name="facebook-domain-verification"
-			content="7ep1e76q53u7eukptogvhqx5waivyk"
-		/> -->
+		<!-- Critical CSS -->
+		<style>
+			/* Include your critical CSS here for above-the-fold content */
+			body {
+				font-family: "Roboto", sans-serif;
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+				background-color: #fff;
+			}
+		</style>
 
-		<link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-		<link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-
+		<!-- Defer non-critical CSS -->
 		<link
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
 			integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
 			crossorigin="anonymous"
 			referrerpolicy="no-referrer"
+			media="print"
+			onload="this.media='all'"
 		/>
 
 		<link
@@ -49,47 +56,58 @@
 			href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
 			crossorigin="anonymous"
+			media="print"
+			onload="this.media='all'"
 		/>
-		<link rel="stylesheet" href="bower_components/aos/dist/aos.css" />
 
 		<link
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"
+			media="print"
+			onload="this.media='all'"
 		/>
 
-		<link
-			rel="stylesheet"
-			href="//fonts.googleapis.com/earlyaccess/droidarabickufi.css"
-		/>
 		<link
 			rel="stylesheet"
 			type="text/css"
 			charset="UTF-8"
 			href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
+			media="print"
+			onload="this.media='all'"
 		/>
 		<link
 			rel="stylesheet"
 			type="text/css"
 			href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
+			media="print"
+			onload="this.media='all'"
 		/>
+
+		<noscript>
+			<link
+				rel="stylesheet"
+				href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+			/>
+			<link
+				rel="stylesheet"
+				href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+			/>
+			<link
+				rel="stylesheet"
+				href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"
+			/>
+			<link
+				rel="stylesheet"
+				href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
+			/>
+			<link
+				rel="stylesheet"
+				href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
+			/>
+		</noscript>
+
 		<link
 			href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-			rel="stylesheet"
-		/>
-
-		<!-- PacificoFont -->
-		<link
-			href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-			rel="stylesheet"
-		/>
-
-		<link
-			href="https://fonts.googleapis.com/css2?family=Rastantly+Cortez&display=swap"
-			rel="stylesheet"
-		/>
-
-		<link
-			href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap"
 			rel="stylesheet"
 		/>
 
@@ -98,7 +116,8 @@
 			rel="stylesheet"
 		/>
 
-		<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+		<!-- Defer JavaScript -->
+		<script defer src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 		<link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -141,10 +160,7 @@
 		/></noscript> -->
 		<!-- End Meta Pixel Code -->
 
-		<title>Serene Jannat | Best Gifts and Candles Online Shop</title>
-	</head>
-	<body>
-		<!-- Google tag (gtag.js) -->
+		<!-- Google Tag Manager -->
 		<script
 			async
 			src="https://www.googletagmanager.com/gtag/js?id=G-XJPBMN7HH5"
@@ -155,12 +171,14 @@
 				dataLayer.push(arguments);
 			}
 			gtag("js", new Date());
-
 			gtag("config", "G-XJPBMN7HH5");
 		</script>
+		<!-- End Google Tag Manager -->
 
+		<title>Serene Jannat | Best Gifts and Candles Online Shop</title>
+	</head>
+	<body>
 		<noscript>You need to enable JavaScript to run this app.</noscript>
-
 		<div id="root"></div>
 	</body>
 </html>
