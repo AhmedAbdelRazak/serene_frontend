@@ -65,20 +65,33 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 		autoplaySpeed: 4000,
 	};
 
-	const handleCartIconClick = (product) => {
+	const handleCartIconClick = async (product) => {
 		ReactGA.event({
 			category: "Add To The Cart Featured Products",
 			action: "User Added Featured Product To The Cart",
 			label: `User added ${product.productName} to the cart from Featured Products`,
 		});
-		readProduct(product._id).then((data3) => {
-			if (data3 && data3.error) {
-				console.log(data3.error);
-			} else {
+		try {
+			const data3 = await readProduct(product._id);
+			if (data3 && !data3.error) {
 				openSidebar2();
 				addToCart(product._id, null, 1, data3, product.productAttributes[0]);
 			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	const navigateToProduct = (product) => {
+		ReactGA.event({
+			category: "Featured Product Clicked",
+			action: "Featured Product Clicked",
+			label: `User Navigated to ${product.productName} single page`,
 		});
+		window.scrollTo({ top: 0, behavior: "smooth" });
+		history.push(
+			`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`
+		);
 	};
 
 	return (
@@ -90,16 +103,14 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 						featuredProducts.map((product, i) => {
 							const chosenProductAttributes = product.productAttributes[0];
 							const images =
-								product.productAttributes[0]?.productImages ||
+								chosenProductAttributes?.productImages ||
 								product.thumbnailImage[0].images;
 							const originalPrice =
-								chosenProductAttributes && chosenProductAttributes.price
-									? chosenProductAttributes.price
-									: product.price;
+								chosenProductAttributes?.price || product.price;
 							const discountedPrice =
 								product.priceAfterDiscount > 0
 									? product.priceAfterDiscount
-									: chosenProductAttributes.priceAfterDiscount;
+									: chosenProductAttributes?.priceAfterDiscount;
 
 							const discountPercentage =
 								((originalPrice - discountedPrice) / originalPrice) * 100;
@@ -114,17 +125,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 								<div key={i} className='slide'>
 									<ProductCard
 										hoverable
-										onClick={() => {
-											ReactGA.event({
-												category: "Featured Product Clicked",
-												action: "Featured Product Clicked",
-												label: `User Navigated to ${product.productName} single page`,
-											});
-											window.scrollTo({ top: 0, behavior: "smooth" });
-											history.push(
-												`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`
-											);
-										}}
+										onClick={() => navigateToProduct(product)}
 										cover={
 											<ImageContainer>
 												{discountPercentage > 0 && (
