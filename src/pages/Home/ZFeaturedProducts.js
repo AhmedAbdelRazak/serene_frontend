@@ -150,6 +150,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 																<ProductImage
 																	src={img.url}
 																	alt={`${product.productName} - view ${index + 1}`}
+																	loading='lazy'
 																/>
 															</ImageWrapper>
 														))}
@@ -159,6 +160,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 														<ProductImage
 															src={images[0].url}
 															alt={`${product.productName} - single view`}
+															loading='lazy'
 														/>
 													</ImageWrapper>
 												)}

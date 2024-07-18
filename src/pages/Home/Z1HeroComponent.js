@@ -48,7 +48,11 @@ const Z1HeroComponent = () => {
 				<Slider {...settingsHero}>
 					{homePage && homePage.thumbnail && homePage.thumbnail[0] && (
 						<Banner>
-							<Img loading='lazy' src={homePage.thumbnail[0].url} />
+							<Img
+								loading='lazy'
+								src={homePage.thumbnail[0].url}
+								alt='Serene Jannat Best Offers Of Candles, Gifts, Vases and Decor Votives'
+							/>
 							<Overlay />
 							<BannerContent data-aos='fade-in' data-aos-delay='1000'>
 								<BannerText>{homePage.header1 || ""}</BannerText>
@@ -69,7 +73,11 @@ const Z1HeroComponent = () => {
 
 					{homePage && homePage.thumbnail2 && homePage.thumbnail2[0] && (
 						<Banner>
-							<Img loading='lazy' src={homePage.thumbnail2[0].url} />
+							<Img
+								loading='lazy'
+								src={homePage.thumbnail2[0].url}
+								alt='Serene Jannat Candles And Gifts'
+							/>
 							<Overlay />
 							<BannerContent data-aos='fade-in' data-aos-delay='1000'>
 								<BannerText>{homePage.header2 || ""}</BannerText>
@@ -80,7 +88,11 @@ const Z1HeroComponent = () => {
 
 					{homePage && homePage.thumbnail3 && homePage.thumbnail3[0] && (
 						<Banner>
-							<Img loading='lazy' src={homePage.thumbnail3[0].url} />
+							<Img
+								loading='lazy'
+								src={homePage.thumbnail3[0].url}
+								alt='Serene Jannat Candles And Gifts'
+							/>
 							<Overlay />
 							<BannerContent data-aos='fade-in' data-aos-delay='1000'>
 								<BannerText>{homePage.header3 || ""}</BannerText>

@@ -142,6 +142,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 																<ProductImage
 																	src={img.url}
 																	alt={`${product.productName} - view ${index + 1}`}
+																	loading='lazy'
 																/>
 															</ImageWrapper>
 														))}
@@ -151,6 +152,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 														<ProductImage
 															src={images[0].url}
 															alt={`${product.productName} - single view`}
+															loading='lazy'
 														/>
 													</ImageWrapper>
 												)}
