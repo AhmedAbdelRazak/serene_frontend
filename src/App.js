@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense, lazy } from "react";
+import React, { useEffect, useState } from "react";
 import { Route, BrowserRouter, Switch } from "react-router-dom";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
@@ -7,52 +7,45 @@ import "slick-carousel/slick/slick-theme.css";
 import "react-quill/dist/quill.snow.css";
 import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
-import NavbarTop from "./NavbarUpdate/NavbarTop";
-import NavbarBottom from "./NavbarUpdate/NavbarBottom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Footer from "./Footer";
 
-// Lazy load components
-const Login = lazy(() => import("./pages/Login"));
-const Register = lazy(() => import("./pages/Register"));
-const Home = lazy(() => import("./pages/Home/Home"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
-const RetExchPolicy = lazy(() => import("./pages/RetExchPolicy"));
-const About = lazy(() => import("./pages/About/About"));
-const Cart = lazy(() => import("./pages/Checkout/Cart"));
-const AdminDashboard = lazy(
-	() => import("./Admin/AdminMainDashboard/AdminDashboard")
-);
-const CategoriesMain = lazy(() => import("./Admin/Categories/CategoriesMain"));
-const SubcategoryMain = lazy(
-	() => import("./Admin/Subcategory/SubcategoryMain")
-);
-const ParentMain = lazy(() => import("./Admin/Gender/GenderMain"));
-const AttributesMain = lazy(() => import("./Admin/Attributes/AttributesMain"));
-const ProductMain = lazy(() => import("./Admin/Product/ProductMain"));
-const StoreSettingsMain = lazy(
-	() => import("./Admin/StoreSettings/StoreSettingsMain")
-);
-const EditWebsiteMain = lazy(
-	() => import("./Admin/EditingWebsite/EditWebsiteMain")
-);
-const CustomerServiceSupportMain = lazy(
-	() => import("./Admin/Chat/CustomerServiceSupportMain")
-);
-const StorePOSMain = lazy(() => import("./Admin/StorePOS/StorePOSMain"));
-const UserDashboard = lazy(() => import("./User/UserDashboard"));
-const SingleProductMain = lazy(
-	() => import("./pages/SingleProduct/SingleProductMain")
-);
-const ShopPageMain = lazy(() => import("./pages/ShopPage/ShopPageMain"));
-const ContactUs = lazy(() => import("./pages/Contact/ContactUs"));
-const ChatIcon = lazy(() => import("./Chat/ChatIcon"));
-const LinkGenerated = lazy(() => import("./Admin/StorePOS/LinkGenerated"));
-const CouponManagement = lazy(
-	() => import("./Admin/CouponManagement/CouponManagement")
-);
-const AdminRoute = lazy(() => import("./auth/AdminRoute"));
-const PrivateRoute = lazy(() => import("./auth/PrivateRoute"));
+//Store
+import NavbarTop from "./NavbarUpdate/NavbarTop";
+import NavbarBottom from "./NavbarUpdate/NavbarBottom";
+
+// eslint-disable-next-line
+import { isAuthenticated } from "./auth";
+import Home from "./pages/Home/Home";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import CookiePolicy from "./pages/CookiePolicy";
+import RetExchPolicy from "./pages/RetExchPolicy";
+import About from "./pages/About/About";
+import Cart from "./pages/Checkout/Cart";
+
+//Admin Routes
+import AdminDashboard from "./Admin/AdminMainDashboard/AdminDashboard";
+import AdminRoute from "./auth/AdminRoute";
+import CategoriesMain from "./Admin/Categories/CategoriesMain";
+import SubcategoryMain from "./Admin/Subcategory/SubcategoryMain";
+import ParentMain from "./Admin/Gender/GenderMain";
+import AttributesMain from "./Admin/Attributes/AttributesMain";
+import ProductMain from "./Admin/Product/ProductMain";
+import StoreSettingsMain from "./Admin/StoreSettings/StoreSettingsMain";
+import EditWebsiteMain from "./Admin/EditingWebsite/EditWebsiteMain";
+import CustomerServiceSupportMain from "./Admin/Chat/CustomerServiceSupportMain";
+import StorePOSMain from "./Admin/StorePOS/StorePOSMain";
+
+//Client Routes
+import PrivateRoute from "./auth/PrivateRoute";
+import UserDashboard from "./User/UserDashboard";
+import SingleProductMain from "./pages/SingleProduct/SingleProductMain";
+import ShopPageMain from "./pages/ShopPage/ShopPageMain";
+import ContactUs from "./pages/Contact/ContactUs";
+import ChatIcon from "./Chat/ChatIcon";
+import LinkGenerated from "./Admin/StorePOS/LinkGenerated";
+import CouponManagement from "./Admin/CouponManagement/CouponManagement";
 
 const App = () => {
 	// eslint-disable-next-line
@@ -109,117 +102,96 @@ const App = () => {
 	return (
 		<BrowserRouter>
 			<ToastContainer className='toast-top-center' position='top-center' />
-			<Suspense fallback={<div>Loading...</div>}>
-				{window.location.pathname.includes("admin") ? null : (
-					<>
-						<NavbarTop />
 
-						<NavbarBottom />
-					</>
-				)}
+			{window.location.pathname.includes("admin") ? null : (
+				<>
+					<NavbarTop />
 
-				<Switch>
-					<Route
-						path='/'
-						exact
-						component={() => <Home chosenLanguage={language} />}
-					/>
-					<Route
-						path='/about'
-						exact
-						component={() => <About chosenLanguage={language} />}
-					/>
+					<NavbarBottom />
+				</>
+			)}
 
-					<Route
-						path='/single-product/:productSlug/:categorySlug/:productId'
-						exact
-						component={() => <SingleProductMain chosenLanguage={language} />}
-					/>
+			<Switch>
+				<Route
+					path='/'
+					exact
+					component={() => <Home chosenLanguage={language} />}
+				/>
+				<Route
+					path='/about'
+					exact
+					component={() => <About chosenLanguage={language} />}
+				/>
 
-					<Route path='/our-products' exact component={ShopPageMain} />
-					<Route path='/contact' exact component={ContactUs} />
+				<Route
+					path='/single-product/:productSlug/:categorySlug/:productId'
+					exact
+					component={() => <SingleProductMain chosenLanguage={language} />}
+				/>
 
-					<Route
-						path='/privacy-policy-terms-conditions'
-						exact
-						component={PrivacyPolicy}
-					/>
-					<Route path='/cookie-policy' exact component={CookiePolicy} />
-					<Route
-						path='/return-exchange-policy'
-						exact
-						component={RetExchPolicy}
-					/>
-					<Route path='/signup' exact component={Register} />
-					<Route path='/signin' exact component={Login} />
-					<Route path='/cart' exact component={Cart} />
-					<Route
-						path='/payment-link/:orderId'
-						exact
-						component={LinkGenerated}
-					/>
+				<Route path='/our-products' exact component={ShopPageMain} />
+				<Route path='/contact' exact component={ContactUs} />
 
-					<AdminRoute
-						path='/admin/dashboard'
-						exact
-						component={AdminDashboard}
-					/>
-					<AdminRoute
-						path='/admin/categories'
-						exact
-						component={CategoriesMain}
-					/>
-					<AdminRoute path='/admin/gender' exact component={ParentMain} />
-					<AdminRoute
-						path='/admin/attributes'
-						exact
-						component={AttributesMain}
-					/>
-					<AdminRoute path='/admin/products' exact component={ProductMain} />
-					<AdminRoute
-						path='/admin/customer-service'
-						exact
-						component={CustomerServiceSupportMain}
-					/>
+				<Route
+					path='/privacy-policy-terms-conditions'
+					exact
+					component={PrivacyPolicy}
+				/>
+				<Route path='/cookie-policy' exact component={CookiePolicy} />
+				<Route path='/return-exchange-policy' exact component={RetExchPolicy} />
+				<Route path='/signup' exact component={Register} />
+				<Route path='/signin' exact component={Login} />
+				<Route path='/cart' exact component={Cart} />
+				<Route path='/payment-link/:orderId' exact component={LinkGenerated} />
 
-					<AdminRoute
-						path='/admin/store-management'
-						exact
-						component={() => <StoreSettingsMain />}
-					/>
-					<AdminRoute
-						path='/admin/subcategories'
-						exact
-						component={SubcategoryMain}
-					/>
-					<AdminRoute
-						path='/admin/website-management'
-						exact
-						component={EditWebsiteMain}
-					/>
+				<AdminRoute path='/admin/dashboard' exact component={AdminDashboard} />
+				<AdminRoute path='/admin/categories' exact component={CategoriesMain} />
+				<AdminRoute path='/admin/gender' exact component={ParentMain} />
+				<AdminRoute path='/admin/attributes' exact component={AttributesMain} />
+				<AdminRoute path='/admin/products' exact component={ProductMain} />
+				<AdminRoute
+					path='/admin/customer-service'
+					exact
+					component={CustomerServiceSupportMain}
+				/>
 
-					<AdminRoute path='/admin/store-pos' exact component={StorePOSMain} />
+				<AdminRoute
+					path='/admin/store-management'
+					exact
+					component={() => <StoreSettingsMain />}
+				/>
+				<AdminRoute
+					path='/admin/subcategories'
+					exact
+					component={SubcategoryMain}
+				/>
+				<AdminRoute
+					path='/admin/website-management'
+					exact
+					component={EditWebsiteMain}
+				/>
 
-					<AdminRoute
-						path='/admin/coupon-management'
-						exact
-						component={CouponManagement}
-					/>
+				<AdminRoute path='/admin/store-pos' exact component={StorePOSMain} />
 
-					<PrivateRoute path='/dashboard' exact component={UserDashboard} />
-				</Switch>
-				{window.location.pathname.includes("admin") ? null : (
-					<>
-						<ChatIcon />
-					</>
-				)}
+				<AdminRoute
+					path='/admin/coupon-management'
+					exact
+					component={CouponManagement}
+				/>
 
-				{window.location.pathname.includes("admin") ? null : (
-					<>
-						<Footer />
-					</>
-				)}
-			</Suspense>
+				<PrivateRoute path='/dashboard' exact component={UserDashboard} />
+			</Switch>
+			{window.location.pathname.includes("admin") ? null : (
+				<>
+					<ChatIcon />
+				</>
+			)}
+
+			{window.location.pathname.includes("admin") ? null : (
+				<>
+					<Footer />
+				</>
+			)}
 		</BrowserRouter>
 	);
 };
