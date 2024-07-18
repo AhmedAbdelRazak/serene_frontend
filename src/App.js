@@ -1,19 +1,19 @@
-/** @format */
-
-import React, { useEffect, useState, lazy, Suspense } from "react";
-import { Route, BrowserRouter, Switch, useLocation } from "react-router-dom";
+import React, { useEffect, useState, Suspense, lazy } from "react";
+import { Route, BrowserRouter, Switch } from "react-router-dom";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "react-quill/dist/quill.snow.css";
 import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
+import NavbarTop from "./NavbarUpdate/NavbarTop";
+import NavbarBottom from "./NavbarUpdate/NavbarBottom";
 import Footer from "./Footer";
 
+// Lazy load components
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
-const NavbarTop = lazy(() => import("./NavbarUpdate/NavbarTop"));
-const NavbarBottom = lazy(() => import("./NavbarUpdate/NavbarBottom"));
 const Home = lazy(() => import("./pages/Home/Home"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
@@ -23,7 +23,6 @@ const Cart = lazy(() => import("./pages/Checkout/Cart"));
 const AdminDashboard = lazy(
 	() => import("./Admin/AdminMainDashboard/AdminDashboard")
 );
-const AdminRoute = lazy(() => import("./auth/AdminRoute"));
 const CategoriesMain = lazy(() => import("./Admin/Categories/CategoriesMain"));
 const SubcategoryMain = lazy(
 	() => import("./Admin/Subcategory/SubcategoryMain")
@@ -41,7 +40,6 @@ const CustomerServiceSupportMain = lazy(
 	() => import("./Admin/Chat/CustomerServiceSupportMain")
 );
 const StorePOSMain = lazy(() => import("./Admin/StorePOS/StorePOSMain"));
-const PrivateRoute = lazy(() => import("./auth/PrivateRoute"));
 const UserDashboard = lazy(() => import("./User/UserDashboard"));
 const SingleProductMain = lazy(
 	() => import("./pages/SingleProduct/SingleProductMain")
@@ -53,22 +51,28 @@ const LinkGenerated = lazy(() => import("./Admin/StorePOS/LinkGenerated"));
 const CouponManagement = lazy(
 	() => import("./Admin/CouponManagement/CouponManagement")
 );
+const AdminRoute = lazy(() => import("./auth/AdminRoute"));
+const PrivateRoute = lazy(() => import("./auth/PrivateRoute"));
 
 const App = () => {
-	const location = useLocation();
+	// eslint-disable-next-line
 	const [language, setLanguage] = useState("English");
+	// eslint-disable-next-line
+	const [allAdsCombined, setAllAdsCombined] = useState([]);
 
 	useEffect(() => {
 		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
-		ReactGA.send({
-			hitType: "pageview",
-			page: location.pathname + location.search,
-		});
+		ReactGA.send(window.location.pathname + window.location.search);
+
 		setLanguage("English");
-	}, [location]);
+
+		// eslint-disable-next-line
+	}, [window.location.pathname]);
 
 	const languageToggle = () => {
+		console.log(language);
 		localStorage.setItem("lang", JSON.stringify(language));
+		// window.location.reload(false);
 	};
 
 	useEffect(() => {
@@ -77,35 +81,43 @@ const App = () => {
 	}, [language]);
 
 	useEffect(() => {
-		if (!location.pathname.includes("/checkout")) {
+		if (window.location.pathname.includes("/checkout")) {
+			return;
+		} else {
 			localStorage.removeItem("PaidNow");
 			localStorage.removeItem("storedData");
 			localStorage.removeItem("chosenShippingOption");
 			localStorage.removeItem("orderDataStored");
 		}
-	}, [location]);
 
-	// const options = {
-	// 	autoConfig: true,
-	// 	debug: false,
-	// };
+		// eslint-disable-next-line
+	}, []);
 
-	// useEffect(() => {
-	// 	ReactPixel.init(process.env.REACT_APP_FACEBOOK_PIXEL_ID, options);
-	// 	ReactPixel.pageView();
-	// }, []);
+	const options = {
+		autoConfig: true,
+		debug: false,
+	};
+
+	useEffect(() => {
+		ReactPixel.init(process.env.REACT_APP_FACEBOOK_PIXEL_ID, options);
+
+		ReactPixel.pageView();
+
+		// eslint-disable-next-line
+	}, []);
 
 	return (
 		<BrowserRouter>
 			<ToastContainer className='toast-top-center' position='top-center' />
-			{!location.pathname.includes("admin") && (
-				<Suspense fallback={<div>Loading...</div>}>
-					<NavbarTop />
-					<NavbarBottom />
-				</Suspense>
-			)}
-
 			<Suspense fallback={<div>Loading...</div>}>
+				{window.location.pathname.includes("admin") ? null : (
+					<>
+						<NavbarTop />
+
+						<NavbarBottom />
+					</>
+				)}
+
 				<Switch>
 					<Route
 						path='/'
@@ -117,13 +129,16 @@ const App = () => {
 						exact
 						component={() => <About chosenLanguage={language} />}
 					/>
+
 					<Route
 						path='/single-product/:productSlug/:categorySlug/:productId'
 						exact
 						component={() => <SingleProductMain chosenLanguage={language} />}
 					/>
+
 					<Route path='/our-products' exact component={ShopPageMain} />
 					<Route path='/contact' exact component={ContactUs} />
+
 					<Route
 						path='/privacy-policy-terms-conditions'
 						exact
@@ -166,6 +181,7 @@ const App = () => {
 						exact
 						component={CustomerServiceSupportMain}
 					/>
+
 					<AdminRoute
 						path='/admin/store-management'
 						exact
@@ -181,22 +197,29 @@ const App = () => {
 						exact
 						component={EditWebsiteMain}
 					/>
+
 					<AdminRoute path='/admin/store-pos' exact component={StorePOSMain} />
+
 					<AdminRoute
 						path='/admin/coupon-management'
 						exact
 						component={CouponManagement}
 					/>
+
 					<PrivateRoute path='/dashboard' exact component={UserDashboard} />
 				</Switch>
-			</Suspense>
+				{window.location.pathname.includes("admin") ? null : (
+					<>
+						<ChatIcon />
+					</>
+				)}
 
-			{!location.pathname.includes("admin") && (
-				<Suspense fallback={<div>Loading...</div>}>
-					<ChatIcon />
-					<Footer />
-				</Suspense>
-			)}
+				{window.location.pathname.includes("admin") ? null : (
+					<>
+						<Footer />
+					</>
+				)}
+			</Suspense>
 		</BrowserRouter>
 	);
 };
