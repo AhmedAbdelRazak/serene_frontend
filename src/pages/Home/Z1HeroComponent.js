@@ -17,7 +17,7 @@ const Z1HeroComponent = () => {
 			if (data.error) {
 				console.log(data.error);
 			} else {
-				setHomePage(data && data[data.length - 1]);
+				setHomePage(data[data.length - 1]);
 			}
 		});
 	};
@@ -42,30 +42,13 @@ const Z1HeroComponent = () => {
 		adaptiveHeight: true,
 	};
 
-	const preloadImage = (src) => {
-		const img = new Image();
-		img.src = src;
-	};
-
-	useEffect(() => {
-		if (homePage.thumbnail) {
-			preloadImage(homePage.thumbnail[0].url);
-		}
-		if (homePage.thumbnail2) {
-			preloadImage(homePage.thumbnail2[0].url);
-		}
-		if (homePage.thumbnail3) {
-			preloadImage(homePage.thumbnail3[0].url);
-		}
-	}, [homePage]);
-
 	return (
 		<Suspense fallback={<div>Loading...</div>}>
 			<HeroComponentWrapper className='mx-auto text-center'>
 				<Slider {...settingsHero}>
 					{homePage && homePage.thumbnail && homePage.thumbnail[0] && (
 						<Banner>
-							<Img loading='lazy' srcSet={homePage.thumbnail[0].url} />
+							<Img loading='lazy' src={homePage.thumbnail[0].url} />
 							<Overlay />
 							<BannerContent data-aos='fade-in' data-aos-delay='1000'>
 								<BannerText>{homePage.header1 || ""}</BannerText>
@@ -86,7 +69,7 @@ const Z1HeroComponent = () => {
 
 					{homePage && homePage.thumbnail2 && homePage.thumbnail2[0] && (
 						<Banner>
-							<Img loading='lazy' srcSet={homePage.thumbnail2[0].url} />
+							<Img loading='lazy' src={homePage.thumbnail2[0].url} />
 							<Overlay />
 							<BannerContent data-aos='fade-in' data-aos-delay='1000'>
 								<BannerText>{homePage.header2 || ""}</BannerText>
@@ -97,7 +80,7 @@ const Z1HeroComponent = () => {
 
 					{homePage && homePage.thumbnail3 && homePage.thumbnail3[0] && (
 						<Banner>
-							<Img loading='lazy' srcSet={homePage.thumbnail3[0].url} />
+							<Img loading='lazy' src={homePage.thumbnail3[0].url} />
 							<Overlay />
 							<BannerContent data-aos='fade-in' data-aos-delay='1000'>
 								<BannerText>{homePage.header3 || ""}</BannerText>
@@ -120,21 +103,22 @@ const Banner = styled.div`
 	flex-direction: column;
 	overflow: hidden;
 	position: relative;
-	width: 100%;
-	height: 50vh;
+	width: 100%; /* Take full width */
+	height: 50vh; /* 70% of the visible height */
 
 	@media (max-width: 1000px) {
-		height: 42vh;
+		width: 100%; /* Take full width */
+		height: 42vh; /* 70% of the visible height */
 	}
 `;
 
 const Img = styled.img`
 	position: absolute;
 	inset: 0;
-	width: 100%;
-	height: 100%;
+	width: 100%; /* Take full width */
+	height: 100%; /* Take full height */
 	object-fit: cover;
-	object-position: center;
+	object-position: center; /* Center the image */
 `;
 
 const HeroComponentWrapper = styled.div`
@@ -182,13 +166,13 @@ const Overlay = styled.div`
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0, 0, 0, 0.25);
+	background-color: rgba(0, 0, 0, 0.25); /* Dark overlay with opacity */
 	z-index: 1;
 `;
 
 const BannerContent = styled.div`
 	position: absolute;
-	top: 25%;
+	top: 25%; /* 25% from the top */
 	left: 20%;
 	transform: translate(-50%, -50%);
 	color: white;
@@ -196,13 +180,14 @@ const BannerContent = styled.div`
 	z-index: 2;
 
 	@media (max-width: 700px) {
-		top: 20%;
+		position: absolute;
+		top: 20%; /* 25% from the top */
 		left: 10%;
 	}
 `;
 
 const BannerText = styled.h1`
-	font-family: "Allison", cursive;
+	font-family: "Allison", cursive; /* Update the font family */
 	font-size: 5rem;
 	font-weight: bolder;
 	max-width: 80%;
