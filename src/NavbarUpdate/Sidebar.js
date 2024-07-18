@@ -93,7 +93,7 @@ const Sidebar = ({
 			<SidebarWrapper isOpen={isSidebarOpen}>
 				<CloseIcon onClick={() => setIsSidebarOpen(false)} />
 				<Logo isOpen={isSidebarOpen}>
-					<img src={storeLogo} alt='Serene Janat Shop' />
+					<img src={storeLogo} alt='Serene Janat Shop Logo' loading='lazy' />
 				</Logo>
 				<HorizontalLine />
 				<NavContainer>

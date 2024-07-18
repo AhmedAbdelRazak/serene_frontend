@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8" />
+		<meta charset="utf-8" />
 		<link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#000000" />
@@ -25,12 +25,10 @@
 		<meta property="og:url" content="https://serenejannat.com" />
 		<meta property="og:type" content="website" />
 		<meta property="og:locale" content="en_US" />
-
-		<link
-			rel="preload"
-			as="image"
-			href="/path/to/largest-contentful-paint-image.webp"
-		/>
+		<link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+		<link rel="preload" href="%PUBLIC_URL%/path-to-hero-image.jpg" as="image" />
+		<link rel="preload" href="%PUBLIC_URL%/critical.css" as="style" />
+		<link rel="stylesheet" href="%PUBLIC_URL%/critical.css" />
 		<link
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
@@ -84,18 +82,10 @@
 			href="https://fonts.googleapis.com/css2?family=Allison&display=swap"
 			rel="stylesheet"
 		/>
-
 		<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 		<link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-		<title>Serene Jannat | Best Gifts and Candles Online Shop</title>
-	</head>
-	<body>
-		<noscript>You need to enable JavaScript to run this app.</noscript>
-		<div id="root"></div>
-
 		<!-- Google Tag Manager -->
 		<script
 			async
@@ -131,13 +121,11 @@
         fbq('init', '3506674879555844');
         fbq('track', 'PageView');
     </script> -->
-		<noscript>
-			<img
-				height="1"
-				width="1"
-				style="display: none"
-				src="https://www.facebook.com/tr?id=3506674879555844&ev=PageView&noscript=1"
-			/>
-		</noscript>
+
+		<title>Serene Jannat | Best Gifts and Candles Online Shop</title>
+	</head>
+	<body>
+		<noscript>You need to enable JavaScript to run this app.</noscript>
+		<div id="root"></div>
 	</body>
 </html>

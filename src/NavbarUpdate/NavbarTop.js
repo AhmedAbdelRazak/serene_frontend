@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { FaBars, FaUserPlus } from "react-icons/fa";
 import { AiOutlineShoppingCart } from "react-icons/ai";
-import Sidebar from "./Sidebar";
-import SidebarCart from "./SidebarCart";
 import { isAuthenticated, signout } from "../auth";
 import { getOnlineStoreData } from "../Global";
 import { useCartContext } from "../cart_context";
 
-const NavbarTop = () => {
+const Sidebar = React.lazy(() => import("./Sidebar"));
+const SidebarCart = React.lazy(() => import("./SidebarCart"));
+
+const NavbarTop = React.memo(() => {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [isCartOpen, setIsCartOpen] = useState(false);
 	const [activeLink, setActiveLink] = useState("");
@@ -108,7 +109,7 @@ const NavbarTop = () => {
 			/>
 		</>
 	);
-};
+});
 
 export default NavbarTop;
 
