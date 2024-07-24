@@ -2,12 +2,10 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import { useLocation } from "react-router-dom";
 
-// Utility function to capitalize the first letter of each word
 const capitalizeWords = (str) => {
 	return str.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
-// Utility function to escape JSON strings
 const escapeJsonString = (str) => {
 	return str
 		.replace(/\\/g, "\\\\")
@@ -19,14 +17,11 @@ const escapeJsonString = (str) => {
 		.replace(/\f/g, "\\f");
 };
 
-// Utility function to format the GTIN
 const formatGTIN = (sku) => {
 	let formattedSKU = sku.toString();
 	if (formattedSKU.length > 12) {
-		// If SKU is greater than 12, take the first 12 digits
 		formattedSKU = formattedSKU.substring(0, 12);
 	} else if (formattedSKU.length < 12) {
-		// If SKU is less than 12, repeat the SKU until it is 12 digits long
 		while (formattedSKU.length < 12) {
 			formattedSKU += sku.toString();
 		}
@@ -35,7 +30,6 @@ const formatGTIN = (sku) => {
 	return formattedSKU;
 };
 
-// Generate keywords from products array
 const generateKeywords = (products) => {
 	const categoryKeywords = products.map(
 		(product) => product.category.categoryName
@@ -44,7 +38,6 @@ const generateKeywords = (products) => {
 	return [...new Set([...categoryKeywords, ...productKeywords])].join(", ");
 };
 
-// Generate structured data for products
 const generateProductSchema = (products) => {
 	return products.map((product) => {
 		const hasVariables =
@@ -76,7 +69,7 @@ const generateProductSchema = (products) => {
 						"@type": "Review",
 						reviewRating: {
 							"@type": "Rating",
-							ratingValue: comment.rating || 5, // Default to 5 if no rating provided
+							ratingValue: comment.rating || 5,
 							bestRating: 5,
 							worstRating: 1,
 						},
@@ -125,7 +118,7 @@ const generateProductSchema = (products) => {
 				"@type": "Brand",
 				name: "Serene Jannat",
 			},
-			gtin: formatGTIN(product.productSKU), // Use the formatGTIN function here
+			gtin: formatGTIN(product.productSKU),
 			mpn,
 			offers: {
 				"@type": "Offer",
@@ -184,19 +177,20 @@ const generateProductSchema = (products) => {
 			},
 			review: reviews,
 			productID: product._id,
+			url: `https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`,
 		};
 	});
 };
 
 const ShopPageHelmet = ({ products }) => {
-	const location = useLocation(); // Use useLocation to get the current URL
+	const location = useLocation();
 
 	const title = "Our Products - Serene Jannat Gift Store";
 	const description =
 		"Explore our wide range of products including candles, glass items, and more at Serene Jannat Gift Store. Find the perfect gift for any occasion.";
 	const keywords = generateKeywords(products);
 	const productSchema = generateProductSchema(products);
-	const canonicalUrl = `https://serenejannat.com${location.pathname}${location.search}`; // Generate canonical URL dynamically
+	const canonicalUrl = `https://serenejannat.com${location.pathname}${location.search}`;
 
 	return (
 		<Helmet>

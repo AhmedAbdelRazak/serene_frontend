@@ -254,6 +254,7 @@ const Home = () => {
 					"@type": "AggregateRating",
 					ratingValue,
 					reviewCount,
+					url: `https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`,
 				},
 				review: reviews,
 				productID: product._id,

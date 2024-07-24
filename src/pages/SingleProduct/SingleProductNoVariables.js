@@ -161,90 +161,90 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 			<Helmet>
 				<script type='application/ld+json'>
 					{`
-		{
-			"@context": "http://schema.org",
-			"@type": "Product",
-			"name": "${escapeJsonString(product.productName)}",
-			"image": "${chosenImages[0]}",
-			"description": "${escapeJsonString(plainDescription)}",
-			"brand": {
-				"@type": "Brand",
-				"name": "Serene Jannat"
-			},
-			"gtin": "${formatGTIN(product.productSKU)}",
-			"mpn": "${product.productSKU}",
-			"offers": {
-				"@type": "Offer",
-				"priceCurrency": "USD",
-				"price": "${Number(product.priceAfterDiscount)}",
-				"priceValidUntil": "2026-12-31",
-				"availability": "${Number(product.quantity) > 0 ? "http://schema.org/InStock" : "http://schema.org/OutOfStock"}",
-				"itemCondition": "http://schema.org/NewCondition",
-				"hasMerchantReturnPolicy": {
-					"@type": "MerchantReturnPolicy",
-					"returnPolicyCategory": "https://serenejannat.com/privacy-policy-terms-conditions",
-					"merchantReturnDays": "7",
-					"merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions"
-				},
-				"shippingDetails": {
-					"@type": "OfferShippingDetails",
-					"shippingRate": {
-						"@type": "MonetaryAmount",
-						"value": "5.00",
-						"currency": "USD"
-					},
-					"deliveryTime": {
-						"@type": "ShippingDeliveryTime",
-						"handlingTime": {
-							"@type": "QuantitativeValue",
-							"minValue": 0,
-							"maxValue": 1,
-							"unitCode": "d"
-						},
-						"transitTime": {
-							"@type": "QuantitativeValue",
-							"minValue": 3,
-							"maxValue": 7,
-							"unitCode": "d"
-						}
-					},
-					"shippingDestination": {
-						"@type": "DefinedRegion",
-						"geoMidpoint": {
-							"@type": "GeoCoordinates",
-							"latitude": 37.7749,
-							"longitude": -122.4194
-						}
-					}
-				}
-			},
-			"aggregateRating": {
-				"@type": "AggregateRating",
-				"ratingValue": "${product.ratings.length > 0 ? (product.ratings.reduce((acc, rating) => acc + rating.star, 0) / product.ratings.length).toFixed(1) : 5.0}",
-				"reviewCount": "${product.ratings.length > 0 ? product.ratings.length : 1}"
-			},
-			"review": ${JSON.stringify(
-				product.comments && product.comments.length > 0
-					? product.comments.map((comment) => ({
-							"@type": "Review",
-							reviewRating: {
-								"@type": "Rating",
-								ratingValue: comment.rating || 5, // Default to 5 if no rating provided
-							},
-							author: {
-								"@type": "Person",
-								name: escapeJsonString(
-									comment.postedBy ? comment.postedBy.name : "Anonymous"
-								),
-							},
-							reviewBody: escapeJsonString(comment.text),
-							datePublished: new Date(comment.created).toISOString(),
-						}))
-					: []
-			)},
-			"productID": "${product._id}"
-		}
-		`}
+        {
+            "@context": "http://schema.org",
+            "@type": "Product",
+            "name": "${escapeJsonString(product.productName)}",
+            "image": "${chosenImages[0]}",
+            "description": "${escapeJsonString(plainDescription)}",
+            "brand": {
+                "@type": "Brand",
+                "name": "Serene Jannat"
+            },
+            "gtin": "${formatGTIN(product.productSKU)}",
+            "mpn": "${product.productSKU}",
+            "offers": {
+                "@type": "Offer",
+                "priceCurrency": "USD",
+                "price": "${Number(product.priceAfterDiscount)}",
+                "priceValidUntil": "2026-12-31",
+                "availability": "${Number(product.quantity) > 0 ? "http://schema.org/InStock" : "http://schema.org/OutOfStock"}",
+                "itemCondition": "http://schema.org/NewCondition",
+                "hasMerchantReturnPolicy": {
+                    "@type": "MerchantReturnPolicy",
+                    "returnPolicyCategory": "https://serenejannat.com/privacy-policy-terms-conditions",
+                    "merchantReturnDays": "7",
+                    "merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions"
+                },
+                "shippingDetails": {
+                    "@type": "OfferShippingDetails",
+                    "shippingRate": {
+                        "@type": "MonetaryAmount",
+                        "value": "5.00",
+                        "currency": "USD"
+                    },
+                    "deliveryTime": {
+                        "@type": "ShippingDeliveryTime",
+                        "handlingTime": {
+                            "@type": "QuantitativeValue",
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "unitCode": "d"
+                        },
+                        "transitTime": {
+                            "@type": "QuantitativeValue",
+                            "minValue": 3,
+                            "maxValue": 7,
+                            "unitCode": "d"
+                        }
+                    },
+                    "shippingDestination": {
+                        "@type": "DefinedRegion",
+                        "geoMidpoint": {
+                            "@type": "GeoCoordinates",
+                            "latitude": 37.7749,
+                            "longitude": -122.4194
+                        }
+                    }
+                }
+            },
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "${product.ratings.length > 0 ? (product.ratings.reduce((acc, rating) => acc + rating.star, 0) / product.ratings.length).toFixed(1) : 5.0}",
+                "reviewCount": "${product.ratings.length > 0 ? product.ratings.length : 1}"
+            },
+            "review": ${JSON.stringify(
+							product.comments && product.comments.length > 0
+								? product.comments.map((comment) => ({
+										"@type": "Review",
+										reviewRating: {
+											"@type": "Rating",
+											ratingValue: comment.rating || 5,
+										},
+										author: {
+											"@type": "Person",
+											name: escapeJsonString(
+												comment.postedBy ? comment.postedBy.name : "Anonymous"
+											),
+										},
+										reviewBody: escapeJsonString(comment.text),
+										datePublished: new Date(comment.created).toISOString(),
+									}))
+								: []
+						)},
+            "productID": "${product._id}"
+        }
+        `}
 				</script>
 				<link
 					rel='canonical'
