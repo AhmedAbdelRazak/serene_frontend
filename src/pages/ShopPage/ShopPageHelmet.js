@@ -18,14 +18,13 @@ const escapeJsonString = (str) => {
 };
 
 const formatGTIN = (sku) => {
-	let formattedSKU = sku.toString();
-	if (formattedSKU.length > 12) {
-		formattedSKU = formattedSKU.substring(0, 12);
-	} else if (formattedSKU.length < 12) {
+	let formattedSKU = sku.toString().replace(/[^0-9]/g, ""); // Remove non-numeric characters
+	if (formattedSKU.length > 14) {
+		formattedSKU = formattedSKU.substring(0, 14);
+	} else {
 		while (formattedSKU.length < 12) {
-			formattedSKU += sku.toString();
+			formattedSKU += "0"; // Pad with zeros until it reaches 12 digits
 		}
-		formattedSKU = formattedSKU.substring(0, 12);
 	}
 	return formattedSKU;
 };
@@ -106,7 +105,7 @@ const generateProductSchema = (products) => {
 					.join(", ")
 			: product.productSKU;
 
-		return {
+		const productSchema = {
 			"@context": "http://schema.org",
 			"@type": "Product",
 			name: capitalizeWords(escapeJsonString(product.productName)),
@@ -118,7 +117,6 @@ const generateProductSchema = (products) => {
 				"@type": "Brand",
 				name: "Serene Jannat",
 			},
-			gtin: formatGTIN(product.productSKU),
 			mpn,
 			offers: {
 				"@type": "Offer",
@@ -179,6 +177,12 @@ const generateProductSchema = (products) => {
 			productID: product._id,
 			url: `https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`,
 		};
+
+		if (product.productSKU && /\d/.test(product.productSKU)) {
+			productSchema.gtin = formatGTIN(product.productSKU); // Ensure GTIN is numeric and padded to 12 digits
+		}
+
+		return productSchema;
 	});
 };
 

@@ -90,16 +90,13 @@ const Home = () => {
 
 	// Utility function to format the GTIN
 	const formatGTIN = (sku) => {
-		let formattedSKU = sku.toString();
-		if (formattedSKU.length > 12) {
-			// If SKU is greater than 12, take the first 12 digits
-			formattedSKU = formattedSKU.substring(0, 12);
-		} else if (formattedSKU.length < 12) {
-			// If SKU is less than 12, repeat the SKU until it is 12 digits long
-			while (formattedSKU.length < 12) {
-				formattedSKU += sku.toString();
+		let formattedSKU = sku.toString().replace(/[^0-9]/g, ""); // Remove non-numeric characters
+		if (formattedSKU.length > 14) {
+			formattedSKU = formattedSKU.substring(0, 14);
+		} else if (formattedSKU.length < 14) {
+			while (formattedSKU.length < 14) {
+				formattedSKU += "0"; // Pad with zeros
 			}
-			formattedSKU = formattedSKU.substring(0, 12);
 		}
 		return formattedSKU;
 	};
@@ -186,7 +183,7 @@ const Home = () => {
 						.join(", ")
 				: product.productSKU;
 
-			return {
+			const productSchema = {
 				"@context": "http://schema.org",
 				"@type": "Product",
 				name: capitalizeWords(escapeJsonString(product.productName)),
@@ -198,7 +195,6 @@ const Home = () => {
 					"@type": "Brand",
 					name: "Serene Jannat",
 				},
-				gtin: formatGTIN(product.productSKU), // Use the formatGTIN function here
 				mpn,
 				offers: {
 					"@type": "Offer",
@@ -259,6 +255,12 @@ const Home = () => {
 				review: reviews,
 				productID: product._id,
 			};
+
+			if (product.productSKU && /\d/.test(product.productSKU)) {
+				productSchema.gtin = formatGTIN(product.productSKU); // Ensure GTIN is numeric and properly formatted
+			}
+
+			return productSchema;
 		});
 	};
 
