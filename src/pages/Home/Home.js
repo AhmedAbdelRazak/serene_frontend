@@ -209,8 +209,7 @@ const Home = () => {
 					itemCondition: "http://schema.org/NewCondition",
 					hasMerchantReturnPolicy: {
 						"@type": "MerchantReturnPolicy",
-						returnPolicyCategory:
-							"https://schema.org/ReturnPolicyCategoryFullRefund",
+						returnPolicyCategory: "https://schema.org/ReturnFullRefund",
 						merchantReturnDays: "7",
 						merchantReturnLink:
 							"https://serenejannat.com/privacy-policy-terms-conditions",
@@ -243,6 +242,10 @@ const Home = () => {
 						},
 						shippingDestination: {
 							"@type": "DefinedRegion",
+							addressCountry: {
+								"@type": "Country",
+								name: "US",
+							},
 							geoMidpoint: {
 								"@type": "GeoCoordinates",
 								latitude: 37.7749,

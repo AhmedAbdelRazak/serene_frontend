@@ -177,9 +177,9 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
                 "priceValidUntil": "2026-12-31",
                 "availability": "${Number(product.quantity) > 0 ? "http://schema.org/InStock" : "http://schema.org/OutOfStock"}",
                 "itemCondition": "http://schema.org/NewCondition",
-                 "hasMerchantReturnPolicy": {
+                "hasMerchantReturnPolicy": {
                     "@type": "MerchantReturnPolicy",
-                    "returnPolicyCategory": "https://schema.org/ReturnPolicyCategoryFullRefund",
+                    "returnPolicyCategory": "https://schema.org/ReturnFullRefund",
                     "merchantReturnDays": "7",
                     "merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions",
                     "applicableCountry": {
@@ -211,7 +211,10 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
                     },
                     "shippingDestination": {
                         "@type": "DefinedRegion",
-                        "addressCountry": "US",
+                        "addressCountry": {
+                            "@type": "Country",
+                            "name": "US"
+                        },
                         "geoMidpoint": {
                             "@type": "GeoCoordinates",
                             "latitude": 37.7749,
