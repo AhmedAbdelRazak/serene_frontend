@@ -229,6 +229,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 
 	const isOutOfStock = chosenAttributes.quantity <= 0;
 
+	// eslint-disable-next-line
 	const formatGTIN = (sku) => {
 		let formattedSKU = sku.toString().replace(/[^0-9]/g, ""); // Remove non-numeric characters
 		if (formattedSKU.length > 14) {
@@ -256,7 +257,6 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
                 "@type": "Brand",
                 "name": "Serene Jannat"
             },
-            "gtin": "${product.productSKU && /\d/.test(product.productSKU) ? formatGTIN(product.productSKU) : ""}",
             "mpn": "${escapeJsonString(product.productAttributes.map((attr) => `${product.productSKU}-${attr.SubSKU}`).join(", "))}",
             "offers": {
                 "@type": "Offer",
@@ -269,7 +269,8 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
                     "@type": "MerchantReturnPolicy",
                     "returnPolicyCategory": "https://serenejannat.com/privacy-policy-terms-conditions",
                     "merchantReturnDays": "7",
-                    "merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions"
+                    "merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions",
+                    "applicableCountry": "US"
                 },
                 "shippingDetails": {
                     "@type": "OfferShippingDetails",
@@ -295,6 +296,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
                     },
                     "shippingDestination": {
                         "@type": "DefinedRegion",
+                        "addressCountry": "US",
                         "geoMidpoint": {
                             "@type": "GeoCoordinates",
                             "latitude": 37.7749,
@@ -325,7 +327,8 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 								datePublished: new Date(comment.created).toISOString(),
 							}))
 						)},
-            "productID": "${product._id}"
+            "productID": "${product._id}",
+            "identifier_exists": false
         }
         `}
 				</script>

@@ -141,6 +141,7 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 		return str.replace(/\b\w/g, (char) => char.toUpperCase());
 	};
 
+	// eslint-disable-next-line
 	const formatGTIN = (sku) => {
 		let formattedSKU = sku.toString().replace(/[^0-9]/g, ""); // Remove non-numeric characters
 		if (formattedSKU.length > 14) {
@@ -168,7 +169,6 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
                 "@type": "Brand",
                 "name": "Serene Jannat"
             },
-            "gtin": "${product.productSKU && /\d/.test(product.productSKU) ? formatGTIN(product.productSKU) : ""}",
             "mpn": "${product.productSKU}",
             "offers": {
                 "@type": "Offer",
@@ -181,7 +181,8 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
                     "@type": "MerchantReturnPolicy",
                     "returnPolicyCategory": "https://serenejannat.com/privacy-policy-terms-conditions",
                     "merchantReturnDays": "7",
-                    "merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions"
+                    "merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions",
+                    "applicableCountry": "US"
                 },
                 "shippingDetails": {
                     "@type": "OfferShippingDetails",
@@ -207,6 +208,7 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
                     },
                     "shippingDestination": {
                         "@type": "DefinedRegion",
+                        "addressCountry": "US",
                         "geoMidpoint": {
                             "@type": "GeoCoordinates",
                             "latitude": 37.7749,
@@ -239,7 +241,8 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 									}))
 								: []
 						)},
-            "productID": "${product._id}"
+            "productID": "${product._id}",
+            "identifier_exists": false
         }
         `}
 				</script>

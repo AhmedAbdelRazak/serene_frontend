@@ -89,6 +89,7 @@ const Home = () => {
 	};
 
 	// Utility function to format the GTIN
+	// eslint-disable-next-line
 	const formatGTIN = (sku) => {
 		let formattedSKU = sku.toString().replace(/[^0-9]/g, ""); // Remove non-numeric characters
 		if (formattedSKU.length > 14) {
@@ -256,9 +257,11 @@ const Home = () => {
 				productID: product._id,
 			};
 
-			if (product.productSKU && /\d/.test(product.productSKU)) {
-				productSchema.gtin = formatGTIN(product.productSKU); // Ensure GTIN is numeric and properly formatted
-			}
+			// if (product.productSKU && /\d/.test(product.productSKU)) {
+			// 	productSchema.gtin = formatGTIN(product.productSKU); // Ensure GTIN is numeric and properly formatted
+			// }
+
+			productSchema["identifier_exists"] = false;
 
 			return productSchema;
 		});

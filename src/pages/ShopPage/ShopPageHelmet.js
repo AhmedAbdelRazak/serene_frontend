@@ -17,6 +17,7 @@ const escapeJsonString = (str) => {
 		.replace(/\f/g, "\\f");
 };
 
+// eslint-disable-next-line
 const formatGTIN = (sku) => {
 	let formattedSKU = sku.toString().replace(/[^0-9]/g, ""); // Remove non-numeric characters
 	if (formattedSKU.length > 14) {
@@ -29,6 +30,7 @@ const formatGTIN = (sku) => {
 	return formattedSKU;
 };
 
+// Generate keywords from products array
 const generateKeywords = (products) => {
 	const categoryKeywords = products.map(
 		(product) => product.category.categoryName
@@ -37,6 +39,7 @@ const generateKeywords = (products) => {
 	return [...new Set([...categoryKeywords, ...productKeywords])].join(", ");
 };
 
+// Generate structured data for products
 const generateProductSchema = (products) => {
 	return products.map((product) => {
 		const hasVariables =
@@ -135,6 +138,7 @@ const generateProductSchema = (products) => {
 					merchantReturnDays: "7",
 					merchantReturnLink:
 						"https://serenejannat.com/privacy-policy-terms-conditions",
+					applicableCountry: "US",
 				},
 				shippingDetails: {
 					"@type": "OfferShippingDetails",
@@ -160,6 +164,7 @@ const generateProductSchema = (products) => {
 					},
 					shippingDestination: {
 						"@type": "DefinedRegion",
+						addressCountry: "US",
 						geoMidpoint: {
 							"@type": "GeoCoordinates",
 							latitude: 37.7749,
@@ -178,9 +183,12 @@ const generateProductSchema = (products) => {
 			url: `https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`,
 		};
 
-		if (product.productSKU && /\d/.test(product.productSKU)) {
-			productSchema.gtin = formatGTIN(product.productSKU); // Ensure GTIN is numeric and padded to 12 digits
-		}
+		// if (product.productSKU && /\d/.test(product.productSKU)) {
+		// 	productSchema.gtin = formatGTIN(product.productSKU); // Ensure GTIN is numeric and padded to 12 digits
+		// } else {
+		// 	productSchema["identifier_exists"] = false;
+		// }
+		productSchema["identifier_exists"] = false;
 
 		return productSchema;
 	});
