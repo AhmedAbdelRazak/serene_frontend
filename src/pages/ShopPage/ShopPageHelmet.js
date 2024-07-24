@@ -133,6 +133,8 @@ const generateProductSchema = (products) => {
 				itemCondition: "http://schema.org/NewCondition",
 				hasMerchantReturnPolicy: {
 					"@type": "MerchantReturnPolicy",
+					returnPolicyCategory:
+						"https://schema.org/ReturnPolicyCategoryFullRefund",
 					merchantReturnDays: "7",
 					merchantReturnLink:
 						"https://serenejannat.com/privacy-policy-terms-conditions",

@@ -266,14 +266,15 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
                 "availability": "${gettingTotalProductQty() > 0 ? "http://schema.org/InStock" : "http://schema.org/OutOfStock"}",
                 "itemCondition": "http://schema.org/NewCondition",
                 "hasMerchantReturnPolicy": {
-					"@type": "MerchantReturnPolicy",
-					"merchantReturnDays": "7",
-					"merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions",
-					"applicableCountry": {
-						"@type": "Country",
-						"name": "US"
-					}
-				},
+                    "@type": "MerchantReturnPolicy",
+                    "returnPolicyCategory": "https://schema.org/ReturnPolicyCategoryFullRefund",
+                    "merchantReturnDays": "7",
+                    "merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions",
+                    "applicableCountry": {
+                        "@type": "Country",
+                        "name": "US"
+                    }
+                },
                 "shippingDetails": {
                     "@type": "OfferShippingDetails",
                     "shippingRate": {
