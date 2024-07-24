@@ -209,11 +209,13 @@ const Home = () => {
 					itemCondition: "http://schema.org/NewCondition",
 					hasMerchantReturnPolicy: {
 						"@type": "MerchantReturnPolicy",
-						returnPolicyCategory:
-							"https://serenejannat.com/privacy-policy-terms-conditions",
 						merchantReturnDays: "7",
 						merchantReturnLink:
 							"https://serenejannat.com/privacy-policy-terms-conditions",
+						applicableCountry: {
+							"@type": "Country",
+							name: "US",
+						},
 					},
 					shippingDetails: {
 						"@type": "OfferShippingDetails",
