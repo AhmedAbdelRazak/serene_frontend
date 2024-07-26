@@ -267,13 +267,15 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
                 "itemCondition": "http://schema.org/NewCondition",
                 "hasMerchantReturnPolicy": {
                     "@type": "MerchantReturnPolicy",
-                    "returnPolicyCategory": "https://schema.org/ReturnFullRefund",
-                    "merchantReturnDays": "7",
+                    "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                    "merchantReturnDays": 7,
                     "merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions",
                     "applicableCountry": {
                         "@type": "Country",
                         "name": "US"
-                    }
+                    },
+                    "returnMethod": "https://schema.org/ReturnByMail",
+                    "returnFees": "https://schema.org/FreeReturn"
                 },
                 "shippingDetails": {
                     "@type": "OfferShippingDetails",
@@ -374,7 +376,15 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 				<meta property='product:id' content={product._id} />
 				<meta
 					name='keywords'
-					content={`${product.category.categoryName}, ${product.productName}, ${product.subcategory && product.subcategory[0].SubcategoryName}, ${product.subcategory && product.subcategory[1] && product.subcategory[1].SubcategoryName}`}
+					content={`${product.category.categoryName}, ${product.productName}, ${
+						product.subcategory && product.subcategory[0]
+							? product.subcategory[0].SubcategoryName
+							: ""
+					}, ${
+						product.subcategory && product.subcategory[1]
+							? product.subcategory[1].SubcategoryName
+							: ""
+					}`}
 				/>
 				<meta charSet='utf-8' />
 				<title>

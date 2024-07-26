@@ -147,7 +147,7 @@ const Home = () => {
 							"@type": "Review",
 							reviewRating: {
 								"@type": "Rating",
-								ratingValue: comment.rating || 5, // Default to 5 if no rating provided
+								ratingValue: comment.rating || 5,
 								bestRating: 5,
 								worstRating: 1,
 							},
@@ -209,14 +209,17 @@ const Home = () => {
 					itemCondition: "http://schema.org/NewCondition",
 					hasMerchantReturnPolicy: {
 						"@type": "MerchantReturnPolicy",
-						returnPolicyCategory: "https://schema.org/ReturnFullRefund",
-						merchantReturnDays: "7",
+						returnPolicyCategory:
+							"https://schema.org/MerchantReturnFiniteReturnWindow",
+						merchantReturnDays: 7,
 						merchantReturnLink:
 							"https://serenejannat.com/privacy-policy-terms-conditions",
 						applicableCountry: {
 							"@type": "Country",
 							name: "US",
 						},
+						returnMethod: "https://schema.org/ReturnByMail",
+						returnFees: "https://schema.org/FreeReturn",
 					},
 					shippingDetails: {
 						"@type": "OfferShippingDetails",
@@ -258,16 +261,17 @@ const Home = () => {
 					"@type": "AggregateRating",
 					ratingValue,
 					reviewCount,
-					url: `https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`,
 				},
 				review: reviews,
 				productID: product._id,
+				url: `https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`,
 			};
 
 			// if (product.productSKU && /\d/.test(product.productSKU)) {
-			// 	productSchema.gtin = formatGTIN(product.productSKU); // Ensure GTIN is numeric and properly formatted
+			// 	productSchema.gtin = formatGTIN(product.productSKU); // Ensure GTIN is numeric and padded to 12 digits
+			// } else {
+			// 	productSchema["identifier_exists"] = false;
 			// }
-
 			productSchema["identifier_exists"] = false;
 
 			return productSchema;

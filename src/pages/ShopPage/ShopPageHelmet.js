@@ -133,14 +133,17 @@ const generateProductSchema = (products) => {
 				itemCondition: "http://schema.org/NewCondition",
 				hasMerchantReturnPolicy: {
 					"@type": "MerchantReturnPolicy",
-					returnPolicyCategory: "https://schema.org/ReturnFullRefund",
-					merchantReturnDays: "7",
+					returnPolicyCategory:
+						"https://schema.org/MerchantReturnFiniteReturnWindow",
+					merchantReturnDays: 7,
 					merchantReturnLink:
 						"https://serenejannat.com/privacy-policy-terms-conditions",
 					applicableCountry: {
 						"@type": "Country",
 						name: "US",
 					},
+					returnMethod: "https://schema.org/ReturnByMail",
+					returnFees: "https://schema.org/FreeReturn",
 				},
 				shippingDetails: {
 					"@type": "OfferShippingDetails",

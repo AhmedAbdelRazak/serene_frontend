@@ -175,17 +175,23 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
                 "priceCurrency": "USD",
                 "price": "${Number(product.priceAfterDiscount)}",
                 "priceValidUntil": "2026-12-31",
-                "availability": "${Number(product.quantity) > 0 ? "http://schema.org/InStock" : "http://schema.org/OutOfStock"}",
+                "availability": "${
+									Number(product.quantity) > 0
+										? "http://schema.org/InStock"
+										: "http://schema.org/OutOfStock"
+								}",
                 "itemCondition": "http://schema.org/NewCondition",
                 "hasMerchantReturnPolicy": {
                     "@type": "MerchantReturnPolicy",
-                    "returnPolicyCategory": "https://schema.org/ReturnFullRefund",
-                    "merchantReturnDays": "7",
+                    "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                    "merchantReturnDays": 7,
                     "merchantReturnLink": "https://serenejannat.com/privacy-policy-terms-conditions",
                     "applicableCountry": {
                         "@type": "Country",
                         "name": "US"
-                    }
+                    },
+                    "returnMethod": "https://schema.org/ReturnByMail",
+                    "returnFees": "https://schema.org/FreeReturn"
                 },
                 "shippingDetails": {
                     "@type": "OfferShippingDetails",
@@ -225,8 +231,19 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
             },
             "aggregateRating": {
                 "@type": "AggregateRating",
-                "ratingValue": "${product.ratings.length > 0 ? (product.ratings.reduce((acc, rating) => acc + rating.star, 0) / product.ratings.length).toFixed(1) : 5.0}",
-                "reviewCount": "${product.ratings.length > 0 ? product.ratings.length : 1}"
+                "ratingValue": "${
+									product.ratings.length > 0
+										? (
+												product.ratings.reduce(
+													(acc, rating) => acc + rating.star,
+													0
+												) / product.ratings.length
+											).toFixed(1)
+										: 5.0
+								}",
+                "reviewCount": "${
+									product.ratings.length > 0 ? product.ratings.length : 1
+								}"
             },
             "review": ${JSON.stringify(
 							product.comments && product.comments.length > 0
@@ -277,7 +294,15 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 				<meta property='product:id' content={product._id} />
 				<meta
 					name='keywords'
-					content={`${product.category.categoryName}, ${product.productName}, ${product.subcategory && product.subcategory[0] ? product.subcategory[0].SubcategoryName : ""}, ${product.subcategory && product.subcategory[1] ? product.subcategory[1].SubcategoryName : ""}`}
+					content={`${product.category.categoryName}, ${product.productName}, ${
+						product.subcategory && product.subcategory[0]
+							? product.subcategory[0].SubcategoryName
+							: ""
+					}, ${
+						product.subcategory && product.subcategory[1]
+							? product.subcategory[1].SubcategoryName
+							: ""
+					}`}
 				/>
 				<meta charSet='utf-8' />
 				<title>
