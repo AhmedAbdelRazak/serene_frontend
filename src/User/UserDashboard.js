@@ -13,6 +13,7 @@ import UpdateProfilePage from "./UpdateProfilePage";
 import ContactCustomerServicePage from "./ContactCustomerServicePage";
 import UserWishlist from "./UserWishlist";
 import styled from "styled-components";
+import { Helmet } from "react-helmet";
 
 const { Sider, Content } = Layout;
 
@@ -83,6 +84,21 @@ const UserDashboard = () => {
 
 	return (
 		<UserDashboardWrapper>
+			<Helmet>
+				{/* <script>
+					{`
+						gtag('event', 'conversion_event_purchase', {
+						  // <event_parameters>
+						});
+					`}
+				</script> */}
+
+				<script>
+					{`
+						gtag('event', 'conversion_event_purchase');
+					`}
+				</script>
+			</Helmet>
 			<Layout style={{ minHeight: "100vh" }}>
 				<Sider
 					collapsible

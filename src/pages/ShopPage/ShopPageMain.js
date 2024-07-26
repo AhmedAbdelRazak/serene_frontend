@@ -50,7 +50,7 @@ const ShopPageMain = () => {
 	const [page, setPage] = useState(1);
 	const [allColors, setAllColors] = useState([]);
 	const [drawerVisible, setDrawerVisible] = useState(false);
-	const records = 60;
+	const records = 80;
 
 	const { openSidebar2, addToCart } = useCartContext();
 
@@ -232,7 +232,11 @@ const ShopPageMain = () => {
 								>
 									<Option value=''>All Categories</Option>
 									{categories.map((category, i) => (
-										<Option key={i} value={category.id}>
+										<Option
+											style={{ textTransform: "capitalize" }}
+											key={i}
+											value={category.id}
+										>
 											{category.name}
 										</Option>
 									))}

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
+import { Input as AntdInput } from "antd";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { isAuthenticated } from "../../auth";
 
 const Z2StepOne = ({
@@ -8,6 +10,8 @@ const Z2StepOne = ({
 	handleCustomerDetailChange,
 	handleNextStep,
 	passwordError,
+	accountType,
+	handleAccountTypeChange,
 }) => {
 	const [errors, setErrors] = useState({
 		name: false,
@@ -17,6 +21,9 @@ const Z2StepOne = ({
 		confirmPassword: false,
 	});
 
+	const isUserAuthenticated = isAuthenticated() && isAuthenticated().user;
+
+	console.log(customerDetails, "customerDetails");
 	return (
 		<>
 			{step === 1 && (
@@ -46,26 +53,58 @@ const Z2StepOne = ({
 						onChange={handleCustomerDetailChange}
 						className={errors.phone ? "error" : ""}
 					/>
-					{isAuthenticated() &&
-					isAuthenticated().user &&
-					isAuthenticated().user.name ? null : (
+
+					{!isUserAuthenticated && (
+						<AccountTypeWrapper>
+							<label>
+								<input
+									type='radio'
+									name='accountType'
+									value='create'
+									checked={accountType === "create"}
+									onChange={(e) => handleAccountTypeChange(e.target.value)}
+								/>
+								<span>Create an Account</span>
+							</label>
+							<label>
+								<input
+									type='radio'
+									name='accountType'
+									value='guest'
+									checked={accountType === "guest"}
+									onChange={(e) => handleAccountTypeChange(e.target.value)}
+								/>
+								<span>Checkout as a Guest</span>
+							</label>
+						</AccountTypeWrapper>
+					)}
+
+					{accountType === "create" && (
 						<PasswordWrapper>
-							<Input
-								className={`w-50 ${errors.password ? "error" : ""}`}
-								type='password'
-								name='password'
-								placeholder='Password'
-								value={customerDetails.password}
-								onChange={handleCustomerDetailChange}
-							/>
-							<Input
-								className={`w-50 ${errors.confirmPassword ? "error" : ""}`}
-								type='password'
-								name='confirmPassword'
-								placeholder='Confirm Password'
-								value={customerDetails.confirmPassword}
-								onChange={handleCustomerDetailChange}
-							/>
+							<PasswordInputWrapper>
+								<AntdInput.Password
+									className={`password-input ${errors.password ? "error" : ""}`}
+									name='password'
+									placeholder='Password'
+									value={customerDetails.password}
+									onChange={handleCustomerDetailChange}
+									iconRender={(visible) =>
+										visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+									}
+								/>
+							</PasswordInputWrapper>
+							<PasswordInputWrapper>
+								<AntdInput.Password
+									className={`password-input ${errors.confirmPassword ? "error" : ""}`}
+									name='confirmPassword'
+									placeholder='Confirm Password'
+									value={customerDetails.confirmPassword}
+									onChange={handleCustomerDetailChange}
+									iconRender={(visible) =>
+										visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+									}
+								/>
+							</PasswordInputWrapper>
 						</PasswordWrapper>
 					)}
 
@@ -124,7 +163,7 @@ const Input = styled.input`
 	font-size: 1rem;
 
 	&.error {
-		border-color: #ff6b6b; // Light reddish color for error
+		border-color: #ff6b6b; /* Light reddish color for error */
 	}
 `;
 
@@ -168,8 +207,39 @@ const PasswordWrapper = styled.div`
 	}
 `;
 
+const PasswordInputWrapper = styled.div`
+	width: 100%;
+`;
+
 const Error = styled.p`
 	color: red;
 	font-size: 0.9rem;
 	text-align: center;
+`;
+
+const AccountTypeWrapper = styled.div`
+	display: flex;
+	justify-content: center;
+	margin: 20px 0;
+
+	label {
+		display: flex;
+		align-items: center;
+		font-size: 1rem;
+		font-weight: bold;
+		margin-right: 20px;
+
+		input {
+			margin-right: 5px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		flex-direction: column;
+		align-items: flex-start;
+		label {
+			margin-bottom: 10px;
+			margin-right: 0;
+		}
+	}
 `;

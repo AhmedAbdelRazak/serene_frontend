@@ -34,6 +34,8 @@ const Cart = () => {
 	const [comments, setComments] = useState("");
 	const [coupon, setCoupon] = useState("");
 	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [accountType, setAccountType] = useState("");
+
 	// eslint-disable-next-line
 	const history = useHistory();
 	const { user } = isAuthenticated();
@@ -173,6 +175,31 @@ const Cart = () => {
 
 	const handlePreviousStep = () => {
 		setStep(step - 1);
+	};
+
+	const handleCustomerDetailChange = (e) => {
+		const { name, value } = e.target;
+		setCustomerDetails((prevDetails) => ({
+			...prevDetails,
+			[name]: value,
+		}));
+	};
+
+	const handleAccountTypeChange = (newAccountType) => {
+		setAccountType(newAccountType);
+		if (newAccountType === "guest") {
+			setCustomerDetails((prevDetails) => ({
+				...prevDetails,
+				password: "SereneJannat123!",
+				confirmPassword: "SereneJannat123!",
+			}));
+		} else {
+			setCustomerDetails((prevDetails) => ({
+				...prevDetails,
+				password: "",
+				confirmPassword: "",
+			}));
+		}
 	};
 
 	// eslint-disable-next-line
@@ -316,14 +343,11 @@ const Cart = () => {
 						<Z2StepOne
 							step={step}
 							customerDetails={customerDetails}
-							handleCustomerDetailChange={(e) =>
-								setCustomerDetails({
-									...customerDetails,
-									[e.target.name]: e.target.value,
-								})
-							}
+							handleCustomerDetailChange={handleCustomerDetailChange}
 							handleNextStep={handleNextStep}
 							passwordError={passwordError}
+							accountType={accountType}
+							handleAccountTypeChange={handleAccountTypeChange}
 						/>
 						<Z3StepTwo
 							step={step}
@@ -349,12 +373,7 @@ const Cart = () => {
 							zipcode={zipcode}
 							handleZipCodeChange={(e) => setZipCode(e.target.value)}
 							customerDetails={customerDetails} // Pass customerDetails
-							handleCustomerDetailChange={(e) =>
-								setCustomerDetails({
-									...customerDetails,
-									[e.target.name]: e.target.value,
-								})
-							}
+							handleCustomerDetailChange={handleCustomerDetailChange}
 						/>
 						<Z4StepThree
 							step={step}

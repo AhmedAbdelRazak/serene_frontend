@@ -325,12 +325,10 @@ const Home = () => {
 				<ZSearch />
 			</div> */}
 			{!loading && allCategories && allCategories.length > 0 ? (
-				<div data-aos='fade-down'>
-					<ZCategories
-						allCategories={allCategories}
-						allSubcategories={allSubcategories}
-					/>
-				</div>
+				<ZCategories
+					allCategories={allCategories}
+					allSubcategories={allSubcategories}
+				/>
 			) : null}
 			{!loading && featuredProducts && featuredProducts.length > 0 ? (
 				<div data-aos='fade-up'>
