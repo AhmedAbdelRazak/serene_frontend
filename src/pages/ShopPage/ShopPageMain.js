@@ -564,7 +564,7 @@ const ShopPageMain = () => {
 														originalPrice > discountedPrice ? (
 															<span>
 																<OriginalPrice>
-																	Price: ${originalPrice}
+																	Price: ${originalPrice.toFixed(2)}
 																</OriginalPrice>{" "}
 																<DiscountedPrice>
 																	${discountedPrice}
@@ -572,7 +572,7 @@ const ShopPageMain = () => {
 															</span>
 														) : (
 															<DiscountedPrice>
-																Price: ${discountedPrice}
+																Price: ${discountedPrice.toFixed(2)}
 															</DiscountedPrice>
 														)
 													}
