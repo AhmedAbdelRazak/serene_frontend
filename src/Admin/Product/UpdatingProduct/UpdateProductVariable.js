@@ -444,7 +444,7 @@ const UpdatingProductVariable = ({
 														className='text-muted'
 														style={{ fontWeight: "bold", fontSize: "13px" }}
 													>
-														Manufacturing Price (Color:{" "}
+														Purchase Price (Color:{" "}
 														<span style={{ color: "black" }}>
 															{allColors[
 																allColors.map((i) => i.hexa).indexOf(p.color)
@@ -498,7 +498,7 @@ const UpdatingProductVariable = ({
 														className='text-muted'
 														style={{ fontWeight: "bold", fontSize: "13px" }}
 													>
-														Price After Discount (Color:{" "}
+														Selling Price (Color:{" "}
 														<span style={{ color: "black" }}>
 															{allColors[
 																allColors.map((i) => i.hexa).indexOf(p.color)

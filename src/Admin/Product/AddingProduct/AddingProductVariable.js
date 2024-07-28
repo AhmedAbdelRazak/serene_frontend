@@ -158,6 +158,7 @@ const AddingProductVariable = ({
 		}
 	};
 
+	// eslint-disable-next-line
 	const adjustingWholeSalePrice = (e, p) => {
 		const index = productAttributesFinal.findIndex((object) => {
 			return object.PK === p.size + p.color;
@@ -477,7 +478,7 @@ const AddingProductVariable = ({
 														className='text-muted'
 														style={{ fontWeight: "bold", fontSize: "13px" }}
 													>
-														Product Manufacturing Price (Color:{" "}
+														Purchase Price (Color:{" "}
 														<span style={{ color: "black" }}>
 															{allColors &&
 																allColors[0] &&
@@ -500,7 +501,7 @@ const AddingProductVariable = ({
 														className='text-muted'
 														style={{ fontWeight: "bold", fontSize: "13px" }}
 													>
-														Product Retailer Price (Color:{" "}
+														Retailer Price (Color:{" "}
 														<span style={{ color: "black" }}>
 															{allColors &&
 																allColors[0] &&
@@ -523,7 +524,7 @@ const AddingProductVariable = ({
 														className='text-muted'
 														style={{ fontWeight: "bold", fontSize: "13px" }}
 													>
-														Product Price After Discount (Color:{" "}
+														Selling Price (Color:{" "}
 														<span style={{ color: "black" }}>
 															{allColors &&
 																allColors[0] &&
@@ -542,7 +543,7 @@ const AddingProductVariable = ({
 													/>
 												</div>
 
-												<div className='form-group col-md-5 mx-auto'>
+												{/* <div className='form-group col-md-5 mx-auto'>
 													<label
 														className='text-muted'
 														style={{ fontWeight: "bold", fontSize: "13px" }}
@@ -564,7 +565,7 @@ const AddingProductVariable = ({
 														value={productAttributesFinal[i].WholeSalePrice}
 														required
 													/>
-												</div>
+												</div> */}
 
 												<div className='form-group col-md-5 mx-auto'>
 													<label

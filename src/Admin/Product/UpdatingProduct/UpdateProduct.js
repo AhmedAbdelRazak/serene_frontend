@@ -506,7 +506,7 @@ const UpdateProduct = () => {
 						</div>
 					) : (
 						<div>
-							<div className='mt-5 text-center'>
+							<div className='mt-5 float-right'>
 								<Button
 									style={{ fontWeight: "bold", fontSize: "1rem" }}
 									type='primary'
