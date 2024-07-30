@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import SingleProductNoVariables from "./SingleProductNoVariables";
 import SingleProductWithVariables from "./SingleProductWithVariables";
 import { gettingSingleProduct } from "../../apiCore"; // Adjust the path if needed
@@ -11,6 +11,7 @@ const SingleProductMain = () => {
 	const [product, setProduct] = useState(null);
 	const [error, setError] = useState(null);
 	const [likee, setLikee] = useState(false); // State to manage wishlist status
+	const history = useHistory();
 
 	useEffect(() => {
 		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
@@ -20,6 +21,18 @@ const SingleProductMain = () => {
 	}, [window.location.pathname]);
 
 	useEffect(() => {
+		const redirectMappings = {
+			"668881f07c77e46961b309e1":
+				"/single-product/glass-jellyfish-windchime-small-royal-blue/outdoors/669334c85e796e948f7f978f",
+			"668df0ae1faae48b9c615699":
+				"/single-product/glass-jellyfish-windchime-small-blue/outdoors/669331925e796e948f7f951f",
+		};
+
+		if (redirectMappings[productId]) {
+			history.push(redirectMappings[productId]);
+			return;
+		}
+
 		const fetchProduct = async () => {
 			try {
 				const product = await gettingSingleProduct(
@@ -34,7 +47,7 @@ const SingleProductMain = () => {
 		};
 
 		fetchProduct();
-	}, [productSlug, categorySlug, productId, likee]);
+	}, [productSlug, categorySlug, productId, likee, history]);
 
 	if (error) {
 		return <div>{error}</div>;
