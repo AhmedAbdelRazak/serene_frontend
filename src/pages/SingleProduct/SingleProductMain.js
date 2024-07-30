@@ -21,15 +21,9 @@ const SingleProductMain = () => {
 	}, [window.location.pathname]);
 
 	useEffect(() => {
-		const redirectMappings = {
-			"668881f07c77e46961b309e1":
-				"/single-product/glass-jellyfish-windchime-small-royal-blue/outdoors/669334c85e796e948f7f978f",
-			"668df0ae1faae48b9c615699":
-				"/single-product/glass-jellyfish-windchime-small-blue/outdoors/669331925e796e948f7f951f",
-		};
-
-		if (redirectMappings[productId]) {
-			history.push(redirectMappings[productId]);
+		if (categorySlug === "home-decor-outdoor") {
+			const newPath = `/single-product/${productSlug}/outdoors/${productId}`;
+			history.push(newPath);
 			return;
 		}
 
