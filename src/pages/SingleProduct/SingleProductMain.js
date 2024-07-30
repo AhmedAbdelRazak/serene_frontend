@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory, useLocation } from "react-router-dom";
 import SingleProductNoVariables from "./SingleProductNoVariables";
 import SingleProductWithVariables from "./SingleProductWithVariables";
 import { gettingSingleProduct } from "../../apiCore"; // Adjust the path if needed
@@ -12,6 +12,7 @@ const SingleProductMain = () => {
 	const [error, setError] = useState(null);
 	const [likee, setLikee] = useState(false); // State to manage wishlist status
 	const history = useHistory();
+	const location = useLocation();
 
 	useEffect(() => {
 		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
@@ -21,9 +22,17 @@ const SingleProductMain = () => {
 	}, [window.location.pathname]);
 
 	useEffect(() => {
-		if (categorySlug === "home-decor-outdoor") {
-			const newPath = `/single-product/${productSlug}/outdoors/${productId}`;
-			history.push(newPath);
+		const currentPath = location.pathname;
+
+		const redirectMappings = {
+			"/single-product/glass-jellyfish-windchime-green-small/home-decor-outdoor/668881f07c77e46961b309e1":
+				"/single-product/glass-jellyfish-windchime-small-green/outdoors/668881f07c77e46961b309e1",
+			"/single-product/glass-jellyfish-windchime-large-blue-large/home-decor-outdoor/668df0ae1faae48b9c615699":
+				"/single-product/glass-jellyfish-windchime-small-royal-blue/outdoors/669334c85e796e948f7f978f",
+		};
+
+		if (redirectMappings[currentPath]) {
+			history.push(redirectMappings[currentPath]);
 			return;
 		}
 
@@ -41,7 +50,7 @@ const SingleProductMain = () => {
 		};
 
 		fetchProduct();
-	}, [productSlug, categorySlug, productId, likee, history]);
+	}, [productSlug, categorySlug, productId, likee, history, location]);
 
 	if (error) {
 		return <div>{error}</div>;
