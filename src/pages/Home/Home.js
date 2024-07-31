@@ -1,19 +1,17 @@
-import React, { useEffect, useState, useCallback, Suspense, lazy } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
-import AOS from "aos";
-import "aos/dist/aos.css"; // Import AOS styles
+import Z1HeroComponent from "./Z1HeroComponent";
 import {
 	gettingCategoriesAndSubcategories,
 	gettingSpecificProducts,
 } from "../../apiCore";
-
-// Lazy load components
-const Z1HeroComponent = lazy(() => import("./Z1HeroComponent"));
-const ZCategories = lazy(() => import("./ZCategories"));
-const ZFeaturedProducts = lazy(() => import("./ZFeaturedProducts"));
-const ZNewArrival = lazy(() => import("./ZNewArrival"));
+import ZCategories from "./ZCategories";
+import AOS from "aos";
+import "aos/dist/aos.css"; // Import AOS styles
+import ZFeaturedProducts from "./ZFeaturedProducts";
+import ZNewArrival from "./ZNewArrival";
 
 const Home = () => {
 	const [allCategories, setAllCategories] = useState("");
@@ -22,7 +20,7 @@ const Home = () => {
 	const [newArrivalProducts, setNewArrivalProducts] = useState("");
 	const [loading, setLoading] = useState(true);
 
-	const distinctCategoriesAndSubcategories = useCallback(() => {
+	const distinctCategoriesAndSubcategories = () => {
 		setLoading(true);
 		gettingCategoriesAndSubcategories().then((data) => {
 			if (data && data.error) {
@@ -47,25 +45,30 @@ const Home = () => {
 						console.log(data3.error);
 					} else {
 						setNewArrivalProducts(data3);
+
 						setLoading(false);
 					}
 				});
 			}
 		});
-	}, []);
+	};
 
 	useEffect(() => {
 		distinctCategoriesAndSubcategories();
 		window.scrollTo({ top: 0, behavior: "smooth" });
-	}, [distinctCategoriesAndSubcategories]);
+		// eslint-disable-next-line
+	}, []);
 
 	useEffect(() => {
 		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
 		ReactGA.send(window.location.pathname + window.location.search);
-	}, []);
+
+		// eslint-disable-next-line
+	}, [window.location.pathname]);
 
 	useEffect(() => {
 		AOS.init({ duration: 2000 }); // Initializes AOS; 2000 is the animation duration in milliseconds
+		// Optionally, you can add settings for offset, delay, etc.
 	}, []);
 
 	// Utility function to capitalize the first letter of each word
@@ -315,25 +318,28 @@ const Home = () => {
 				featuredProducts={featuredProducts}
 				newArrivalProducts={newArrivalProducts}
 			/>
-			<Suspense fallback={<div>Loading...</div>}>
+			<div>
 				<Z1HeroComponent />
-				{!loading && allCategories && allCategories.length > 0 && (
-					<ZCategories
-						allCategories={allCategories}
-						allSubcategories={allSubcategories}
-					/>
-				)}
-				{!loading && featuredProducts && featuredProducts.length > 0 && (
-					<div data-aos='fade-up'>
-						<ZFeaturedProducts featuredProducts={featuredProducts} />
-					</div>
-				)}
-				{!loading && newArrivalProducts && newArrivalProducts.length > 0 && (
-					<div data-aos='fade-up'>
-						<ZNewArrival newArrivalProducts={newArrivalProducts} />
-					</div>
-				)}
-			</Suspense>
+			</div>
+			{/* <div className='pt-3'>
+				<ZSearch />
+			</div> */}
+			{!loading && allCategories && allCategories.length > 0 ? (
+				<ZCategories
+					allCategories={allCategories}
+					allSubcategories={allSubcategories}
+				/>
+			) : null}
+			{!loading && featuredProducts && featuredProducts.length > 0 ? (
+				<div data-aos='fade-up'>
+					<ZFeaturedProducts featuredProducts={featuredProducts} />
+				</div>
+			) : null}
+			{!loading && newArrivalProducts && newArrivalProducts.length > 0 ? (
+				<div data-aos='fade-up'>
+					<ZNewArrival newArrivalProducts={newArrivalProducts} />
+				</div>
+			) : null}
 		</HomeWrapper>
 	);
 };
