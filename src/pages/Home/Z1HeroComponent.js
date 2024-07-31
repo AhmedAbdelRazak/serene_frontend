@@ -1,5 +1,3 @@
-/** @format */
-
 import React, { useState, useEffect, Suspense } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -50,7 +48,7 @@ const Z1HeroComponent = () => {
 						<Banner>
 							<Img
 								loading='lazy'
-								src={homePage.thumbnail[0].url}
+								src={`${homePage.thumbnail[0].url}?auto=format&fit=max&w=1200`}
 								alt='Serene Jannat Best Offers Of Candles, Gifts, Vases and Decor Votives'
 							/>
 							<Overlay />
@@ -75,7 +73,7 @@ const Z1HeroComponent = () => {
 						<Banner>
 							<Img
 								loading='lazy'
-								src={homePage.thumbnail2[0].url}
+								src={`${homePage.thumbnail2[0].url}?auto=format&fit=max&w=1200`}
 								alt='Serene Jannat Candles And Gifts'
 							/>
 							<Overlay />
@@ -90,7 +88,7 @@ const Z1HeroComponent = () => {
 						<Banner>
 							<Img
 								loading='lazy'
-								src={homePage.thumbnail3[0].url}
+								src={`${homePage.thumbnail3[0].url}?auto=format&fit=max&w=1200`}
 								alt='Serene Jannat Candles And Gifts'
 							/>
 							<Overlay />
