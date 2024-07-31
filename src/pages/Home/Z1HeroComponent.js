@@ -254,6 +254,6 @@ const BannerButton2 = styled(Link)`
 		padding: 12px 22px;
 		text-decoration: none;
 		transition: var(--main-transition);
-		color: var(--text-color-light);
+		color: var (--text-color-light);
 	}
 `;

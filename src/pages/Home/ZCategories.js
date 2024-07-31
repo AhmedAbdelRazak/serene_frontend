@@ -1,18 +1,18 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { Card } from "antd";
 import ReactGA from "react-ga4";
 
 const ZCategories = ({ allCategories }) => {
-	const handleCategoryClick = (categoryName) => {
+	const handleCategoryClick = useCallback((categoryName) => {
 		ReactGA.event({
 			category: "Category Clicked Home Page",
 			action: "User Clicked On Category In Home Page",
 			label: `User Clicked on ${categoryName} In The Home Page`,
 		});
 		window.scrollTo({ top: 0, behavior: "smooth" });
-	};
+	}, []);
 
 	return (
 		<Container>
@@ -27,7 +27,7 @@ const ZCategories = ({ allCategories }) => {
 								<CategoryImageWrapper>
 									<CategoryImage
 										loading='lazy'
-										src={category.thumbnail[0].url}
+										src={`${category.thumbnail[0].url}?auto=format&fit=max&w=600`}
 										alt={category.categoryName}
 									/>
 								</CategoryImageWrapper>
@@ -41,7 +41,7 @@ const ZCategories = ({ allCategories }) => {
 	);
 };
 
-export default ZCategories;
+export default React.memo(ZCategories);
 
 const Container = styled.div`
 	background: var(--neutral-light);
