@@ -29,6 +29,10 @@ const ZCategories = ({ allCategories }) => {
 										loading='lazy'
 										src={`${category.thumbnail[0].url}?auto=format&fit=max&w=600`}
 										alt={category.categoryName}
+										srcSet={`${category.thumbnail[0].url}?auto=format&fit=max&w=300 300w,
+                             ${category.thumbnail[0].url}?auto=format&fit=max&w=600 600w`}
+										sizes='(max-width: 600px) 300px, 600px'
+										type='image/webp'
 									/>
 								</CategoryImageWrapper>
 							)}

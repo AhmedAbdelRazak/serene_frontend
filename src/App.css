@@ -79,21 +79,6 @@ body {
 	--main-spacing: 0.3rem;
 }
 
-@media (min-width: 950px) {
-	.overAllSidebar {
-		display: none;
-	}
-	.faaa-bars {
-		display: none;
-	}
-}
-
-@media (max-width: 900px) {
-	.loginGoogle {
-		font-size: 13px !important;
-	}
-}
-
 .spinning-loader {
 	margin-bottom: 550px !important;
 	margin-top: 150px !important;
