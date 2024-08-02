@@ -19,7 +19,12 @@ module.exports = {
 			{
 				test: /\.js$/,
 				exclude: /node_modules/,
-				use: "babel-loader",
+				use: {
+					loader: "babel-loader",
+					options: {
+						presets: ["@babel/preset-env", "@babel/preset-react"],
+					},
+				},
 			},
 			{
 				test: /\.css$/,
@@ -39,7 +44,16 @@ module.exports = {
 			chunks: "all",
 		},
 		minimize: true,
-		minimizer: [new TerserPlugin(), new CssMinimizerPlugin()],
+		minimizer: [
+			new TerserPlugin({
+				terserOptions: {
+					compress: {
+						drop_console: true,
+					},
+				},
+			}),
+			new CssMinimizerPlugin(),
+		],
 	},
 	plugins: [
 		new CleanWebpackPlugin(),
@@ -52,6 +66,11 @@ module.exports = {
 		}),
 		new BundleAnalyzerPlugin(), // Optional: for analyzing the bundle size
 	],
+	resolve: {
+		alias: {
+			react: path.resolve("./node_modules/react"),
+		},
+	},
 	devServer: {
 		contentBase: path.join(__dirname, "build"),
 		compress: true,
