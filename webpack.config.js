@@ -37,6 +37,19 @@ module.exports = {
 					filename: "images/[hash][ext][query]",
 				},
 			},
+			{
+				test: /\.(wav|mp3|ogg|flac|aac|m4a)$/i,
+				use: [
+					{
+						loader: "file-loader",
+						options: {
+							name: "[path][name].[hash].[ext]",
+							outputPath: "assets/audio",
+							publicPath: "assets/audio",
+						},
+					},
+				],
+			},
 		],
 	},
 	optimization: {
