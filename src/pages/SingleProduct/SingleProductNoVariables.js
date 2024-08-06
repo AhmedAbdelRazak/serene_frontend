@@ -173,7 +173,7 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
             "offers": {
                 "@type": "Offer",
                 "priceCurrency": "USD",
-                "price": "${Number(product.priceAfterDiscount)}",
+                "price": "${Number(product.priceAfterDiscount).toFixed(2)}",
                 "priceValidUntil": "2026-12-31",
                 "availability": "${
 									Number(product.quantity) > 0

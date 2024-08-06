@@ -200,7 +200,7 @@ const Home = () => {
 				offers: {
 					"@type": "Offer",
 					priceCurrency: "USD",
-					price: Number(price),
+					price: Number(price).toFixed(2),
 					priceValidUntil,
 					availability:
 						quantity > 0

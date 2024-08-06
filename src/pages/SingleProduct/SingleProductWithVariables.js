@@ -261,7 +261,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
             "offers": {
                 "@type": "Offer",
                 "priceCurrency": "USD",
-                "price": "${Number(chosenAttributes.priceAfterDiscount || product.productAttributes[0].priceAfterDiscount)}",
+                "price": "${Number(chosenAttributes.priceAfterDiscount || product.productAttributes[0].priceAfterDiscount).toFixed(2)}",
                 "priceValidUntil": "2026-12-31",
                 "availability": "${gettingTotalProductQty() > 0 ? "http://schema.org/InStock" : "http://schema.org/OutOfStock"}",
                 "itemCondition": "http://schema.org/NewCondition",
