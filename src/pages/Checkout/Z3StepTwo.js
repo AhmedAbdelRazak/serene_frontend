@@ -25,6 +25,48 @@ const Z3StepTwo = ({
 	customerDetails,
 	handleCustomerDetailChange,
 }) => {
+	const closeCities = [
+		"San Bernardino",
+		"Riverside",
+		"Redlands",
+		"Ontario",
+		"Fontana",
+		"Rancho Cucamonga",
+		"Colton",
+		"Loma Linda",
+		"Highland",
+		"Hesperia",
+		"Moreno Valley",
+		"Crestline",
+		"Twin Peaks",
+		"Big Bear",
+		"Blue Jay",
+		"Inland Empire",
+		"Anaheim",
+		"Orange County",
+		"Banning",
+		"Redlands",
+		"Upland",
+		"Chino",
+		"Montclair",
+	];
+
+	const isLocalShipping = shipmentChosen._id === "66c2a28f9a509e5920162709";
+	const isStateCalifornia = state.toLowerCase() === "california";
+	const isCityNotInCloseCities = !closeCities.some((closeCity) =>
+		city.toLowerCase().includes(closeCity.toLowerCase())
+	);
+
+	const filteredShippingOptions = allShippingOptions.filter((option) => {
+		if (!isStateCalifornia) {
+			return (
+				option._id !== "66c2a28f9a509e5920162709" &&
+				option._id !== "66c2a2379a509e59201626da"
+			);
+		}
+		return true;
+	});
+
 	return (
 		<>
 			{step === 2 && (
@@ -119,21 +161,26 @@ const Z3StepTwo = ({
 							Choose a carrier
 						</label>
 					</>
-					{allShippingOptions &&
-						allShippingOptions.map((option) => (
-							<ShippingOption key={option._id}>
-								<ShippingLabel>
-									<input
-										type='radio'
-										name='shippingOption'
-										value={option._id}
-										checked={shipmentChosen._id === option._id}
-										onChange={handleShippingOptionChange}
-									/>
-									{option.carrierName} - ${option.shippingPrice}
-								</ShippingLabel>
-							</ShippingOption>
-						))}
+					{filteredShippingOptions.map((option) => (
+						<ShippingOption key={option._id}>
+							<ShippingLabel>
+								<input
+									type='radio'
+									name='shippingOption'
+									value={option._id}
+									checked={shipmentChosen._id === option._id}
+									onChange={handleShippingOptionChange}
+								/>
+								{option.carrierName} - ${option.shippingPrice}
+							</ShippingLabel>
+						</ShippingOption>
+					))}
+					{isLocalShipping && isStateCalifornia && isCityNotInCloseCities && (
+						<WarningMessage>
+							Please ensure that you choose the correct shipping option, we are
+							only shipping to the cities {closeCities.join(", ")}.
+						</WarningMessage>
+					)}
 					<ButtonWrapper>
 						<BackButton onClick={handlePreviousStep}>Back</BackButton>
 						<ContinueButton
@@ -314,4 +361,11 @@ const BackButton = styled.button`
 		width: 100%;
 		margin-bottom: 10px;
 	}
+`;
+
+const WarningMessage = styled.div`
+	color: red;
+	font-weight: bold;
+	margin-top: 10px;
+	font-size: 14px;
 `;

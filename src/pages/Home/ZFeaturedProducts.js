@@ -258,6 +258,11 @@ const ProductCard = styled(Card)`
 	max-height: 400px;
 	min-height: 400px;
 
+	@media (max-width: 700px) {
+		max-height: 500px;
+		min-height: 500px;
+	}
+
 	&:hover {
 		transform: translateY(-10px);
 		box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
@@ -281,6 +286,10 @@ const ImageWrapper = styled.div`
 	height: 300px;
 	overflow: hidden;
 	border-radius: 10px 10px 0 0;
+
+	@media (max-width: 700px) {
+		height: 400px;
+	}
 `;
 
 const ProductImage = styled.img`

@@ -703,8 +703,8 @@ const ProductCard = styled(Card)`
 	}
 
 	@media (max-width: 700px) {
-		min-height: 500px;
-		max-height: 500px;
+		min-height: 600px;
+		max-height: 600px;
 	}
 `;
 
@@ -715,7 +715,7 @@ const ImageContainer = styled.div`
 	border-radius: 10px 10px 0 0;
 
 	@media (max-width: 700px) {
-		height: 400px;
+		height: 500px;
 	}
 `;
 
