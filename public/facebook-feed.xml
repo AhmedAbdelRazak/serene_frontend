@@ -1,5 +1,5 @@
 
-        <rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+        <rss xmlns="http://www.facebook.com/2008/fbml" version="2.0">
             <channel>
                 <title>Serene Jannat Products</title>
                 <link>https://serenejannat.com</link>
@@ -15,7 +15,6 @@
                     <g:price>18.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0001-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -57,7 +56,6 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0002-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -99,7 +97,6 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0003-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -141,7 +138,6 @@
                     <g:price>32.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>planters</g:google_product_category>
                     <g:product_type><![CDATA[planters]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0004-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -183,7 +179,6 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0005-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -225,7 +220,6 @@
                     <g:price>39.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0006-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -267,7 +261,6 @@
                     <g:price>49.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0007-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -309,7 +302,6 @@
                     <g:price>14.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>votives</g:google_product_category>
                     <g:product_type><![CDATA[votives]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0008-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -351,7 +343,6 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0009-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -393,7 +384,6 @@
                     <g:price>49.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0010-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -435,7 +425,6 @@
                     <g:price>17.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0011-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -477,7 +466,6 @@
                     <g:price>49.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0012-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -519,7 +507,6 @@
                     <g:price>49.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0013-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -561,7 +548,6 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0014-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -603,7 +589,6 @@
                     <g:price>15.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0015-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -645,7 +630,6 @@
                     <g:price>15.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0016-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -687,7 +671,6 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0017-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -729,7 +712,6 @@
                     <g:price>35.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0018-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -771,7 +753,6 @@
                     <g:price>10.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>votives</g:google_product_category>
                     <g:product_type><![CDATA[votives]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0019-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -813,7 +794,6 @@
                     <g:price>39.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0020-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -855,7 +835,6 @@
                     <g:price>39.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0021-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -897,7 +876,6 @@
                     <g:price>31.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0022-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -939,7 +917,6 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>planters</g:google_product_category>
                     <g:product_type><![CDATA[planters]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0023-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -981,7 +958,6 @@
                     <g:price>35.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0024-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1023,7 +999,6 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0025-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1065,7 +1040,6 @@
                     <g:price>37.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0026-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1107,7 +1081,6 @@
                     <g:price>37.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0027-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1149,7 +1122,6 @@
                     <g:price>23.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0028-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1191,7 +1163,6 @@
                     <g:price>23.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0029-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1233,7 +1204,6 @@
                     <g:price>23.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0030-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1275,7 +1245,6 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0031-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1317,7 +1286,6 @@
                     <g:price>39.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0032-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1359,7 +1327,6 @@
                     <g:price>49.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0033-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1401,7 +1368,6 @@
                     <g:price>33.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0034-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1443,7 +1409,6 @@
                     <g:price>43.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0035-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1485,7 +1450,6 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0036-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1527,7 +1491,6 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0037-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1569,7 +1532,6 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0038-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1611,7 +1573,6 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0039-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1653,7 +1614,6 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0040-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1695,7 +1655,6 @@
                     <g:price>15.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>votives</g:google_product_category>
                     <g:product_type><![CDATA[votives]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0041-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1737,7 +1696,6 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0042-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1779,7 +1737,6 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0043-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1821,7 +1778,6 @@
                     <g:price>15.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0044-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1863,7 +1819,6 @@
                     <g:price>28.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0045-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1905,7 +1860,6 @@
                     <g:price>32.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0046-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1947,7 +1901,6 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0047-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -1989,7 +1942,6 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0048-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2031,7 +1983,6 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0049-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2073,7 +2024,6 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0050-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2115,7 +2065,6 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0051-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2157,7 +2106,6 @@
                     <g:price>20.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0052-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2199,7 +2147,6 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0053-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2241,7 +2188,6 @@
                     <g:price>13.08 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>t shirts</g:google_product_category>
                     <g:product_type><![CDATA[t shirts]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[12003650367291218953]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2284,7 +2230,6 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[13286251179063735237]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2327,7 +2272,6 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[17143622583668256301]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2370,7 +2314,6 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[36613641407255236455]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2413,7 +2356,6 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[23455276265019262945]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2456,7 +2398,6 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[10444181043460355550]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2499,7 +2440,6 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[14838926078310201223]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2541,7 +2481,6 @@
                     <g:price>18.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg054-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2583,7 +2522,6 @@
                     <g:price>22.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0055-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2625,7 +2563,6 @@
                     <g:price>26.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0056-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2667,7 +2604,6 @@
                     <g:price>24.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0057-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2709,7 +2645,6 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0058-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2751,7 +2686,6 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0059-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2793,7 +2727,6 @@
                     <g:price>24.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0060-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2835,7 +2768,6 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0061-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2877,7 +2809,6 @@
                     <g:price>40.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0062-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2919,7 +2850,6 @@
                     <g:price>40.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0063-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -2961,7 +2891,6 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0064-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3003,7 +2932,6 @@
                     <g:price>20.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0065-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3045,7 +2973,6 @@
                     <g:price>21.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg066-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3087,7 +3014,6 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0067-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3129,7 +3055,6 @@
                     <g:price>35.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0068-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3171,7 +3096,6 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0069-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3213,7 +3137,6 @@
                     <g:price>9.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0070-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3255,7 +3178,6 @@
                     <g:price>9.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0071-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3297,7 +3219,6 @@
                     <g:price>18.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0072-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3339,7 +3260,6 @@
                     <g:price>21.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0073-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3381,7 +3301,6 @@
                     <g:price>21.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0074-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3423,7 +3342,6 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0075-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3465,7 +3383,6 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0076-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
@@ -3507,7 +3424,6 @@
                     <g:price>27.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type> <!-- Use the populated categoryName -->
                     <g:mpn><![CDATA[bg0077-24]]></g:mpn>
                     <g:identifier_exists>false</g:identifier_exists>
