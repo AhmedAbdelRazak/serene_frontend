@@ -15,7 +15,7 @@
                     <g:price>18.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -40,7 +40,7 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -65,7 +65,7 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Holiday & Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -90,7 +90,7 @@
                     <g:price>32.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>planters</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden > Planters</g:google_product_category>
                     <g:product_type><![CDATA[planters]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -115,7 +115,7 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -140,7 +140,7 @@
                     <g:price>39.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -165,7 +165,7 @@
                     <g:price>49.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -190,7 +190,7 @@
                     <g:price>14.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>votives</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Candles > Votive Candles</g:google_product_category>
                     <g:product_type><![CDATA[votives]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -215,7 +215,7 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -240,7 +240,7 @@
                     <g:price>49.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -265,7 +265,7 @@
                     <g:price>17.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -290,7 +290,7 @@
                     <g:price>49.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -315,7 +315,7 @@
                     <g:price>49.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -340,7 +340,7 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -365,7 +365,7 @@
                     <g:price>15.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -390,7 +390,7 @@
                     <g:price>15.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -415,7 +415,7 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Holiday & Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -440,7 +440,7 @@
                     <g:price>35.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -465,7 +465,7 @@
                     <g:price>10.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>votives</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Candles > Votive Candles</g:google_product_category>
                     <g:product_type><![CDATA[votives]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -490,7 +490,7 @@
                     <g:price>39.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -515,7 +515,7 @@
                     <g:price>39.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -540,7 +540,7 @@
                     <g:price>31.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -565,7 +565,7 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>planters</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden > Planters</g:google_product_category>
                     <g:product_type><![CDATA[planters]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -590,7 +590,7 @@
                     <g:price>35.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -615,7 +615,7 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -640,7 +640,7 @@
                     <g:price>37.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Holiday & Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -665,7 +665,7 @@
                     <g:price>37.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Holiday & Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -690,7 +690,7 @@
                     <g:price>23.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -715,7 +715,7 @@
                     <g:price>23.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -740,7 +740,7 @@
                     <g:price>23.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -765,7 +765,7 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -790,7 +790,7 @@
                     <g:price>39.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Holiday & Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -815,7 +815,7 @@
                     <g:price>49.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -840,7 +840,7 @@
                     <g:price>33.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -865,7 +865,7 @@
                     <g:price>43.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -890,7 +890,7 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -915,7 +915,7 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -940,7 +940,7 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Holiday & Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -965,7 +965,7 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Holiday & Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -990,7 +990,7 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Holiday & Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1015,7 +1015,7 @@
                     <g:price>15.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>votives</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Candles > Votive Candles</g:google_product_category>
                     <g:product_type><![CDATA[votives]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1040,7 +1040,7 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1065,7 +1065,7 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Holiday & Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1090,7 +1090,7 @@
                     <g:price>15.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>seasonal</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Holiday & Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1115,7 +1115,7 @@
                     <g:price>28.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1140,7 +1140,7 @@
                     <g:price>32.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1165,7 +1165,7 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1190,7 +1190,7 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1215,7 +1215,7 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1240,7 +1240,7 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1265,7 +1265,7 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1290,7 +1290,7 @@
                     <g:price>20.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1315,7 +1315,7 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1340,7 +1340,7 @@
                     <g:price>13.08 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>t shirts</g:google_product_category>
+                    <g:google_product_category>Apparel & Accessories > Clothing > Shirts & Tops > T-Shirts</g:google_product_category>
                     <g:product_type><![CDATA[t shirts]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1366,7 +1366,7 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1392,7 +1392,7 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1418,7 +1418,7 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1444,7 +1444,7 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1470,7 +1470,7 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1496,7 +1496,7 @@
                     <g:price>12.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>candles</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1521,7 +1521,7 @@
                     <g:price>18.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1546,7 +1546,7 @@
                     <g:price>22.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1571,7 +1571,7 @@
                     <g:price>26.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1596,7 +1596,7 @@
                     <g:price>24.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1621,7 +1621,7 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1646,7 +1646,7 @@
                     <g:price>19.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1671,7 +1671,7 @@
                     <g:price>24.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1696,7 +1696,7 @@
                     <g:price>45.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1721,7 +1721,7 @@
                     <g:price>40.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1746,7 +1746,7 @@
                     <g:price>40.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>outdoors</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Lawn & Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1771,7 +1771,7 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1796,7 +1796,7 @@
                     <g:price>20.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1821,7 +1821,7 @@
                     <g:price>21.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1846,7 +1846,7 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1871,7 +1871,7 @@
                     <g:price>35.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1896,7 +1896,7 @@
                     <g:price>25.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1921,7 +1921,7 @@
                     <g:price>9.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1946,7 +1946,7 @@
                     <g:price>9.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1971,7 +1971,7 @@
                     <g:price>18.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -1996,7 +1996,7 @@
                     <g:price>21.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -2021,7 +2021,7 @@
                     <g:price>21.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>home decor</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -2046,7 +2046,7 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -2071,7 +2071,7 @@
                     <g:price>29.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
@@ -2096,7 +2096,7 @@
                     <g:price>27.99 USD</g:price>
                     <g:brand>Serene Jannat</g:brand>
                     <g:condition>new</g:condition>
-                    <g:google_product_category>vases</g:google_product_category>
+                    <g:google_product_category>Home & Garden > Decor > Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
                     <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
                     <g:shipping>
