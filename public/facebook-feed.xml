@@ -17,15 +17,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.45 kg</shipping_weight>
+                    <shipping_length>16.51 cm</shipping_length>
+                    <shipping_width>16.51 cm</shipping_width>
+                    <shipping_height>15.24 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -39,7 +34,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.362Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.205Z</datePublished>
                     </review>
                 
                 </item>
@@ -57,15 +52,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.66 kg</shipping_weight>
+                    <shipping_length>20.32 cm</shipping_length>
+                    <shipping_width>6.99 cm</shipping_width>
+                    <shipping_height>22.23 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -79,7 +69,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.362Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.205Z</datePublished>
                     </review>
                 
                 </item>
@@ -97,15 +87,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[seasonal]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.97 kg</shipping_weight>
+                    <shipping_length>17.14 cm</shipping_length>
+                    <shipping_width>17.14 cm</shipping_width>
+                    <shipping_height>13.34 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -119,7 +104,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.362Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.205Z</datePublished>
                     </review>
                 
                 </item>
@@ -137,15 +122,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[planters]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.45 kg</shipping_weight>
+                    <shipping_length>16.51 cm</shipping_length>
+                    <shipping_width>16.51 cm</shipping_width>
+                    <shipping_height>15.24 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -159,7 +139,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -177,15 +157,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[outdoors]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.17 kg</shipping_weight>
+                    <shipping_length>15.24 cm</shipping_length>
+                    <shipping_width>15.24 cm</shipping_width>
+                    <shipping_height>NaN cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -199,7 +174,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -217,15 +192,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.78 kg</shipping_weight>
+                    <shipping_length>22.86 cm</shipping_length>
+                    <shipping_width>22.86 cm</shipping_width>
+                    <shipping_height>24.77 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -239,7 +209,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -257,15 +227,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.03 kg</shipping_weight>
+                    <shipping_length>20.32 cm</shipping_length>
+                    <shipping_width>20.32 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -279,7 +244,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -297,15 +262,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[votives]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.68 kg</shipping_weight>
+                    <shipping_length>10.79 cm</shipping_length>
+                    <shipping_width>10.79 cm</shipping_width>
+                    <shipping_height>10.16 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -319,7 +279,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -337,15 +297,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.82 kg</shipping_weight>
+                    <shipping_length>13.97 cm</shipping_length>
+                    <shipping_width>13.97 cm</shipping_width>
+                    <shipping_height>21.59 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -359,7 +314,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -377,15 +332,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.03 kg</shipping_weight>
+                    <shipping_length>20.32 cm</shipping_length>
+                    <shipping_width>20.32 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -399,7 +349,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -417,15 +367,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[home decor]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.24 kg</shipping_weight>
+                    <shipping_length>22.23 cm</shipping_length>
+                    <shipping_width>10.16 cm</shipping_width>
+                    <shipping_height>15.24 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -439,7 +384,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -457,15 +402,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.03 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>17.78 cm</shipping_width>
+                    <shipping_height>15.24 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -479,7 +419,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -497,15 +437,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.42 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>17.78 cm</shipping_width>
+                    <shipping_height>15.24 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -519,7 +454,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -537,15 +472,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.97 kg</shipping_weight>
+                    <shipping_length>25.40 cm</shipping_length>
+                    <shipping_width>25.40 cm</shipping_width>
+                    <shipping_height>14.61 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -559,7 +489,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -577,15 +507,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>13.34 cm</shipping_length>
+                    <shipping_width>13.34 cm</shipping_width>
+                    <shipping_height>12.70 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -599,7 +524,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -617,15 +542,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[home decor]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.98 kg</shipping_weight>
+                    <shipping_length>16.51 cm</shipping_length>
+                    <shipping_width>16.51 cm</shipping_width>
+                    <shipping_height>7.62 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -639,7 +559,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -657,15 +577,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[seasonal]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>13.97 cm</shipping_length>
+                    <shipping_width>13.97 cm</shipping_width>
+                    <shipping_height>10.16 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -679,7 +594,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.206Z</datePublished>
                     </review>
                 
                 </item>
@@ -697,15 +612,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[home decor]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.86 kg</shipping_weight>
+                    <shipping_length>24.13 cm</shipping_length>
+                    <shipping_width>24.13 cm</shipping_width>
+                    <shipping_height>24.13 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -719,7 +629,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.207Z</datePublished>
                     </review>
                 
                 </item>
@@ -737,15 +647,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[votives]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.48 kg</shipping_weight>
+                    <shipping_length>13.97 cm</shipping_length>
+                    <shipping_width>13.97 cm</shipping_width>
+                    <shipping_height>12.70 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -759,7 +664,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.207Z</datePublished>
                     </review>
                 
                 </item>
@@ -777,15 +682,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.30 kg</shipping_weight>
+                    <shipping_length>20.32 cm</shipping_length>
+                    <shipping_width>20.32 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -799,7 +699,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.207Z</datePublished>
                     </review>
                 
                 </item>
@@ -817,15 +717,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.86 kg</shipping_weight>
+                    <shipping_length>20.32 cm</shipping_length>
+                    <shipping_width>20.32 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -839,7 +734,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.363Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.207Z</datePublished>
                     </review>
                 
                 </item>
@@ -857,15 +752,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.36 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>17.78 cm</shipping_width>
+                    <shipping_height>24.13 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -879,7 +769,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.207Z</datePublished>
                     </review>
                 
                 </item>
@@ -897,15 +787,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[planters]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>4.16 kg</shipping_weight>
+                    <shipping_length>24.77 cm</shipping_length>
+                    <shipping_width>24.77 cm</shipping_width>
+                    <shipping_height>22.86 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -919,7 +804,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.207Z</datePublished>
                     </review>
                 
                 </item>
@@ -937,15 +822,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.00 kg</shipping_weight>
+                    <shipping_length>16.51 cm</shipping_length>
+                    <shipping_width>18.39 cm</shipping_width>
+                    <shipping_height>27.94 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -959,7 +839,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.207Z</datePublished>
                     </review>
                 
                 </item>
@@ -977,15 +857,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.96 kg</shipping_weight>
+                    <shipping_length>15.88 cm</shipping_length>
+                    <shipping_width>15.88 cm</shipping_width>
+                    <shipping_height>16.51 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -999,7 +874,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.207Z</datePublished>
                     </review>
                 
                 </item>
@@ -1017,15 +892,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[seasonal]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.36 kg</shipping_weight>
+                    <shipping_length>22.86 cm</shipping_length>
+                    <shipping_width>22.86 cm</shipping_width>
+                    <shipping_height>27.94 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1039,7 +909,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.207Z</datePublished>
                     </review>
                 
                 </item>
@@ -1057,15 +927,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[seasonal]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>3.08 kg</shipping_weight>
+                    <shipping_length>22.86 cm</shipping_length>
+                    <shipping_width>22.86 cm</shipping_width>
+                    <shipping_height>25.40 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1079,7 +944,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.207Z</datePublished>
                     </review>
                 
                 </item>
@@ -1097,15 +962,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[home decor]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.91 kg</shipping_weight>
+                    <shipping_length>10.16 cm</shipping_length>
+                    <shipping_width>10.16 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1119,7 +979,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1137,15 +997,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[home decor]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.68 kg</shipping_weight>
+                    <shipping_length>10.16 cm</shipping_length>
+                    <shipping_width>10.16 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1159,7 +1014,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1177,15 +1032,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[home decor]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.84 kg</shipping_weight>
+                    <shipping_length>11.43 cm</shipping_length>
+                    <shipping_width>11.43 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1199,7 +1049,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1217,15 +1067,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[outdoors]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.48 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>25.40 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1239,7 +1084,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1257,15 +1102,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[seasonal]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>3.08 kg</shipping_weight>
+                    <shipping_length>22.86 cm</shipping_length>
+                    <shipping_width>22.86 cm</shipping_width>
+                    <shipping_height>15.24 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1279,7 +1119,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1297,15 +1137,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[outdoors]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.43 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>17.78 cm</shipping_width>
+                    <shipping_height>22.86 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1319,7 +1154,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1337,15 +1172,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.71 kg</shipping_weight>
+                    <shipping_length>14.61 cm</shipping_length>
+                    <shipping_width>14.61 cm</shipping_width>
+                    <shipping_height>22.23 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1359,7 +1189,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1377,15 +1207,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.27 kg</shipping_weight>
+                    <shipping_length>19.05 cm</shipping_length>
+                    <shipping_width>19.05 cm</shipping_width>
+                    <shipping_height>30.48 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1399,7 +1224,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1417,15 +1242,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[outdoors]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.17 kg</shipping_weight>
+                    <shipping_length>15.24 cm</shipping_length>
+                    <shipping_width>15.24 cm</shipping_width>
+                    <shipping_height>NaN cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1439,7 +1259,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1457,15 +1277,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[outdoors]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.17 kg</shipping_weight>
+                    <shipping_length>15.24 cm</shipping_length>
+                    <shipping_width>15.24 cm</shipping_width>
+                    <shipping_height>NaN cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1479,7 +1294,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1497,15 +1312,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[seasonal]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.30 kg</shipping_weight>
+                    <shipping_length>10.16 cm</shipping_length>
+                    <shipping_width>10.16 cm</shipping_width>
+                    <shipping_height>22.86 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1519,7 +1329,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1537,15 +1347,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[seasonal]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.97 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>17.78 cm</shipping_width>
+                    <shipping_height>14.61 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1559,7 +1364,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1577,15 +1382,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[seasonal]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.59 kg</shipping_weight>
+                    <shipping_length>11.43 cm</shipping_length>
+                    <shipping_width>11.43 cm</shipping_width>
+                    <shipping_height>12.06 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1599,7 +1399,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1617,15 +1417,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[votives]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.93 kg</shipping_weight>
+                    <shipping_length>14.61 cm</shipping_length>
+                    <shipping_width>14.61 cm</shipping_width>
+                    <shipping_height>11.43 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1639,7 +1434,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1657,15 +1452,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[outdoors]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.13 kg</shipping_weight>
+                    <shipping_length>20.32 cm</shipping_length>
+                    <shipping_width>20.32 cm</shipping_width>
+                    <shipping_height>35.56 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1679,7 +1469,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1697,15 +1487,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[seasonal]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.05 kg</shipping_weight>
+                    <shipping_length>8.89 cm</shipping_length>
+                    <shipping_width>8.89 cm</shipping_width>
+                    <shipping_height>6.35 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1719,7 +1504,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1737,15 +1522,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[seasonal]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.05 kg</shipping_weight>
+                    <shipping_length>8.89 cm</shipping_length>
+                    <shipping_width>8.89 cm</shipping_width>
+                    <shipping_height>7.62 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1759,7 +1539,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1777,15 +1557,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.04 kg</shipping_weight>
+                    <shipping_length>15.24 cm</shipping_length>
+                    <shipping_width>15.24 cm</shipping_width>
+                    <shipping_height>22.86 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1799,7 +1574,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1817,15 +1592,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.31 kg</shipping_weight>
+                    <shipping_length>16.51 cm</shipping_length>
+                    <shipping_width>16.51 cm</shipping_width>
+                    <shipping_height>35.56 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1839,7 +1609,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1857,15 +1627,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.82 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>22.86 cm</shipping_width>
+                    <shipping_height>30.48 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1879,7 +1644,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1897,15 +1662,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.12 kg</shipping_weight>
+                    <shipping_length>19.05 cm</shipping_length>
+                    <shipping_width>8.89 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1919,7 +1679,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1937,15 +1697,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.03 kg</shipping_weight>
+                    <shipping_length>19.05 cm</shipping_length>
+                    <shipping_width>8.89 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1959,7 +1714,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -1977,15 +1732,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.10 kg</shipping_weight>
+                    <shipping_length>19.05 cm</shipping_length>
+                    <shipping_width>8.89 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -1999,7 +1749,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.208Z</datePublished>
                     </review>
                 
                 </item>
@@ -2017,15 +1767,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.08 kg</shipping_weight>
+                    <shipping_length>19.05 cm</shipping_length>
+                    <shipping_width>8.89 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2039,7 +1784,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2057,15 +1802,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[outdoors]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.42 kg</shipping_weight>
+                    <shipping_length>22.86 cm</shipping_length>
+                    <shipping_width>22.86 cm</shipping_width>
+                    <shipping_height>22.86 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2079,7 +1819,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2097,15 +1837,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.92 kg</shipping_weight>
+                    <shipping_length>19.05 cm</shipping_length>
+                    <shipping_width>8.89 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2119,7 +1854,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2130,22 +1865,17 @@
                     <title><![CDATA[unisex heavy cotton tee]]></title>
                     <description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></description>
                     <link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee/t-shirts/669206907810212587ff6aaa</link>
-                    <image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</image_link>
+                    <image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</image_link>
                     <availability>in stock</availability>
                     <price>13.08 USD</price>
                     <brand>Serene Jannat</brand>
                     <condition>new</condition>
                     <product_type><![CDATA[t shirts]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.00 kg</shipping_weight>
+                    <shipping_length>0.00 cm</shipping_length>
+                    <shipping_width>0.00 cm</shipping_width>
+                    <shipping_height>0.00 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2159,253 +1889,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.364Z</datePublished>
-                    </review>
-                
-                </item>
-            
-
-                <item>
-                    <id>669206917810212587ff6ab9</id>
-                    <title><![CDATA[scented soy candle, 9oz - clean cotton / 9oz - clean cotton / 9oz]]></title>
-                    <description><![CDATA[Packed with immersive aromas, these scented candles come in 9oz glass jars and are one size (2.8&amp;Prime; &amp;times; 3.5&quot;) (7.1cm &amp;times; 8.8cm). Made with 100% natural soy wax blend, each candle features a 100% cotton wick.
-.: Materials: 100% natural soy wax blend, 100% cotton wick and a glass jar.: Size: 2.8&amp;Prime; &amp;times; 3.5&quot; (7.1cm &amp;times; 8.9cm).: Compliant with ASTM safety standards.: Burning time: 50-60 hours.: Assembled in the USA from globally sourced parts]]></description>
-                    <link>https://serenejannat.com/single-product/scented-soy-candle-9oz-clean-cotton-9oz-3518-3520/candles/669206917810212587ff6ab9</link>
-                    <image_link>https://images-api.printify.com/mockup/668b5a24c62a914d1d03b383/80301/47578/scented-soy-candle-9oz-clean-cotton-9oz.jpg?camera_label=context-3</image_link>
-                    <availability>in stock</availability>
-                    <price>12.99 USD</price>
-                    <brand>Serene Jannat</brand>
-                    <condition>new</condition>
-                    <product_type><![CDATA[candles]]></product_type>
-                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
-                    <ratingValue>5.0</ratingValue>
-                    <reviewCount>1</reviewCount>
-                    
-                    <review>
-                        <reviewer>
-                            <name>Anonymous</name>
-                        </reviewer>
-                        <reviewBody>Excellent product!</reviewBody>
-                        <reviewRating>
-                            <ratingValue>5</ratingValue>
-                            <bestRating>5</bestRating>
-                            <worstRating>1</worstRating>
-                        </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
-                    </review>
-                
-                </item>
-            
-
-                <item>
-                    <id>669206917810212587ff6abc</id>
-                    <title><![CDATA[scented soy candle, 9oz - clean cotton / 9oz - sea salt + orchid / 9oz]]></title>
-                    <description><![CDATA[Packed with immersive aromas, these scented candles come in 9oz glass jars and are one size (2.8&amp;Prime; &amp;times; 3.5&quot;) (7.1cm &amp;times; 8.8cm). Made with 100% natural soy wax blend, each candle features a 100% cotton wick.
-.: Materials: 100% natural soy wax blend, 100% cotton wick and a glass jar.: Size: 2.8&amp;Prime; &amp;times; 3.5&quot; (7.1cm &amp;times; 8.9cm).: Compliant with ASTM safety standards.: Burning time: 50-60 hours.: Assembled in the USA from globally sourced parts]]></description>
-                    <link>https://serenejannat.com/single-product/scented-soy-candle-9oz-clean-cotton-9oz-3519-3520/candles/669206917810212587ff6abc</link>
-                    <image_link>https://images-api.printify.com/mockup/668b5a24c62a914d1d03b383/80302/78857/scented-soy-candle-9oz-clean-cotton-9oz.jpg?camera_label=context-3</image_link>
-                    <availability>in stock</availability>
-                    <price>12.99 USD</price>
-                    <brand>Serene Jannat</brand>
-                    <condition>new</condition>
-                    <product_type><![CDATA[candles]]></product_type>
-                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
-                    <ratingValue>5.0</ratingValue>
-                    <reviewCount>1</reviewCount>
-                    
-                    <review>
-                        <reviewer>
-                            <name>Anonymous</name>
-                        </reviewer>
-                        <reviewBody>Excellent product!</reviewBody>
-                        <reviewRating>
-                            <ratingValue>5</ratingValue>
-                            <bestRating>5</bestRating>
-                            <worstRating>1</worstRating>
-                        </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
-                    </review>
-                
-                </item>
-            
-
-                <item>
-                    <id>669206917810212587ff6abf</id>
-                    <title><![CDATA[scented soy candle, 9oz - clean cotton / 9oz - white sage + lavender / 9oz]]></title>
-                    <description><![CDATA[Packed with immersive aromas, these scented candles come in 9oz glass jars and are one size (2.8&amp;Prime; &amp;times; 3.5&quot;) (7.1cm &amp;times; 8.8cm). Made with 100% natural soy wax blend, each candle features a 100% cotton wick.
-.: Materials: 100% natural soy wax blend, 100% cotton wick and a glass jar.: Size: 2.8&amp;Prime; &amp;times; 3.5&quot; (7.1cm &amp;times; 8.9cm).: Compliant with ASTM safety standards.: Burning time: 50-60 hours.: Assembled in the USA from globally sourced parts]]></description>
-                    <link>https://serenejannat.com/single-product/scented-soy-candle-9oz-clean-cotton-9oz-3517-3520/candles/669206917810212587ff6abf</link>
-                    <image_link>https://images-api.printify.com/mockup/668b5a24c62a914d1d03b383/80303/78858/scented-soy-candle-9oz-clean-cotton-9oz.jpg?camera_label=context-3</image_link>
-                    <availability>in stock</availability>
-                    <price>12.99 USD</price>
-                    <brand>Serene Jannat</brand>
-                    <condition>new</condition>
-                    <product_type><![CDATA[candles]]></product_type>
-                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
-                    <ratingValue>5.0</ratingValue>
-                    <reviewCount>1</reviewCount>
-                    
-                    <review>
-                        <reviewer>
-                            <name>Anonymous</name>
-                        </reviewer>
-                        <reviewBody>Excellent product!</reviewBody>
-                        <reviewRating>
-                            <ratingValue>5</ratingValue>
-                            <bestRating>5</bestRating>
-                            <worstRating>1</worstRating>
-                        </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
-                    </review>
-                
-                </item>
-            
-
-                <item>
-                    <id>669206917810212587ff6ac2</id>
-                    <title><![CDATA[scented soy candle, 9oz - clean cotton / 9oz - cinnamon vanilla / 9oz]]></title>
-                    <description><![CDATA[Packed with immersive aromas, these scented candles come in 9oz glass jars and are one size (2.8&amp;Prime; &amp;times; 3.5&quot;) (7.1cm &amp;times; 8.8cm). Made with 100% natural soy wax blend, each candle features a 100% cotton wick.
-.: Materials: 100% natural soy wax blend, 100% cotton wick and a glass jar.: Size: 2.8&amp;Prime; &amp;times; 3.5&quot; (7.1cm &amp;times; 8.9cm).: Compliant with ASTM safety standards.: Burning time: 50-60 hours.: Assembled in the USA from globally sourced parts]]></description>
-                    <link>https://serenejannat.com/single-product/scented-soy-candle-9oz-clean-cotton-9oz-4038-3520/candles/669206917810212587ff6ac2</link>
-                    <image_link>https://images-api.printify.com/mockup/668b5a24c62a914d1d03b383/93542/78860/scented-soy-candle-9oz-clean-cotton-9oz.jpg?camera_label=context-3</image_link>
-                    <availability>in stock</availability>
-                    <price>12.99 USD</price>
-                    <brand>Serene Jannat</brand>
-                    <condition>new</condition>
-                    <product_type><![CDATA[candles]]></product_type>
-                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
-                    <ratingValue>5.0</ratingValue>
-                    <reviewCount>1</reviewCount>
-                    
-                    <review>
-                        <reviewer>
-                            <name>Anonymous</name>
-                        </reviewer>
-                        <reviewBody>Excellent product!</reviewBody>
-                        <reviewRating>
-                            <ratingValue>5</ratingValue>
-                            <bestRating>5</bestRating>
-                            <worstRating>1</worstRating>
-                        </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
-                    </review>
-                
-                </item>
-            
-
-                <item>
-                    <id>669206917810212587ff6ac5</id>
-                    <title><![CDATA[scented soy candle, 9oz - clean cotton / 9oz - atlantis whisper / 9oz]]></title>
-                    <description><![CDATA[Packed with immersive aromas, these scented candles come in 9oz glass jars and are one size (2.8&amp;Prime; &amp;times; 3.5&quot;) (7.1cm &amp;times; 8.8cm). Made with 100% natural soy wax blend, each candle features a 100% cotton wick.
-.: Materials: 100% natural soy wax blend, 100% cotton wick and a glass jar.: Size: 2.8&amp;Prime; &amp;times; 3.5&quot; (7.1cm &amp;times; 8.9cm).: Compliant with ASTM safety standards.: Burning time: 50-60 hours.: Assembled in the USA from globally sourced parts]]></description>
-                    <link>https://serenejannat.com/single-product/scented-soy-candle-9oz-clean-cotton-9oz-4704-3520/candles/669206917810212587ff6ac5</link>
-                    <image_link>https://images-api.printify.com/mockup/668b5a24c62a914d1d03b383/104679/101687/scented-soy-candle-9oz-clean-cotton-9oz.jpg?camera_label=context-3</image_link>
-                    <availability>in stock</availability>
-                    <price>12.99 USD</price>
-                    <brand>Serene Jannat</brand>
-                    <condition>new</condition>
-                    <product_type><![CDATA[candles]]></product_type>
-                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
-                    <ratingValue>5.0</ratingValue>
-                    <reviewCount>1</reviewCount>
-                    
-                    <review>
-                        <reviewer>
-                            <name>Anonymous</name>
-                        </reviewer>
-                        <reviewBody>Excellent product!</reviewBody>
-                        <reviewRating>
-                            <ratingValue>5</ratingValue>
-                            <bestRating>5</bestRating>
-                            <worstRating>1</worstRating>
-                        </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
-                    </review>
-                
-                </item>
-            
-
-                <item>
-                    <id>669206917810212587ff6ac8</id>
-                    <title><![CDATA[scented soy candle, 9oz - clean cotton / 9oz - coconut cream + cardamom / 9oz]]></title>
-                    <description><![CDATA[Packed with immersive aromas, these scented candles come in 9oz glass jars and are one size (2.8&amp;Prime; &amp;times; 3.5&quot;) (7.1cm &amp;times; 8.8cm). Made with 100% natural soy wax blend, each candle features a 100% cotton wick.
-.: Materials: 100% natural soy wax blend, 100% cotton wick and a glass jar.: Size: 2.8&amp;Prime; &amp;times; 3.5&quot; (7.1cm &amp;times; 8.9cm).: Compliant with ASTM safety standards.: Burning time: 50-60 hours.: Assembled in the USA from globally sourced parts]]></description>
-                    <link>https://serenejannat.com/single-product/scented-soy-candle-9oz-clean-cotton-9oz-4706-3520/candles/669206917810212587ff6ac8</link>
-                    <image_link>https://images-api.printify.com/mockup/668b5a24c62a914d1d03b383/104681/101689/scented-soy-candle-9oz-clean-cotton-9oz.jpg?camera_label=context-3</image_link>
-                    <availability>in stock</availability>
-                    <price>12.99 USD</price>
-                    <brand>Serene Jannat</brand>
-                    <condition>new</condition>
-                    <product_type><![CDATA[candles]]></product_type>
-                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
-                    <ratingValue>5.0</ratingValue>
-                    <reviewCount>1</reviewCount>
-                    
-                    <review>
-                        <reviewer>
-                            <name>Anonymous</name>
-                        </reviewer>
-                        <reviewBody>Excellent product!</reviewBody>
-                        <reviewRating>
-                            <ratingValue>5</ratingValue>
-                            <bestRating>5</bestRating>
-                            <worstRating>1</worstRating>
-                        </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2423,15 +1907,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.13 kg</shipping_weight>
+                    <shipping_length>16.51 cm</shipping_length>
+                    <shipping_width>16.51 cm</shipping_width>
+                    <shipping_height>20.32 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2445,7 +1924,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2463,15 +1942,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.40 kg</shipping_weight>
+                    <shipping_length>15.24 cm</shipping_length>
+                    <shipping_width>15.24 cm</shipping_width>
+                    <shipping_height>25.40 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2485,7 +1959,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2503,15 +1977,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.46 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>17.78 cm</shipping_width>
+                    <shipping_height>30.48 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2525,7 +1994,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2543,15 +2012,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.32 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>17.78 cm</shipping_width>
+                    <shipping_height>30.48 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2565,7 +2029,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2583,15 +2047,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[outdoors]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.62 kg</shipping_weight>
+                    <shipping_length>10.16 cm</shipping_length>
+                    <shipping_width>10.16 cm</shipping_width>
+                    <shipping_height>22.86 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2605,7 +2064,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2617,21 +2076,16 @@
                     <description><![CDATA[Introducing our exquisite handcrafted glass jellyfish ornament—a serene ocean-themed room accent that captures the ethereal beauty of these sea creatures. Each piece is uniquely blown, featuring vibrant shades of ocean blue and delicate flowing tendrils that sway gently with any movement of air. Suspended from above by a thin line, this mesmerizing jellyfish hanger adds coastal charm to your living space or serves as an eye-catching centerpiece for beach-themed decor. Ideal for gift-giving or as a unique addition to your collection of decorations. Dive into marine wonder with our glass jellyfish creation!]]></description>
                     <link>https://serenejannat.com/single-product/glass-jellyfish-windchime-small-royal-blue/outdoors/669334c85e796e948f7f978f</link>
                     <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1720923315/serene_janat/1720923315114.jpg</image_link>
-                    <availability>out of stock</availability>
+                    <availability>in stock</availability>
                     <price>19.99 USD</price>
                     <brand>Serene Jannat</brand>
                     <condition>new</condition>
                     <product_type><![CDATA[outdoors]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.55 kg</shipping_weight>
+                    <shipping_length>10.16 cm</shipping_length>
+                    <shipping_width>10.16 cm</shipping_width>
+                    <shipping_height>25.40 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2645,7 +2099,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2663,15 +2117,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.40 kg</shipping_weight>
+                    <shipping_length>13.97 cm</shipping_length>
+                    <shipping_width>13.97 cm</shipping_width>
+                    <shipping_height>33.02 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2685,7 +2134,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2703,15 +2152,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.63 kg</shipping_weight>
+                    <shipping_length>25.40 cm</shipping_length>
+                    <shipping_width>25.40 cm</shipping_width>
+                    <shipping_height>33.02 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2725,7 +2169,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2743,15 +2187,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[outdoors]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.33 kg</shipping_weight>
+                    <shipping_length>15.24 cm</shipping_length>
+                    <shipping_width>15.24 cm</shipping_width>
+                    <shipping_height>15.24 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2765,7 +2204,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2783,15 +2222,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[outdoors]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.74 kg</shipping_weight>
+                    <shipping_length>19.05 cm</shipping_length>
+                    <shipping_width>19.05 cm</shipping_width>
+                    <shipping_height>20.32 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2805,7 +2239,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.209Z</datePublished>
                     </review>
                 
                 </item>
@@ -2823,15 +2257,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.43 kg</shipping_weight>
+                    <shipping_length>24.13 cm</shipping_length>
+                    <shipping_width>24.13 cm</shipping_width>
+                    <shipping_height>22.86 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2845,7 +2274,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -2863,15 +2292,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.52 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>17.78 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2885,7 +2309,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -2903,15 +2327,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.76 kg</shipping_weight>
+                    <shipping_length>15.88 cm</shipping_length>
+                    <shipping_width>15.88 cm</shipping_width>
+                    <shipping_height>27.94 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2925,7 +2344,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -2943,15 +2362,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.70 kg</shipping_weight>
+                    <shipping_length>18.41 cm</shipping_length>
+                    <shipping_width>18.41 cm</shipping_width>
+                    <shipping_height>43.18 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -2965,7 +2379,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -2983,15 +2397,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.27 kg</shipping_weight>
+                    <shipping_length>16.51 cm</shipping_length>
+                    <shipping_width>15.88 cm</shipping_width>
+                    <shipping_height>38.10 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -3005,7 +2414,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -3023,15 +2432,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.42 kg</shipping_weight>
+                    <shipping_length>20.32 cm</shipping_length>
+                    <shipping_width>20.32 cm</shipping_width>
+                    <shipping_height>17.78 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -3045,7 +2449,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -3063,15 +2467,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[home decor]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.23 kg</shipping_weight>
+                    <shipping_length>8.89 cm</shipping_length>
+                    <shipping_width>8.89 cm</shipping_width>
+                    <shipping_height>16.51 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -3085,7 +2484,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -3103,15 +2502,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[home decor]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.33 kg</shipping_weight>
+                    <shipping_length>8.48 cm</shipping_length>
+                    <shipping_width>8.48 cm</shipping_width>
+                    <shipping_height>16.51 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -3125,7 +2519,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -3143,15 +2537,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>0.98 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>17.78 cm</shipping_width>
+                    <shipping_height>29.21 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -3165,7 +2554,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -3183,15 +2572,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[home decor]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.42 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>17.78 cm</shipping_width>
+                    <shipping_height>33.02 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -3205,7 +2589,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -3223,15 +2607,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[home decor]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.41 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>16.51 cm</shipping_width>
+                    <shipping_height>34.29 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -3245,7 +2624,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -3263,15 +2642,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.78 kg</shipping_weight>
+                    <shipping_length>17.78 cm</shipping_length>
+                    <shipping_width>17.78 cm</shipping_width>
+                    <shipping_height>48.26 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -3285,7 +2659,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -3303,15 +2677,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>2.31 kg</shipping_weight>
+                    <shipping_length>15.24 cm</shipping_length>
+                    <shipping_width>15.24 cm</shipping_width>
+                    <shipping_height>45.72 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -3325,7 +2694,7 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
                     </review>
                 
                 </item>
@@ -3343,15 +2712,10 @@
                     <condition>new</condition>
                     <product_type><![CDATA[vases]]></product_type>
                     <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
-                    <shipping>
-                        <country>US</country>
-                        <service>Standard</service>
-                        <price>5.00 USD</price>
-                    </shipping>
-                    <shipping_weight>0.5 kg</g:shipping_weight>
-                    <shipping_length>10 cm</g:shipping_length>
-                    <shipping_width>10 cm</g:shipping_width>
-                    <shipping_height>15 cm</g:shipping_height>
+                    <shipping_weight>1.86 kg</shipping_weight>
+                    <shipping_length>13.97 cm</shipping_length>
+                    <shipping_width>13.97 cm</shipping_width>
+                    <shipping_height>47.63 cm</shipping_height>
                     <ratingValue>5.0</ratingValue>
                     <reviewCount>1</reviewCount>
                     
@@ -3365,7 +2729,392 @@
                             <bestRating>5</bestRating>
                             <worstRating>1</worstRating>
                         </reviewRating>
-                        <datePublished>2024-08-24T01:17:26.365Z</datePublished>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
+                    </review>
+                
+                </item>
+            
+
+                <item>
+                    <id>66d8cfa21818ee7eaef3001c</id>
+                    <title><![CDATA[scented soy candle 10oz - bourbon roasted pecan]]></title>
+                    <description><![CDATA[Indulge your senses with our luxurious 10oz soy candle, crafted to perfection with a rich, white wax that exudes the irresistible aroma of Bourbon Roasted Pecans. This exquisite scent combines the warm, nutty notes of roasted pecans with a hint of smooth bourbon, creating a cozy and inviting atmosphere in any room. Encased in an elegant jar with a natural wood top, this candle not only smells divine but also adds a touch of rustic charm to your decor. Perfect for unwinding after a long day or setting the mood for a special occasion, our Bourbon Roasted Pecans soy candle is a must-have for any candle enthusiast.]]></description>
+                    <link>https://serenejannat.com/single-product/scented-soy-candle-10oz---bourbon-roasted-pecan/candles/66d8cfa21818ee7eaef3001c</link>
+                    <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1725484056/serene_janat/1725484056306.jpg</image_link>
+                    <availability>in stock</availability>
+                    <price>10.00 USD</price>
+                    <brand>Serene Jannat</brand>
+                    <condition>new</condition>
+                    <product_type><![CDATA[candles]]></product_type>
+                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>9.53 cm</shipping_height>
+                    <ratingValue>5.0</ratingValue>
+                    <reviewCount>1</reviewCount>
+                    
+                    <review>
+                        <reviewer>
+                            <name>Anonymous</name>
+                        </reviewer>
+                        <reviewBody>Excellent product!</reviewBody>
+                        <reviewRating>
+                            <ratingValue>5</ratingValue>
+                            <bestRating>5</bestRating>
+                            <worstRating>1</worstRating>
+                        </reviewRating>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
+                    </review>
+                
+                </item>
+            
+
+                <item>
+                    <id>66d8d1761818ee7eaef300eb</id>
+                    <title><![CDATA[scented soy candle 10oz - butterscotch bliss]]></title>
+                    <description><![CDATA[Experience the delightful aroma of our 10oz soy candle, meticulously crafted with pure white wax and infused with the sweet, creamy scent of Butterscotch. This enchanting fragrance captures the essence of rich, buttery caramel, creating a warm and inviting ambiance in any space. Topped with a black wood lid, this candle not only offers a luxurious scent but also adds a touch of rustic elegance to your home decor. Perfect for cozy evenings or as a thoughtful gift, our Butterscotch soy candle is sure to become a favorite in your collection.]]></description>
+                    <link>https://serenejannat.com/single-product/scented-soy-candle-10oz---butterscotch-bliss/candles/66d8d1761818ee7eaef300eb</link>
+                    <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1725485044/serene_janat/1725485043337.jpg</image_link>
+                    <availability>in stock</availability>
+                    <price>10.00 USD</price>
+                    <brand>Serene Jannat</brand>
+                    <condition>new</condition>
+                    <product_type><![CDATA[candles]]></product_type>
+                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>9.53 cm</shipping_height>
+                    <ratingValue>5.0</ratingValue>
+                    <reviewCount>1</reviewCount>
+                    
+                    <review>
+                        <reviewer>
+                            <name>Anonymous</name>
+                        </reviewer>
+                        <reviewBody>Excellent product!</reviewBody>
+                        <reviewRating>
+                            <ratingValue>5</ratingValue>
+                            <bestRating>5</bestRating>
+                            <worstRating>1</worstRating>
+                        </reviewRating>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
+                    </review>
+                
+                </item>
+            
+
+                <item>
+                    <id>66d8d2791818ee7eaef301e3</id>
+                    <title><![CDATA[scented soy candle 10oz - calm essence]]></title>
+                    <description><![CDATA[Immerse yourself in tranquility with our 10oz soy candle, beautifully crafted with pure white wax and infused with the soothing scents of Lavender and Sage. This harmonious blend of floral and herbal notes creates a serene and calming atmosphere, perfect for relaxation and unwinding. Encased in an elegant jar with your choice of a natural wood or black wood top, this candle not only offers a luxurious fragrance but also adds a touch of sophistication to any decor. Ideal for creating a peaceful ambiance in your home or as a thoughtful gift, our Lavender and Sage soy candle is a must-have for those who cherish moments of calm and serenity.]]></description>
+                    <link>https://serenejannat.com/single-product/scented-soy-candle-10oz---calm-essence/candles/66d8d2791818ee7eaef301e3</link>
+                    <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1725485683/serene_janat/1725485683266.jpg</image_link>
+                    <availability>in stock</availability>
+                    <price>10.00 USD</price>
+                    <brand>Serene Jannat</brand>
+                    <condition>new</condition>
+                    <product_type><![CDATA[candles]]></product_type>
+                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>9.53 cm</shipping_height>
+                    <ratingValue>5.0</ratingValue>
+                    <reviewCount>1</reviewCount>
+                    
+                    <review>
+                        <reviewer>
+                            <name>Anonymous</name>
+                        </reviewer>
+                        <reviewBody>Excellent product!</reviewBody>
+                        <reviewRating>
+                            <ratingValue>5</ratingValue>
+                            <bestRating>5</bestRating>
+                            <worstRating>1</worstRating>
+                        </reviewRating>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
+                    </review>
+                
+                </item>
+            
+
+                <item>
+                    <id>66d8d3f41818ee7eaef3024b</id>
+                    <title><![CDATA[scented soy candle 10oz - chocolate]]></title>
+                    <description><![CDATA[Indulge in the decadent aroma of our 10oz soy candle, expertly crafted with pure white wax and infused with the rich, velvety scent of chocolate. This luxurious fragrance envelops your space with the comforting and irresistible essence of freshly melted chocolate, creating a warm and inviting atmosphere. Encased in an elegant jar with a natural wood top, this candle delights your senses. Perfect for cozy evenings, special occasions, or as a thoughtful gift, our chocolate-scented soy candle is a must-have for any chocolate lover.]]></description>
+                    <link>https://serenejannat.com/single-product/scented-soy-candle-10oz---chocolate/candles/66d8d3f41818ee7eaef3024b</link>
+                    <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1725486045/serene_janat/1725486044396.jpg</image_link>
+                    <availability>in stock</availability>
+                    <price>10.00 USD</price>
+                    <brand>Serene Jannat</brand>
+                    <condition>new</condition>
+                    <product_type><![CDATA[candles]]></product_type>
+                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>9.53 cm</shipping_height>
+                    <ratingValue>5.0</ratingValue>
+                    <reviewCount>1</reviewCount>
+                    
+                    <review>
+                        <reviewer>
+                            <name>Anonymous</name>
+                        </reviewer>
+                        <reviewBody>Excellent product!</reviewBody>
+                        <reviewRating>
+                            <ratingValue>5</ratingValue>
+                            <bestRating>5</bestRating>
+                            <worstRating>1</worstRating>
+                        </reviewRating>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
+                    </review>
+                
+                </item>
+            
+
+                <item>
+                    <id>66d8d4c31818ee7eaef30270</id>
+                    <title><![CDATA[scented soy candle 10oz - creamy vanilla coconut]]></title>
+                    <description><![CDATA[Indulge in the tropical delight of our 10oz soy candle, meticulously crafted with pure white wax and infused with the luscious scents of creamy vanilla and coconut. This enchanting fragrance blend transports you to a serene paradise, where the sweet, comforting notes of vanilla perfectly complement the exotic, refreshing aroma of coconut. Encased in an elegant jar with a natural wood top, this candle offers a luxurious creamy scent. Perfect for creating a relaxing ambiance or as a thoughtful gift, our creamy vanilla and coconut soy candle is a must-have for any candle enthusiast.]]></description>
+                    <link>https://serenejannat.com/single-product/scented-soy-candle-10oz---creamy-vanilla-coconut/candles/66d8d4c31818ee7eaef30270</link>
+                    <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1725486123/serene_janat/1725486122276.jpg</image_link>
+                    <availability>in stock</availability>
+                    <price>10.00 USD</price>
+                    <brand>Serene Jannat</brand>
+                    <condition>new</condition>
+                    <product_type><![CDATA[candles]]></product_type>
+                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>9.53 cm</shipping_height>
+                    <ratingValue>5.0</ratingValue>
+                    <reviewCount>1</reviewCount>
+                    
+                    <review>
+                        <reviewer>
+                            <name>Anonymous</name>
+                        </reviewer>
+                        <reviewBody>Excellent product!</reviewBody>
+                        <reviewRating>
+                            <ratingValue>5</ratingValue>
+                            <bestRating>5</bestRating>
+                            <worstRating>1</worstRating>
+                        </reviewRating>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
+                    </review>
+                
+                </item>
+            
+
+                <item>
+                    <id>66d8d5761818ee7eaef302cb</id>
+                    <title><![CDATA[scented soy candle 10oz - hazelnut coffee]]></title>
+                    <description><![CDATA[Discover the cozy embrace of our 10oz soy candle, crafted with pristine white wax and infused with the rich, nutty aroma of hazelnut. This delightful scent evokes the comforting essence of roasted hazelnuts, filling your space with a warm and inviting ambiance. The candle is elegantly presented with a natural wood top, adding a touch of rustic charm to any setting. Whether you’re winding down after a long day or setting the mood for a special gathering, our hazelnut soy candle is the perfect companion to create a serene and welcoming atmosphere.]]></description>
+                    <link>https://serenejannat.com/single-product/scented-soy-candle-10oz---hazelnut-coffee/candles/66d8d5761818ee7eaef302cb</link>
+                    <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1725486331/serene_janat/1725486331077.jpg</image_link>
+                    <availability>in stock</availability>
+                    <price>10.00 USD</price>
+                    <brand>Serene Jannat</brand>
+                    <condition>new</condition>
+                    <product_type><![CDATA[candles]]></product_type>
+                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>9.53 cm</shipping_height>
+                    <ratingValue>5.0</ratingValue>
+                    <reviewCount>1</reviewCount>
+                    
+                    <review>
+                        <reviewer>
+                            <name>Anonymous</name>
+                        </reviewer>
+                        <reviewBody>Excellent product!</reviewBody>
+                        <reviewRating>
+                            <ratingValue>5</ratingValue>
+                            <bestRating>5</bestRating>
+                            <worstRating>1</worstRating>
+                        </reviewRating>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
+                    </review>
+                
+                </item>
+            
+
+                <item>
+                    <id>66d8d6611818ee7eaef30326</id>
+                    <title><![CDATA[scented soy candle 10oz - island escape]]></title>
+                    <description><![CDATA[Transport yourself to a tropical paradise with our “Island Escape” 10oz soy candle. Crafted from pure white wax, this candle captures the essence of a serene island getaway with its delightful coconut fragrance. The scent of fresh, creamy coconut will whisk you away to sandy beaches and swaying palm trees, creating a relaxing and rejuvenating atmosphere in your home. Choose between a natural wood or sleek black top to complement your decor, adding a touch of elegance to this exotic escape. Perfect for unwinding after a long day or bringing a bit of the tropics to any occasion, our “Island Escape” soy candle is your ticket to paradise.]]></description>
+                    <link>https://serenejannat.com/single-product/scented-soy-candle-10oz---island-escape/candles/66d8d6611818ee7eaef30326</link>
+                    <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1725486592/serene_janat/1725486591588.jpg</image_link>
+                    <availability>in stock</availability>
+                    <price>10.00 USD</price>
+                    <brand>Serene Jannat</brand>
+                    <condition>new</condition>
+                    <product_type><![CDATA[candles]]></product_type>
+                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>9.53 cm</shipping_height>
+                    <ratingValue>5.0</ratingValue>
+                    <reviewCount>1</reviewCount>
+                    
+                    <review>
+                        <reviewer>
+                            <name>Anonymous</name>
+                        </reviewer>
+                        <reviewBody>Excellent product!</reviewBody>
+                        <reviewRating>
+                            <ratingValue>5</ratingValue>
+                            <bestRating>5</bestRating>
+                            <worstRating>1</worstRating>
+                        </reviewRating>
+                        <datePublished>2024-09-30T21:42:24.210Z</datePublished>
+                    </review>
+                
+                </item>
+            
+
+                <item>
+                    <id>66d915c91818ee7eaef309bb</id>
+                    <title><![CDATA[scented soy candle 10oz - mango papaya]]></title>
+                    <description><![CDATA[Escape to a tropical oasis with our 10oz soy candle, crafted with pure white wax and infused with the mouthwatering scent of mango papaya. This vibrant fragrance combines the juicy sweetness of ripe mangoes with the exotic, refreshing notes of papaya, creating an uplifting and invigorating atmosphere in any room. Encased in an elegant jar with a natural wood top, this candle delights your senses but also adds a touch of rustic charm to your decor. Perfect for brightening up your space or as a thoughtful gift, our mango papaya soy candle is a must-have for anyone who loves the essence of the tropics.]]></description>
+                    <link>https://serenejannat.com/single-product/scented-soy-candle-10oz---mango-papaya/candles/66d915c91818ee7eaef309bb</link>
+                    <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1725502479/serene_janat/1725502479318.jpg</image_link>
+                    <availability>in stock</availability>
+                    <price>10.00 USD</price>
+                    <brand>Serene Jannat</brand>
+                    <condition>new</condition>
+                    <product_type><![CDATA[candles]]></product_type>
+                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>9.53 cm</shipping_height>
+                    <ratingValue>5.0</ratingValue>
+                    <reviewCount>1</reviewCount>
+                    
+                    <review>
+                        <reviewer>
+                            <name>Anonymous</name>
+                        </reviewer>
+                        <reviewBody>Excellent product!</reviewBody>
+                        <reviewRating>
+                            <ratingValue>5</ratingValue>
+                            <bestRating>5</bestRating>
+                            <worstRating>1</worstRating>
+                        </reviewRating>
+                        <datePublished>2024-09-30T21:42:24.211Z</datePublished>
+                    </review>
+                
+                </item>
+            
+
+                <item>
+                    <id>66d917151818ee7eaef30a16</id>
+                    <title><![CDATA[scented soy candle 10oz - seaside memories]]></title>
+                    <description><![CDATA[Bring the essence of the coast into your home with our Seaside Memories 10oz soy candle. Crafted from pure white wax, this candle captures the nostalgic scent of sunny beaches, blending the refreshing aroma of ocean air with hints of warm sand and sea breeze. Whether you choose a natural wood or sleek black wood top, this candle adds a touch of elegance to any decor. Light it up and let the soothing fragrance transport you to your favorite seaside escape, perfect for creating a relaxing and rejuvenating atmosphere.]]></description>
+                    <link>https://serenejannat.com/single-product/scented-soy-candle-10oz---seaside-memories/candles/66d917151818ee7eaef30a16</link>
+                    <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1725502973/serene_janat/1725502973360.jpg</image_link>
+                    <availability>in stock</availability>
+                    <price>10.00 USD</price>
+                    <brand>Serene Jannat</brand>
+                    <condition>new</condition>
+                    <product_type><![CDATA[candles]]></product_type>
+                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>9.53 cm</shipping_height>
+                    <ratingValue>5.0</ratingValue>
+                    <reviewCount>1</reviewCount>
+                    
+                    <review>
+                        <reviewer>
+                            <name>Anonymous</name>
+                        </reviewer>
+                        <reviewBody>Excellent product!</reviewBody>
+                        <reviewRating>
+                            <ratingValue>5</ratingValue>
+                            <bestRating>5</bestRating>
+                            <worstRating>1</worstRating>
+                        </reviewRating>
+                        <datePublished>2024-09-30T21:42:24.211Z</datePublished>
+                    </review>
+                
+                </item>
+            
+
+                <item>
+                    <id>66d918b71818ee7eaef30a7e</id>
+                    <title><![CDATA[scented soy candle 10oz - vanilla dreams]]></title>
+                    <description><![CDATA[Immerse yourself in the comforting embrace of our 10oz soy candle, crafted with pristine white wax and infused with the rich, soothing scent of creamy vanilla. This delightful fragrance evokes the warmth of freshly baked treats, filling your space with a cozy and inviting aroma. The candle is elegantly topped with a natural wood lid, adding a touch of rustic charm to any setting. Perfect for creating a relaxing ambiance or as a thoughtful gift.]]></description>
+                    <link>https://serenejannat.com/single-product/scented-soy-candle-10oz---vanilla-dreams/candles/66d918b71818ee7eaef30a7e</link>
+                    <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1725503543/serene_janat/1725503542551.jpg</image_link>
+                    <availability>in stock</availability>
+                    <price>10.00 USD</price>
+                    <brand>Serene Jannat</brand>
+                    <condition>new</condition>
+                    <product_type><![CDATA[candles]]></product_type>
+                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>9.53 cm</shipping_height>
+                    <ratingValue>5.0</ratingValue>
+                    <reviewCount>1</reviewCount>
+                    
+                    <review>
+                        <reviewer>
+                            <name>Anonymous</name>
+                        </reviewer>
+                        <reviewBody>Excellent product!</reviewBody>
+                        <reviewRating>
+                            <ratingValue>5</ratingValue>
+                            <bestRating>5</bestRating>
+                            <worstRating>1</worstRating>
+                        </reviewRating>
+                        <datePublished>2024-09-30T21:42:24.212Z</datePublished>
+                    </review>
+                
+                </item>
+            
+
+                <item>
+                    <id>66d91f271818ee7eaef30d5a</id>
+                    <title><![CDATA[scented soy candle 10oz - pumpkin spice]]></title>
+                    <description><![CDATA[Indulge in the cozy, nostalgic aroma of our 10oz Pumpkin Spice soy wax candle. Perfectly capturing the essence of Thanksgiving desserts, this candle fills your space with the warm, inviting scent of spiced pumpkin pie fresh from the oven. Hand-poured with natural soy wax, it offers a clean, long-lasting burn that enhances any room with its delightful fragrance. Whether you’re looking to create a festive atmosphere or simply enjoy a moment of comfort, our Pumpkin Spice candle is the perfect addition to your home. Light it up and let the memories of family gatherings and holiday feasts come flooding back.]]></description>
+                    <link>https://serenejannat.com/single-product/scented-soy-candle-10oz---pumpkin-spice/candles/66d91f271818ee7eaef30d5a</link>
+                    <image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1725504969/serene_janat/1725504968777.jpg</image_link>
+                    <availability>in stock</availability>
+                    <price>10.00 USD</price>
+                    <brand>Serene Jannat</brand>
+                    <condition>new</condition>
+                    <product_type><![CDATA[candles]]></product_type>
+                    <identifier_exists>false</identifier_exists> <!-- Explicitly tell Facebook no GTIN/MPN -->
+                    <shipping_weight>0.50 kg</shipping_weight>
+                    <shipping_length>7.62 cm</shipping_length>
+                    <shipping_width>7.62 cm</shipping_width>
+                    <shipping_height>9.53 cm</shipping_height>
+                    <ratingValue>5.0</ratingValue>
+                    <reviewCount>1</reviewCount>
+                    
+                    <review>
+                        <reviewer>
+                            <name>Anonymous</name>
+                        </reviewer>
+                        <reviewBody>Excellent product!</reviewBody>
+                        <reviewRating>
+                            <ratingValue>5</ratingValue>
+                            <bestRating>5</bestRating>
+                            <worstRating>1</worstRating>
+                        </reviewRating>
+                        <datePublished>2024-09-30T21:42:24.212Z</datePublished>
                     </review>
                 
                 </item>
