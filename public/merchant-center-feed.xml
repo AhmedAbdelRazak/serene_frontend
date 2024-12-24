@@ -3,7 +3,7 @@
             <channel>
                 <title>Serene Jannat Products</title>
                 <link>https://serenejannat.com</link>
-                <description>Product feed for Serene Jannat Gift Store</description>
+                <description>High-quality product feed for Google Merchant Center</description>
                 
                 <item>
                     <g:id>6681b17a0916c8dd33b3a7d8</g:id>
@@ -21,24 +21,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.45 kg</g:shipping_weight>
                     <g:shipping_length>16.51 cm</g:shipping_length>
                     <g:shipping_width>16.51 cm</g:shipping_width>
                     <g:shipping_height>15.24 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -58,24 +53,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.66 kg</g:shipping_weight>
                     <g:shipping_length>20.32 cm</g:shipping_length>
                     <g:shipping_width>6.99 cm</g:shipping_width>
                     <g:shipping_height>22.23 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -96,24 +86,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Holiday &amp; Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.97 kg</g:shipping_weight>
                     <g:shipping_length>17.14 cm</g:shipping_length>
                     <g:shipping_width>17.14 cm</g:shipping_width>
                     <g:shipping_height>13.34 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -133,24 +118,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Planters</g:google_product_category>
                     <g:product_type><![CDATA[planters]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.45 kg</g:shipping_weight>
                     <g:shipping_length>16.51 cm</g:shipping_length>
                     <g:shipping_width>16.51 cm</g:shipping_width>
                     <g:shipping_height>15.24 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -170,24 +150,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.17 kg</g:shipping_weight>
                     <g:shipping_length>15.24 cm</g:shipping_length>
                     <g:shipping_width>15.24 cm</g:shipping_width>
                     <g:shipping_height>0.00 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -205,24 +180,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.78 kg</g:shipping_weight>
                     <g:shipping_length>22.86 cm</g:shipping_length>
                     <g:shipping_width>22.86 cm</g:shipping_width>
                     <g:shipping_height>24.77 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -241,24 +211,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.03 kg</g:shipping_weight>
                     <g:shipping_length>20.32 cm</g:shipping_length>
                     <g:shipping_width>20.32 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -277,24 +242,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles &gt; Votive Candles</g:google_product_category>
                     <g:product_type><![CDATA[votives]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.68 kg</g:shipping_weight>
                     <g:shipping_length>10.79 cm</g:shipping_length>
                     <g:shipping_width>10.79 cm</g:shipping_width>
                     <g:shipping_height>10.16 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -312,24 +272,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.82 kg</g:shipping_weight>
                     <g:shipping_length>13.97 cm</g:shipping_length>
                     <g:shipping_width>13.97 cm</g:shipping_width>
                     <g:shipping_height>21.59 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -349,24 +304,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.03 kg</g:shipping_weight>
                     <g:shipping_length>20.32 cm</g:shipping_length>
                     <g:shipping_width>20.32 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -385,24 +335,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.24 kg</g:shipping_weight>
                     <g:shipping_length>22.23 cm</g:shipping_length>
                     <g:shipping_width>10.16 cm</g:shipping_width>
                     <g:shipping_height>15.24 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -420,24 +365,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.03 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>17.78 cm</g:shipping_width>
                     <g:shipping_height>15.24 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -456,24 +396,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.42 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>17.78 cm</g:shipping_width>
                     <g:shipping_height>15.24 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -493,24 +428,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.97 kg</g:shipping_weight>
                     <g:shipping_length>25.40 cm</g:shipping_length>
                     <g:shipping_width>25.40 cm</g:shipping_width>
                     <g:shipping_height>14.61 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -528,24 +458,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>13.34 cm</g:shipping_length>
                     <g:shipping_width>13.34 cm</g:shipping_width>
                     <g:shipping_height>12.70 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -565,24 +490,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.98 kg</g:shipping_weight>
                     <g:shipping_length>16.51 cm</g:shipping_length>
                     <g:shipping_width>16.51 cm</g:shipping_width>
                     <g:shipping_height>7.62 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -602,24 +522,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Holiday &amp; Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>13.97 cm</g:shipping_length>
                     <g:shipping_width>13.97 cm</g:shipping_width>
                     <g:shipping_height>10.16 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -637,24 +552,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.86 kg</g:shipping_weight>
                     <g:shipping_length>24.13 cm</g:shipping_length>
                     <g:shipping_width>24.13 cm</g:shipping_width>
                     <g:shipping_height>24.13 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -673,24 +583,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles &gt; Votive Candles</g:google_product_category>
                     <g:product_type><![CDATA[votives]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.48 kg</g:shipping_weight>
                     <g:shipping_length>13.97 cm</g:shipping_length>
                     <g:shipping_width>13.97 cm</g:shipping_width>
                     <g:shipping_height>12.70 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -709,24 +614,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.30 kg</g:shipping_weight>
                     <g:shipping_length>20.32 cm</g:shipping_length>
                     <g:shipping_width>20.32 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -744,24 +644,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.86 kg</g:shipping_weight>
                     <g:shipping_length>20.32 cm</g:shipping_length>
                     <g:shipping_width>20.32 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -780,24 +675,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.36 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>17.78 cm</g:shipping_width>
                     <g:shipping_height>24.13 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -816,24 +706,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Planters</g:google_product_category>
                     <g:product_type><![CDATA[planters]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>4.16 kg</g:shipping_weight>
                     <g:shipping_length>24.77 cm</g:shipping_length>
                     <g:shipping_width>24.77 cm</g:shipping_width>
                     <g:shipping_height>22.86 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -852,24 +737,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.00 kg</g:shipping_weight>
                     <g:shipping_length>16.51 cm</g:shipping_length>
                     <g:shipping_width>18.39 cm</g:shipping_width>
                     <g:shipping_height>27.94 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -890,24 +770,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.96 kg</g:shipping_weight>
                     <g:shipping_length>15.88 cm</g:shipping_length>
                     <g:shipping_width>15.88 cm</g:shipping_width>
                     <g:shipping_height>16.51 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -927,24 +802,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Holiday &amp; Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.36 kg</g:shipping_weight>
                     <g:shipping_length>22.86 cm</g:shipping_length>
                     <g:shipping_width>22.86 cm</g:shipping_width>
                     <g:shipping_height>27.94 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -964,24 +834,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Holiday &amp; Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>3.08 kg</g:shipping_weight>
                     <g:shipping_length>22.86 cm</g:shipping_length>
                     <g:shipping_width>22.86 cm</g:shipping_width>
                     <g:shipping_height>25.40 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1003,24 +868,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.91 kg</g:shipping_weight>
                     <g:shipping_length>10.16 cm</g:shipping_length>
                     <g:shipping_width>10.16 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1042,24 +902,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.68 kg</g:shipping_weight>
                     <g:shipping_length>10.16 cm</g:shipping_length>
                     <g:shipping_width>10.16 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1081,24 +936,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.84 kg</g:shipping_weight>
                     <g:shipping_length>11.43 cm</g:shipping_length>
                     <g:shipping_width>11.43 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1117,24 +967,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.48 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>25.40 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1153,24 +998,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Holiday &amp; Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>3.08 kg</g:shipping_weight>
                     <g:shipping_length>22.86 cm</g:shipping_length>
                     <g:shipping_width>22.86 cm</g:shipping_width>
                     <g:shipping_height>15.24 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1189,24 +1029,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.43 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>17.78 cm</g:shipping_width>
                     <g:shipping_height>22.86 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1226,24 +1061,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.71 kg</g:shipping_weight>
                     <g:shipping_length>14.61 cm</g:shipping_length>
                     <g:shipping_width>14.61 cm</g:shipping_width>
                     <g:shipping_height>22.23 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1262,24 +1092,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.27 kg</g:shipping_weight>
                     <g:shipping_length>19.05 cm</g:shipping_length>
                     <g:shipping_width>19.05 cm</g:shipping_width>
                     <g:shipping_height>30.48 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1298,24 +1123,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.17 kg</g:shipping_weight>
                     <g:shipping_length>15.24 cm</g:shipping_length>
                     <g:shipping_width>15.24 cm</g:shipping_width>
                     <g:shipping_height>0.00 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1333,24 +1153,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.17 kg</g:shipping_weight>
                     <g:shipping_length>15.24 cm</g:shipping_length>
                     <g:shipping_width>15.24 cm</g:shipping_width>
                     <g:shipping_height>0.00 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1368,24 +1183,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Holiday &amp; Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.30 kg</g:shipping_weight>
                     <g:shipping_length>10.16 cm</g:shipping_length>
                     <g:shipping_width>10.16 cm</g:shipping_width>
                     <g:shipping_height>22.86 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1404,24 +1214,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Holiday &amp; Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.97 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>17.78 cm</g:shipping_width>
                     <g:shipping_height>14.61 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1439,24 +1244,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Holiday &amp; Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.59 kg</g:shipping_weight>
                     <g:shipping_length>11.43 cm</g:shipping_length>
                     <g:shipping_width>11.43 cm</g:shipping_width>
                     <g:shipping_height>12.06 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1474,24 +1274,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles &gt; Votive Candles</g:google_product_category>
                     <g:product_type><![CDATA[votives]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.93 kg</g:shipping_weight>
                     <g:shipping_length>14.61 cm</g:shipping_length>
                     <g:shipping_width>14.61 cm</g:shipping_width>
                     <g:shipping_height>11.43 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1510,24 +1305,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.13 kg</g:shipping_weight>
                     <g:shipping_length>20.32 cm</g:shipping_length>
                     <g:shipping_width>20.32 cm</g:shipping_width>
                     <g:shipping_height>35.56 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1546,24 +1336,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Holiday &amp; Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.05 kg</g:shipping_weight>
                     <g:shipping_length>8.89 cm</g:shipping_length>
                     <g:shipping_width>8.89 cm</g:shipping_width>
                     <g:shipping_height>6.35 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1582,24 +1367,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Holiday &amp; Seasonal Decor</g:google_product_category>
                     <g:product_type><![CDATA[seasonal]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.05 kg</g:shipping_weight>
                     <g:shipping_length>8.89 cm</g:shipping_length>
                     <g:shipping_width>8.89 cm</g:shipping_width>
                     <g:shipping_height>7.62 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1618,24 +1398,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.04 kg</g:shipping_weight>
                     <g:shipping_length>15.24 cm</g:shipping_length>
                     <g:shipping_width>15.24 cm</g:shipping_width>
                     <g:shipping_height>22.86 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1654,24 +1429,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.31 kg</g:shipping_weight>
                     <g:shipping_length>16.51 cm</g:shipping_length>
                     <g:shipping_width>16.51 cm</g:shipping_width>
                     <g:shipping_height>35.56 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1690,24 +1460,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.82 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>22.86 cm</g:shipping_width>
                     <g:shipping_height>30.48 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1726,24 +1491,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.12 kg</g:shipping_weight>
                     <g:shipping_length>19.05 cm</g:shipping_length>
                     <g:shipping_width>8.89 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1763,24 +1523,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.03 kg</g:shipping_weight>
                     <g:shipping_length>19.05 cm</g:shipping_length>
                     <g:shipping_width>8.89 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1799,24 +1554,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.10 kg</g:shipping_weight>
                     <g:shipping_length>19.05 cm</g:shipping_length>
                     <g:shipping_width>8.89 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1835,24 +1585,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.08 kg</g:shipping_weight>
                     <g:shipping_length>19.05 cm</g:shipping_length>
                     <g:shipping_width>8.89 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1872,24 +1617,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.42 kg</g:shipping_weight>
                     <g:shipping_length>22.86 cm</g:shipping_length>
                     <g:shipping_width>22.86 cm</g:shipping_width>
                     <g:shipping_height>22.86 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1908,24 +1648,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.92 kg</g:shipping_weight>
                     <g:shipping_length>19.05 cm</g:shipping_length>
                     <g:shipping_width>8.89 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -1934,102 +1669,8 @@
                     <g:title><![CDATA[unisex heavy cotton tee]]></g:title>
                     <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
                     <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee/t-shirts/669206907810212587ff6aaa</g:link>
-                    <g:image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:image_link>
-                    <g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12028/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92570/unisex-heavy-cotton-tee.jpg?camera_label=front</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/92571/unisex-heavy-cotton-tee.jpg?camera_label=back</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102005/unisex-heavy-cotton-tee.jpg?camera_label=front-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102006/unisex-heavy-cotton-tee.jpg?camera_label=back-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102001/unisex-heavy-cotton-tee.jpg?camera_label=folded</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102002/unisex-heavy-cotton-tee.jpg?camera_label=hanging-1</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102003/unisex-heavy-cotton-tee.jpg?camera_label=hanging-2</g:additional_image_link>
-<g:additional_image_link>https://images-api.printify.com/mockup/6691f96aa4058f26b60786bf/12124/102004/unisex-heavy-cotton-tee.jpg?camera_label=hanging-3</g:additional_image_link>
+                    <g:image_link></g:image_link>
+                    
                     <g:availability>in stock</g:availability>
                     <g:price>13.08 USD</g:price>
                     <g:sale_price>13.08 USD</g:sale_price>
@@ -2038,23 +1679,18 @@
                     <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops &gt; T-Shirts</g:google_product_category>
                     <g:product_type><![CDATA[t shirts]]></g:product_type>
                     <g:size>S</g:size>
-                    
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.00 kg</g:shipping_weight>
                     <g:shipping_length>0.00 cm</g:shipping_length>
                     <g:shipping_width>0.00 cm</g:shipping_width>
                     <g:shipping_height>0.00 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2072,24 +1708,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.13 kg</g:shipping_weight>
                     <g:shipping_length>16.51 cm</g:shipping_length>
                     <g:shipping_width>16.51 cm</g:shipping_width>
                     <g:shipping_height>20.32 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2107,24 +1738,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.40 kg</g:shipping_weight>
                     <g:shipping_length>15.24 cm</g:shipping_length>
                     <g:shipping_width>15.24 cm</g:shipping_width>
                     <g:shipping_height>25.40 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2142,24 +1768,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.46 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>17.78 cm</g:shipping_width>
                     <g:shipping_height>30.48 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2178,24 +1799,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.32 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>17.78 cm</g:shipping_width>
                     <g:shipping_height>30.48 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2213,24 +1829,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.62 kg</g:shipping_weight>
                     <g:shipping_length>10.16 cm</g:shipping_length>
                     <g:shipping_width>10.16 cm</g:shipping_width>
                     <g:shipping_height>22.86 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2248,24 +1859,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.55 kg</g:shipping_weight>
                     <g:shipping_length>10.16 cm</g:shipping_length>
                     <g:shipping_width>10.16 cm</g:shipping_width>
                     <g:shipping_height>25.40 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2284,24 +1890,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.40 kg</g:shipping_weight>
                     <g:shipping_length>13.97 cm</g:shipping_length>
                     <g:shipping_width>13.97 cm</g:shipping_width>
                     <g:shipping_height>33.02 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2321,24 +1922,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.63 kg</g:shipping_weight>
                     <g:shipping_length>25.40 cm</g:shipping_length>
                     <g:shipping_width>25.40 cm</g:shipping_width>
                     <g:shipping_height>33.02 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2357,24 +1953,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.33 kg</g:shipping_weight>
                     <g:shipping_length>15.24 cm</g:shipping_length>
                     <g:shipping_width>15.24 cm</g:shipping_width>
                     <g:shipping_height>15.24 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2393,24 +1984,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden</g:google_product_category>
                     <g:product_type><![CDATA[outdoors]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.74 kg</g:shipping_weight>
                     <g:shipping_length>19.05 cm</g:shipping_length>
                     <g:shipping_width>19.05 cm</g:shipping_width>
                     <g:shipping_height>20.32 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2430,24 +2016,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.43 kg</g:shipping_weight>
                     <g:shipping_length>24.13 cm</g:shipping_length>
                     <g:shipping_width>24.13 cm</g:shipping_width>
                     <g:shipping_height>22.86 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2467,24 +2048,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.52 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>17.78 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2503,24 +2079,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.76 kg</g:shipping_weight>
                     <g:shipping_length>15.88 cm</g:shipping_length>
                     <g:shipping_width>15.88 cm</g:shipping_width>
                     <g:shipping_height>27.94 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2539,24 +2110,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.70 kg</g:shipping_weight>
                     <g:shipping_length>18.41 cm</g:shipping_length>
                     <g:shipping_width>18.41 cm</g:shipping_width>
                     <g:shipping_height>43.18 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2575,24 +2141,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.27 kg</g:shipping_weight>
                     <g:shipping_length>16.51 cm</g:shipping_length>
                     <g:shipping_width>15.88 cm</g:shipping_width>
                     <g:shipping_height>38.10 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2611,24 +2172,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.42 kg</g:shipping_weight>
                     <g:shipping_length>20.32 cm</g:shipping_length>
                     <g:shipping_width>20.32 cm</g:shipping_width>
                     <g:shipping_height>17.78 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2648,24 +2204,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.23 kg</g:shipping_weight>
                     <g:shipping_length>8.89 cm</g:shipping_length>
                     <g:shipping_width>8.89 cm</g:shipping_width>
                     <g:shipping_height>16.51 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2683,24 +2234,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.33 kg</g:shipping_weight>
                     <g:shipping_length>8.48 cm</g:shipping_length>
                     <g:shipping_width>8.48 cm</g:shipping_width>
                     <g:shipping_height>16.51 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2719,24 +2265,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.98 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>17.78 cm</g:shipping_width>
                     <g:shipping_height>29.21 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2755,24 +2296,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.42 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>17.78 cm</g:shipping_width>
                     <g:shipping_height>33.02 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2791,24 +2327,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
                     <g:product_type><![CDATA[home decor]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.41 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>16.51 cm</g:shipping_width>
                     <g:shipping_height>34.29 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2827,24 +2358,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.78 kg</g:shipping_weight>
                     <g:shipping_length>17.78 cm</g:shipping_length>
                     <g:shipping_width>17.78 cm</g:shipping_width>
                     <g:shipping_height>48.26 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2863,24 +2389,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>2.31 kg</g:shipping_weight>
                     <g:shipping_length>15.24 cm</g:shipping_length>
                     <g:shipping_width>15.24 cm</g:shipping_width>
                     <g:shipping_height>45.72 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2899,24 +2420,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
                     <g:product_type><![CDATA[vases]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>1.86 kg</g:shipping_weight>
                     <g:shipping_length>13.97 cm</g:shipping_length>
                     <g:shipping_width>13.97 cm</g:shipping_width>
                     <g:shipping_height>47.63 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2934,24 +2450,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>9.53 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -2969,24 +2480,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>9.53 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -3004,24 +2510,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>9.53 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -3039,24 +2540,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>9.53 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -3074,24 +2570,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>9.53 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -3109,24 +2600,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>9.53 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -3144,24 +2630,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>9.53 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -3179,24 +2660,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>9.53 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -3214,24 +2690,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>9.53 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -3249,24 +2720,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>9.53 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
 
@@ -3284,24 +2750,19 @@
                     <g:condition>new</g:condition>
                     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
                     <g:product_type><![CDATA[candles]]></g:product_type>
-                    
-                    
+                    <g:size></g:size>
+                    <g:color>unspecified</g:color>
                     <g:age_group>adult</g:age_group>
-                    <g:identifier_exists>false</g:identifier_exists> <!-- Explicitly tell Google no GTIN/MPN -->
+                    <g:identifier_exists>false</g:identifier_exists>
                     <g:shipping_weight>0.50 kg</g:shipping_weight>
                     <g:shipping_length>7.62 cm</g:shipping_length>
                     <g:shipping_width>7.62 cm</g:shipping_width>
                     <g:shipping_height>9.53 cm</g:shipping_height>
                     <g:tax>
                         <g:country>US</g:country>
-                        <g:rate>0.00</g:rate> <!-- Adjust based on tax rate if applicable -->
+                        <g:rate>0.00</g:rate>
                         <g:tax_ship>true</g:tax_ship>
                     </g:tax>
-                    <g:shipping>
-                        <g:country>US</g:country>
-                        <g:service>Standard shipping</g:service>
-                        <g:price>0.00 USD</g:price> <!-- Adjust based on shipping cost -->
-                    </g:shipping>
                 </item>
             
             </channel>
