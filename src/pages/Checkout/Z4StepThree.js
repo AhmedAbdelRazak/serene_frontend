@@ -300,6 +300,19 @@ const Z4StepThree = ({
 
 				toast.success("Order successfully created.");
 
+				if (window.gtag) {
+					// Replace these with real values
+					const orderValue = Number(totalAmountAdjusted); // or however you track total
+					const orderId = orderResponse?.order?._id || "some-fallback-id";
+
+					window.gtag("event", "conversion", {
+						send_to: "AW-11537568049/k1aMCO6fgIAaELGixf0q",
+						value: orderValue, // total order amount
+						currency: "USD",
+						transaction_id: orderId, // some unique transaction ID
+					});
+				}
+
 				setTimeout(() => {
 					clearCart(); // Clear the cart after order is created
 					setIsLoading(false);
