@@ -18,7 +18,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>blue, turquoise, white, gold</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -43,7 +43,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>gray, white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -68,7 +68,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
             <g:product_type><![CDATA[seasonal]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>blue, green, yellow, brown, gold</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -93,7 +93,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Pot &amp; Planter Liners</g:google_product_category>
             <g:product_type><![CDATA[planters]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>blue, green</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -118,7 +118,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
             <g:product_type><![CDATA[outdoors]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>blue, light blue, white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -143,7 +143,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>turquoise</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -168,7 +168,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>amber, white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -193,7 +193,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Home Fragrances &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[votives]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -218,7 +218,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>black, silver</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -243,7 +243,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>gray</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -268,7 +268,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
             <g:product_type><![CDATA[home decor]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>caramel</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -293,7 +293,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>mint, amber</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -318,7 +318,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>gray, amber</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -343,7 +343,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>amber, white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -368,7 +368,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>light blue, white, gold</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -393,7 +393,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
             <g:product_type><![CDATA[home decor]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>gray</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -418,7 +418,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
             <g:product_type><![CDATA[seasonal]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white, blue, black</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -443,7 +443,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
             <g:product_type><![CDATA[home decor]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -468,7 +468,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Home Fragrances &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[votives]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>gold</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -493,7 +493,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white, gray</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -518,7 +518,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>taupe, brown</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -543,7 +543,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>aqua, white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -568,7 +568,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Pot &amp; Planter Liners</g:google_product_category>
             <g:product_type><![CDATA[planters]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>blue, orange, gold</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -593,7 +593,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>brown, blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -618,7 +618,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>blue, green</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -643,7 +643,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
             <g:product_type><![CDATA[seasonal]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>brown</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -668,7 +668,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
             <g:product_type><![CDATA[seasonal]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>brown</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -693,7 +693,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
             <g:product_type><![CDATA[home decor]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>blue, light blue, white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -718,7 +718,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
             <g:product_type><![CDATA[home decor]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>brown, blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -743,7 +743,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
             <g:product_type><![CDATA[home decor]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -767,8 +767,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
             <g:product_type><![CDATA[outdoors]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>small</g:size>
+            <g:color>green</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -793,7 +793,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
             <g:product_type><![CDATA[seasonal]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>orange</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -818,7 +818,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
             <g:product_type><![CDATA[outdoors]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>multicolor</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -842,8 +842,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>medium</g:size>
+            <g:color>brown, blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -867,8 +867,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>large</g:size>
+            <g:color>brown, blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -893,7 +893,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
             <g:product_type><![CDATA[outdoors]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>red</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -918,7 +918,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
             <g:product_type><![CDATA[outdoors]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>light green</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -943,7 +943,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
             <g:product_type><![CDATA[seasonal]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>green</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -968,7 +968,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
             <g:product_type><![CDATA[seasonal]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>green</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1018,7 +1018,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Home Fragrances &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[votives]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1042,8 +1042,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
             <g:product_type><![CDATA[outdoors]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>large</g:size>
+            <g:color>blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1067,8 +1067,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
             <g:product_type><![CDATA[seasonal]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>small</g:size>
+            <g:color>orange</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1092,8 +1092,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
             <g:product_type><![CDATA[seasonal]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>small</g:size>
+            <g:color>brown</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1117,8 +1117,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>small</g:size>
+            <g:color>emerald green, gold</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1142,8 +1142,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>medium</g:size>
+            <g:color>emerald green, gold</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1168,7 +1168,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>amber, blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1193,7 +1193,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>amber</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1218,7 +1218,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>brown</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1243,7 +1243,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>light blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1268,7 +1268,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>black</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1293,7 +1293,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
             <g:product_type><![CDATA[outdoors]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>green</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1318,7 +1318,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>transparent</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1642,8 +1642,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>small</g:size>
+            <g:color>caramel</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1667,8 +1667,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>medium</g:size>
+            <g:color>caramel</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1692,8 +1692,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>large</g:size>
+            <g:color>caramel</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1718,7 +1718,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>purple</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1742,8 +1742,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
             <g:product_type><![CDATA[outdoors]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>small</g:size>
+            <g:color>blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1767,8 +1767,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
             <g:product_type><![CDATA[outdoors]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>small</g:size>
+            <g:color>royal blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1793,7 +1793,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>caramel</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1818,7 +1818,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>amber, white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1843,7 +1843,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
             <g:product_type><![CDATA[outdoors]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>red</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1868,7 +1868,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
             <g:product_type><![CDATA[outdoors]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>aqua</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1892,8 +1892,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>large</g:size>
+            <g:color>royal blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1917,8 +1917,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>small</g:size>
+            <g:color>royal blue</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1943,7 +1943,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>gray, white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1968,7 +1968,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>gray, white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -1992,8 +1992,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>large</g:size>
+            <g:color>emerald green, gold</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2018,7 +2018,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>bronze</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2043,7 +2043,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
             <g:product_type><![CDATA[home decor]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>silver</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2068,7 +2068,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
             <g:product_type><![CDATA[home decor]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>silver</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2092,8 +2092,8 @@
             <g:condition>new</g:condition>
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
-            <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:size>small</g:size>
+            <g:color>multicolor</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2118,7 +2118,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
             <g:product_type><![CDATA[home decor]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>caramel</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2143,7 +2143,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
             <g:product_type><![CDATA[home decor]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>brown</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2168,7 +2168,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>multicolor</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2193,7 +2193,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>purple</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2218,7 +2218,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
             <g:product_type><![CDATA[vases]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>amber</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2243,7 +2243,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[candles]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2268,7 +2268,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[candles]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2293,7 +2293,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[candles]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2318,7 +2318,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[candles]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2343,7 +2343,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[candles]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2368,7 +2368,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[candles]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2393,7 +2393,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[candles]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2418,7 +2418,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[candles]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2443,7 +2443,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[candles]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2468,7 +2468,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[candles]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
@@ -2493,7 +2493,7 @@
             <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
             <g:product_type><![CDATA[candles]]></g:product_type>
             <g:size>Unspecified</g:size>
-            <g:color>Unspecified</g:color>
+            <g:color>white</g:color>
             <g:age_group>adult</g:age_group>
             <g:gender>unisex</g:gender>
             <g:identifier_exists>false</g:identifier_exists>
