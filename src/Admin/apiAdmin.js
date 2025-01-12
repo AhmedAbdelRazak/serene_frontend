@@ -1319,6 +1319,43 @@ export const removeCoupon = (couponId, userId, token) => {
 		.catch((err) => console.log(err));
 };
 
+export const JanatWebsitePrivacy = (
+	documentId,
+	JanatWebsite,
+	userId,
+	token
+) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/serene-jannat-website/${documentId}/${userId}`,
+		{
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(JanatWebsite),
+			// body: image,
+		}
+	)
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+};
+
+export const getJanatWebsiteRecord = () => {
+	return fetch(`${process.env.REACT_APP_API_URL}/janat-website-document`, {
+		method: "GET",
+	})
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};
+
 export const aceOrders = (userId, token, day1, day2) => {
 	return fetch(
 		`${process.env.REACT_APP_API_URL}/ace/orderslist/dates/${day1}/${day2}/${userId}`,

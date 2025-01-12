@@ -74,6 +74,9 @@ const Footer = () => {
 				>
 					Serene Jannat | Terms & Conditions
 				</Terms>
+				<Terms onClick={() => handleNavigation("/return-refund-policy")}>
+					Serene Jannat | Return & Refund Policy
+				</Terms>
 
 				<Copyright>
 					Copyright©{new Date().getFullYear()} Serene Jannat All Rights

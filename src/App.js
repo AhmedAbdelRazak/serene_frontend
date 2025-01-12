@@ -17,7 +17,7 @@ const Register = lazy(() => import("./pages/Register"));
 const Home = lazy(() => import("./pages/Home/Home"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
-const RetExchPolicy = lazy(() => import("./pages/RetExchPolicy"));
+const ReturnRefundPolicy = lazy(() => import("./pages/ReturnRefundPolicy"));
 const About = lazy(() => import("./pages/About/About"));
 const Cart = lazy(() => import("./pages/Checkout/Cart"));
 const AdminDashboard = lazy(
@@ -146,9 +146,9 @@ const App = () => {
 					/>
 					<Route path='/cookie-policy' exact component={CookiePolicy} />
 					<Route
-						path='/return-exchange-policy'
+						path='/return-refund-policy'
 						exact
-						component={RetExchPolicy}
+						component={ReturnRefundPolicy}
 					/>
 					<Route path='/signup' exact component={Register} />
 					<Route path='/signin' exact component={Login} />

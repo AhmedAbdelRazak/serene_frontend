@@ -5,6 +5,8 @@ import EditHomePage from "./EditHomePage";
 import EditContactUsPage from "./EditContactUsPage";
 import EditAboutUsPage from "./EditAboutUsPage";
 import AdminNavbar from "../AdminNavbar/AdminNavbar";
+import ZTermsAndConditions from "./ZTermsAndConditions";
+import ZReturnAndExchange from "./ZReturnAndExchange";
 
 const EditWebsiteMain = ({ chosenLanguage }) => {
 	const [AdminMenuStatus, setAdminMenuStatus] = useState(false);
@@ -18,6 +20,10 @@ const EditWebsiteMain = ({ chosenLanguage }) => {
 			setActiveTab("ContactUs");
 		} else if (window.location.search.includes("aboutus")) {
 			setActiveTab("AboutUs");
+		} else if (window.location.search.includes("termsconditions")) {
+			setActiveTab("termsconditions");
+		} else if (window.location.search.includes("returnsexchange")) {
+			setActiveTab("returnsexchange");
 		} else {
 			setActiveTab("HomePage");
 		}
@@ -45,7 +51,7 @@ const EditWebsiteMain = ({ chosenLanguage }) => {
 						className='mx-auto col-md-10 mx-auto'
 						style={{ background: "#8a8a8a", padding: "1px" }}
 					>
-						<div className='my-2 tab-grid col-md-6 mx-auto'>
+						<div className='my-2 tab-grid col-md-12 mx-auto'>
 							<Tab
 								isActive={activeTab === "HomePage"}
 								onClick={() => {
@@ -70,6 +76,27 @@ const EditWebsiteMain = ({ chosenLanguage }) => {
 							>
 								<Link to='/admin/website-management?aboutus'>About Us</Link>
 							</Tab>
+
+							<Tab
+								isActive={activeTab === "termsconditions"}
+								onClick={() => {
+									setActiveTab("termsconditions");
+								}}
+							>
+								<Link to='/admin/website-management?termsconditions'>
+									Terms & Conditions
+								</Link>
+							</Tab>
+							<Tab
+								isActive={activeTab === "returnsexchange"}
+								onClick={() => {
+									setActiveTab("returnsexchange");
+								}}
+							>
+								<Link to='/admin/website-management?returnsexchange'>
+									Returns & Exchange
+								</Link>
+							</Tab>
 						</div>
 					</div>
 
@@ -80,6 +107,10 @@ const EditWebsiteMain = ({ chosenLanguage }) => {
 							<EditContactUsPage />
 						) : activeTab === "AboutUs" ? (
 							<EditAboutUsPage />
+						) : activeTab === "termsconditions" ? (
+							<ZTermsAndConditions />
+						) : activeTab === "returnsexchange" ? (
+							<ZReturnAndExchange />
 						) : null}
 					</div>
 				</div>

@@ -5,8 +5,8 @@ import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { getJanatWebsiteRecord } from "../Admin/apiAdmin";
 
-const PrivacyPolicy = () => {
-	const [termsAndConditionEnglish, setTermsAndConditionEnglish] = useState("");
+const ReturnRefundPolicy = () => {
+	const [returnsAndExchange, setReturnsAndExchange] = useState("");
 
 	const gettingJanatWebsiteRecord = () => {
 		getJanatWebsiteRecord().then((data) => {
@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
 				console.log(data.error, "data.error");
 			} else {
 				if (data && data[0]) {
-					setTermsAndConditionEnglish(data[0].termsAndConditionEnglish || "");
+					setReturnsAndExchange(data[0].returnsAndExchange || "");
 				}
 			}
 		});
@@ -25,12 +25,12 @@ const PrivacyPolicy = () => {
 		// eslint-disable-next-line
 	}, []);
 
-	const title = "Privacy Policy | Terms & Conditions | Serene Jannat";
+	const title = "Return and Refund Policy | Serene Jannat";
 	const description =
-		"Learn about the privacy practices of Serene Jannat, your trusted online gift store for candles, glass items, and more.";
-	const url = "https://serenejannat.com/privacy-policy-terms-conditions";
+		"Learn about the returns and refund practices of Serene Jannat, your trusted online gift store for candles, glass items, and more.";
+	const url = "https://serenejannat.com/return-refund-policy";
 	const keywords =
-		"Privacy Policy, Terms and Conditions, Serene Jannat, Online Shop, Candles, Gifts, blown glasses, decoration";
+		"Returns, Refunds, Exchange, Terms and Conditions, Serene Jannat, Online Shop, Candles, Gifts, blown glasses, decoration";
 
 	return (
 		<Wrapper>
@@ -43,7 +43,7 @@ const PrivacyPolicy = () => {
 				<meta property='og:url' content={url} />
 				<link
 					rel='canonical'
-					href='https://serenejannat.com/privacy-policy-terms-conditions'
+					href='https://serenejannat.com/return-refund-policy'
 				/>
 				<meta property='og:type' content='website' />
 			</Helmet>
@@ -51,12 +51,10 @@ const PrivacyPolicy = () => {
 				<DescriptionWrapper>
 					<div
 						dangerouslySetInnerHTML={{
-							__html: termsAndConditionEnglish,
+							__html: returnsAndExchange,
 						}}
 					/>
 				</DescriptionWrapper>
-				<br />
-				<br />
 			</ContentWrapper>
 		</Wrapper>
 	);
@@ -154,7 +152,7 @@ const ContentWrapper = styled.div`
 		color: var(--text-color-primary);
 		font-family: "SF Pro Display", sans-serif;
 		font-size: 16px;
-		line-height: 1;
+		line-height: 1.2;
 		margin-bottom: 20px;
 	}
 
@@ -162,7 +160,7 @@ const ContentWrapper = styled.div`
 		color: var(--text-color-primary);
 		font-family: "SF Pro Display", sans-serif;
 		font-size: 16px;
-		line-height: 1;
+		line-height: 1.1;
 		margin-bottom: 20px;
 		padding-left: 20px;
 
@@ -175,7 +173,7 @@ const ContentWrapper = styled.div`
 		color: var(--text-color-primary);
 		font-family: "SF Pro Display", sans-serif;
 		font-size: 16px;
-		line-height: 1;
+		line-height: 1.1;
 		margin-bottom: 20px;
 	}
 `;
@@ -196,4 +194,4 @@ const DescriptionWrapper = styled.div`
 	}
 `;
 
-export default PrivacyPolicy;
+export default ReturnRefundPolicy;
