@@ -66,16 +66,33 @@ export const CartProvider = ({ children }) => {
 	};
 
 	// add to cart
-	const addToCart = (id, color, amount, product, chosenProductAttributes) => {
+	// NOTE: We add a new argument "customDesign" for POD
+	const addToCart = (
+		id,
+		color,
+		amount,
+		product,
+		chosenProductAttributes,
+		customDesign // <-- new optional parameter
+	) => {
 		dispatch({
 			type: ADD_TO_CART,
-			payload: { id, color, amount, product, chosenProductAttributes },
+			payload: {
+				id,
+				color,
+				amount,
+				product,
+				chosenProductAttributes,
+				customDesign,
+			},
 		});
 	};
+
 	// remove item
 	const removeItem = (id, size, color) => {
 		dispatch({ type: REMOVE_CART_ITEM, payload: { id, size, color } });
 	};
+
 	// toggle amount
 	const toggleAmount = (id, value, chosenAttribute, newMax) => {
 		dispatch({
@@ -83,6 +100,7 @@ export const CartProvider = ({ children }) => {
 			payload: { id, value, chosenAttribute, newMax },
 		});
 	};
+
 	// clear cart
 	const clearCart = () => {
 		dispatch({ type: CLEAR_CART });
@@ -119,6 +137,7 @@ export const CartProvider = ({ children }) => {
 		dispatch({ type: SHIPPING_DETAILS, payload: { chosenShipmentDetails } });
 	};
 
+	// keep totals in sync with localStorage
 	useEffect(() => {
 		dispatch({ type: COUNT_CART_TOTALS });
 		localStorage.setItem("cart", JSON.stringify(state.cart));

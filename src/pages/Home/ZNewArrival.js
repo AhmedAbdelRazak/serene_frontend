@@ -65,7 +65,15 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 		autoplaySpeed: 4000,
 	};
 
+	// === ADD TO CART LOGIC ===
 	const handleCartIconClick = async (product) => {
+		// If it's a POD product => redirect to /custom-gifts/:id instead
+		if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
+			history.push(`/custom-gifts/${product._id}`);
+			return;
+		}
+
+		// Otherwise, do normal "add to cart"
 		ReactGA.event({
 			category: "Add To The Cart New Arrivals",
 			action: "User Added New Arrival Product To The Cart",
@@ -82,7 +90,15 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 		}
 	};
 
+	// === CLICK PRODUCT => NAVIGATE ===
 	const navigateToProduct = (product) => {
+		// If it's a POD product => redirect to /custom-gifts/:id
+		if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
+			history.push(`/custom-gifts/${product._id}`);
+			return;
+		}
+
+		// Otherwise, normal single-product route
 		ReactGA.event({
 			category: "New Arrival Product Clicked",
 			action: "New Arrival Product Clicked",
@@ -106,17 +122,25 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 								chosenProductAttributes?.productImages ||
 								product.thumbnailImage[0].images;
 
-							const originalPrice = product.price;
+							const originalPrice = product.price || 0;
 							const discountedPrice =
 								product.priceAfterDiscount > 0
 									? product.priceAfterDiscount
-									: chosenProductAttributes?.priceAfterDiscount;
+									: chosenProductAttributes?.priceAfterDiscount || 0;
+
+							const originalPriceFixed = originalPrice.toFixed(2);
+							const discountedPriceFixed = discountedPrice.toFixed(2);
 
 							const totalQuantity =
 								product.productAttributes.reduce(
 									(acc, attr) => acc + attr.quantity,
 									0
 								) || product.quantity;
+
+							// is POD?
+							const isPOD =
+								product.isPrintifyProduct &&
+								product.printifyProductDetails?.POD;
 
 							return (
 								<div key={i} className='slide'>
@@ -125,6 +149,9 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 										onClick={() => navigateToProduct(product)}
 										cover={
 											<ImageContainer>
+												{/* If it's POD => Show "Custom Design" badge */}
+												{isPOD && <PodBadge>Custom Design 💖</PodBadge>}
+
 												{totalQuantity > 0 ? (
 													<CartIcon
 														onClick={(e) => {
@@ -135,6 +162,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 												) : (
 													<OutOfStockBadge>Out of Stock</OutOfStockBadge>
 												)}
+
 												{images.length > 1 ? (
 													<Slider {...imageSettings}>
 														{images.map((img, index) => (
@@ -165,14 +193,14 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 												originalPrice > discountedPrice ? (
 													<span>
 														Price:{" "}
-														<OriginalPrice>${originalPrice}</OriginalPrice>{" "}
+														<OriginalPrice>${originalPriceFixed}</OriginalPrice>{" "}
 														<DiscountedPrice>
-															${discountedPrice}
+															${discountedPriceFixed}
 														</DiscountedPrice>
 													</span>
 												) : (
 													<DiscountedPrice>
-														Price: ${discountedPrice}
+														Price: ${discountedPriceFixed}
 													</DiscountedPrice>
 												)
 											}
@@ -189,6 +217,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 
 export default ZNewArrival;
 
+/* ==== STYLES ==== */
 const Container = styled.div`
 	background: var(--background-light);
 	padding: 10px;
@@ -290,6 +319,20 @@ const ProductImage = styled.img`
 	height: 100%;
 	object-fit: cover;
 	object-position: center;
+`;
+
+const PodBadge = styled.div`
+	position: absolute;
+	top: 12px; /* Moved down from 8px => more spacing */
+	left: 12px; /* Moved in from 8px => more spacing */
+	background-color: #ffafc5; /* pinkish color */
+	color: #ffffff;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-weight: bold;
+	font-size: 0.8rem;
+	z-index: 20;
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 `;
 
 const CartIcon = styled(ShoppingCartOutlined)`

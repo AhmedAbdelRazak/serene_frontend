@@ -22,18 +22,33 @@ const ZCategories = ({ allCategories }) => {
 						key={category.categorySlug}
 						onClick={() => handleCategoryClick(category.categoryName)}
 					>
-						<Link to={`/our-products?category=${category.categorySlug}`}>
-							{category.thumbnail && category.thumbnail.length > 0 && (
-								<CategoryImageWrapper>
-									<CategoryImage
-										loading='lazy'
-										src={`${category.thumbnail[0].url}?auto=format&fit=max&w=600`}
-										alt={category.categoryName}
-									/>
-								</CategoryImageWrapper>
-							)}
-							<CategoryName>{category.categoryName}</CategoryName>
-						</Link>
+						{category._id === "679bb2a7dba50a58933d01eb" ? (
+							<Link to={`/custom-gifts`}>
+								{category.thumbnail && category.thumbnail.length > 0 && (
+									<CategoryImageWrapper>
+										<CategoryImage
+											loading='lazy'
+											src={`${category.thumbnail[0].url}?auto=format&fit=max&w=600`}
+											alt={category.categoryName}
+										/>
+									</CategoryImageWrapper>
+								)}
+								<CategoryName>{category.categoryName}</CategoryName>
+							</Link>
+						) : (
+							<Link to={`/our-products?category=${category.categorySlug}`}>
+								{category.thumbnail && category.thumbnail.length > 0 && (
+									<CategoryImageWrapper>
+										<CategoryImage
+											loading='lazy'
+											src={`${category.thumbnail[0].url}?auto=format&fit=max&w=600`}
+											alt={category.categoryName}
+										/>
+									</CategoryImageWrapper>
+								)}
+								<CategoryName>{category.categoryName}</CategoryName>
+							</Link>
+						)}
 					</CategoryCard>
 				))}
 			</ZCategoriesWrapper>

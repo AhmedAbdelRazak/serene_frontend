@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import {
 	FaBoxOpen,
@@ -7,8 +7,22 @@ import {
 	FaTruck,
 	FaCalendarAlt,
 } from "react-icons/fa";
+import { Modal } from "antd"; // using antd's modal
 
 const OrdersPage = ({ orders }) => {
+	// Store the image URL we want to preview in a modal
+	const [modalImage, setModalImage] = useState("");
+
+	// Handler to open the modal
+	const handleImageClick = (imgUrl) => {
+		setModalImage(imgUrl);
+	};
+
+	// Handler to close the modal
+	const handleCloseModal = () => {
+		setModalImage("");
+	};
+
 	return (
 		<OrdersWrapper>
 			{orders.map((order) => (
@@ -23,6 +37,7 @@ const OrdersPage = ({ orders }) => {
 								{new Date(order.orderCreationDate).toLocaleDateString()}{" "}
 								{new Date(order.orderCreationDate).toLocaleTimeString()}
 							</StyledText>
+
 							<StyledText>
 								<FaTruck style={{ marginRight: "5px" }} />
 								<strong>Tracking Number:</strong>{" "}
@@ -38,15 +53,14 @@ const OrdersPage = ({ orders }) => {
 									"No Tracking # Yet"
 								)}
 							</StyledText>
+
 							<div>
 								<FaTruck style={{ marginRight: "5px" }} />
 								<strong>Ship To Address:</strong>{" "}
-								{order.customerDetails.address}
-								{", "}
-								{order.customerDetails.city}
-								{", "}
+								{order.customerDetails.address}, {order.customerDetails.city},{" "}
 								{order.customerDetails.state} {order.customerDetails.zipcode}
 							</div>
+
 							<div className='row'>
 								<div className='col-md-6'>
 									<span>
@@ -61,7 +75,7 @@ const OrdersPage = ({ orders }) => {
 									<span>
 										<FaDollarSign style={{ marginRight: "5px" }} />
 										<strong>Payment Status:</strong>{" "}
-										{order.paymentDetails.payment.status.toLowerCase() ===
+										{order?.paymentDetails?.payment?.status?.toLowerCase() ===
 										"completed"
 											? "Paid"
 											: "Not Paid"}
@@ -84,55 +98,58 @@ const OrdersPage = ({ orders }) => {
 										<strong>Shipping Fees:</strong> ${order.shippingFees}
 									</span>
 								</div>
-								{order &&
-									order.appliedCoupon &&
-									order.appliedCoupon.discount && (
-										<>
-											<div className='col-md-6' style={{ color: "darkgreen" }}>
-												<FaDollarSign style={{ marginRight: "5px" }} />
-												<strong>Applied Coupon:</strong>
-												{order.appliedCoupon && order.appliedCoupon.discount}%
-												OFF!
-											</div>
-											<div className='col-md-6' style={{ color: "darkred" }}>
-												<FaDollarSign style={{ marginRight: "5px" }} />
-												<strong>Before Discount Total:</strong> $
-												{order.totalAmount && order.totalAmount.toFixed(2)}
-											</div>
-										</>
-									)}
+
+								{order?.appliedCoupon?.discount && (
+									<>
+										<div className='col-md-6' style={{ color: "darkgreen" }}>
+											<FaDollarSign style={{ marginRight: "5px" }} />
+											<strong>Applied Coupon:</strong>
+											{order.appliedCoupon.discount}% OFF!
+										</div>
+										<div className='col-md-6' style={{ color: "darkred" }}>
+											<FaDollarSign style={{ marginRight: "5px" }} />
+											<strong>Before Discount Total:</strong> $
+											{order.totalAmount && order.totalAmount.toFixed(2)}
+										</div>
+									</>
+								)}
 							</div>
 
 							<CenteredText>
 								<strong>Total Amount:</strong> $
 								{Number(order.totalAmountAfterDiscount).toFixed(2)}
 							</CenteredText>
-							<SectionTitle>Payment Details</SectionTitle>
 
+							<SectionTitle>Payment Details</SectionTitle>
 							<div className='row'>
 								<div className='col-md-4'>
 									<StyledText>
 										<FaReceipt style={{ marginRight: "5px" }} />
 										<strong>TransactionId:</strong>{" "}
-										{order.paymentDetails.payment.receiptNumber}
+										{order.paymentDetails?.payment?.receiptNumber}
 									</StyledText>
 								</div>
-
 								<div className='col-md-4'>
 									<StyledText>
 										<span style={{ marginLeft: "10px" }}>
 											<strong>Last4:</strong>{" "}
-											{order.paymentDetails.payment.cardDetails.card.last4}
+											{order.paymentDetails?.payment?.cardDetails?.card?.last4}
 										</span>
 									</StyledText>
 								</div>
-
 								<div className='col-md-4'>
 									<StyledText>
 										<span style={{ marginLeft: "10px" }}>
 											<strong>Expiry Date:</strong>{" "}
-											{order.paymentDetails.payment.cardDetails.card.expMonth}/
-											{order.paymentDetails.payment.cardDetails.card.expYear}
+											{
+												order.paymentDetails?.payment?.cardDetails?.card
+													?.expMonth
+											}
+											/
+											{
+												order.paymentDetails?.payment?.cardDetails?.card
+													?.expYear
+											}
 										</span>
 									</StyledText>
 								</div>
@@ -140,102 +157,231 @@ const OrdersPage = ({ orders }) => {
 						</div>
 
 						<SectionTitle>Products</SectionTitle>
-						{order.productsNoVariable.map((product) => (
-							<ProductWrapper key={product.name}>
-								<ProductImage src={product.image} alt={product.name} />
-								<ProductDetails>
-									<StyledText>
-										<strong>Product Name:</strong> {product.name}
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Ordered Quantity:</strong>{" "}
-											{product.ordered_quantity}
-										</span>
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Price/Unit:</strong> ${product.price}
-										</span>
-									</StyledText>
-									<StyledText>
-										<strong>SKU:</strong> {product.sku}
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Color:</strong> {product.color}
-										</span>
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Size:</strong> {product.size}
-										</span>
-									</StyledText>
-									{product.isPrintifyProduct && (
+
+						{/* ======== NO-VARIABLE PRODUCTS ======== */}
+						{order.productsNoVariable.map((product) => {
+							// Decide which image to show. If product.image is empty, try customDesign
+							const displayImg =
+								product.image && product.image.length > 0
+									? product.image
+									: product.isPrintifyProduct &&
+										  product.customDesign?.originalPrintifyImageURL
+										? product.customDesign.originalPrintifyImageURL
+										: "https://via.placeholder.com/64";
+
+							return (
+								<ProductWrapper key={product.name}>
+									<ProductImage
+										src={displayImg}
+										alt={product.name}
+										// Make the image clickable => open modal
+										onClick={() => handleImageClick(displayImg)}
+									/>
+									<ProductDetails>
 										<StyledText>
-											<strong>Source:</strong> Printify
+											<strong>Product Name:</strong> {product.name}
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Ordered Quantity:</strong>{" "}
+												{product.ordered_quantity}
+											</span>
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Price/Unit:</strong> ${product.price}
+											</span>
 										</StyledText>
-									)}
-									<StyledText>
-										<strong>Total Amount:</strong> $
-										{(product.ordered_quantity * product.price).toFixed(2)}
-									</StyledText>
-								</ProductDetails>
-							</ProductWrapper>
-						))}
-						{order.chosenProductQtyWithVariables.map((product) => (
-							<ProductWrapper key={product.name}>
-								<ProductImage src={product.image} alt={product.name} />
-								<ProductDetails>
-									<StyledText>
-										<strong>Product Name:</strong> {product.name}
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Ordered Quantity:</strong>{" "}
-											{product.ordered_quantity}
-										</span>
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Price/Unit:</strong> ${product.price}
-										</span>
-									</StyledText>
-									<StyledText>
-										<strong>SKU:</strong> {product.chosenAttributes.SubSKU}
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Color:</strong> {product.chosenAttributes.color}
-										</span>
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Size:</strong> {product.chosenAttributes.size}
-										</span>
-									</StyledText>
-									{product.productImages &&
-										product.productImages.length > 0 && (
-											<div>
-												<StyledText>Product Images:</StyledText>
-												{product.productImages.map((img, index) => (
-													<img
-														key={index}
-														src={img.url}
-														alt='Product'
-														style={{
-															width: "100px",
-															marginRight: "10px",
-														}}
-													/>
-												))}
-											</div>
+										<StyledText>
+											<strong>SKU:</strong> {product.sku}
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Color:</strong> {product.color}
+											</span>
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Size:</strong> {product.size}
+											</span>
+										</StyledText>
+										{/* If POD, show "Source: Print On Demand" */}
+										{product.isPrintifyProduct && (
+											<StyledText>
+												<strong>Source:</strong>Serene Jannat Print On Demand
+											</StyledText>
 										)}
-									{product.isPrintifyProduct && (
 										<StyledText>
-											<strong>Source:</strong> Printify
+											<strong>Total Amount:</strong> $
+											{(product.ordered_quantity * product.price).toFixed(2)}
 										</StyledText>
-									)}
-									<StyledText>
-										<strong>Total Amount:</strong> $
-										{(product.ordered_quantity * product.price).toFixed(2)}
-									</StyledText>
-								</ProductDetails>
-							</ProductWrapper>
-						))}
+									</ProductDetails>
+								</ProductWrapper>
+							);
+						})}
+
+						{/* ======== VARIABLE PRODUCTS ======== */}
+						{order.chosenProductQtyWithVariables.map((product) => {
+							// Decide which image to show
+							const displayImg =
+								product.image && product.image.length > 0
+									? product.image
+									: product.isPrintifyProduct &&
+										  product.customDesign?.originalPrintifyImageURL
+										? product.customDesign.originalPrintifyImageURL
+										: "https://via.placeholder.com/64";
+
+							return (
+								<ProductWrapper key={product.name}>
+									<ProductImage
+										src={displayImg}
+										alt={product.name}
+										onClick={() => handleImageClick(displayImg)}
+									/>
+									<ProductDetails>
+										<StyledText>
+											<strong>Product Name:</strong> {product.name}
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Ordered Quantity:</strong>{" "}
+												{product.ordered_quantity}
+											</span>
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Price/Unit:</strong> ${product.price}
+											</span>
+										</StyledText>
+										<StyledText>
+											<strong>SKU:</strong> {product.chosenAttributes.SubSKU}
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Color:</strong> {product.chosenAttributes.color}
+											</span>
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Size:</strong> {product.chosenAttributes.size}
+											</span>
+										</StyledText>
+
+										{/* If we have productImages for the variable item */}
+										{product.productImages &&
+											product.productImages.length > 0 && (
+												<div>
+													<StyledText>Product Images:</StyledText>
+													{product.productImages.map((img, index) => (
+														<img
+															key={index}
+															src={img.url}
+															alt='Product'
+															style={{
+																width: "100px",
+																marginRight: "10px",
+																cursor: "pointer",
+																borderRadius: "5px",
+															}}
+															onClick={() => handleImageClick(img.url)}
+														/>
+													))}
+												</div>
+											)}
+
+										{/* If Print On Demand (POD) => show final design + text */}
+										{product.isPrintifyProduct &&
+											product.printifyProductDetails?.POD && (
+												<>
+													<StyledText>
+														<strong>Source:</strong>Serene Jannat Print On
+														Demand
+													</StyledText>
+													{product.customDesign && (
+														<div style={{ margin: "10px 0" }}>
+															{/* Final Screenshot */}
+															{product.customDesign.finalScreenshotUrl && (
+																<>
+																	<StyledText>
+																		<strong>Final Design Preview:</strong>
+																	</StyledText>
+																	<img
+																		src={
+																			product.customDesign.finalScreenshotUrl
+																		}
+																		alt='Final Design'
+																		style={{
+																			width: "150px",
+																			border: "1px solid #ccc",
+																			cursor: "pointer",
+																		}}
+																		onClick={() =>
+																			handleImageClick(
+																				product.customDesign.finalScreenshotUrl
+																			)
+																		}
+																	/>
+																</>
+															)}
+															{/* Custom Text(s) */}
+															{product.customDesign.texts &&
+																product.customDesign.texts.length > 0 && (
+																	<div>
+																		<StyledText>
+																			<strong>Custom Text(s):</strong>
+																		</StyledText>
+																		{product.customDesign.texts.map(
+																			(textObj, idx) => (
+																				<StyledText
+																					key={idx}
+																					style={{ marginLeft: "15px" }}
+																				>
+																					- <strong>Text:</strong> "
+																					{textObj.text}"
+																					<br />
+																					&nbsp; <strong>Color:</strong>{" "}
+																					{textObj.color}
+																					<br />
+																					&nbsp; <strong>
+																						Font Family:
+																					</strong>{" "}
+																					{textObj.font_family}
+																				</StyledText>
+																			)
+																		)}
+																	</div>
+																)}
+														</div>
+													)}
+												</>
+											)}
+
+										<StyledText>
+											<strong>Total Amount:</strong> $
+											{(product.ordered_quantity * product.price).toFixed(2)}
+										</StyledText>
+									</ProductDetails>
+								</ProductWrapper>
+							);
+						})}
 					</CardContent>
 				</OrderCard>
 			))}
+
+			{/* ===== Modal to show the full-size image ===== */}
+			<Modal
+				open={!!modalImage}
+				onCancel={handleCloseModal}
+				footer={null}
+				closable={true}
+				centered
+				bodyStyle={{ padding: "10px", textAlign: "center" }}
+				width='auto'
+				zIndex={9999}
+			>
+				{modalImage && (
+					<img
+						src={modalImage}
+						alt='Full Preview'
+						style={{
+							maxWidth: "90vw",
+							maxHeight: "80vh",
+							objectFit: "contain",
+						}}
+					/>
+				)}
+			</Modal>
 		</OrdersWrapper>
 	);
 };
 
 export default OrdersPage;
 
+/* ==================== STYLES ==================== */
 const OrdersWrapper = styled.div`
 	padding: 20px;
 	background-color: var(--background-light);
@@ -312,6 +458,7 @@ const ProductImage = styled.img`
 	object-fit: cover;
 	border-radius: 5px;
 	margin-right: 10px;
+	cursor: pointer; /* show that it's clickable */
 `;
 
 const ProductDetails = styled.div`

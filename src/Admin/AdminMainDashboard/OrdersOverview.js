@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // eslint-disable-next-line
-import { DatePicker, Table } from "antd";
+import { DatePicker, Table, Modal } from "antd";
 import styled from "styled-components";
 import CountUp from "react-countup";
 import { getListOfOrdersAggregated } from "../apiAdmin";
@@ -13,23 +13,30 @@ const OrdersOverview = ({ showModal }) => {
 	const [totalQuantity, setTotalQuantity] = useState(0);
 	const [totalAmount, setTotalAmount] = useState(0);
 	// eslint-disable-next-line
-	const [date, setDate] = useState(moment()); // Initialize with current date
+	const [date, setDate] = useState(moment()); // single-day approach, defaults to today
 	const [loading, setLoading] = useState(false);
 	const [expandedRowKeys, setExpandedRowKeys] = useState([]);
 
+	// For image preview
+	const [modalImage, setModalImage] = useState(null);
+
 	const { user, token } = isAuthenticated();
 
+	// ─────────────────────────────────────────────────────────
+	// FETCH
+	// ─────────────────────────────────────────────────────────
 	const fetchOrders = async (selectedDate) => {
 		setLoading(true);
 
 		const page = 1;
 		const records = 50;
 		const status = "all";
-		const userId = user._id; // replace with actual user ID
+		const userId = user._id;
 
 		const startDate = selectedDate
 			? selectedDate.format("YYYY-MM-DD")
 			: moment().format("YYYY-MM-DD");
+		// For single-day approach, endDate = startDate
 		const endDate = startDate;
 
 		try {
@@ -45,15 +52,16 @@ const OrdersOverview = ({ showModal }) => {
 			if (response && response.orders) {
 				setData(response.orders);
 				setTotalOrders(response.totalRecords);
-				setTotalQuantity(
-					response.orders.reduce((acc, order) => acc + order.totalOrderQty, 0)
+				const totalQty = response.orders.reduce(
+					(acc, order) => acc + order.totalOrderQty,
+					0
 				);
-				setTotalAmount(
-					response.orders.reduce(
-						(acc, order) => acc + order.totalAmountAfterDiscount,
-						0
-					)
+				setTotalQuantity(totalQty);
+				const totalAmt = response.orders.reduce(
+					(acc, order) => acc + order.totalAmountAfterDiscount,
+					0
 				);
+				setTotalAmount(totalAmt);
 			}
 		} catch (error) {
 			console.error("Error fetching orders:", error);
@@ -67,31 +75,119 @@ const OrdersOverview = ({ showModal }) => {
 		// eslint-disable-next-line
 	}, [date, showModal]);
 
+	// ─────────────────────────────────────────────────────────
+	// HELPER: get fallback image
+	// ─────────────────────────────────────────────────────────
+	const getDisplayImage = (product) => {
+		if (product.image && product.image.length > 0) {
+			return product.image;
+		}
+		if (
+			product.isPrintifyProduct &&
+			product.printifyProductDetails?.POD &&
+			product.customDesign?.originalPrintifyImageURL
+		) {
+			return product.customDesign.originalPrintifyImageURL;
+		}
+		return "https://via.placeholder.com/50";
+	};
+
+	// ─────────────────────────────────────────────────────────
+	// EXPANDED ROW
+	// ─────────────────────────────────────────────────────────
 	const expandedRowRender = (record) => {
 		const products = [
 			...record.productsNoVariable,
 			...record.chosenProductQtyWithVariables,
 		];
+
 		return (
-			<>
-				{products.map((product, index) => (
-					<div
-						key={index}
-						style={{ display: "flex", alignItems: "center", marginBottom: 8 }}
-					>
-						<img
-							src={product.image}
-							alt='product'
-							style={{ width: "50px", marginRight: 16 }}
-						/>
-						<div>
-							<div>{product.name}</div>
-							<div>Quantity: {product.ordered_quantity}</div>
-							<div>Price: ${product.price}</div>
-						</div>
-					</div>
-				))}
-			</>
+			<ExpandedContainer>
+				{products.map((product, index) => {
+					const displayImg = getDisplayImage(product);
+					return (
+						<ProductRow key={index}>
+							<img
+								src={displayImg}
+								alt='product'
+								style={{
+									width: "50px",
+									marginRight: 16,
+									borderRadius: 5,
+									cursor: "pointer",
+								}}
+								onClick={() => setModalImage(displayImg)}
+							/>
+							<div>
+								<div style={{ fontWeight: "bold" }}>{product.name}</div>
+								{/* If chosenAttributes => color / size */}
+								{product.chosenAttributes && (
+									<div style={{ margin: "2px 0" }}>
+										<strong>Color:</strong> {product.chosenAttributes.color} |{" "}
+										<strong>Size:</strong> {product.chosenAttributes.size}
+									</div>
+								)}
+								<div>Quantity: {product.ordered_quantity}</div>
+								<div>Price: ${product.price}</div>
+
+								{/* POD => design details */}
+								{product.isPrintifyProduct &&
+									product.printifyProductDetails?.POD && (
+										<>
+											<div style={{ marginTop: "5px" }}>
+												<small>
+													<strong>Source:</strong> Print On Demand
+												</small>
+											</div>
+											{product.customDesign && (
+												<div style={{ marginTop: "5px" }}>
+													{/* Final design */}
+													{product.customDesign.finalScreenshotUrl && (
+														<>
+															<strong>Final Design Preview:</strong>
+															<br />
+															<img
+																src={product.customDesign.finalScreenshotUrl}
+																alt='Final Design'
+																style={{
+																	width: "80px",
+																	marginTop: "3px",
+																	border: "1px solid #ccc",
+																	borderRadius: "5px",
+																	cursor: "pointer",
+																}}
+																onClick={() =>
+																	setModalImage(
+																		product.customDesign.finalScreenshotUrl
+																	)
+																}
+															/>
+														</>
+													)}
+													{/* Custom texts */}
+													{product.customDesign.texts &&
+														product.customDesign.texts.length > 0 && (
+															<div style={{ marginTop: "5px" }}>
+																<strong>Custom Text(s):</strong>
+																<ul>
+																	{product.customDesign.texts.map((txt, i) => (
+																		<li key={i}>
+																			<strong>Text:</strong> {txt.text}, Color:{" "}
+																			{txt.color}
+																		</li>
+																	))}
+																</ul>
+															</div>
+														)}
+												</div>
+											)}
+										</>
+									)}
+							</div>
+						</ProductRow>
+					);
+				})}
+			</ExpandedContainer>
 		);
 	};
 
@@ -99,6 +195,9 @@ const OrdersOverview = ({ showModal }) => {
 		setExpandedRowKeys(expanded ? [record._id] : []);
 	};
 
+	// ─────────────────────────────────────────────────────────
+	// TABLE COLUMNS
+	// ─────────────────────────────────────────────────────────
 	const columns = [
 		{
 			title: "#",
@@ -169,6 +268,9 @@ const OrdersOverview = ({ showModal }) => {
 		},
 	];
 
+	// ─────────────────────────────────────────────────────────
+	// RENDER
+	// ─────────────────────────────────────────────────────────
 	return (
 		<>
 			<ScoreCardsWrapper>
@@ -210,17 +312,21 @@ const OrdersOverview = ({ showModal }) => {
 					</Count>
 				</Card>
 			</ScoreCardsWrapper>
-			{/* <StyledDatePickerContainer>
-				<span style={{ fontWeight: "bold" }}>
-					Selected Date: {date.format("YYYY-MM-DD")}
-				</span>
-				<DatePicker
-					style={{ marginTop: 16, width: "100%" }}
-					onChange={(date) => setDate(date || moment())}
-					value={date}
-					disabledDate={(current) => current && current > moment().endOf("day")}
-				/>
-			</StyledDatePickerContainer> */}
+
+			{/* If you want to enable date picking for single-day, uncomment: 
+      <StyledDatePickerContainer>
+        <span style={{ fontWeight: "bold" }}>
+          Selected Date: {date.format("YYYY-MM-DD")}
+        </span>
+        <DatePicker
+          style={{ marginTop: 16, width: "100%" }}
+          onChange={(selected) => setDate(selected || moment())}
+          value={date}
+          disabledDate={(current) => current && current > moment().endOf("day")}
+        />
+      </StyledDatePickerContainer>
+      */}
+
 			<Table
 				columns={columns}
 				dataSource={data}
@@ -231,12 +337,36 @@ const OrdersOverview = ({ showModal }) => {
 				rowKey={(record) => record._id}
 				style={{ marginTop: 16 }}
 			/>
+
+			{/* IMAGE MODAL */}
+			<Modal
+				open={!!modalImage}
+				onCancel={() => setModalImage(null)}
+				footer={null}
+				closable={true}
+				centered
+				width='auto'
+				bodyStyle={{ padding: "10px", textAlign: "center" }}
+			>
+				{modalImage && (
+					<img
+						src={modalImage}
+						alt='Full Preview'
+						style={{
+							maxWidth: "90vw",
+							maxHeight: "80vh",
+							objectFit: "contain",
+						}}
+					/>
+				)}
+			</Modal>
 		</>
 	);
 };
 
 export default OrdersOverview;
 
+/* ============ STYLES ============ */
 const ScoreCardsWrapper = styled.div`
 	display: flex;
 	justify-content: space-around;
@@ -291,5 +421,21 @@ const StyledDatePickerContainer = styled.div`
 	}
 	.ant-picker {
 		width: 100%;
+	}
+`;
+
+const ExpandedContainer = styled.div`
+	padding: 10px;
+`;
+
+const ProductRow = styled.div`
+	display: flex;
+	align-items: flex-start;
+	margin-bottom: 8px;
+	border-bottom: 1px dashed #ccc;
+	padding-bottom: 8px;
+
+	&:last-child {
+		border-bottom: none;
 	}
 `;

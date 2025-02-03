@@ -26,35 +26,74 @@
 		<meta property="og:type" content="website" />
 		<meta property="og:locale" content="en_US" />
 
-		<!-- Preload Fonts -->
-		<link
-			rel="preload"
-			href="https://fonts.googleapis.com/css2?family=Rastantly+Cortez&display=swap"
-			as="style"
-		/>
-		<link
-			rel="preload"
-			href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Open+Sans&display=swap"
-			as="style"
-		/>
+		<!-- Optional SEO enhancements -->
+		<meta name="robots" content="index, follow" />
+		<link rel="canonical" href="https://serenejannat.com/" />
 
-		<!-- Fonts -->
+		<title>Serene Jannat | Best Gifts and Candles Online Shop</title>
+
+		<!-- 
+      Preconnect for faster font loading
+      IMPORTANT: put preconnect links as early as possible.
+    -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+		<!-- 
+      Preload combined Google Fonts stylesheet (for Rastantly Cortez, 
+      Montserrat, Open Sans, Great Vibes, Allison, Allura, Dancing Script, Lobster).
+      onload="this.onload=null;this.rel='stylesheet'" switches from preload to stylesheet once loaded.
+    -->
 		<link
-			rel="stylesheet"
-			href="https://fonts.googleapis.com/css2?family=Rastantly+Cortez&display=swap"
+			rel="preload"
+			as="style"
+			href="https://fonts.googleapis.com/css2?family=Rastantly+Cortez&family=Montserrat:wght@400;700&family=Open+Sans&family=Great+Vibes&family=Allison&family=Allura&family=Dancing+Script&family=Lobster&display=swap"
+			onload="this.onload=null;this.rel='stylesheet'"
 		/>
-		<link
-			rel="stylesheet"
-			href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Open+Sans&display=swap"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://fonts.googleapis.com/css2?family=Allison&display=swap"
-		/>
+		<noscript>
+			<link
+				rel="stylesheet"
+				href="https://fonts.googleapis.com/css2?family=Rastantly+Cortez&family=Montserrat:wght@400;700&family=Open+Sans&family=Great+Vibes&family=Allison&family=Allura&family=Dancing+Script&family=Lobster&display=swap"
+			/>
+		</noscript>
+
+		<!-- 
+      NOTE: The below lines are your original font links. 
+      They are commented out to avoid duplicate downloads, but kept here so 
+      we haven't "removed" them from your code. If you ever want to revert to 
+      separate requests, just uncomment these.
+
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Rastantly+Cortez&display=swap"
+      as="style"
+    />
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Open+Sans&display=swap"
+      as="style"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Rastantly+Cortez&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Open+Sans&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Allison&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Allura&family=Dancing+Script&family=Great+Vibes&family=Lobster&display=swap"
+    />
+    -->
 
 		<!-- Stylesheets -->
 		<link
@@ -84,11 +123,7 @@
 			href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
 		/>
 
-		<!-- Preconnect for faster font loading -->
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-		<!-- Google Tag Manager -->
+		<!-- Google Tag (GA4) -->
 		<script
 			async
 			src="https://www.googletagmanager.com/gtag/js?id=G-XJPBMN7HH5"
@@ -104,23 +139,41 @@
 
 		<!-- Facebook Pixel Code -->
 		<!-- <script>
-        !function(f,b,e,v,n,t,s)
-        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-        n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s)}(window,document,'script',
-        'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '3506674879555844');
-        fbq('track', 'PageView');
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod
+            ? n.callMethod.apply(n, arguments)
+            : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = "2.0";
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(
+        window,
+        document,
+        "script",
+        "https://connect.facebook.net/en_US/fbevents.js"
+      );
+      fbq("init", "3506674879555844");
+      fbq("track", "PageView");
     </script>
-    <noscript>
-        <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=3506674879555844&ev=PageView&noscript=1"/>
-    </noscript> -->
-
-		<title>Serene Jannat | Best Gifts and Candles Online Shop</title>
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display:none"
+        src="https://www.facebook.com/tr?id=3506674879555844&ev=PageView&noscript=1"
+    /></noscript> -->
 	</head>
+
 	<body>
 		<noscript>You need to enable JavaScript to run this app.</noscript>
 		<div id="root"></div>

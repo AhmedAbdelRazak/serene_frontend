@@ -33,6 +33,8 @@ const NavbarBottom = () => {
 				setClickedLink("home");
 			} else if (path === "/our-products") {
 				setClickedLink("products");
+			} else if (path === "/custom-gifts") {
+				setClickedLink("customgifts");
 			} else if (path === "/about") {
 				setClickedLink("about");
 			} else if (path === "/contact") {
@@ -77,6 +79,14 @@ const NavbarBottom = () => {
 						className={clickedLink === "products" ? "active" : ""}
 					>
 						Products
+					</NavLink>
+					<NavLink
+						isSticky={isSticky}
+						to='/custom-gifts'
+						onClick={() => handleNavLinkClick("customgifts")}
+						className={clickedLink === "customgifts" ? "active" : ""}
+					>
+						Custom Gifts
 					</NavLink>
 					<NavLink
 						isSticky={isSticky}

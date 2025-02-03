@@ -23,7 +23,6 @@ const Z2StepOne = ({
 
 	const isUserAuthenticated = isAuthenticated() && isAuthenticated().user;
 
-	console.log(customerDetails, "customerDetails");
 	return (
 		<>
 			{step === 1 && (

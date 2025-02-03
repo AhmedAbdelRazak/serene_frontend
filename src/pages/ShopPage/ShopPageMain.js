@@ -550,9 +550,21 @@ const ShopPageMain = () => {
 																	label: `User Navigated to ${product.productName} single page`,
 																});
 																window.scrollTo({ top: 0, behavior: "smooth" });
-																history.push(
-																	`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`
-																);
+
+																function getProductLink(product) {
+																	// If the product is POD (Printify) => link to custom-gifts/<printifyProductId>
+																	if (
+																		product.printifyProductDetails?.POD ===
+																			true &&
+																		product.printifyProductDetails?.id
+																	) {
+																		return `/custom-gifts/${product._id}`;
+																	}
+																	// Otherwise => old link
+																	return `/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`;
+																}
+
+																history.push(getProductLink(product));
 															}}
 														/>
 													</ImageContainer>

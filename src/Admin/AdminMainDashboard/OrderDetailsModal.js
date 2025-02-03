@@ -24,6 +24,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 		useState(false);
 	const [isEditProductModalVisible, setIsEditProductModalVisible] =
 		useState(false);
+
 	const [trackingNumber, setTrackingNumber] = useState("");
 	const [status, setStatus] = useState(order?.status || "");
 	const [customerDetails, setCustomerDetails] = useState(
@@ -31,8 +32,14 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 	);
 	const [selectedProduct, setSelectedProduct] = useState(null);
 
+	// For image preview
+	const [modalImage, setModalImage] = useState("");
+
 	const { user, token } = isAuthenticated();
 
+	// ─────────────────────────────────────────────────────────────
+	// EDIT LOGIC
+	// ─────────────────────────────────────────────────────────────
 	const handleEditTrackingClick = () => {
 		setIsEditTrackingModalVisible(true);
 		setTrackingNumber(order.trackingNumber || "");
@@ -116,14 +123,27 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 	};
 
 	const handleProductUpdate = (updatedOrder) => {
-		// Update the local order object with the new order data
+		// Update the local order object with the new data
 		Object.assign(order, updatedOrder);
+	};
+
+	// ─────────────────────────────────────────────────────────────
+	// IMAGE PREVIEW LOGIC
+	// ─────────────────────────────────────────────────────────────
+	const handleImageClick = (url) => {
+		setModalImage(url);
+	};
+	const handleCloseImageModal = () => {
+		setModalImage("");
 	};
 
 	if (!order) return null;
 
 	return (
 		<>
+			{/* ─────────────────────────────────────────────────────────
+          MAIN ORDER MODAL
+      ────────────────────────────────────────────────────────── */}
 			<Modal
 				title={`Order Details - Invoice Number: ${order.invoiceNumber}`}
 				open={isVisible}
@@ -134,6 +154,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 			>
 				<OrderDetailsWrapper>
 					<CardContent>
+						{/* LEFT SIDE: Basic Info */}
 						<div className='col-md-6'>
 							<Title>Your Orders</Title>
 							<StyledText>
@@ -142,6 +163,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 								{new Date(order.orderCreationDate).toLocaleDateString()}{" "}
 								{new Date(order.orderCreationDate).toLocaleTimeString()}
 							</StyledText>
+
 							<StyledText>
 								<FaTruck style={{ marginRight: "5px" }} />
 								<strong>Tracking Number:</strong>{" "}
@@ -161,15 +183,14 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 									onClick={handleEditTrackingClick}
 								/>
 							</StyledText>
+
 							<div>
 								<FaTruck style={{ marginRight: "5px" }} />
 								<strong>Ship To Address:</strong>{" "}
-								{order.customerDetails.address}
-								{", "}
-								{order.customerDetails.city}
-								{", "}
+								{order.customerDetails.address}, {order.customerDetails.city},{" "}
 								{order.customerDetails.state} {order.customerDetails.zipcode}
 							</div>
+
 							<StyledText>
 								<FaBoxOpen style={{ marginRight: "5px" }} />
 								<strong>Shipment Status:</strong>{" "}
@@ -180,6 +201,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 									onClick={handleEditStatusClick}
 								/>
 							</StyledText>
+
 							<StyledText>
 								<FaReceipt style={{ marginRight: "5px" }} />
 								<strong>Ship To:</strong> {order.customerDetails.name}{" "}
@@ -219,32 +241,29 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 								<div className='col-md-6'>
 									<strong>Customer Comment:</strong> {order.orderComment}
 								</div>
-								{order &&
-									order.appliedCoupon &&
-									order.appliedCoupon.discount && (
-										<>
-											<div className='col-md-6' style={{ color: "darkgreen" }}>
-												<FaDollarSign style={{ marginRight: "5px" }} />
-												<strong>Applied Coupon:</strong>
-												{order.appliedCoupon && order.appliedCoupon.discount}%
-												OFF!
-											</div>
-											<div className='col-md-6' style={{ color: "darkred" }}>
-												<FaDollarSign style={{ marginRight: "5px" }} />
-												<strong>Before Discount Total:</strong> $
-												{order.totalAmount && order.totalAmount.toFixed(2)}
-											</div>
-										</>
-									)}
+
+								{order?.appliedCoupon?.discount && (
+									<>
+										<div className='col-md-6' style={{ color: "darkgreen" }}>
+											<FaDollarSign style={{ marginRight: "5px" }} />
+											<strong>Applied Coupon:</strong>
+											{order.appliedCoupon.discount}% OFF!
+										</div>
+										<div className='col-md-6' style={{ color: "darkred" }}>
+											<FaDollarSign style={{ marginRight: "5px" }} />
+											<strong>Before Discount Total:</strong> $
+											{order.totalAmount && order.totalAmount.toFixed(2)}
+										</div>
+									</>
+								)}
 							</div>
 
 							<CenteredText>
-								<strong>Total Amount:</strong> $
+								<strong>Total Amount:</strong>{" "}
 								{Number(order.totalAmountAfterDiscount).toFixed(2)}
 							</CenteredText>
 
 							<SectionTitle>Payment Details</SectionTitle>
-
 							<div className='row'>
 								<div className='col-md-4'>
 									<StyledText>
@@ -253,7 +272,6 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 										{order.paymentDetails?.payment?.receiptNumber}
 									</StyledText>
 								</div>
-
 								<div className='col-md-4'>
 									<StyledText>
 										<span style={{ marginLeft: "10px" }}>
@@ -262,7 +280,6 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 										</span>
 									</StyledText>
 								</div>
-
 								<div className='col-md-4'>
 									<StyledText>
 										<span style={{ marginLeft: "10px" }}>
@@ -282,7 +299,8 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 							</div>
 						</div>
 
-						<SectionTitle>
+						{/* RIGHT SIDE: PRODUCTS */}
+						<SectionTitle style={{ marginTop: "25px" }}>
 							Products{" "}
 							<span
 								style={{
@@ -294,95 +312,276 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 								(Edit: <FaEdit onClick={() => handleEditProductClick(order)} />)
 							</span>
 						</SectionTitle>
-						{order.productsNoVariable.map((product) => (
-							<ProductWrapper key={product.productId}>
-								<ProductImage src={product.image} alt={product.name} />
-								<ProductDetails>
-									<StyledText>
-										<strong>Product Name:</strong> {product.name}
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Ordered Quantity:</strong>{" "}
-											{product.ordered_quantity}
-										</span>
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Price/Unit:</strong> ${product.price}
-										</span>
-									</StyledText>
-									<StyledText>
-										<strong>SKU:</strong> {product.sku}
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Color:</strong> {product.color}
-										</span>
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Size:</strong> {product.size}
-										</span>
-									</StyledText>
-									<StyledText>
-										<strong>Total Amount:</strong> $
-										{(product.ordered_quantity * product.price).toFixed(2)}
-									</StyledText>
-									<FaEdit
-										style={{ cursor: "pointer", marginLeft: "10px" }}
-										onClick={() => handleEditProductClick(product)}
+
+						{/* ================= NO-VARIABLE PRODUCTS ================= */}
+						{order.productsNoVariable.map((product) => {
+							// Fallback for POD image
+							const displayImg =
+								product.image && product.image.length > 0
+									? product.image
+									: product.isPrintifyProduct &&
+										  product.customDesign?.originalPrintifyImageURL
+										? product.customDesign.originalPrintifyImageURL
+										: "https://via.placeholder.com/64";
+
+							return (
+								<ProductWrapper key={product.productId}>
+									<ProductImage
+										src={displayImg}
+										alt={product.name}
+										onClick={() => handleImageClick(displayImg)}
 									/>
-								</ProductDetails>
-							</ProductWrapper>
-						))}
-						{order.chosenProductQtyWithVariables.map((product) => (
-							<ProductWrapper key={product.productId}>
-								<ProductImage src={product.image} alt={product.name} />
-								<ProductDetails>
-									<StyledText>
-										<strong>Product Name:</strong> {product.name}
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Ordered Quantity:</strong>{" "}
-											{product.ordered_quantity}
-										</span>
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Price/Unit:</strong> ${product.price}
-										</span>
-									</StyledText>
-									<StyledText>
-										<strong>SKU:</strong> {product.chosenAttributes.SubSKU}
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Color:</strong> {product.chosenAttributes.color}
-										</span>
-										<span style={{ marginLeft: "20px" }}>
-											<strong>Size:</strong> {product.chosenAttributes.size}
-										</span>
-									</StyledText>
-									{product.productImages &&
-										product.productImages.length > 0 && (
-											<div>
-												<StyledText>Product Images:</StyledText>
-												{product.productImages.map((img, index) => (
-													<img
-														key={index}
-														src={img.url}
-														alt='Product'
-														style={{
-															width: "100px",
-															marginRight: "10px",
-														}}
-													/>
-												))}
-											</div>
+									<ProductDetails>
+										<StyledText>
+											<strong>Product Name:</strong> {product.name}
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Ordered Quantity:</strong>{" "}
+												{product.ordered_quantity}
+											</span>
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Price/Unit:</strong> ${product.price}
+											</span>
+										</StyledText>
+										<StyledText>
+											<strong>SKU:</strong> {product.sku}
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Color:</strong> {product.color}
+											</span>
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Size:</strong> {product.size}
+											</span>
+										</StyledText>
+
+										{/* Show POD source if isPrintifyProduct */}
+										{product.isPrintifyProduct && (
+											<StyledText>
+												<strong>Source:</strong> Print On Demand
+											</StyledText>
 										)}
-									<StyledText>
-										<strong>Total Amount:</strong> $
-										{(product.ordered_quantity * product.price).toFixed(2)}
-									</StyledText>
-									<FaEdit
-										style={{ cursor: "pointer", marginLeft: "10px" }}
-										onClick={() => handleEditProductClick(product)}
+
+										{/* If there's a customDesign => Show finalScreenshotUrl & texts */}
+										{product.isPrintifyProduct &&
+											product.printifyProductDetails?.POD &&
+											product.customDesign && (
+												<div style={{ margin: "10px 0" }}>
+													{product.customDesign.finalScreenshotUrl && (
+														<>
+															<StyledText>
+																<strong>Final Design Preview:</strong>
+															</StyledText>
+															<img
+																src={product.customDesign.finalScreenshotUrl}
+																alt='Final Design'
+																style={{
+																	width: "150px",
+																	border: "1px solid #ccc",
+																	cursor: "pointer",
+																	marginBottom: "10px",
+																}}
+																onClick={() =>
+																	handleImageClick(
+																		product.customDesign.finalScreenshotUrl
+																	)
+																}
+															/>
+														</>
+													)}
+
+													{/* Custom text(s) */}
+													{product.customDesign.texts &&
+														product.customDesign.texts.length > 0 && (
+															<div>
+																<StyledText>
+																	<strong>Custom Text(s):</strong>
+																</StyledText>
+																{product.customDesign.texts.map(
+																	(textObj, idx) => (
+																		<StyledText
+																			key={idx}
+																			style={{ marginLeft: "15px" }}
+																		>
+																			- <strong>Text:</strong> "{textObj.text}"
+																			<br />
+																			&nbsp; <strong>Color:</strong>{" "}
+																			{textObj.color}
+																			<br />
+																			&nbsp; <strong>Font Family:</strong>{" "}
+																			{textObj.font_family}
+																			<br />
+																			&nbsp; <strong>
+																				Background color:
+																			</strong>{" "}
+																			{textObj.background_color}
+																		</StyledText>
+																	)
+																)}
+															</div>
+														)}
+												</div>
+											)}
+
+										<StyledText>
+											<strong>Total Amount:</strong>{" "}
+											{(product.ordered_quantity * product.price).toFixed(2)}
+										</StyledText>
+										<FaEdit
+											style={{ cursor: "pointer", marginLeft: "10px" }}
+											onClick={() => handleEditProductClick(product)}
+										/>
+									</ProductDetails>
+								</ProductWrapper>
+							);
+						})}
+
+						{/* ================= PRODUCTS WITH VARIABLES ================= */}
+						{order.chosenProductQtyWithVariables.map((product) => {
+							// Fallback for POD image
+							const displayImg =
+								product.image && product.image.length > 0
+									? product.image
+									: product.isPrintifyProduct &&
+										  product.customDesign?.originalPrintifyImageURL
+										? product.customDesign.originalPrintifyImageURL
+										: "https://via.placeholder.com/64";
+
+							return (
+								<ProductWrapper key={product.productId}>
+									<ProductImage
+										src={displayImg}
+										alt={product.name}
+										onClick={() => handleImageClick(displayImg)}
 									/>
-								</ProductDetails>
-							</ProductWrapper>
-						))}
+									<ProductDetails>
+										<StyledText>
+											<strong>Product Name:</strong> {product.name}
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Ordered Quantity:</strong>{" "}
+												{product.ordered_quantity}
+											</span>
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Price/Unit:</strong> ${product.price}
+											</span>
+										</StyledText>
+										<StyledText>
+											<strong>SKU:</strong> {product.chosenAttributes?.SubSKU}
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Color:</strong>{" "}
+												{product.chosenAttributes?.color}
+											</span>
+											<span style={{ marginLeft: "20px" }}>
+												<strong>Size:</strong> {product.chosenAttributes?.size}
+											</span>
+										</StyledText>
+
+										{/* If local productImages exist (e.g., multiple angles) */}
+										{product.productImages &&
+											product.productImages.length > 0 && (
+												<div>
+													<StyledText>Product Images:</StyledText>
+													{product.productImages.map((img, index) => (
+														<img
+															key={index}
+															src={img.url}
+															alt='Product'
+															style={{
+																width: "100px",
+																marginRight: "10px",
+																cursor: "pointer",
+																borderRadius: "5px",
+															}}
+															onClick={() => handleImageClick(img.url)}
+														/>
+													))}
+												</div>
+											)}
+
+										{/* If it's a POD item => show final design, custom texts, etc. */}
+										{product.isPrintifyProduct &&
+											product.printifyProductDetails?.POD &&
+											product.customDesign && (
+												<div style={{ margin: "10px 0" }}>
+													{product.customDesign.finalScreenshotUrl && (
+														<>
+															<StyledText>
+																<strong>Final Design Preview:</strong>
+															</StyledText>
+															<img
+																src={product.customDesign.finalScreenshotUrl}
+																alt='Final Design'
+																style={{
+																	width: "150px",
+																	border: "1px solid #ccc",
+																	cursor: "pointer",
+																	marginBottom: "10px",
+																}}
+																onClick={() =>
+																	handleImageClick(
+																		product.customDesign.finalScreenshotUrl
+																	)
+																}
+															/>
+														</>
+													)}
+
+													{product.customDesign.texts &&
+														product.customDesign.texts.length > 0 && (
+															<div>
+																<StyledText>
+																	<strong>Custom Text(s):</strong>
+																</StyledText>
+																{product.customDesign.texts.map(
+																	(textObj, idx) => (
+																		<StyledText
+																			key={idx}
+																			style={{ marginLeft: "15px" }}
+																		>
+																			- <strong>Text:</strong> "{textObj.text}"
+																			<br />
+																			&nbsp; <strong>Color:</strong>{" "}
+																			{textObj.color}
+																			<br />
+																			&nbsp; <strong>Font Family:</strong>{" "}
+																			{textObj.font_family}
+																			<br />
+																			&nbsp; <strong>
+																				Background color:
+																			</strong>{" "}
+																			{textObj.background_color}
+																		</StyledText>
+																	)
+																)}
+															</div>
+														)}
+												</div>
+											)}
+
+										{/* Source: Print On Demand */}
+										{product.isPrintifyProduct && (
+											<StyledText>
+												<strong>Source:</strong> Print On Demand
+											</StyledText>
+										)}
+
+										<StyledText>
+											<strong>Total Amount:</strong>{" "}
+											{(product.ordered_quantity * product.price).toFixed(2)}
+										</StyledText>
+
+										<FaEdit
+											style={{ cursor: "pointer", marginLeft: "10px" }}
+											onClick={() => handleEditProductClick(product)}
+										/>
+									</ProductDetails>
+								</ProductWrapper>
+							);
+						})}
 					</CardContent>
 				</OrderDetailsWrapper>
 			</Modal>
 
+			{/* ─────────────────────────────────────────────────────────
+          TRACKING NUMBER MODAL
+      ────────────────────────────────────────────────────────── */}
 			<Modal
 				title='Edit Tracking Number'
 				open={isEditTrackingModalVisible}
@@ -407,6 +606,9 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 				/>
 			</Modal>
 
+			{/* ─────────────────────────────────────────────────────────
+          STATUS MODAL
+      ────────────────────────────────────────────────────────── */}
 			<Modal
 				title='Edit Status'
 				open={isEditStatusModalVisible}
@@ -436,6 +638,9 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 				</Select>
 			</Modal>
 
+			{/* ─────────────────────────────────────────────────────────
+          SHIP-TO MODAL
+      ────────────────────────────────────────────────────────── */}
 			<Modal
 				title='Edit Ship To Details'
 				open={isEditShipToModalVisible}
@@ -499,6 +704,9 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 				/>
 			</Modal>
 
+			{/* ─────────────────────────────────────────────────────────
+          EDIT PRODUCT MODAL
+      ────────────────────────────────────────────────────────── */}
 			{selectedProduct && (
 				<ProductEditModal
 					isVisible={isEditProductModalVisible}
@@ -510,12 +718,39 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 					setIsVisibleMain={setIsVisible}
 				/>
 			)}
+
+			{/* ─────────────────────────────────────────────────────────
+          IMAGE PREVIEW MODAL
+      ────────────────────────────────────────────────────────── */}
+			<Modal
+				open={!!modalImage}
+				onCancel={handleCloseImageModal}
+				footer={null}
+				closable={true}
+				centered
+				width='auto'
+				bodyStyle={{ padding: "10px", textAlign: "center" }}
+				zIndex={9999}
+			>
+				{modalImage && (
+					<img
+						src={modalImage}
+						alt='Preview'
+						style={{
+							maxWidth: "90vw",
+							maxHeight: "80vh",
+							objectFit: "contain",
+						}}
+					/>
+				)}
+			</Modal>
 		</>
 	);
 };
 
 export default OrderDetailsModal;
 
+/* ================= STYLES ================= */
 const OrderDetailsWrapper = styled.div`
 	padding: 20px;
 	background-color: #f9f9f9;
@@ -559,6 +794,7 @@ const ProductImage = styled.img`
 	object-fit: cover;
 	border-radius: 5px;
 	margin-right: 10px;
+	cursor: pointer; /* Make it clickable */
 `;
 
 const ProductDetails = styled.div`

@@ -55,6 +55,8 @@ const Sidebar = ({
 				setActiveLink("home");
 			} else if (path === "/our-products") {
 				setActiveLink("products");
+			} else if (path === "/custom-gifts") {
+				setActiveLink("customgifts");
 			} else if (path === "/about") {
 				setActiveLink("about");
 			} else if (path === "/contact") {
@@ -110,6 +112,13 @@ const Sidebar = ({
 						isActive={activeLink === "products"}
 					>
 						<FaProductHunt /> Products
+					</StyledLink>
+					<StyledLink
+						to='/custom-gifts'
+						onClick={() => handleNavLinkClick("customgifts")}
+						isActive={activeLink === "customgifts"}
+					>
+						<FaProductHunt /> Custom Gifts
 					</StyledLink>
 					<StyledLink
 						to='/about'

@@ -65,7 +65,15 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 		autoplaySpeed: 4000,
 	};
 
+	// === ADD TO CART or Redirect if POD ===
 	const handleCartIconClick = async (product) => {
+		// Check if it's POD => redirect
+		if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
+			history.push(`/custom-gifts/${product._id}`);
+			return;
+		}
+
+		// Otherwise => normal add to cart
 		ReactGA.event({
 			category: "Add To The Cart Featured Products",
 			action: "User Added Featured Product To The Cart",
@@ -82,7 +90,15 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 		}
 	};
 
+	// === CLICK PRODUCT => NAVIGATE or Redirect if POD ===
 	const navigateToProduct = (product) => {
+		// If POD => redirect
+		if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
+			history.push(`/custom-gifts/${product._id}`);
+			return;
+		}
+
+		// Otherwise => normal single-product route
 		ReactGA.event({
 			category: "Featured Product Clicked",
 			action: "Featured Product Clicked",
@@ -105,21 +121,33 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 							const images =
 								chosenProductAttributes?.productImages ||
 								product.thumbnailImage[0].images;
+
+							// Original & discounted prices => 2 decimals
 							const originalPrice =
-								chosenProductAttributes?.price || product.price;
+								chosenProductAttributes?.price || product.price || 0;
 							const discountedPrice =
 								product.priceAfterDiscount > 0
 									? product.priceAfterDiscount
-									: chosenProductAttributes?.priceAfterDiscount;
+									: chosenProductAttributes?.priceAfterDiscount || 0;
+
+							const originalPriceFixed = originalPrice.toFixed(2);
+							const discountedPriceFixed = discountedPrice.toFixed(2);
 
 							const discountPercentage =
-								((originalPrice - discountedPrice) / originalPrice) * 100;
+								originalPrice > 0
+									? ((originalPrice - discountedPrice) / originalPrice) * 100
+									: 0;
 
 							const totalQuantity =
 								product.productAttributes.reduce(
 									(acc, attr) => acc + attr.quantity,
 									0
 								) || product.quantity;
+
+							// Check if POD
+							const isPOD =
+								product.isPrintifyProduct &&
+								product.printifyProductDetails?.POD;
 
 							return (
 								<div key={i} className='slide'>
@@ -128,11 +156,16 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 										onClick={() => navigateToProduct(product)}
 										cover={
 											<ImageContainer>
+												{/* If discount applies => show discount badge */}
 												{discountPercentage > 0 && (
 													<DiscountBadge>
 														{discountPercentage.toFixed(0)}% OFF!
 													</DiscountBadge>
 												)}
+
+												{/* If product is POD => show custom design badge */}
+												{isPOD && <PodBadge>Custom Design 💖</PodBadge>}
+
 												{totalQuantity > 0 ? (
 													<CartIcon
 														onClick={(e) => {
@@ -143,6 +176,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 												) : (
 													<OutOfStockBadge>Out of Stock</OutOfStockBadge>
 												)}
+
 												{images.length > 1 ? (
 													<Slider {...imageSettings}>
 														{images.map((img, index) => (
@@ -173,14 +207,14 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 												originalPrice > discountedPrice ? (
 													<span>
 														Price:{" "}
-														<OriginalPrice>${originalPrice}</OriginalPrice>{" "}
+														<OriginalPrice>${originalPriceFixed}</OriginalPrice>{" "}
 														<DiscountedPrice>
-															${discountedPrice}
+															${discountedPriceFixed}
 														</DiscountedPrice>
 													</span>
 												) : (
 													<DiscountedPrice>
-														Price: ${discountedPrice}
+														Price: ${discountedPriceFixed}
 													</DiscountedPrice>
 												)
 											}
@@ -197,6 +231,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 
 export default ZFeaturedProducts;
 
+/* =================== STYLES =================== */
 const Container = styled.div`
 	background: var(--neutral-light2);
 	padding: 10px;
@@ -350,4 +385,19 @@ const OriginalPrice = styled.span`
 
 const DiscountedPrice = styled.span`
 	color: var(--text-color-primary);
+`;
+
+/* === New custom design badge for POD === */
+const PodBadge = styled.div`
+	position: absolute;
+	top: 45px; /* below the discount badge so they don't overlap */
+	left: 15px;
+	background-color: #ffafc5; /* pinkish color */
+	color: #ffffff;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-weight: bold;
+	font-size: 0.8rem;
+	z-index: 11; /* ensure it's above discount badge if needed */
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 `;

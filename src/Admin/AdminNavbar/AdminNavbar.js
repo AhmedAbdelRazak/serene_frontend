@@ -95,7 +95,7 @@ const items = [
 		"divider"
 	),
 	getItem(
-		"Inbound Management",
+		<Link to='/admin/printify-management'>Printify Management</Link>,
 		"sub13",
 		<ImportOutlined />,
 		null,
@@ -206,7 +206,9 @@ const AdminNavbar = ({
 																	? "sub15"
 																	: fromPage === "Coupons"
 																		? "sub23"
-																		: "sub1"
+																		: fromPage === "PrintifyMain"
+																			? "sub13"
+																			: "sub1"
 					}
 					defaultOpenKeys={["sub1"]}
 					mode='inline'

@@ -2,12 +2,13 @@ import React from "react";
 import styled, { keyframes } from "styled-components";
 import { Select } from "antd";
 import { states } from "../../Global";
+import { useCartContext } from "../../cart_context"; // <-- import cart context to access cart
 
 const { Option } = Select;
 
 const Z3StepTwo = ({
 	step,
-	handleShippingOptionChange,
+	handleShippingOptionChange, // We'll keep it, though we're using our own handler
 	handleStateChange,
 	handleAddressChange,
 	handleCityChange,
@@ -25,6 +26,52 @@ const Z3StepTwo = ({
 	customerDetails,
 	handleCustomerDetailChange,
 }) => {
+	const { cart, addShipmentDetails } = useCartContext();
+
+	// 1) We detect whether there's at least one Printify product in the cart:
+	const hasPrintifyItem = cart.some((item) => item.isPrintifyProduct);
+
+	// 2) We also check specifically for a Printify POD product with a custom design:
+	const hasCustomDesignPOD = cart.some(
+		(item) => item.isPrintifyProduct && item.customDesign
+	);
+
+	// 3) Helper to compute shipping cost
+	const getFinalShippingCost = (option) => {
+		const personalStockCount = cart.filter(
+			(item) => !item.isPrintifyProduct
+		).length;
+		const printifyCount = cart.filter((item) => item.isPrintifyProduct).length;
+
+		let finalPrice = 0;
+		// If there's at least one personal-stock item, start with option.shippingPrice
+		if (personalStockCount > 0) {
+			finalPrice += option.shippingPrice;
+			// Add $3 for each additional personal-stock item beyond the first
+			if (personalStockCount > 1) {
+				finalPrice += (personalStockCount - 1) * 3;
+			}
+		}
+		// For Printify items, add $4 for each
+		finalPrice += printifyCount * 4;
+
+		return finalPrice;
+	};
+
+	// 4) Called when user picks a shipping option radio
+	const handleLocalShippingOptionChange = (optionId) => {
+		const chosenOption = allShippingOptions.find((opt) => opt._id === optionId);
+		if (!chosenOption) return;
+
+		const finalShippingPrice = getFinalShippingCost(chosenOption);
+		const finalChosenOption = {
+			...chosenOption,
+			shippingPrice: finalShippingPrice,
+		};
+		addShipmentDetails(finalChosenOption);
+	};
+
+	// 5) Local shipping checks
 	const closeCities = [
 		"San Bernardino",
 		"Riverside",
@@ -57,13 +104,30 @@ const Z3StepTwo = ({
 		city.toLowerCase().includes(closeCity.toLowerCase())
 	);
 
+	// 6) Filter out undesired shipping options
+	//    - If user is NOT in California, exclude local shipping IDs
+	//    - If there is at least one Printify item, exclude these same local shipping IDs
 	const filteredShippingOptions = allShippingOptions.filter((option) => {
+		// If not CA
 		if (!isStateCalifornia) {
-			return (
-				option._id !== "66c2a28f9a509e5920162709" &&
-				option._id !== "66c2a2379a509e59201626da"
-			);
+			if (
+				option._id === "66c2a28f9a509e5920162709" || // local pickup
+				option._id === "66c2a2379a509e59201626da" // local delivery
+			) {
+				return false;
+			}
 		}
+
+		// If there's a Printify item in the cart, also exclude pickup & local
+		if (hasPrintifyItem) {
+			if (
+				option._id === "66c2a28f9a509e5920162709" ||
+				option._id === "66c2a2379a509e59201626da"
+			) {
+				return false;
+			}
+		}
+
 		return true;
 	});
 
@@ -90,9 +154,9 @@ const Z3StepTwo = ({
 							onChange={handleStateChange}
 							style={{ width: "100%" }}
 						>
-							{states.map((state, i) => (
-								<Option key={i} value={state.name}>
-									{state.name}
+							{states.map((st, i) => (
+								<Option key={i} value={st.name}>
+									{st.name}
 								</Option>
 							))}
 						</Select>
@@ -153,6 +217,17 @@ const Z3StepTwo = ({
 							onChange={handleCommentsChange}
 						/>
 					</ShippingOption>
+
+					{/* 7) Show the Printify POD note if there is a product with custom design */}
+					{hasCustomDesignPOD && (
+						<PODNote>
+							Your custom-designed item requires extra production time. Please
+							note that it can take up to <strong>10 days</strong> for Print on
+							Demand (POD) items to be produced and shipped. We appreciate your
+							patience and look forward to delivering your unique creation!
+						</PODNote>
+					)}
+
 					<>
 						<label
 							className='mt-3'
@@ -161,20 +236,23 @@ const Z3StepTwo = ({
 							Choose a carrier
 						</label>
 					</>
-					{filteredShippingOptions.map((option) => (
-						<ShippingOption key={option._id}>
-							<ShippingLabel>
-								<input
-									type='radio'
-									name='shippingOption'
-									value={option._id}
-									checked={shipmentChosen._id === option._id}
-									onChange={handleShippingOptionChange}
-								/>
-								{option.carrierName} - ${option.shippingPrice}
-							</ShippingLabel>
-						</ShippingOption>
-					))}
+					{filteredShippingOptions.map((option) => {
+						const finalShippingCost = getFinalShippingCost(option);
+						return (
+							<ShippingOption key={option._id}>
+								<ShippingLabel>
+									<input
+										type='radio'
+										name='shippingOption'
+										value={option._id}
+										checked={shipmentChosen._id === option._id}
+										onChange={() => handleLocalShippingOptionChange(option._id)}
+									/>
+									{option.carrierName} - ${finalShippingCost}
+								</ShippingLabel>
+							</ShippingOption>
+						);
+					})}
 					{isLocalShipping && isStateCalifornia && isCityNotInCloseCities && (
 						<WarningMessage>
 							Please ensure that you choose the correct shipping option, we are
@@ -205,6 +283,8 @@ const Z3StepTwo = ({
 };
 
 export default Z3StepTwo;
+
+// -------------------------- STYLES --------------------------------
 
 const fadeIn = keyframes`
   from {
@@ -287,6 +367,18 @@ const ShippingOption = styled.div`
 	label {
 		font-size: 1rem;
 	}
+`;
+
+const PODNote = styled.div`
+	margin: 20px 0;
+	padding: 15px;
+	border: 1px solid #f0c14b;
+	background-color: #fff8e1;
+	border-radius: 5px;
+	color: #333;
+	font-size: 0.9rem;
+	font-weight: bold;
+	line-height: 1.4;
 `;
 
 const ShippingOptionRow = styled.div`

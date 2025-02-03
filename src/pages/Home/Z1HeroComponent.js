@@ -94,7 +94,9 @@ const Z1HeroComponent = () => {
 							<Overlay />
 							<BannerContent data-aos='fade-in' data-aos-delay='1000'>
 								<BannerText>{homePage.header3 || ""}</BannerText>
-								<BannerButton to='/our-products'>SHOP NOW!</BannerButton>
+								<BannerButton to='/custom-gifts'>
+									Customize Your Gift in 3 Minutes!
+								</BannerButton>
 							</BannerContent>
 						</Banner>
 					)}

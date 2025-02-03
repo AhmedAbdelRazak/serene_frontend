@@ -233,7 +233,8 @@ const Z4StepThree = ({
 					price: item.priceAfterDiscount,
 					image: item.image,
 					isPrintifyProduct: item.isPrintifyProduct,
-					printifyProductDetails: item.printifyProductDetails,
+					printifyProductDetails: item.printifyProductDetails, // <-- important
+					customDesign: item.customDesign, // <-- might still be null for normal products
 				})),
 			chosenProductQtyWithVariables: cart
 				.filter((item) => item.chosenProductAttributes)
@@ -246,9 +247,10 @@ const Z4StepThree = ({
 						ordered_quantity: item.amount,
 						price: item.priceAfterDiscount,
 						image: imageUrl,
-						chosenAttributes: item.chosenProductAttributes,
+						chosenAttributes: item.chosenProductAttributes, // <-- includes color, size, SubSKU
 						isPrintifyProduct: item.isPrintifyProduct,
-						printifyProductDetails: item.printifyProductDetails,
+						printifyProductDetails: item.printifyProductDetails, // <-- important
+						customDesign: item.customDesign, // <-- if it's a POD item w/ design
 					};
 				}),
 			customerDetails: {
@@ -265,10 +267,10 @@ const Z4StepThree = ({
 			status: "In Process",
 			onHoldStatus: "None",
 			totalAmount: total_amount,
-			totalAmountAfterDiscount: totalAmountAdjusted, // Adjust totalAmountAfterDiscount
+			totalAmountAfterDiscount: totalAmountAdjusted, // coupon logic
 			chosenShippingOption: shipmentChosen,
 			orderSource: "Website",
-			appliedCoupon: goodCoupon ? appliedCoupon : {}, // Adjust discount as needed
+			appliedCoupon: goodCoupon ? appliedCoupon : {},
 			shipDate: new Date(),
 			orderCreationDate: new Date(),
 			sendSMS: true,
@@ -276,10 +278,10 @@ const Z4StepThree = ({
 			shippingFees:
 				shipmentChosen && shipmentChosen.shippingPrice
 					? shipmentChosen.shippingPrice
-					: 10, // Adjust shipping fees as needed
+					: 10,
 			paymentStatus: "In Process",
 			orderComment: comments,
-			privacyPolicyAgreement: isTermsAccepted, // Include the agreement state
+			privacyPolicyAgreement: isTermsAccepted,
 		};
 
 		try {
@@ -293,28 +295,27 @@ const Z4StepThree = ({
 				toast.error(orderResponse.error);
 				setIsModalVisible(false);
 			} else {
+				// GA, gtag, success toast, etc.
 				ReactGA.event({
 					category: "User Successfully Paid",
 					action: "User Successfully Paid",
 				});
-
 				toast.success("Order successfully created.");
 
 				if (window.gtag) {
-					// Replace these with real values
-					const orderValue = Number(totalAmountAdjusted); // or however you track total
+					const orderValue = Number(totalAmountAdjusted);
 					const orderId = orderResponse?.order?._id || "some-fallback-id";
 
 					window.gtag("event", "conversion", {
 						send_to: "AW-11537568049/k1aMCO6fgIAaELGixf0q",
-						value: orderValue, // total order amount
+						value: orderValue,
 						currency: "USD",
-						transaction_id: orderId, // some unique transaction ID
+						transaction_id: orderId,
 					});
 				}
 
 				setTimeout(() => {
-					clearCart(); // Clear the cart after order is created
+					clearCart();
 					setIsLoading(false);
 					window.location.href = "/dashboard";
 				}, 3000);
@@ -408,7 +409,7 @@ const Z4StepThree = ({
 						<CheckoutButton onClick={handleProceedToCheckout}>
 							Proceed to Checkout
 						</CheckoutButton>
-						<ClearCartButton onClick={() => history.push("/")}>
+						<ClearCartButton onClick={() => history.push("/our-products")}>
 							Continue Shopping...
 						</ClearCartButton>
 					</ButtonWrapper>

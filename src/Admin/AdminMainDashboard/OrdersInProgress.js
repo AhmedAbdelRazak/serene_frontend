@@ -23,7 +23,7 @@ const OrdersInProgress = ({ showModal }) => {
 		const startDate = null;
 		const endDate = null;
 		const status = "open";
-		const userId = user._id; // replace with actual user ID
+		const userId = user._id;
 
 		try {
 			const response = await getListOfOrdersAggregated(
@@ -59,31 +59,105 @@ const OrdersInProgress = ({ showModal }) => {
 		fetchOrders();
 	}, [fetchOrders, showModal]);
 
+	// Helper to get the best display image for a product
+	const getDisplayImage = (product) => {
+		if (product.image && product.image.length > 0) {
+			return product.image;
+		}
+		// If it's a POD item and has originalPrintifyImageURL, use that
+		if (
+			product.isPrintifyProduct &&
+			product.printifyProductDetails?.POD &&
+			product.customDesign?.originalPrintifyImageURL
+		) {
+			return product.customDesign.originalPrintifyImageURL;
+		}
+		// Otherwise, fallback to a placeholder
+		return "https://via.placeholder.com/50";
+	};
+
 	const expandedRowRender = (record) => {
+		// Merge no-variable + variable products
 		const products = [
 			...record.productsNoVariable,
 			...record.chosenProductQtyWithVariables,
 		];
+
 		return (
-			<>
-				{products.map((product, index) => (
-					<div
-						key={index}
-						style={{ display: "flex", alignItems: "center", marginBottom: 8 }}
-					>
-						<img
-							src={product.image}
-							alt='product'
-							style={{ width: "50px", marginRight: 16 }}
-						/>
-						<div>
-							<div>{product.name}</div>
-							<div>Quantity: {product.ordered_quantity}</div>
-							<div>Price: ${product.price}</div>
-						</div>
-					</div>
-				))}
-			</>
+			<ExpandedContainer>
+				{products.map((product, index) => {
+					const displayImg = getDisplayImage(product);
+					return (
+						<ProductRow key={index}>
+							<img
+								src={displayImg}
+								alt={product.name}
+								style={{ width: "50px", marginRight: 16, borderRadius: 5 }}
+							/>
+							<div>
+								<div style={{ fontWeight: "bold" }}>{product.name}</div>
+								{/* If chosenAttributes exist, show color/size */}
+								{product.chosenAttributes && (
+									<div style={{ margin: "2px 0" }}>
+										<strong>Color:</strong> {product.chosenAttributes.color} |{" "}
+										<strong>Size:</strong> {product.chosenAttributes.size}
+									</div>
+								)}
+
+								<div>Quantity: {product.ordered_quantity}</div>
+								<div>Price: ${product.price}</div>
+
+								{/* If it's a POD item => show "Source: Print On Demand" and any design details */}
+								{product.isPrintifyProduct &&
+									product.printifyProductDetails?.POD && (
+										<>
+											<div style={{ marginTop: "5px" }}>
+												<small>
+													<strong>Source:</strong> Print On Demand
+												</small>
+											</div>
+											{/* If there's a customDesign => final design preview + custom texts */}
+											{product.customDesign && (
+												<div style={{ marginTop: "5px" }}>
+													{product.customDesign.finalScreenshotUrl && (
+														<div>
+															<strong>Final Design Preview:</strong>
+															<br />
+															<img
+																src={product.customDesign.finalScreenshotUrl}
+																alt='Final Design'
+																style={{
+																	width: "80px",
+																	marginTop: "3px",
+																	border: "1px solid #ccc",
+																	borderRadius: "5px",
+																}}
+															/>
+														</div>
+													)}
+													{product.customDesign.texts &&
+														product.customDesign.texts.length > 0 && (
+															<div style={{ marginTop: "5px" }}>
+																<strong>Custom Text(s):</strong>
+																<ul>
+																	{product.customDesign.texts.map((txt, i) => (
+																		<li key={i}>
+																			<strong>Text:</strong> {txt.text}, Color:{" "}
+																			{txt.color}
+																		</li>
+																	))}
+																</ul>
+															</div>
+														)}
+												</div>
+											)}
+										</>
+									)}
+							</div>
+						</ProductRow>
+					);
+				})}
+			</ExpandedContainer>
 		);
 	};
 
@@ -219,6 +293,7 @@ const OrdersInProgress = ({ showModal }) => {
 
 export default OrdersInProgress;
 
+/* ========== STYLES ========== */
 const ScoreCardsWrapper = styled.div`
 	display: flex;
 	justify-content: space-around;
@@ -256,4 +331,20 @@ const DetailsLink = styled.div`
 	color: #1890ff;
 	cursor: pointer;
 	text-decoration: underline;
+`;
+
+const ExpandedContainer = styled.div`
+	padding: 10px;
+`;
+
+const ProductRow = styled.div`
+	display: flex;
+	align-items: flex-start;
+	margin-bottom: 8px;
+	border-bottom: 1px dashed #ccc;
+	padding-bottom: 8px;
+
+	&:last-child {
+		border-bottom: none;
+	}
 `;

@@ -5,8 +5,9 @@ import { useCartContext } from "../cart_context";
 import { Link } from "react-router-dom";
 import { getColors } from "../apiCore";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Add this import
+import "react-toastify/dist/ReactToastify.css";
 import ReactGA from "react-ga4";
+import { Modal } from "antd"; // If you prefer to keep your image/design modal logic
 
 const SidebarCart = ({ from }) => {
 	const {
@@ -20,7 +21,9 @@ const SidebarCart = ({ from }) => {
 		clearCart,
 		total_amount,
 	} = useCartContext();
+
 	const [allColors, setAllColors] = useState([]);
+	const [modalItem, setModalItem] = useState(null); // For future image/design modal if desired
 
 	useEffect(() => {
 		getColors().then((data) => {
@@ -32,48 +35,28 @@ const SidebarCart = ({ from }) => {
 		});
 	}, []);
 
+	// Check stock availability for each cart item
 	const checkingAvailability = cart.map((item) => {
-		// Check if the product has attributes
-		const hasAttributes =
-			item.allProductDetailsIncluded.productAttributes &&
-			item.allProductDetailsIncluded.productAttributes.length > 0;
+		const product = item.allProductDetailsIncluded || {};
+		const productAttrs = product.productAttributes || [];
 
-		// Find the chosen attribute if it exists
-		const chosenAttribute = hasAttributes
-			? item.allProductDetailsIncluded.productAttributes.find(
-					(attr) => attr.color === item.color && attr.size === item.size
-				)
-			: null;
-
-		// Log details for debugging
-		console.log("Item:", item.name);
-		console.log("Has Attributes:", hasAttributes);
-		console.log("Chosen Attribute:", chosenAttribute);
-		console.log(
-			"Active Product:",
-			item.allProductDetailsIncluded.activeProduct
-		);
-		console.log(
-			"Active Backorder:",
-			item.allProductDetailsIncluded.activeBackorder
-		);
-		console.log(
-			"Chosen Attribute Quantity:",
-			chosenAttribute ? chosenAttribute.quantity : "N/A"
+		// if local variant, find the chosen attribute
+		const chosenAttr = productAttrs.find(
+			(attr) => attr.color === item.color && attr.size === item.size
 		);
 
-		// Determine availability based on attributes or directly on the product
-		if (hasAttributes) {
+		// if we have local attributes, compare item.amount to chosenAttr.quantity
+		if (productAttrs.length > 0 && chosenAttr) {
 			return (
-				item.allProductDetailsIncluded.activeProduct &&
-				chosenAttribute &&
-				chosenAttribute.quantity >= item.amount &&
+				product.activeProduct &&
+				chosenAttr.quantity >= item.amount &&
 				item.amount > 0
 			);
 		} else {
+			// fallback => just compare to product.quantity
 			return (
-				item.allProductDetailsIncluded.activeProduct &&
-				item.allProductDetailsIncluded.quantity >= item.amount &&
+				product.activeProduct &&
+				product.quantity >= item.amount &&
 				item.amount > 0
 			);
 		}
@@ -81,10 +64,16 @@ const SidebarCart = ({ from }) => {
 
 	const isStockAvailable = checkingAvailability.every(Boolean);
 
+	const handleClickImage = (item) => {
+		// If you want a modal for product image/design, store item in state
+		setModalItem(item);
+	};
+
 	return (
 		<>
-			<ToastContainer className='toast-top-center' position='top-center' />{" "}
+			<ToastContainer className='toast-top-center' position='top-center' />
 			{isSidebarOpen2 && <Overlay onClick={() => closeSidebar2()} />}
+
 			<CartWrapper isOpen={isSidebarOpen2} fromPage={from === "NavbarBottom"}>
 				<CloseIcon onClick={() => closeSidebar2()} />
 				<CartContent>
@@ -102,37 +91,50 @@ const SidebarCart = ({ from }) => {
 						</p>
 					) : (
 						cart.map((item, i) => {
-							const productColors =
-								item.allProductDetailsIncluded.productAttributes.map(
-									(attr) => attr.color
-								);
-							const uniqueProductColors = [...new Set(productColors)];
+							const product = item.allProductDetailsIncluded || {};
+							const productAttrs = product.productAttributes || [];
 
-							const productSizes =
-								item.allProductDetailsIncluded.productAttributes.map(
-									(attr) => attr.size
-								);
-							const uniqueProductSizes = [...new Set(productSizes)];
+							const uniqueProductColors = [
+								...new Set(productAttrs.map((attr) => attr.color)),
+							];
+							const uniqueProductSizes = [
+								...new Set(productAttrs.map((attr) => attr.size)),
+							];
 
-							const chosenAttribute =
-								item.allProductDetailsIncluded.productAttributes.find(
-									(attr) => attr.color === item.color && attr.size === item.size
-								);
+							// find chosen attribute if local variants exist
+							const chosenAttr = productAttrs.find(
+								(attr) => attr.color === item.color && attr.size === item.size
+							);
+							const maxQuantity = chosenAttr
+								? chosenAttr.quantity
+								: product.quantity || item.max; // fallback
 
+							// out-of-stock check
 							const isItemOutOfStock =
-								(!item.allProductDetailsIncluded.activeBackorder &&
-									chosenAttribute &&
-									chosenAttribute.quantity < item.amount) ||
-								item.allProductDetailsIncluded.quantity <= 0;
+								(!product.activeBackorder &&
+									chosenAttr &&
+									chosenAttr.quantity < item.amount) ||
+								product.quantity <= 0;
+
+							// if it's a POD item => disable color/size changes
+							const isPodProduct =
+								item.isPrintifyProduct &&
+								product.printifyProductDetails?.POD === true;
 
 							return (
 								<CartItem key={i}>
-									<ItemImage src={item.image} alt={item.name} />
+									<ItemImage
+										src={item.image}
+										alt={item.name}
+										onClick={() => handleClickImage(item)}
+									/>
 									<ItemDetails>
 										<ItemName>{item.name}</ItemName>
 										{isItemOutOfStock && (
 											<OutOfStockMessage>Out Of Stock</OutOfStockMessage>
 										)}
+
+										{/* Quantity +/- => pass the "maxQuantity" to toggleAmount */}
 										<QuantityWrapper>
 											<QuantityButton
 												onClick={() =>
@@ -140,7 +142,7 @@ const SidebarCart = ({ from }) => {
 														item.id,
 														"dec",
 														item.chosenProductAttributes,
-														item.max
+														maxQuantity
 													)
 												}
 											>
@@ -153,86 +155,158 @@ const SidebarCart = ({ from }) => {
 														item.id,
 														"inc",
 														item.chosenProductAttributes,
-														item.max
+														maxQuantity
 													)
 												}
 											>
 												+
 											</QuantityButton>
 										</QuantityWrapper>
+
 										<ItemPrice>Price: ${item.priceAfterDiscount}</ItemPrice>
 										<ItemTotal>
 											Item Total: ${item.priceAfterDiscount * item.amount}
 										</ItemTotal>
-										{item.chosenProductAttributes && (
-											<AttributeWrapper>
-												<AttributeSelect
-													value={item.color}
-													onChange={(e) => {
-														const chosenColorImageHelper =
-															item.allProductDetailsIncluded.productAttributes.find(
-																(attr) => attr.color === e.target.value
-															);
 
-														const chosenColorImage =
-															chosenColorImageHelper?.productImages?.[0]?.url;
-
-														const chosenAttribute2 =
-															item.allProductDetailsIncluded.productAttributes.find(
-																(attr) =>
-																	attr.color.toLowerCase() ===
-																		e.target.value.toLowerCase() &&
-																	attr.size.toLowerCase() ===
-																		item.size.toLowerCase()
-															);
-														changeColor(
-															item.id,
-															e.target.value,
-															item.size,
-															chosenColorImage,
-															chosenAttribute2.quantity,
-															item.color
-														);
-													}}
-												>
-													{uniqueProductColors.map((color, ii) => (
-														<option key={ii} value={color}>
-															{
-																allColors.find((clr) => clr.hexa === color)
-																	?.color
-															}
-														</option>
-													))}
-												</AttributeSelect>
-												{uniqueProductSizes[0] !== "nosizes" && (
-													<AttributeSelect
-														value={item.size}
-														onChange={(e) => {
-															const chosenAttribute2 =
-																item.allProductDetailsIncluded.productAttributes.find(
-																	(attr) =>
-																		attr.size.toLowerCase() ===
-																		e.target.value.toLowerCase()
-																);
-
-															changeSize(
-																item.id,
-																e.target.value,
-																item.color,
-																chosenAttribute2.quantity,
-																item.size
-															);
-														}}
-													>
-														{uniqueProductSizes.map((size, iii) => (
-															<option key={iii} value={size}>
-																{size}
-															</option>
+										{item.chosenProductAttributes &&
+											productAttrs.length > 0 && (
+												<AttributeWrapper>
+													{/* ======= COLOR SELECT ======= */}
+													{uniqueProductColors.length > 0 &&
+														(isPodProduct && item.customDesign ? (
+															// --- If it's a POD item with a custom design,
+															//     display only ONE <option> in a disabled dropdown ---
+															<AttributeSelect
+																disabled
+																style={{ color: "grey" }}
+																value={
+																	item.customDesign.variants?.color?.title ||
+																	item.customDesign.color ||
+																	item.color
+																}
+															>
+																<option
+																	value={
+																		item.customDesign.variants?.color?.title ||
+																		item.customDesign.color ||
+																		item.color
+																	}
+																>
+																	{item.customDesign.variants?.color?.title ||
+																		item.customDesign.color ||
+																		item.color}
+																</option>
+															</AttributeSelect>
+														) : (
+															// --- Otherwise, the normal non-POD color select logic ---
+															<AttributeSelect
+																disabled={isPodProduct} // if you still want to disable for non-designed POD
+																style={{
+																	color: isPodProduct ? "grey" : "inherit",
+																}}
+																value={item.color}
+																onChange={(e) => {
+																	if (!isPodProduct) {
+																		const newColor = e.target.value;
+																		const newChosenAttr = productAttrs.find(
+																			(a) =>
+																				a.color.toLowerCase() ===
+																					newColor.toLowerCase() &&
+																				a.size.toLowerCase() ===
+																					item.size.toLowerCase()
+																		);
+																		const chosenColorImage =
+																			newChosenAttr?.productImages?.[0]?.url ||
+																			item.image;
+																		const newQuantity =
+																			newChosenAttr?.quantity || 0;
+																		changeColor(
+																			item.id,
+																			newColor,
+																			item.size,
+																			chosenColorImage,
+																			newQuantity,
+																			item.color
+																		);
+																	}
+																}}
+															>
+																{uniqueProductColors.map((colorVal, ii) => (
+																	<option key={ii} value={colorVal}>
+																		{allColors.find(
+																			(clr) => clr.hexa === colorVal
+																		)?.color || colorVal}
+																	</option>
+																))}
+															</AttributeSelect>
 														))}
-													</AttributeSelect>
-												)}
-											</AttributeWrapper>
-										)}
+
+													{/* ======= SIZE SELECT ======= */}
+													{uniqueProductSizes[0] !== "nosizes" &&
+														uniqueProductSizes.length > 0 &&
+														(isPodProduct && item.customDesign ? (
+															// --- Same idea for size: single option with customDesign size ---
+															<AttributeSelect
+																disabled
+																style={{ color: "grey" }}
+																value={
+																	item.customDesign.variants?.size?.title ||
+																	item.customDesign.size ||
+																	item.size
+																}
+															>
+																<option
+																	value={
+																		item.customDesign.variants?.size?.title ||
+																		item.customDesign.size ||
+																		item.size
+																	}
+																>
+																	{item.customDesign.variants?.size?.title ||
+																		item.customDesign.size ||
+																		item.size}
+																</option>
+															</AttributeSelect>
+														) : (
+															// --- Otherwise normal non-POD size logic ---
+															<AttributeSelect
+																disabled={isPodProduct}
+																style={{
+																	color: isPodProduct ? "grey" : "inherit",
+																}}
+																value={item.size}
+																onChange={(e) => {
+																	if (!isPodProduct) {
+																		const newSize = e.target.value;
+																		const newChosenAttr = productAttrs.find(
+																			(a) =>
+																				a.size.toLowerCase() ===
+																					newSize.toLowerCase() &&
+																				a.color.toLowerCase() ===
+																					item.color.toLowerCase()
+																		);
+																		const newQuantity =
+																			newChosenAttr?.quantity || 0;
+																		changeSize(
+																			item.id,
+																			newSize,
+																			item.color,
+																			newQuantity,
+																			item.size
+																		);
+																	}
+																}}
+															>
+																{uniqueProductSizes.map((sz, iii) => (
+																	<option key={iii} value={sz}>
+																		{sz}
+																	</option>
+																))}
+															</AttributeSelect>
+														))}
+												</AttributeWrapper>
+											)}
+
 										<RemoveButton
 											onClick={() => removeItem(item.id, item.size, item.color)}
 										>
@@ -245,7 +319,7 @@ const SidebarCart = ({ from }) => {
 					)}
 					{cart.length > 0 && (
 						<TotalAmount>
-							Total Amount: ${Number(total_amount).toFixed(2)}{" "}
+							Total Amount: ${Number(total_amount).toFixed(2)}
 							<hr className='col-md-6' />
 						</TotalAmount>
 					)}
@@ -257,18 +331,19 @@ const SidebarCart = ({ from }) => {
 									if (isStockAvailable) {
 										window.scrollTo({ top: 0, behavior: "smooth" });
 										closeSidebar2();
-										// handleCheckout();
+										// track GA
 										ReactGA.event({
 											category: "Continue To Checkout",
 											action: "User Clicked Continue To Checkout From Cart",
 										});
 									} else {
+										// find out-of-stock items & show message
 										const outOfStockItems = cart.filter(
 											(item, index) => !checkingAvailability[index]
 										);
-										outOfStockItems.forEach((item) => {
+										outOfStockItems.forEach((itm) => {
 											toast.error(
-												`Please remove product ${item.name} so you can checkout`
+												`Please remove product ${itm.name} so you can checkout`
 											);
 										});
 									}
@@ -282,13 +357,40 @@ const SidebarCart = ({ from }) => {
 						</ButtonsWrapper>
 					)}
 				</CartContent>
-				{/* Add this */}
 			</CartWrapper>
+
+			{/* Example image/design modal if you want it */}
+			<Modal
+				open={!!modalItem}
+				onCancel={() => setModalItem(null)}
+				footer={null}
+				title={null}
+				closable={true}
+				centered
+				bodyStyle={{ padding: "10px", textAlign: "center" }}
+				maskClosable
+				width='auto'
+				zIndex={9999}
+			>
+				{modalItem && (
+					<img
+						src={modalItem.image}
+						alt={modalItem.name}
+						style={{
+							maxWidth: "90vw",
+							maxHeight: "70vh",
+							objectFit: "contain",
+						}}
+					/>
+				)}
+			</Modal>
 		</>
 	);
 };
 
 export default SidebarCart;
+
+/* =============== STYLED COMPONENTS ================ */
 
 const fadeIn = keyframes`
   from {
@@ -345,7 +447,6 @@ const CartWrapper = styled.div`
 			: css`
 					${fadeOut} 0.3s ease forwards
 				`};
-
 	overflow-y: auto;
 `;
 
@@ -383,6 +484,7 @@ const ItemImage = styled.img`
 	object-fit: cover;
 	border-radius: 8px;
 	margin-right: 15px;
+	cursor: pointer;
 `;
 
 const ItemDetails = styled.div`
@@ -461,6 +563,11 @@ const AttributeSelect = styled.select`
 
 	@media (max-width: 900px) {
 		max-width: 80% !important;
+	}
+
+	&:disabled {
+		background-color: #ebebeb;
+		cursor: not-allowed;
 	}
 `;
 

@@ -1,5 +1,7 @@
 /** @format */
 
+import axios from "axios";
+
 export const allLoyaltyPointsAndStoreStatus = (token) => {
 	return fetch(`${process.env.REACT_APP_API_URL}/store-management`, {
 		method: "GET",
@@ -180,6 +182,28 @@ export const updateUser = (user, next) => {
 			next();
 		}
 	}
+};
+
+export const cloudinaryUpload1 = (userId, token, uploadData) => {
+	// uploadData is an object like { image: base64String }
+	return axios
+		.post(
+			`${process.env.REACT_APP_API_URL}/uploadimage/${userId}`,
+			uploadData,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		)
+		.then((res) => {
+			// Return ONLY the .data object => { public_id, url } from the server
+			return res.data;
+		})
+		.catch((err) => {
+			console.error("cloudinaryUpload1 error:", err);
+			throw err;
+		});
 };
 
 export const productStar = (productId, star, token, email, userId) => {
