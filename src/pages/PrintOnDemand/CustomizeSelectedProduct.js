@@ -893,6 +893,7 @@ export default function CustomizeSelectedProduct() {
 
 		try {
 			const screenshotOptions = {
+				scale: 3,
 				useCORS: true,
 				allowTaint: true,
 				// ignore dotted overlays etc.
