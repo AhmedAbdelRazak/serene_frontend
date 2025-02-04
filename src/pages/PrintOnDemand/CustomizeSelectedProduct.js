@@ -222,6 +222,16 @@ export default function CustomizeSelectedProduct() {
 	// One-time default text
 	const [defaultTextAdded, setDefaultTextAdded] = useState(false);
 
+	// (2) ===> ADD 1-SECOND FADE-IN FOR MOBILE BUTTONS
+	const [showMobileButtons, setShowMobileButtons] = useState(false);
+	useEffect(() => {
+		if (isMobile) {
+			setTimeout(() => {
+				setShowMobileButtons(true);
+			}, 1000);
+		}
+	}, [isMobile]);
+
 	// LOAD PRODUCT
 	useEffect(() => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
@@ -565,9 +575,18 @@ export default function CustomizeSelectedProduct() {
 		}
 	}
 
+	// (1) ===> OVERWRITE "Start typing here..." WHEN USER DOUBLE CLICKS (OR DOUBLE TAPS)
 	function handleTextDoubleClick(el) {
+		// If it’s still the default “Start typing here...”, remove it immediately:
+		if (el.text === "Start typing here...") {
+			setElements((prev) =>
+				prev.map((item) => (item.id === el.id ? { ...item, text: "" } : item))
+			);
+			setInlineEditText(""); // start with empty text so user doesn't backspace
+		} else {
+			setInlineEditText(el.text);
+		}
 		setInlineEditId(el.id);
-		setInlineEditText(el.text);
 	}
 
 	// Double-tap for mobile
@@ -1245,7 +1264,6 @@ export default function CustomizeSelectedProduct() {
 									: "https://schema.org/OutOfStock",
 							url: `https://serenejannat.com/custom-gifts/${product._id}`,
 						},
-						// Some optional extra properties about printing or personalization
 						additionalProperty: [
 							{
 								"@type": "PropertyValue",
@@ -1280,8 +1298,18 @@ export default function CustomizeSelectedProduct() {
 							// The main "front" slide
 							return (
 								<div key={image.src}>
+									{/* 
+									   (2) => FADE IN EFFECT AFTER 1 SEC FOR MOBILE BUTTONS.
+									   We keep the same top area but add a class that fades in.
+									*/}
 									{isMobile && (
-										<MobileToolbarWrapper className='noScreenshot'>
+										<MobileToolbarWrapper
+											className='noScreenshot'
+											style={{
+												opacity: showMobileButtons ? 1 : 0,
+												transition: "opacity 0.8s ease-in",
+											}}
+										>
 											<MobileLeftCorner>
 												<Select
 													style={{ width: "100%", marginBottom: 8 }}
@@ -1376,7 +1404,7 @@ export default function CustomizeSelectedProduct() {
 														hiddenFileInputRef.current.click();
 													}}
 												>
-													Upload
+													Upload Image
 												</Button>
 												<input
 													type='file'
@@ -1401,9 +1429,7 @@ export default function CustomizeSelectedProduct() {
 											crossOrigin='anonymous'
 										/>
 
-										{/* The bounding box for the design area. 
-                        We'll place a DottedOverlay with className="noScreenshot"
-                        so the dotted lines won't appear in screenshots. */}
+										{/* The bounding box for the design area */}
 										<PrintArea id='print-area' ref={printAreaRef}>
 											<DottedOverlay className='noScreenshot' />
 											{renderDesignElements()}
@@ -1460,7 +1486,7 @@ export default function CustomizeSelectedProduct() {
 						</span>
 					</div>
 
-					<CustomizePanel>
+					<CustomizePanel className='whole-select-options'>
 						<Title
 							level={4}
 							style={{ color: "var(--text-color-dark)", marginBottom: 8 }}
@@ -1586,6 +1612,123 @@ export default function CustomizeSelectedProduct() {
 					)}
 				</Col>
 			</Row>
+
+			{/* (3) => ENSURE THE SAME OPTIONS SHOW AT THE BOTTOM ON MOBILE */}
+			{isMobile && (
+				<MobileBottomPanel>
+					<Divider />
+					<CustomizePanel>
+						<Title
+							level={4}
+							style={{ color: "var(--text-color-dark)", marginBottom: 8 }}
+						>
+							Select Options:
+						</Title>
+						<Row gutter={12}>
+							<Col span={12}>
+								<Select
+									style={{ width: "100%" }}
+									placeholder='Color'
+									value={selectedColor}
+									onChange={handleColorChange}
+									disabled={
+										!product.options.find(
+											(opt) => opt.name.toLowerCase() === "colors"
+										)
+									}
+								>
+									{uniqueColorsForDropdown.map((colorTitle) => (
+										<Option key={colorTitle} value={colorTitle}>
+											{colorTitle}
+										</Option>
+									))}
+									{!product.options.find(
+										(opt) => opt.name.toLowerCase() === "colors"
+									) && <Option disabled>No Color</Option>}
+								</Select>
+							</Col>
+							<Col span={12}>
+								<Select
+									style={{ width: "100%" }}
+									placeholder='Size'
+									value={selectedSize}
+									onChange={setSelectedSize}
+									disabled={
+										!product.options.find(
+											(opt) => opt.name.toLowerCase() === "sizes"
+										)
+									}
+								>
+									{product.options
+										.find((opt) => opt.name.toLowerCase() === "sizes")
+										?.values.map((sizeObj) => {
+											const isDisabled = !variantExistsForColorSize(sizeObj);
+											return (
+												<Option
+													key={sizeObj.title}
+													value={sizeObj.title}
+													disabled={isDisabled}
+													style={{ color: isDisabled ? "#aaa" : "inherit" }}
+												>
+													{sizeObj.title}
+												</Option>
+											);
+										})}
+									{!product.options.find(
+										(opt) => opt.name.toLowerCase() === "sizes"
+									) && <Option disabled>No Size Options</Option>}
+								</Select>
+							</Col>
+						</Row>
+						<Divider style={{ margin: "16px 0" }} />
+
+						<Title level={4} style={{ color: "var(--text-color-dark)" }}>
+							Add/Update Text
+						</Title>
+						{/* (On mobile, we also have the top toolbar + a modal, 
+							but let's replicate the user experience in the bottom as well) */}
+						<Row gutter={8}>
+							<Col span={24}>
+								<Input.TextArea
+									placeholder='Enter text here'
+									value={userText}
+									onChange={(e) => setUserText(e.target.value)}
+									autoSize={{ minRows: 2, maxRows: 6 }}
+								/>
+							</Col>
+						</Row>
+						<div style={{ marginTop: 12 }}>
+							<Button
+								type='primary'
+								block
+								onClick={() => addTextElement()}
+								style={{ fontWeight: "bold" }}
+							>
+								Add Text
+							</Button>
+						</div>
+
+						<Divider />
+						<Title level={4}>Upload Your Image</Title>
+						<UploadZone {...getRootProps()}>
+							<input {...getInputProps()} />
+							<p>Drag &amp; drop or click to select an image</p>
+						</UploadZone>
+
+						<Divider />
+
+						<Button
+							type='primary'
+							icon={<ShoppingCartOutlined />}
+							onClick={handleAddToCart}
+							disabled={isAddToCartDisabled}
+							style={{ width: "100%", marginTop: "1rem" }}
+						>
+							{isAddToCartDisabled ? "Processing..." : "Add to Cart"}
+						</Button>
+					</CustomizePanel>
+				</MobileBottomPanel>
+			)}
 
 			{/* Mobile "Add Text" Modal */}
 			<Modal
@@ -2181,7 +2324,7 @@ const DesignOverlay = styled.div`
 `;
 
 /** The bounding box for the design area.
- *  We keep it in screenshots, but we’ll overlay "DottedOverlay" with className="noScreenshot"
+ *  We'll overlay "DottedOverlay" with className="noScreenshot"
  *  so the dashed lines never appear in the final PNG.
  */
 const PrintArea = styled.div`
@@ -2189,7 +2332,7 @@ const PrintArea = styled.div`
 	top: 20%;
 	left: 20%;
 	width: 55%;
-	height: 55%;
+	height: 75%;
 	pointer-events: auto;
 	z-index: 1;
 `;
@@ -2264,6 +2407,14 @@ const FloatingActions = styled.div`
 		align-items: center;
 		gap: 6px;
 	}
+`;
+
+/* 
+   (3) We add a bottom panel on mobile so the same options 
+   appear at the bottom, fulfilling the request for #3
+*/
+const MobileBottomPanel = styled.div`
+	margin-top: 2rem;
 `;
 
 const TextElement = styled.div``;

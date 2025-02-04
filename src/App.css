@@ -126,3 +126,9 @@ body {
 	align-items: center;
 	font-size: 12px;
 }
+
+@media (max-width: 700px) {
+	.whole-select-options {
+		display: none;
+	}
+}
