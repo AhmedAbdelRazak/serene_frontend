@@ -912,7 +912,7 @@ export default function CustomizeSelectedProduct() {
 
 		try {
 			const screenshotOptions = {
-				scale: 3,
+				scale: 1,
 				useCORS: true,
 				allowTaint: true,
 				// ignore dotted overlays etc.
@@ -921,7 +921,7 @@ export default function CustomizeSelectedProduct() {
 				backgroundColor: null,
 			};
 			if (isMobile) {
-				screenshotOptions.scale = 2;
+				screenshotOptions.scale = 1;
 			}
 
 			// #1) Screenshot of bareDesignRef
