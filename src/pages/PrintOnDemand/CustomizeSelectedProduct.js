@@ -582,7 +582,7 @@ export default function CustomizeSelectedProduct() {
 			setElements((prev) =>
 				prev.map((item) => (item.id === el.id ? { ...item, text: "" } : item))
 			);
-			setInlineEditText(""); // start with empty text so user doesn't backspace
+			setInlineEditText(""); // start with empty text
 		} else {
 			setInlineEditText(el.text);
 		}
@@ -1236,7 +1236,9 @@ export default function CustomizeSelectedProduct() {
 				{/* OpenGraph for social sharing */}
 				<meta
 					property='og:title'
-					content={`Customize ${product.printifyProductDetails?.title || product.productName} – Serene Jannat`}
+					content={`Customize ${
+						product.printifyProductDetails?.title || product.productName
+					} – Serene Jannat`}
 				/>
 				<meta
 					property='og:description'
@@ -1324,9 +1326,9 @@ export default function CustomizeSelectedProduct() {
 							return (
 								<div key={image.src}>
 									{/* 
-									   (2) => FADE IN EFFECT AFTER 1 SEC FOR MOBILE BUTTONS.
-									   We keep the same top area but add a class that fades in.
-									*/}
+                     (2) => FADE IN EFFECT AFTER 1 SEC FOR MOBILE BUTTONS.
+                     We keep the same top area but add a class that fades in.
+                  */}
 									{isMobile && (
 										<MobileToolbarWrapper
 											className='noScreenshot'
@@ -1426,6 +1428,8 @@ export default function CustomizeSelectedProduct() {
 															action: "User Uploaded Image In Custom Design",
 															label: `User Uploaded Image In Custom Design`,
 														});
+														// Reset the input so user can re-upload the same file if needed
+														hiddenFileInputRef.current.value = null;
 														hiddenFileInputRef.current.click();
 													}}
 												>
@@ -1440,6 +1444,8 @@ export default function CustomizeSelectedProduct() {
 														if (e.target.files?.length) {
 															addImageElement(e.target.files[0]);
 														}
+														// Important: reset after handling
+														e.target.value = null;
 													}}
 												/>
 											</FloatingActions>
@@ -1566,7 +1572,9 @@ export default function CustomizeSelectedProduct() {
 													key={sizeObj.title}
 													value={sizeObj.title}
 													disabled={isDisabled}
-													style={{ color: isDisabled ? "#aaa" : "inherit" }}
+													style={{
+														color: isDisabled ? "#aaa" : "inherit",
+													}}
 												>
 													{sizeObj.title}
 												</Option>
@@ -1713,7 +1721,7 @@ export default function CustomizeSelectedProduct() {
 							Add/Update Text
 						</Title>
 						{/* (On mobile, we also have the top toolbar + a modal, 
-							but let's replicate the user experience in the bottom as well) */}
+                but let's replicate the user experience in the bottom as well) */}
 						<Row gutter={8}>
 							<Col span={24}>
 								<Input.TextArea
@@ -1777,9 +1785,9 @@ export default function CustomizeSelectedProduct() {
 			{/* Hidden container for bare design screenshot */}
 			<BareDesignOverlay ref={bareDesignRef}>
 				{/* 
-          The same bounding area (no border needed) so positions
-          & rotations match for the "bare" screenshot.
-        */}
+            The same bounding area (no border needed) so positions
+            & rotations match for the "bare" screenshot.
+          */}
 				<BarePrintArea id='bare-print-area' ref={barePrintAreaRef}>
 					{elements.map((el) => (
 						<Rnd
@@ -2350,10 +2358,7 @@ const DesignOverlay = styled.div`
 	}
 `;
 
-/** The bounding box for the design area.
- *  We'll overlay "DottedOverlay" with className="noScreenshot"
- *  so the dashed lines never appear in the final PNG.
- */
+/** The bounding box for the design area. */
 const PrintArea = styled.div`
 	position: absolute;
 	top: 20%;
@@ -2364,9 +2369,7 @@ const PrintArea = styled.div`
 	z-index: 1;
 `;
 
-/** A separate overlay with dashed lines and pointer-events: none
- *  plus "noScreenshot" => ignored by html2canvas
- */
+/** A separate overlay with dashed lines (not in final screenshot) */
 const DottedOverlay = styled.div`
 	position: absolute;
 	top: 0;
@@ -2436,10 +2439,6 @@ const FloatingActions = styled.div`
 	}
 `;
 
-/* 
-   (3) We add a bottom panel on mobile so the same options 
-   appear at the bottom, fulfilling the request for #3
-*/
 const MobileBottomPanel = styled.div`
 	margin-top: 2rem;
 `;
@@ -2694,30 +2693,12 @@ const DoubleClickTooltip = styled.div`
 	}
 `;
 
-const mediaCSS = `
-  @media (max-width: 800px) {
-    .slick-dots {
-      bottom: 0 !important;
-      margin-bottom: 0 !important;
-    }
-    .slick-slider {
-      margin-bottom: 0 !important;
-    }
-  }
-`;
-const styleTag = document.createElement("style");
-styleTag.innerHTML = mediaCSS;
-document.head.appendChild(styleTag);
-
-// -------------------------------------
 // The NEW vertical center indicator (ADDED)
-// -------------------------------------
 const CenterIndicator = styled.div`
 	position: absolute;
 	top: 0;
 	bottom: 0;
 	width: 2px;
-	/* background: rgba(255, 0, 0, 0.3); */
 	left: 50%;
 	pointer-events: none;
 	z-index: 9999;
