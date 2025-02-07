@@ -22,7 +22,6 @@ import {
 	DeleteOutlined,
 	FontColorsOutlined,
 	BoldOutlined,
-	ItalicOutlined,
 	BgColorsOutlined,
 	UpOutlined,
 	DownOutlined,
@@ -30,6 +29,7 @@ import {
 	EditOutlined,
 	CloudUploadOutlined,
 	ReloadOutlined,
+	ItalicOutlined,
 } from "@ant-design/icons";
 import PrintifyCheckoutModal from "./PrintifyCheckoutModal"; // Adjust path if needed
 import { isAuthenticated } from "../../auth";
@@ -637,14 +637,9 @@ export default function CustomizeSelectedProduct() {
 	}
 
 	// RND DRAG/RESIZE
-
-	// --------------------------------------------------------------------
-	// The new state & function to detect horizontal center (ADDED)
-	// --------------------------------------------------------------------
 	const [showCenterLine, setShowCenterLine] = useState(false); // <-- ADDED
 
 	function handleRndDrag(e, data, elId) {
-		// <-- ADDED
 		if (!printAreaRef.current) return;
 		const boundingRect = printAreaRef.current.getBoundingClientRect();
 		const containerCenterX = boundingRect.width / 2;
@@ -662,7 +657,7 @@ export default function CustomizeSelectedProduct() {
 	}
 
 	function handleRndDragStop(e, data, elId) {
-		setShowCenterLine(false); // <-- ADDED to hide once user stops
+		setShowCenterLine(false);
 		setElements((prev) =>
 			prev.map((item) =>
 				item.id === elId ? { ...item, x: data.x, y: data.y } : item
@@ -936,17 +931,19 @@ export default function CustomizeSelectedProduct() {
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		try {
+			// -----------------------------------
+			// CHANGED: scale from 3 to 1 (or 2)
+			// -----------------------------------
 			const screenshotOptions = {
-				scale: 3,
+				scale: 1, // down from 3 to avoid 413 errors
 				useCORS: true,
 				allowTaint: true,
-				// ignore dotted overlays etc.
 				ignoreElements: (element) =>
 					element.classList?.contains("noScreenshot"),
 				backgroundColor: null,
 			};
 			if (isMobile) {
-				screenshotOptions.scale = 2;
+				screenshotOptions.scale = 1; // keep it 1 for mobile as well
 			}
 
 			// #1) Screenshot of bareDesignRef
@@ -1236,7 +1233,9 @@ export default function CustomizeSelectedProduct() {
 				{/* OpenGraph for social sharing */}
 				<meta
 					property='og:title'
-					content={`Customize ${product.printifyProductDetails?.title || product.productName} – Serene Jannat`}
+					content={`Customize ${
+						product.printifyProductDetails?.title || product.productName
+					} – Serene Jannat`}
 				/>
 				<meta
 					property='og:description'
@@ -1323,10 +1322,6 @@ export default function CustomizeSelectedProduct() {
 							// The main "front" slide
 							return (
 								<div key={image.src}>
-									{/* 
-									   (2) => FADE IN EFFECT AFTER 1 SEC FOR MOBILE BUTTONS.
-									   We keep the same top area but add a class that fades in.
-									*/}
 									{isMobile && (
 										<MobileToolbarWrapper
 											className='noScreenshot'
@@ -1446,7 +1441,6 @@ export default function CustomizeSelectedProduct() {
 										</MobileToolbarWrapper>
 									)}
 
-									{/* The main overlay (with T-shirt image) */}
 									<DesignOverlay ref={designOverlayRef}>
 										<OverlayImage
 											src={image.src}
@@ -1454,9 +1448,7 @@ export default function CustomizeSelectedProduct() {
 											crossOrigin='anonymous'
 										/>
 
-										{/* The bounding box for the design area */}
 										<PrintArea id='print-area' ref={printAreaRef}>
-											{/*  <-- ADDED: Show center line if needed */}
 											{showCenterLine && <CenterIndicator />}
 											<DottedOverlay className='noScreenshot' />
 											{renderDesignElements()}
@@ -1566,7 +1558,9 @@ export default function CustomizeSelectedProduct() {
 													key={sizeObj.title}
 													value={sizeObj.title}
 													disabled={isDisabled}
-													style={{ color: isDisabled ? "#aaa" : "inherit" }}
+													style={{
+														color: isDisabled ? "#aaa" : "inherit",
+													}}
 												>
 													{sizeObj.title}
 												</Option>
@@ -1640,7 +1634,6 @@ export default function CustomizeSelectedProduct() {
 				</Col>
 			</Row>
 
-			{/* (3) => ENSURE THE SAME OPTIONS SHOW AT THE BOTTOM ON MOBILE */}
 			{isMobile && (
 				<MobileBottomPanel>
 					<Divider />
@@ -1712,8 +1705,6 @@ export default function CustomizeSelectedProduct() {
 						<Title level={4} style={{ color: "var(--text-color-dark)" }}>
 							Add/Update Text
 						</Title>
-						{/* (On mobile, we also have the top toolbar + a modal, 
-							but let's replicate the user experience in the bottom as well) */}
 						<Row gutter={8}>
 							<Col span={24}>
 								<Input.TextArea
@@ -1757,7 +1748,6 @@ export default function CustomizeSelectedProduct() {
 				</MobileBottomPanel>
 			)}
 
-			{/* Mobile "Add Text" Modal */}
 			<Modal
 				title='Add Your Text'
 				open={textModalVisible}
@@ -1774,12 +1764,7 @@ export default function CustomizeSelectedProduct() {
 				/>
 			</Modal>
 
-			{/* Hidden container for bare design screenshot */}
 			<BareDesignOverlay ref={bareDesignRef}>
-				{/* 
-          The same bounding area (no border needed) so positions
-          & rotations match for the "bare" screenshot.
-        */}
 				<BarePrintArea id='bare-print-area' ref={barePrintAreaRef}>
 					{elements.map((el) => (
 						<Rnd
@@ -1856,9 +1841,6 @@ export default function CustomizeSelectedProduct() {
 		</CustomizeWrapper>
 	);
 
-	/**
-	 * Renders the user’s design elements inside the main #print-area
-	 */
 	function renderDesignElements() {
 		return elements.map((el) => {
 			const isSelected = el.id === selectedElementId;
@@ -1882,7 +1864,7 @@ export default function CustomizeSelectedProduct() {
 						bottomLeft: { width: "20px", height: "20px" },
 						bottomRight: { width: "20px", height: "20px" },
 					}}
-					onDrag={(e, data) => handleRndDrag(e, data, el.id)} // <-- ADDED
+					onDrag={(e, data) => handleRndDrag(e, data, el.id)}
 					onDragStop={(e, data) => handleRndDragStop(e, data, el.id)}
 					onResizeStart={() => setSelectedElementId(el.id)}
 					onResizeStop={(e, dir, ref, delta, pos) =>
@@ -2350,23 +2332,17 @@ const DesignOverlay = styled.div`
 	}
 `;
 
-/** The bounding box for the design area.
- *  We'll overlay "DottedOverlay" with className="noScreenshot"
- *  so the dashed lines never appear in the final PNG.
- */
+/** The bounding box for the design area. */
 const PrintArea = styled.div`
 	position: absolute;
 	top: 20%;
-	left: 23%;
-	width: 53%;
+	left: 20%;
+	width: 60%;
 	height: 75%;
 	pointer-events: auto;
 	z-index: 1;
 `;
 
-/** A separate overlay with dashed lines and pointer-events: none
- *  plus "noScreenshot" => ignored by html2canvas
- */
 const DottedOverlay = styled.div`
 	position: absolute;
 	top: 0;
@@ -2436,10 +2412,6 @@ const FloatingActions = styled.div`
 	}
 `;
 
-/* 
-   (3) We add a bottom panel on mobile so the same options 
-   appear at the bottom, fulfilling the request for #3
-*/
 const MobileBottomPanel = styled.div`
 	margin-top: 2rem;
 `;
@@ -2694,30 +2666,11 @@ const DoubleClickTooltip = styled.div`
 	}
 `;
 
-const mediaCSS = `
-  @media (max-width: 800px) {
-    .slick-dots {
-      bottom: 0 !important;
-      margin-bottom: 0 !important;
-    }
-    .slick-slider {
-      margin-bottom: 0 !important;
-    }
-  }
-`;
-const styleTag = document.createElement("style");
-styleTag.innerHTML = mediaCSS;
-document.head.appendChild(styleTag);
-
-// -------------------------------------
-// The NEW vertical center indicator (ADDED)
-// -------------------------------------
 const CenterIndicator = styled.div`
 	position: absolute;
 	top: 0;
 	bottom: 0;
 	width: 2px;
-	/* background: rgba(255, 0, 0, 0.3); */
 	left: 50%;
 	pointer-events: none;
 	z-index: 9999;
