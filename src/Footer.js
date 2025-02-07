@@ -60,7 +60,7 @@ const Footer = () => {
 				</SocialIcons>
 
 				<ContactInfo>
-					support@serenejannat.com <br />
+					sally.abdelrazak@serenejannat.com <br />
 					(951) 565-7568
 				</ContactInfo>
 

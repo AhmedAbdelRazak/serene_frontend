@@ -5,6 +5,7 @@ import { Card } from "antd";
 import ReactGA from "react-ga4";
 
 const ZCategories = ({ allCategories }) => {
+	// Memoize the click handler so that it doesn't get recreated on every render
 	const handleCategoryClick = useCallback((categoryName) => {
 		ReactGA.event({
 			category: "Category Clicked Home Page",
@@ -17,46 +18,48 @@ const ZCategories = ({ allCategories }) => {
 	return (
 		<Container>
 			<ZCategoriesWrapper>
-				{allCategories.map((category) => (
-					<CategoryCard
-						key={category.categorySlug}
-						onClick={() => handleCategoryClick(category.categoryName)}
-					>
-						{category._id === "679bb2a7dba50a58933d01eb" ? (
-							<Link to={`/custom-gifts`}>
+				{allCategories.map((category) => {
+					// Determine the target URL based on the category's id
+					const linkTarget =
+						category._id === "679bb2a7dba50a58933d01eb"
+							? "/custom-gifts"
+							: `/our-products?category=${category.categorySlug}`;
+
+					return (
+						<CategoryCard
+							key={category.categorySlug}
+							onClick={() => handleCategoryClick(category.categoryName)}
+						>
+							<Link to={linkTarget}>
 								{category.thumbnail && category.thumbnail.length > 0 && (
 									<CategoryImageWrapper>
-										<CategoryImage
-											loading='lazy'
-											src={`${category.thumbnail[0].url}?auto=format&fit=max&w=600`}
-											alt={category.categoryName}
-										/>
+										<picture>
+											{/* Serve WebP if supported */}
+											<source
+												srcSet={`${category.thumbnail[0].url}?auto=format&fit=max&w=600&format=webp`}
+												type='image/webp'
+											/>
+											<CategoryImage
+												loading='lazy'
+												src={`${category.thumbnail[0].url}?auto=format&fit=max&w=600`}
+												alt={category.categoryName}
+											/>
+										</picture>
 									</CategoryImageWrapper>
 								)}
 								<CategoryName>{category.categoryName}</CategoryName>
 							</Link>
-						) : (
-							<Link to={`/our-products?category=${category.categorySlug}`}>
-								{category.thumbnail && category.thumbnail.length > 0 && (
-									<CategoryImageWrapper>
-										<CategoryImage
-											loading='lazy'
-											src={`${category.thumbnail[0].url}?auto=format&fit=max&w=600`}
-											alt={category.categoryName}
-										/>
-									</CategoryImageWrapper>
-								)}
-								<CategoryName>{category.categoryName}</CategoryName>
-							</Link>
-						)}
-					</CategoryCard>
-				))}
+						</CategoryCard>
+					);
+				})}
 			</ZCategoriesWrapper>
 		</Container>
 	);
 };
 
 export default React.memo(ZCategories);
+
+/* Styled Components */
 
 const Container = styled.div`
 	background: var(--neutral-light);
@@ -154,10 +157,10 @@ const CategoryName = styled.h3`
 	}
 
 	@media (max-width: 768px) {
-		font-size: 14px; /* Slightly larger text on tablets */
+		font-size: 14px;
 	}
 
 	@media (max-width: 480px) {
-		font-size: 14px; /* Slightly larger text on cell phones */
+		font-size: 14px;
 	}
 `;

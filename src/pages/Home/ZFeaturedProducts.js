@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import styled from "styled-components";
 import Slider from "react-slick";
 import { Card } from "antd";
@@ -16,99 +16,108 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 	const { openSidebar2, addToCart } = useCartContext();
 	const history = useHistory();
 
-	const settings = {
-		dots: true,
-		infinite: true,
-		speed: 2000,
-		slidesToShow: 5,
-		slidesToScroll: 1,
-		autoplay: true,
-		autoplaySpeed: 5000,
-		centerMode: true,
-		centerPadding: "60px",
-		responsive: [
-			{
-				breakpoint: 1024,
-				settings: {
-					slidesToShow: 3,
-					slidesToScroll: 1,
-					infinite: true,
-					dots: true,
+	// Memoize the main slider settings so they're created only once.
+	const settings = useMemo(
+		() => ({
+			dots: true,
+			infinite: true,
+			speed: 2000,
+			slidesToShow: 5,
+			slidesToScroll: 1,
+			autoplay: true,
+			autoplaySpeed: 5000,
+			centerMode: true,
+			centerPadding: "60px",
+			responsive: [
+				{
+					breakpoint: 1024,
+					settings: {
+						slidesToShow: 3,
+						slidesToScroll: 1,
+						infinite: true,
+						dots: true,
+					},
 				},
-			},
-			{
-				breakpoint: 600,
-				settings: {
-					slidesToShow: 2,
-					slidesToScroll: 1,
-					centerPadding: "30px",
+				{
+					breakpoint: 600,
+					settings: {
+						slidesToShow: 2,
+						slidesToScroll: 1,
+						centerPadding: "30px",
+					},
 				},
-			},
-			{
-				breakpoint: 480,
-				settings: {
-					slidesToShow: 1,
-					slidesToScroll: 1,
-					centerPadding: "25px",
+				{
+					breakpoint: 480,
+					settings: {
+						slidesToShow: 1,
+						slidesToScroll: 1,
+						centerPadding: "25px",
+					},
 				},
-			},
-		],
-	};
+			],
+		}),
+		[]
+	);
 
-	const imageSettings = {
-		dots: true,
-		infinite: true,
-		speed: 1500,
-		slidesToShow: 1,
-		slidesToScroll: 1,
-		autoplay: true,
-		autoplaySpeed: 4000,
-	};
+	// Memoize the inner image slider settings.
+	const imageSettings = useMemo(
+		() => ({
+			dots: true,
+			infinite: true,
+			speed: 1500,
+			slidesToShow: 1,
+			slidesToScroll: 1,
+			autoplay: true,
+			autoplaySpeed: 4000,
+		}),
+		[]
+	);
 
-	// === ADD TO CART or Redirect if POD ===
-	const handleCartIconClick = async (product) => {
-		// Check if it's POD => redirect
-		if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
-			history.push(`/custom-gifts/${product._id}`);
-			return;
-		}
-
-		// Otherwise => normal add to cart
-		ReactGA.event({
-			category: "Add To The Cart Featured Products",
-			action: "User Added Featured Product To The Cart",
-			label: `User added ${product.productName} to the cart from Featured Products`,
-		});
-		try {
-			const data3 = await readProduct(product._id);
-			if (data3 && !data3.error) {
-				openSidebar2();
-				addToCart(product._id, null, 1, data3, product.productAttributes[0]);
+	// Memoize the add-to-cart handler.
+	const handleCartIconClick = useCallback(
+		async (product, e) => {
+			e.stopPropagation();
+			if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
+				history.push(`/custom-gifts/${product._id}`);
+				return;
 			}
-		} catch (error) {
-			console.error(error);
-		}
-	};
+			ReactGA.event({
+				category: "Add To The Cart Featured Products",
+				action: "User Added Featured Product To The Cart",
+				label: `User added ${product.productName} to the cart from Featured Products`,
+			});
+			try {
+				const data3 = await readProduct(product._id);
+				if (data3 && !data3.error) {
+					openSidebar2();
+					addToCart(product._id, null, 1, data3, product.productAttributes[0]);
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		},
+		[history, openSidebar2, addToCart]
+	);
 
-	// === CLICK PRODUCT => NAVIGATE or Redirect if POD ===
-	const navigateToProduct = (product) => {
-		// If POD => redirect
-		if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
-			history.push(`/custom-gifts/${product._id}`);
-			return;
-		}
-
-		// Otherwise => normal single-product route
-		ReactGA.event({
-			category: "Featured Product Clicked",
-			action: "Featured Product Clicked",
-			label: `User Navigated to ${product.productName} single page`,
-		});
-		window.scrollTo({ top: 0, behavior: "smooth" });
-		history.push(
-			`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`
-		);
-	};
+	// Memoize the navigation handler.
+	const navigateToProduct = useCallback(
+		(product) => {
+			if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
+				history.push(`/custom-gifts/${product._id}`);
+				return;
+			}
+			ReactGA.event({
+				category: "Featured Product Clicked",
+				action: "Featured Product Clicked",
+				label: `User Navigated to ${product.productName} single page`,
+			});
+			window.scrollTo({ top: 0, behavior: "smooth" });
+			history.push(
+				`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`
+			);
+		},
+		[history]
+	);
 
 	return (
 		<Container>
@@ -122,7 +131,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 								chosenProductAttributes?.productImages ||
 								product.thumbnailImage[0].images;
 
-							// Original & discounted prices => 2 decimals
+							// Original & discounted prices (2 decimals)
 							const originalPrice =
 								chosenProductAttributes?.price || product.price || 0;
 							const discountedPrice =
@@ -144,7 +153,6 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 									0
 								) || product.quantity;
 
-							// Check if POD
 							const isPOD =
 								product.isPrintifyProduct &&
 								product.printifyProductDetails?.POD;
@@ -156,22 +164,19 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 										onClick={() => navigateToProduct(product)}
 										cover={
 											<ImageContainer>
-												{/* If discount applies => show discount badge */}
+												{/* Display discount badge if applicable */}
 												{discountPercentage > 0 && (
 													<DiscountBadge>
 														{discountPercentage.toFixed(0)}% OFF!
 													</DiscountBadge>
 												)}
 
-												{/* If product is POD => show custom design badge */}
+												{/* Display POD badge if applicable */}
 												{isPOD && <PodBadge>Custom Design 💖</PodBadge>}
 
 												{totalQuantity > 0 ? (
 													<CartIcon
-														onClick={(e) => {
-															e.stopPropagation();
-															handleCartIconClick(product);
-														}}
+														onClick={(e) => handleCartIconClick(product, e)}
 													/>
 												) : (
 													<OutOfStockBadge>Out of Stock</OutOfStockBadge>
@@ -181,21 +186,33 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 													<Slider {...imageSettings}>
 														{images.map((img, index) => (
 															<ImageWrapper key={index}>
-																<ProductImage
-																	src={img.url}
-																	alt={`${product.productName} - view ${index + 1}`}
-																	loading='lazy'
-																/>
+																<picture>
+																	<source
+																		srcSet={`${img.url}?auto=format&fit=max&w=600&format=webp`}
+																		type='image/webp'
+																	/>
+																	<ProductImage
+																		src={`${img.url}?auto=format&fit=max&w=600`}
+																		alt={`${product.productName} - view ${index + 1}`}
+																		loading='lazy'
+																	/>
+																</picture>
 															</ImageWrapper>
 														))}
 													</Slider>
 												) : (
 													<ImageWrapper>
-														<ProductImage
-															src={images[0].url}
-															alt={`${product.productName} - single view`}
-															loading='lazy'
-														/>
+														<picture>
+															<source
+																srcSet={`${images[0].url}?auto=format&fit=max&w=600&format=webp`}
+																type='image/webp'
+															/>
+															<ProductImage
+																src={`${images[0].url}?auto=format&fit=max&w=600`}
+																alt={`${product.productName} - single view`}
+																loading='lazy'
+															/>
+														</picture>
 													</ImageWrapper>
 												)}
 											</ImageContainer>

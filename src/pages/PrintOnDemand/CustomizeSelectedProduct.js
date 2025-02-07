@@ -338,7 +338,7 @@ export default function CustomizeSelectedProduct() {
 		const boxHeight = 100;
 
 		const centerX = boundingRect.width / 2 - boxWidth / 2;
-		const centerY = boundingRect.height / 2 - boxHeight / 2;
+		const centerY = boundingRect.height / 2 - boxHeight / 1;
 
 		const newEl = {
 			id: Date.now(),
@@ -637,7 +637,32 @@ export default function CustomizeSelectedProduct() {
 	}
 
 	// RND DRAG/RESIZE
+
+	// --------------------------------------------------------------------
+	// The new state & function to detect horizontal center (ADDED)
+	// --------------------------------------------------------------------
+	const [showCenterLine, setShowCenterLine] = useState(false); // <-- ADDED
+
+	function handleRndDrag(e, data, elId) {
+		// <-- ADDED
+		if (!printAreaRef.current) return;
+		const boundingRect = printAreaRef.current.getBoundingClientRect();
+		const containerCenterX = boundingRect.width / 2;
+
+		// Find the element so we know its width
+		const theElement = elements.find((x) => x.id === elId);
+		if (!theElement) return;
+
+		// The center of the element relative to the container
+		const elementCenterX = data.x + theElement.width / 2;
+
+		// If it's "close" to containerCenterX, we show the line
+		const isCentered = Math.abs(elementCenterX - containerCenterX) < 5;
+		setShowCenterLine(isCentered);
+	}
+
 	function handleRndDragStop(e, data, elId) {
+		setShowCenterLine(false); // <-- ADDED to hide once user stops
 		setElements((prev) =>
 			prev.map((item) =>
 				item.id === elId ? { ...item, x: data.x, y: data.y } : item
@@ -1431,6 +1456,8 @@ export default function CustomizeSelectedProduct() {
 
 										{/* The bounding box for the design area */}
 										<PrintArea id='print-area' ref={printAreaRef}>
+											{/*  <-- ADDED: Show center line if needed */}
+											{showCenterLine && <CenterIndicator />}
 											<DottedOverlay className='noScreenshot' />
 											{renderDesignElements()}
 										</PrintArea>
@@ -1855,7 +1882,7 @@ export default function CustomizeSelectedProduct() {
 						bottomLeft: { width: "20px", height: "20px" },
 						bottomRight: { width: "20px", height: "20px" },
 					}}
-					onDragStart={() => setSelectedElementId(el.id)}
+					onDrag={(e, data) => handleRndDrag(e, data, el.id)} // <-- ADDED
 					onDragStop={(e, data) => handleRndDragStop(e, data, el.id)}
 					onResizeStart={() => setSelectedElementId(el.id)}
 					onResizeStop={(e, dir, ref, delta, pos) =>
@@ -2330,8 +2357,8 @@ const DesignOverlay = styled.div`
 const PrintArea = styled.div`
 	position: absolute;
 	top: 20%;
-	left: 20%;
-	width: 55%;
+	left: 23%;
+	width: 53%;
 	height: 75%;
 	pointer-events: auto;
 	z-index: 1;
@@ -2667,7 +2694,6 @@ const DoubleClickTooltip = styled.div`
 	}
 `;
 
-/* Raise slick-dots on mobile for less blank space */
 const mediaCSS = `
   @media (max-width: 800px) {
     .slick-dots {
@@ -2682,3 +2708,18 @@ const mediaCSS = `
 const styleTag = document.createElement("style");
 styleTag.innerHTML = mediaCSS;
 document.head.appendChild(styleTag);
+
+// -------------------------------------
+// The NEW vertical center indicator (ADDED)
+// -------------------------------------
+const CenterIndicator = styled.div`
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	/* background: rgba(255, 0, 0, 0.3); */
+	left: 50%;
+	pointer-events: none;
+	z-index: 9999;
+	border: 1px dotted rgba(255, 0, 0, 0.3);
+`;

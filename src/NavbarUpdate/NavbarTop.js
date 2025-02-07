@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { FaBars, FaUserPlus } from "react-icons/fa";
 import { AiOutlineShoppingCart } from "react-icons/ai";
@@ -14,24 +14,39 @@ const NavbarTop = React.memo(() => {
 	const [isCartOpen, setIsCartOpen] = useState(false);
 	const [activeLink, setActiveLink] = useState("");
 	const [storeLogo, setStoreLogo] = useState("");
+	const [isSticky, setIsSticky] = useState(false); // Sticky navbar state
+
 	const { user } = isAuthenticated();
 	const { openSidebar2, total_items } = useCartContext();
-	const [isSticky, setIsSticky] = useState(false); // State for sticky navbar
 
-	const handleNavLinkClick = (link) => {
+	// Memoize the first name to avoid recalculations
+	const firstName = useMemo(() => {
+		return user && user.name ? user.name.split(" ")[0] : "";
+	}, [user]);
+
+	// Memoize nav link click handler
+	const handleNavLinkClick = useCallback((link) => {
 		setActiveLink(link);
 		setIsSidebarOpen(false);
-	};
+	}, []);
 
+	// Memoize signout handler
+	const handleSignout = useCallback(() => {
+		signout(() => {
+			window.location.href = "/";
+		});
+	}, []);
+
+	// Fetch the store logo on mount.
 	useEffect(() => {
 		const fetchData = async () => {
 			const url = await getOnlineStoreData();
 			setStoreLogo(url);
 		};
-
 		fetchData();
 	}, []);
 
+	// Add scroll event listener for sticky navbar.
 	useEffect(() => {
 		const handleScroll = () => {
 			if (window.scrollY > 40) {
@@ -42,17 +57,9 @@ const NavbarTop = React.memo(() => {
 		};
 
 		window.addEventListener("scroll", handleScroll);
-		return () => {
-			window.removeEventListener("scroll", handleScroll);
-		};
+		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
-	const handleSignout = () => {
-		signout(() => {
-			window.location.href = "/";
-		});
-	};
-	const firstName = user && user.name ? user.name.split(" ")[0] : "";
 	return (
 		<>
 			{isSidebarOpen && <Overlay onClick={() => setIsSidebarOpen(false)} />}
@@ -66,7 +73,7 @@ const NavbarTop = React.memo(() => {
 				<NavLinks
 					onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 				>
-					{user && user.name && user.role === 1 ? (
+					{user && user.name && user.role === 1 && (
 						<>
 							<NavLink href='/admin/dashboard'>
 								<FaUserPlus /> Hello {firstName}
@@ -75,8 +82,8 @@ const NavbarTop = React.memo(() => {
 								Signout
 							</NavLink>
 						</>
-					) : null}
-					{user && user.name && user.role === 0 ? (
+					)}
+					{user && user.name && user.role === 0 && (
 						<>
 							<FaUserPlus />
 							<NavLink href='/dashboard'>Hello {firstName}</NavLink>
@@ -84,7 +91,7 @@ const NavbarTop = React.memo(() => {
 								Signout
 							</NavLink>
 						</>
-					) : null}
+					)}
 					{(!user || !user.name) && (
 						<>
 							<NavLink href='/signin'>Login</NavLink>
@@ -92,7 +99,7 @@ const NavbarTop = React.memo(() => {
 						</>
 					)}
 				</NavLinks>
-				<CartIcon onClick={() => openSidebar2()} /> {/* Open SidebarCart */}
+				<CartIcon onClick={() => openSidebar2()} /> {/* Opens SidebarCart */}
 				{total_items > 0 && <Badge>{total_items}</Badge>}
 			</NavbarTopWrapper>
 			<Sidebar
@@ -112,6 +119,8 @@ const NavbarTop = React.memo(() => {
 });
 
 export default NavbarTop;
+
+/* ========== Styled Components ========== */
 
 const NavbarTopWrapper = styled.nav`
 	display: flex;
