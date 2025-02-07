@@ -120,6 +120,36 @@ function cropCanvasToTransparentBounds(originalCanvas) {
 	return newCanvas;
 }
 
+/**
+ * NEW HELPER FUNCTION:
+ * Compresses (and optionally downscales) the HTMLCanvasElement
+ * to reduce base64 size.
+ * mimeType can be "image/jpeg" or "image/webp".
+ * quality is from 0.0 (worst) to 1.0 (best).
+ */
+function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
+	return new Promise((resolve, reject) => {
+		// If you prefer to limit maximum width/height, do it here:
+		// e.g. const maxDim = 2000, etc.
+
+		// Convert canvas to blob
+		canvas.toBlob(
+			(blob) => {
+				if (!blob) {
+					return reject(new Error("Canvas is empty or toBlob() failed."));
+				}
+				// Convert blob back to base64
+				const reader = new FileReader();
+				reader.onload = () => resolve(reader.result);
+				reader.onerror = (err) => reject(err);
+				reader.readAsDataURL(blob);
+			},
+			mimeType,
+			quality
+		);
+	});
+}
+
 export default function CustomizeSelectedProduct() {
 	const { productId } = useParams();
 	const [product, setProduct] = useState(null);
@@ -582,7 +612,7 @@ export default function CustomizeSelectedProduct() {
 			setElements((prev) =>
 				prev.map((item) => (item.id === el.id ? { ...item, text: "" } : item))
 			);
-			setInlineEditText(""); // start with empty text so user doesn't backspace
+			setInlineEditText(""); // start with empty so user doesn't backspace
 		} else {
 			setInlineEditText(el.text);
 		}
@@ -937,15 +967,15 @@ export default function CustomizeSelectedProduct() {
 
 		try {
 			const screenshotOptions = {
-				scale: 3,
+				scale: 3, // Keep your high scale
 				useCORS: true,
 				allowTaint: true,
-				// ignore dotted overlays etc.
 				ignoreElements: (element) =>
 					element.classList?.contains("noScreenshot"),
 				backgroundColor: null,
 			};
 			if (isMobile) {
+				// Mobile can remain smaller scale if you wish, or keep scale=3
 				screenshotOptions.scale = 2;
 			}
 
@@ -955,7 +985,12 @@ export default function CustomizeSelectedProduct() {
 				screenshotOptions
 			);
 			const croppedBareCanvas = cropCanvasToTransparentBounds(bareCanvas);
-			const bareDataURL = croppedBareCanvas.toDataURL("image/png");
+
+			// ----> NEW: compress to avoid 413
+			const bareDataURL = await compressCanvas(croppedBareCanvas, {
+				mimeType: "image/jpeg", // or "image/webp" if you prefer
+				quality: 0.9, // tweak from 0.7 -> 0.95 as needed
+			});
 			const { url: bareUrl } = await cloudinaryUpload1(user._id, token, {
 				image: bareDataURL,
 			});
@@ -965,7 +1000,12 @@ export default function CustomizeSelectedProduct() {
 				designOverlayRef.current,
 				screenshotOptions
 			);
-			const finalDataURL = finalCanvas.toDataURL("image/png");
+
+			// ----> compress again
+			const finalDataURL = await compressCanvas(finalCanvas, {
+				mimeType: "image/jpeg",
+				quality: 0.9,
+			});
 			const { url: finalUrl } = await cloudinaryUpload1(user._id, token, {
 				image: finalDataURL,
 			});
@@ -1205,13 +1245,10 @@ export default function CustomizeSelectedProduct() {
 	return (
 		<CustomizeWrapper>
 			<Helmet>
-				{/* Title: Use dynamic product name + mention customization */}
 				<title>
 					{product.printifyProductDetails?.title || product.productName} |
 					Customize & Print On Demand | Serene Jannat
 				</title>
-
-				{/* Description: Use dynamic description or fallback */}
 				<meta
 					name='description'
 					content={
@@ -1220,8 +1257,6 @@ export default function CustomizeSelectedProduct() {
 						"Customize this product with your own designs and text. Perfect for gifts!"
 					}
 				/>
-
-				{/* Keywords: combine the product's tags with some POD phrases */}
 				<meta
 					name='keywords'
 					content={[
@@ -1232,8 +1267,6 @@ export default function CustomizeSelectedProduct() {
 						"Serene Jannat",
 					].join(", ")}
 				/>
-
-				{/* OpenGraph for social sharing */}
 				<meta
 					property='og:title'
 					content={`Customize ${product.printifyProductDetails?.title || product.productName} – Serene Jannat`}
@@ -1246,7 +1279,6 @@ export default function CustomizeSelectedProduct() {
 						"Create a unique personalized product at Serene Jannat with your own design!"
 					}
 				/>
-				{/* If you have a thumbnail: */}
 				{product.thumbnailImage?.[0]?.images?.[0]?.url && (
 					<meta
 						property='og:image'
@@ -1259,7 +1291,6 @@ export default function CustomizeSelectedProduct() {
 				/>
 				<meta property='og:type' content='product' />
 
-				{/* Structured Data (JSON-LD) */}
 				<script type='application/ld+json'>
 					{JSON.stringify({
 						"@context": "https://schema.org/",
@@ -1323,10 +1354,7 @@ export default function CustomizeSelectedProduct() {
 							// The main "front" slide
 							return (
 								<div key={image.src}>
-									{/* 
-									   (2) => FADE IN EFFECT AFTER 1 SEC FOR MOBILE BUTTONS.
-									   We keep the same top area but add a class that fades in.
-									*/}
+									{/* (2) => FADE IN EFFECT AFTER 1 SEC FOR MOBILE BUTTONS */}
 									{isMobile && (
 										<MobileToolbarWrapper
 											className='noScreenshot'
@@ -1456,7 +1484,6 @@ export default function CustomizeSelectedProduct() {
 
 										{/* The bounding box for the design area */}
 										<PrintArea id='print-area' ref={printAreaRef}>
-											{/*  <-- ADDED: Show center line if needed */}
 											{showCenterLine && <CenterIndicator />}
 											<DottedOverlay className='noScreenshot' />
 											{renderDesignElements()}
@@ -1712,8 +1739,6 @@ export default function CustomizeSelectedProduct() {
 						<Title level={4} style={{ color: "var(--text-color-dark)" }}>
 							Add/Update Text
 						</Title>
-						{/* (On mobile, we also have the top toolbar + a modal, 
-							but let's replicate the user experience in the bottom as well) */}
 						<Row gutter={8}>
 							<Col span={24}>
 								<Input.TextArea
@@ -1776,10 +1801,6 @@ export default function CustomizeSelectedProduct() {
 
 			{/* Hidden container for bare design screenshot */}
 			<BareDesignOverlay ref={bareDesignRef}>
-				{/* 
-          The same bounding area (no border needed) so positions
-          & rotations match for the "bare" screenshot.
-        */}
 				<BarePrintArea id='bare-print-area' ref={barePrintAreaRef}>
 					{elements.map((el) => (
 						<Rnd
@@ -1882,7 +1903,7 @@ export default function CustomizeSelectedProduct() {
 						bottomLeft: { width: "20px", height: "20px" },
 						bottomRight: { width: "20px", height: "20px" },
 					}}
-					onDrag={(e, data) => handleRndDrag(e, data, el.id)} // <-- ADDED
+					onDrag={(e, data) => handleRndDrag(e, data, el.id)}
 					onDragStop={(e, data) => handleRndDragStop(e, data, el.id)}
 					onResizeStart={() => setSelectedElementId(el.id)}
 					onResizeStop={(e, dir, ref, delta, pos) =>
@@ -2350,10 +2371,7 @@ const DesignOverlay = styled.div`
 	}
 `;
 
-/** The bounding box for the design area.
- *  We'll overlay "DottedOverlay" with className="noScreenshot"
- *  so the dashed lines never appear in the final PNG.
- */
+/** The bounding box for the design area. */
 const PrintArea = styled.div`
 	position: absolute;
 	top: 20%;
@@ -2364,9 +2382,7 @@ const PrintArea = styled.div`
 	z-index: 1;
 `;
 
-/** A separate overlay with dashed lines and pointer-events: none
- *  plus "noScreenshot" => ignored by html2canvas
- */
+/** A separate overlay with dashed lines (ignored by screenshot). */
 const DottedOverlay = styled.div`
 	position: absolute;
 	top: 0;
@@ -2436,10 +2452,6 @@ const FloatingActions = styled.div`
 	}
 `;
 
-/* 
-   (3) We add a bottom panel on mobile so the same options 
-   appear at the bottom, fulfilling the request for #3
-*/
 const MobileBottomPanel = styled.div`
 	margin-top: 2rem;
 `;
@@ -2709,15 +2721,12 @@ const styleTag = document.createElement("style");
 styleTag.innerHTML = mediaCSS;
 document.head.appendChild(styleTag);
 
-// -------------------------------------
-// The NEW vertical center indicator (ADDED)
-// -------------------------------------
+// The new vertical center indicator (ADDED)
 const CenterIndicator = styled.div`
 	position: absolute;
 	top: 0;
 	bottom: 0;
 	width: 2px;
-	/* background: rgba(255, 0, 0, 0.3); */
 	left: 50%;
 	pointer-events: none;
 	z-index: 9999;
