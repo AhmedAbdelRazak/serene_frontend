@@ -8,6 +8,7 @@ import {
 	FaTruck,
 	FaCalendarAlt,
 	FaEdit,
+	FaUser,
 } from "react-icons/fa";
 import { updatingAnOrder2 } from "../apiAdmin";
 import { isAuthenticated } from "../../auth";
@@ -139,6 +140,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 
 	if (!order) return null;
 
+	console.log(order, "novariables");
 	return (
 		<>
 			{/* ─────────────────────────────────────────────────────────
@@ -183,7 +185,33 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 									onClick={handleEditTrackingClick}
 								/>
 							</StyledText>
+							<StyledText>
+								<FaUser style={{ marginRight: "5px" }} />
+								<strong>
+									Customer Name: {order.customerDetails.name}
+								</strong>{" "}
+							</StyledText>
+							<StyledText>
+								<FaUser style={{ marginRight: "5px" }} />
+								<strong>
+									Customer Phone: {order.customerDetails.phone}
+								</strong>{" "}
+							</StyledText>
+							<StyledText>
+								<FaUser style={{ marginRight: "5px" }} />
+								<strong>
+									Customer Email: {order.customerDetails.email}
+								</strong>{" "}
+							</StyledText>
 
+							<StyledText>
+								<FaReceipt style={{ marginRight: "5px" }} />
+								<strong>Ship To:</strong> {order.customerDetails.name}{" "}
+								<FaEdit
+									style={{ cursor: "pointer", marginLeft: "10px" }}
+									onClick={handleEditShipToClick}
+								/>
+							</StyledText>
 							<div>
 								<FaTruck style={{ marginRight: "5px" }} />
 								<strong>Ship To Address:</strong>{" "}
@@ -199,15 +227,6 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 								<FaEdit
 									style={{ cursor: "pointer", marginLeft: "10px" }}
 									onClick={handleEditStatusClick}
-								/>
-							</StyledText>
-
-							<StyledText>
-								<FaReceipt style={{ marginRight: "5px" }} />
-								<strong>Ship To:</strong> {order.customerDetails.name}{" "}
-								<FaEdit
-									style={{ cursor: "pointer", marginLeft: "10px" }}
-									onClick={handleEditShipToClick}
 								/>
 							</StyledText>
 
@@ -343,7 +362,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 											</span>
 										</StyledText>
 										<StyledText>
-											<strong>SKU:</strong> {product.sku}
+											<strong>SKU:</strong> {product.productSKU}
 											<span style={{ marginLeft: "20px" }}>
 												<strong>Color:</strong> {product.color}
 											</span>
