@@ -27,6 +27,33 @@ const { Meta } = Card;
 const { Option } = Select;
 const { Search } = Input;
 
+// Helper to see if a color name includes "white"
+const isWhiteColorName = (c) => c.toLowerCase().includes("white");
+
+// Sort colors so that any color containing "white" is pushed to the end
+function reorderColorsToAvoidWhiteFirst(colorNames = []) {
+	// Remove duplicates
+	let unique = [...new Set(colorNames)];
+	// Sort so that "white" is last
+	unique.sort((a, b) => {
+		const aIsWhite = isWhiteColorName(a);
+		const bIsWhite = isWhiteColorName(b);
+		// if a is white and b is not => push a to end
+		if (aIsWhite && !bIsWhite) return 1;
+		// if b is white and a is not => push b to end
+		if (!aIsWhite && bIsWhite) return -1;
+		return 0;
+	});
+	return unique;
+}
+
+// Extract color name from a Printify variant title, e.g. "S / Navy" => "Navy"
+const parsePrintifyColor = (title = "") => {
+	const splitted = title.split("/");
+	if (splitted.length >= 2) return splitted[1].trim();
+	return splitted[0].trim();
+};
+
 const ShopPageMain = () => {
 	const history = useHistory();
 	const location = useLocation();
@@ -45,7 +72,7 @@ const ShopPageMain = () => {
 		size: "",
 		gender: "",
 		searchTerm: "",
-		offers: new URLSearchParams(location.search).get("offers"), // Add offers filter
+		offers: new URLSearchParams(location.search).get("offers"), // "offers" filter
 	});
 	const [page, setPage] = useState(1);
 	const [allColors, setAllColors] = useState([]);
@@ -57,7 +84,6 @@ const ShopPageMain = () => {
 	useEffect(() => {
 		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
 		ReactGA.send(window.location.pathname + window.location.search);
-
 		// eslint-disable-next-line
 	}, [window.location.pathname]);
 
@@ -78,16 +104,21 @@ const ShopPageMain = () => {
 			if (data.error) {
 				console.log(data.error);
 			} else {
-				// Process the products to handle variables and unique colors
 				const uniqueProductMap = {};
 
 				const processedProducts = data.products
 					.map((product) => {
+						// If POD => store product once only
+						if (product.printifyProductDetails?.POD) {
+							uniqueProductMap[product._id] = product;
+							return [product];
+						}
+
+						// Otherwise, expand by color attributes
 						if (
 							product.productAttributes &&
 							product.productAttributes.length > 0
 						) {
-							// Filter product attributes to get unique colors with images
 							const uniqueAttributes = product.productAttributes.reduce(
 								(acc, attr) => {
 									if (attr.productImages.length > 0 && !acc[attr.color]) {
@@ -102,30 +133,29 @@ const ShopPageMain = () => {
 								{}
 							);
 
-							// Add each unique color product to the map to ensure uniqueness
 							Object.values(uniqueAttributes).forEach((attrProduct) => {
 								uniqueProductMap[
 									`${product._id}-${attrProduct.productAttributes[0].color}`
 								] = attrProduct;
 							});
 
-							// Return an array of products split by unique color attributes
 							return Object.values(uniqueAttributes);
+						} else {
+							// Simple product
+							uniqueProductMap[product._id] = product;
+							return [product];
 						}
-						// Return simple products as is
-						uniqueProductMap[product._id] = product;
-						return [product];
 					})
 					.flat();
 
-				// Convert the unique product map back to an array
+				// If your URL has ?category=someSlug, filter:
 				const params = new URLSearchParams(location.search);
 				const categorySlug = params.get("category");
 				const uniqueProducts = categorySlug
-					? Object.values(processedProducts).filter(
-							(product) => product.category.categorySlug === categorySlug
+					? processedProducts.filter(
+							(p) => p.category?.categorySlug === categorySlug
 						)
-					: Object.values(processedProducts);
+					: processedProducts;
 
 				setProducts(uniqueProducts);
 				setTotalRecords(data.totalRecords || 0);
@@ -139,7 +169,7 @@ const ShopPageMain = () => {
 				]);
 			}
 		});
-	}, [filters, page, location.search]);
+	}, [filters, page, location.search, records]);
 
 	useEffect(() => {
 		fetchFilteredProducts();
@@ -165,12 +195,13 @@ const ShopPageMain = () => {
 			size: "",
 			gender: "",
 			searchTerm: "",
-			offers: "", // Reset offers filter
+			offers: "",
 		});
 		setPage(1);
 	};
 
-	const getColorName = (hexa) => {
+	// Translate hexa to actual color name from your master color list
+	const getColorNameFromHexa = (hexa) => {
 		const colorObject = allColors.find((color) => color.hexa === hexa);
 		return colorObject ? colorObject.color : "Unknown Color";
 	};
@@ -183,12 +214,23 @@ const ShopPageMain = () => {
 		setDrawerVisible(false);
 	};
 
+	// eslint-disable-next-line
 	const getTransformedImageUrl = (url, width, height) => {
 		if (!url) return "";
 		const parts = url.split("upload/");
 		const transformation = `upload/w_${width},h_${height},c_scale/`;
 		return parts[0] + transformation + parts[1];
 	};
+
+	// Decide what link to push user to
+	function getProductLink(product) {
+		// If POD => link to /custom-gifts/<_id>
+		if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
+			return `/custom-gifts/${product._id}`;
+		}
+		// Otherwise => normal route
+		return `/single-product/${product.slug}/${product.category?.categorySlug}/${product._id}`;
+	}
 
 	return (
 		<ConfigProvider
@@ -205,6 +247,7 @@ const ShopPageMain = () => {
 			<ShopPageHelmet products={products} />
 			<ShopPageMainOverallWrapper>
 				<ShopPageMainWrapper>
+					{/* ====== DESKTOP FILTERS ====== */}
 					<FiltersSection>
 						<Row gutter={[16, 16]}>
 							<Col span={6} style={{ textTransform: "capitalize" }}>
@@ -219,7 +262,7 @@ const ShopPageMain = () => {
 									<Option value=''>All Colors</Option>
 									{colors.map((color, index) => (
 										<Option key={index} value={color}>
-											{getColorName(color)}
+											{getColorNameFromHexa(color)}
 										</Option>
 									))}
 								</Select>
@@ -231,13 +274,13 @@ const ShopPageMain = () => {
 									onChange={(value) => handleFilterChange("category", value)}
 								>
 									<Option value=''>All Categories</Option>
-									{categories.map((category, i) => (
+									{categories.map((cat, i) => (
 										<Option
 											style={{ textTransform: "capitalize" }}
 											key={i}
-											value={category.id}
+											value={cat.id}
 										>
-											{category.name}
+											{cat.name}
 										</Option>
 									))}
 								</Select>
@@ -283,7 +326,7 @@ const ShopPageMain = () => {
 										handleFilterChange("priceMin", value[0]);
 										handleFilterChange("priceMax", value[1]);
 									}}
-									onAfterChange={fetchFilteredProducts} // Fetch data after dragging stops
+									onAfterChange={fetchFilteredProducts}
 									tooltip={{ formatter: (value) => `$${value}` }}
 								/>
 								<div
@@ -324,6 +367,8 @@ const ShopPageMain = () => {
 							</StyledButton>
 						</Row>
 					</FiltersSection>
+
+					{/* ====== MOBILE FILTERS ====== */}
 					<SearchInputWrapper>
 						<FiltersButton
 							icon={<FilterOutlined />}
@@ -355,7 +400,7 @@ const ShopPageMain = () => {
 									<Option value=''>All Colors</Option>
 									{colors.map((color, index) => (
 										<Option key={index} value={color}>
-											{getColorName(color)}
+											{getColorNameFromHexa(color)}
 										</Option>
 									))}
 								</Select>
@@ -367,9 +412,9 @@ const ShopPageMain = () => {
 									onChange={(value) => handleFilterChange("category", value)}
 								>
 									<Option value=''>All Categories</Option>
-									{categories.map((category, index) => (
-										<Option key={index} value={category.id}>
-											{category.name}
+									{categories.map((cat, i) => (
+										<Option key={i} value={cat.id}>
+											{cat.name}
 										</Option>
 									))}
 								</Select>
@@ -415,7 +460,7 @@ const ShopPageMain = () => {
 										handleFilterChange("priceMin", value[0]);
 										handleFilterChange("priceMax", value[1]);
 									}}
-									onAfterChange={fetchFilteredProducts} // Fetch data after dragging stops
+									onAfterChange={fetchFilteredProducts}
 									tooltip={{ formatter: (value) => `$${value}` }}
 								/>
 								<div
@@ -449,51 +494,104 @@ const ShopPageMain = () => {
 							</Row>
 						</Row>
 					</FiltersDrawer>
+
+					{/* ====== PRODUCT CARDS ====== */}
 					<ProductsSection>
 						<Row gutter={[16, 16]}>
 							{products &&
 								products.map((product, index) => {
-									const productImages =
-										product.productAttributes &&
-										product.productAttributes.length > 0
-											? product.productAttributes[0].productImages
-											: product.thumbnailImage[0].images;
+									const isPOD =
+										product.isPrintifyProduct &&
+										product.printifyProductDetails?.POD;
+
+									// 1) Collect all color names
+									let colorNames = [];
+									let mainColor = "";
+									let originalPrice = product.price || 0;
+									let discountedPrice =
+										product.priceAfterDiscount > 0
+											? product.priceAfterDiscount
+											: product.price || 0;
+
+									// 2) Decide images to display
+									let productImages =
+										product.thumbnailImage && product.thumbnailImage.length > 0
+											? product.thumbnailImage[0].images
+											: [];
+
+									// ========== POD LOGIC ==========
+									if (isPOD) {
+										// Extract color names from all variants
+										const variants =
+											product.printifyProductDetails?.variants || [];
+										colorNames = variants.map((v) =>
+											parsePrintifyColor(v.title)
+										);
+										// Reorder so "white" goes last
+										colorNames = reorderColorsToAvoidWhiteFirst(colorNames);
+										// The first color after re-order is your main color
+										mainColor = colorNames[0] || "";
+
+										// If you store your price in the first variant, you can override:
+										// e.g. originalPrice = variants[0]?.price / 100
+										// etc.
+
+										// For images, if you have product.images from Printify, use it:
+										if (product.images && product.images.length > 0) {
+											productImages = product.images;
+										}
+									} else {
+										// ========== Non-POD LOGIC ==========
+										const attrs = product.productAttributes || [];
+										// Gather color names from all attributes
+										const allAttrColorNames = attrs.map((a) =>
+											getColorNameFromHexa(a.color)
+										);
+										colorNames =
+											reorderColorsToAvoidWhiteFirst(allAttrColorNames);
+										mainColor = colorNames[0] || product.color || "";
+
+										// Find the matching attribute for that mainColor
+										// fallback to the first attribute if none matches
+										let chosenAttr = attrs.find(
+											(a) =>
+												getColorNameFromHexa(a.color).toLowerCase() ===
+												mainColor.toLowerCase()
+										);
+										if (!chosenAttr && attrs.length > 0) {
+											chosenAttr = attrs[0];
+										}
+										if (chosenAttr) {
+											productImages = chosenAttr.productImages || productImages;
+											originalPrice = chosenAttr.price || originalPrice;
+											if (chosenAttr.priceAfterDiscount > 0) {
+												discountedPrice = chosenAttr.priceAfterDiscount;
+											}
+										} else {
+											// fallback if no matching attribute
+											mainColor = product.color || "";
+										}
+									}
+
+									// Calculate discount if any
+									const discountPercentage =
+										((originalPrice - discountedPrice) / originalPrice) * 100;
+
+									// If no images or zero length, fallback
 									const imageUrl =
 										productImages && productImages.length > 0
 											? productImages[0].url
 											: "";
 
-									const chosenProductAttributes =
-										product.productAttributes &&
-										product.productAttributes.length > 0
-											? product.productAttributes[0]
-											: null;
+									// If you want a cloudinary transform
+									// const transformedImageUrl = getTransformedImageUrl(imageUrl, 600, 600);
 
-									const colorName =
-										chosenProductAttributes &&
-										getColorName(chosenProductAttributes.color);
+									// Limit colorNames to first 4
+									const displayedColors = colorNames.slice(0, 4);
 
-									const originalPrice =
-										chosenProductAttributes && chosenProductAttributes.price
-											? chosenProductAttributes.price
-											: product.price;
-									const discountedPrice =
-										product.priceAfterDiscount > 0
-											? product.priceAfterDiscount
-											: chosenProductAttributes.priceAfterDiscount;
-
-									const discountPercentage =
-										((originalPrice - discountedPrice) / originalPrice) * 100;
-
-									// eslint-disable-next-line
-									const transformedImageUrl = getTransformedImageUrl(
-										imageUrl,
-										1200, // Adjust width here
-										1220 // Adjust height here
-									);
-
+									// Product stock quantity
 									const totalQuantity =
-										product.productAttributes.reduce(
+										product.productAttributes?.reduce(
 											(acc, attr) => acc + attr.quantity,
 											0
 										) || product.quantity;
@@ -504,32 +602,42 @@ const ShopPageMain = () => {
 												hoverable
 												cover={
 													<ImageContainer>
-														{discountPercentage > 0 && (
-															<DiscountBadge>
-																{discountPercentage.toFixed(0)}% OFF!
-															</DiscountBadge>
-														)}
+														<BadgeContainer>
+															{/* POD badge */}
+															{isPOD && <PodBadge>Custom Design</PodBadge>}
+															{/* Discount badge if discountPercentage > 0 */}
+															{discountPercentage > 0 && (
+																<DiscountBadge>
+																	{discountPercentage.toFixed(0)}% OFF!
+																</DiscountBadge>
+															)}
+														</BadgeContainer>
+
 														{totalQuantity > 0 ? (
 															<CartIcon
 																onClick={(e) => {
+																	e.stopPropagation();
 																	ReactGA.event({
 																		category: "Add To The Cart Products Page",
 																		action:
 																			"User Added Product From The Products Page",
-																		label: `User added ${product.productName} to the cart from Products Page`,
+																		label: `User added ${product.productName} to the cart`,
 																	});
-																	e.stopPropagation();
 																	readProduct(product._id).then((data3) => {
 																		if (data3 && data3.error) {
 																			console.log(data3.error);
 																		} else {
 																			openSidebar2();
+																			// For non-POD, pass chosenAttr
+																			// For POD, pass null or the variant object if you want
+																			const chosenAttr =
+																				product.productAttributes?.[0] || null;
 																			addToCart(
 																				product._id,
 																				null,
 																				1,
 																				data3,
-																				chosenProductAttributes
+																				chosenAttr
 																			);
 																		}
 																	});
@@ -538,38 +646,25 @@ const ShopPageMain = () => {
 														) : (
 															<OutOfStockBadge>Out of Stock</OutOfStockBadge>
 														)}
+
 														<ProductImage
 															src={imageUrl}
-															// src={transformedImageUrl}
 															alt={product.productName}
 															onClick={() => {
 																ReactGA.event({
 																	category: "Single Product Clicked",
 																	action:
 																		"User Navigated To Single Product From Products Page",
-																	label: `User Navigated to ${product.productName} single page`,
+																	label: `User viewed ${product.productName}`,
 																});
 																window.scrollTo({ top: 0, behavior: "smooth" });
-
-																function getProductLink(product) {
-																	// If the product is POD (Printify) => link to custom-gifts/<printifyProductId>
-																	if (
-																		product.printifyProductDetails?.POD ===
-																			true &&
-																		product.printifyProductDetails?.id
-																	) {
-																		return `/custom-gifts/${product._id}`;
-																	}
-																	// Otherwise => old link
-																	return `/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`;
-																}
-
 																history.push(getProductLink(product));
 															}}
 														/>
 													</ImageContainer>
 												}
 											>
+												{/* ======== Product Title & Price ======== */}
 												<Meta
 													title={product.productName}
 													description={
@@ -579,7 +674,7 @@ const ShopPageMain = () => {
 																	Price: ${originalPrice.toFixed(2)}
 																</OriginalPrice>{" "}
 																<DiscountedPrice>
-																	${discountedPrice}
+																	${discountedPrice.toFixed(2)}
 																</DiscountedPrice>
 															</span>
 														) : (
@@ -589,23 +684,51 @@ const ShopPageMain = () => {
 														)
 													}
 												/>
-												{colorName &&
-												product.category.categoryName !== "candles" ? (
-													<p style={{ textTransform: "capitalize" }}>
-														Color: {colorName}
-													</p>
-												) : product.color ? (
-													<p style={{ textTransform: "capitalize" }}>
-														Color: {product.color}
-													</p>
-												) : null}
 
-												{product.category.categoryName === "candles" &&
-													product.scent && (
-														<p style={{ textTransform: "capitalize" }}>
-															Scent: {product.scent}
+												{/* If POD, show cursive text */}
+												{isPOD && (
+													<CursiveText>
+														Your Loved Ones Deserve 3 Minutes From Your Time To
+														Customize Their Present!
+													</CursiveText>
+												)}
+
+												{/* Candles => show scent; otherwise => show mainColor */}
+												{product.category?.categoryName === "candles" &&
+												product.scent ? (
+													<p
+														style={{
+															textTransform: "capitalize",
+															marginBottom: "4px",
+														}}
+													>
+														Scent: {product.scent}
+													</p>
+												) : (
+													mainColor &&
+													displayedColors.length <= 1 && (
+														<p
+															style={{
+																textTransform: "capitalize",
+																marginBottom: "4px",
+															}}
+														>
+															Color: {mainColor}
 														</p>
-													)}
+													)
+												)}
+
+												{/* Show up to 4 colors if more exist */}
+												{/* {displayedColors.length > 1 && (
+													<p
+														style={{
+															textTransform: "capitalize",
+															marginBottom: "4px",
+														}}
+													>
+														Colors: {displayedColors.join(", ")}
+													</p>
+												)} */}
 											</ProductCard>
 										</Col>
 									);
@@ -632,6 +755,7 @@ const ShopPageMain = () => {
 
 export default ShopPageMain;
 
+/* ======= STYLES ======= */
 const ShopPageMainOverallWrapper = styled.div`
 	background: white;
 	margin: auto;
@@ -705,7 +829,7 @@ const ProductCard = styled(Card)`
 	flex-direction: column;
 	justify-content: space-between;
 	min-height: 600px;
-	max-height: 600px;
+	max-height: 625px;
 	transition: var(--main-transition);
 	text-transform: capitalize;
 
@@ -716,7 +840,7 @@ const ProductCard = styled(Card)`
 
 	@media (max-width: 700px) {
 		min-height: 600px;
-		max-height: 600px;
+		max-height: 625px;
 	}
 `;
 
@@ -729,6 +853,36 @@ const ImageContainer = styled.div`
 	@media (max-width: 700px) {
 		height: 500px;
 	}
+`;
+
+const BadgeContainer = styled.div`
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	z-index: 15;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+`;
+
+const PodBadge = styled.div`
+	background-color: #ffafc5;
+	color: #ffffff;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-weight: bold;
+	font-size: 0.8rem;
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+`;
+
+const DiscountBadge = styled.div`
+	background-color: var(--secondary-color-darker);
+	color: var(--button-font-color);
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-weight: bold;
+	font-size: 0.8rem;
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 `;
 
 const ProductImage = styled.img`
@@ -770,18 +924,6 @@ const OutOfStockBadge = styled.div`
 	font-weight: bold;
 `;
 
-const DiscountBadge = styled.div`
-	position: absolute;
-	top: 10px;
-	left: 10px;
-	background-color: var(--secondary-color-darker);
-	color: var(--button-font-color);
-	padding: 5px 10px;
-	border-radius: 5px;
-	font-weight: bold;
-	z-index: 10;
-`;
-
 const PaginationWrapper = styled.div`
 	display: flex;
 	justify-content: center;
@@ -805,9 +947,22 @@ const OriginalPrice = styled.span`
 	text-decoration: line-through;
 	margin-right: 8px;
 	font-weight: bold;
+	line-height: 0;
 `;
 
 const DiscountedPrice = styled.span`
 	color: var(--text-color-primary);
 	font-weight: bold;
+`;
+
+/* Cursive text for POD products */
+const CursiveText = styled.div`
+	font-family: "Brush Script MT", cursive, sans-serif;
+	color: #222;
+	font-size: 1.3rem;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	font-style: italic;
+	font-weight: bolder;
+	line-height: 1;
 `;
