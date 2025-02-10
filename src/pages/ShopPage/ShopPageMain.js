@@ -829,7 +829,7 @@ const ProductCard = styled(Card)`
 	flex-direction: column;
 	justify-content: space-between;
 	min-height: 600px;
-	max-height: 625px;
+	max-height: 640px;
 	transition: var(--main-transition);
 	text-transform: capitalize;
 
@@ -840,7 +840,7 @@ const ProductCard = styled(Card)`
 
 	@media (max-width: 700px) {
 		min-height: 600px;
-		max-height: 625px;
+		max-height: 640px;
 	}
 `;
 
