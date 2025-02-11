@@ -247,7 +247,7 @@ const ZCustomDesignsWrapper = styled.div`
 	h2 {
 		font-family: "Brush Script MT", cursive, sans-serif;
 		color: var(--secondary-color-darker);
-		font-size: 1.5rem;
+		font-size: 2.3rem;
 		margin-top: 5px;
 		margin-bottom: 5px;
 		font-style: italic;

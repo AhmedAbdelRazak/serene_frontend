@@ -204,13 +204,25 @@ const LoadingText = styled.p`
 const SectionTitle = styled.h1`
 	font-family: "Brush Script MT", cursive, sans-serif;
 	color: var(--secondary-color-darker);
-	font-size: 1.7rem;
+	font-size: 2.3rem;
 	margin-top: 5px;
 	margin-bottom: 5px;
 	font-style: italic;
 	font-weight: bolder;
 	line-height: 1;
 	text-align: center;
+
+	@media (max-width: 900px) {
+		font-family: "Brush Script MT", cursive, sans-serif;
+		color: var(--secondary-color-darker);
+		font-size: 1.5rem;
+		margin-top: 5px;
+		margin-bottom: 5px;
+		font-style: italic;
+		font-weight: bolder;
+		line-height: 1;
+		text-align: center;
+	}
 `;
 
 const GridContainer = styled.div`
