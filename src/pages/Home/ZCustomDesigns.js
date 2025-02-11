@@ -244,6 +244,18 @@ const ZCustomDesignsWrapper = styled.div`
 		display: none !important;
 	}
 
+	h2 {
+		font-family: "Brush Script MT", cursive, sans-serif;
+		color: var(--secondary-color-darker);
+		font-size: 1.5rem;
+		margin-top: 5px;
+		margin-bottom: 5px;
+		font-style: italic;
+		font-weight: bolder;
+		line-height: 1;
+		text-align: left;
+	}
+
 	@media (max-width: 900px) {
 		.slick-arrow,
 		.slick-prev {
