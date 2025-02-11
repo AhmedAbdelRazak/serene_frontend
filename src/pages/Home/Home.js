@@ -12,12 +12,14 @@ import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
 import ZFeaturedProducts from "./ZFeaturedProducts";
 import ZNewArrival from "./ZNewArrival";
+import ZCustomDesigns from "./ZCustomDesigns";
 
 const Home = () => {
 	const [allCategories, setAllCategories] = useState("");
 	const [allSubcategories, setAllSubcategories] = useState("");
 	const [featuredProducts, setFeaturedProducts] = useState("");
 	const [newArrivalProducts, setNewArrivalProducts] = useState("");
+	const [customDesignProducts, setCustomDesignProducts] = useState("");
 	const [loading, setLoading] = useState(true);
 
 	const distinctCategoriesAndSubcategories = () => {
@@ -26,7 +28,7 @@ const Home = () => {
 			if (data && data.error) {
 				console.log(data.error);
 			} else {
-				gettingSpecificProducts(1, 0, 0, 0, 20).then((data2) => {
+				gettingSpecificProducts(1, 0, 0, 0, 0, 20).then((data2) => {
 					if (data2 && data2.error) {
 						console.log(data2.error);
 					} else {
@@ -40,11 +42,19 @@ const Home = () => {
 					}
 				});
 
-				gettingSpecificProducts(0, 1, 0, 0, 20).then((data3) => {
+				gettingSpecificProducts(0, 1, 0, 0, 0, 20).then((data3) => {
 					if (data3 && data3.error) {
 						console.log(data3.error);
 					} else {
 						setNewArrivalProducts(data3);
+
+						gettingSpecificProducts(0, 0, 1, 0, 0, 20).then((data4) => {
+							if (data4 && data4.error) {
+								console.log(data4.error);
+							} else {
+								setCustomDesignProducts(data4);
+							}
+						});
 
 						setLoading(false);
 					}
@@ -324,12 +334,20 @@ const Home = () => {
 			{/* <div className='pt-3'>
 				<ZSearch />
 			</div> */}
+
 			{!loading && allCategories && allCategories.length > 0 ? (
 				<ZCategories
 					allCategories={allCategories}
 					allSubcategories={allSubcategories}
 				/>
 			) : null}
+
+			{!loading && customDesignProducts && customDesignProducts.length > 0 ? (
+				<div data-aos='fade-up'>
+					<ZCustomDesigns customDesignProducts={customDesignProducts} />
+				</div>
+			) : null}
+
 			{!loading && featuredProducts && featuredProducts.length > 0 ? (
 				<div data-aos='fade-up'>
 					<ZFeaturedProducts featuredProducts={featuredProducts} />

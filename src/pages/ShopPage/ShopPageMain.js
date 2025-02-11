@@ -27,34 +27,7 @@ const { Meta } = Card;
 const { Option } = Select;
 const { Search } = Input;
 
-// Helper to see if a color name includes "white"
-const isWhiteColorName = (c) => c.toLowerCase().includes("white");
-
-// Sort colors so that any color containing "white" is pushed to the end
-function reorderColorsToAvoidWhiteFirst(colorNames = []) {
-	// Remove duplicates
-	let unique = [...new Set(colorNames)];
-	// Sort so that "white" is last
-	unique.sort((a, b) => {
-		const aIsWhite = isWhiteColorName(a);
-		const bIsWhite = isWhiteColorName(b);
-		// if a is white and b is not => push a to end
-		if (aIsWhite && !bIsWhite) return 1;
-		// if b is white and a is not => push b to end
-		if (!aIsWhite && bIsWhite) return -1;
-		return 0;
-	});
-	return unique;
-}
-
-// Extract color name from a Printify variant title, e.g. "S / Navy" => "Navy"
-const parsePrintifyColor = (title = "") => {
-	const splitted = title.split("/");
-	if (splitted.length >= 2) return splitted[1].trim();
-	return splitted[0].trim();
-};
-
-const ShopPageMain = () => {
+function ShopPageMain() {
 	const history = useHistory();
 	const location = useLocation();
 	const [products, setProducts] = useState([]);
@@ -72,7 +45,7 @@ const ShopPageMain = () => {
 		size: "",
 		gender: "",
 		searchTerm: "",
-		offers: new URLSearchParams(location.search).get("offers"), // "offers" filter
+		offers: new URLSearchParams(location.search).get("offers"),
 	});
 	const [page, setPage] = useState(1);
 	const [allColors, setAllColors] = useState([]);
@@ -87,8 +60,8 @@ const ShopPageMain = () => {
 		// eslint-disable-next-line
 	}, [window.location.pathname]);
 
+	// Fetch master color list
 	useEffect(() => {
-		// Fetch all colors
 		getColors().then((data) => {
 			if (data.error) {
 				console.log(data.error);
@@ -106,19 +79,83 @@ const ShopPageMain = () => {
 			} else {
 				const uniqueProductMap = {};
 
-				const processedProducts = data.products
+				// We'll flatten each product into sub-products
+				const processed = data.products
 					.map((product) => {
-						// If POD => store product once only
-						if (product.printifyProductDetails?.POD) {
-							uniqueProductMap[product._id] = product;
-							return [product];
+						const isPOD = product.printifyProductDetails?.POD;
+
+						// =====================================
+						// 1) FOR POD => GROUP BY color ONLY
+						// =====================================
+						if (isPOD && product.productAttributes?.length > 0) {
+							// Group the attributes by color code (e.g. #000000, #084f97, etc.)
+							const colorGroups = {};
+							product.productAttributes.forEach((attr) => {
+								const c = attr.color || "unknown"; // hex code or fallback
+								if (!colorGroups[c]) {
+									colorGroups[c] = [];
+								}
+								colorGroups[c].push(attr);
+							});
+
+							// For each color group, create 1 sub-product
+							return Object.keys(colorGroups).map((colorCode) => {
+								const attrList = colorGroups[colorCode];
+								// pick the FIRST attribute's images & price as the representative
+								const firstAttr = attrList[0];
+
+								// sum all quantities for that color
+								const colorTotalQty = attrList.reduce(
+									(acc, a) => acc + (a.quantity || 0),
+									0
+								);
+
+								// decide a price & discount. Here we pick the first, or min, etc.
+								const subPrice = firstAttr.price;
+								const subPriceAfterDiscount =
+									firstAttr.priceAfterDiscount > 0
+										? firstAttr.priceAfterDiscount
+										: subPrice;
+
+								// build the sub-product
+								const subProduct = {
+									...product,
+									// override productAttributes with just these for this color
+									productAttributes: attrList,
+									// custom field for color if you like
+									subColorCode: colorCode,
+
+									// we might override the product's top-level price fields:
+									price: subPrice,
+									priceAfterDiscount: subPriceAfterDiscount,
+
+									// override quantity with sum
+									quantity: colorTotalQty,
+								};
+
+								// If you want the images to come from *all* attributes, you could union them:
+								// but typically you just use the first attr or a single attribute that has the "best" images
+								const imagesToShow = firstAttr.productImages?.length
+									? firstAttr.productImages
+									: product.thumbnailImage?.[0]?.images || [];
+								subProduct.displayImages = imagesToShow; // custom field so we know which images to show
+
+								// store in unique map
+								const key = `${product._id}-${colorCode}`;
+								uniqueProductMap[key] = subProduct;
+								return subProduct;
+							});
 						}
 
-						// Otherwise, expand by color attributes
+						// =====================================
+						// 2) NON-POD => your existing approach
+						// =====================================
 						if (
+							!isPOD &&
 							product.productAttributes &&
 							product.productAttributes.length > 0
 						) {
+							// Expand by color, 1 card per color
 							const uniqueAttributes = product.productAttributes.reduce(
 								(acc, attr) => {
 									if (attr.productImages.length > 0 && !acc[attr.color]) {
@@ -132,32 +169,28 @@ const ShopPageMain = () => {
 								},
 								{}
 							);
-
-							Object.values(uniqueAttributes).forEach((attrProduct) => {
-								uniqueProductMap[
-									`${product._id}-${attrProduct.productAttributes[0].color}`
-								] = attrProduct;
+							const subArray = Object.values(uniqueAttributes);
+							subArray.forEach((subProd) => {
+								const key = `${product._id}-${subProd.productAttributes[0].color}`;
+								uniqueProductMap[key] = subProd;
 							});
-
-							return Object.values(uniqueAttributes);
+							return subArray;
 						} else {
-							// Simple product
+							// Simple product (no attributes or no POD)
 							uniqueProductMap[product._id] = product;
 							return [product];
 						}
 					})
 					.flat();
 
-				// If your URL has ?category=someSlug, filter:
+				// If your URL has ?category=someSlug, optionally filter
 				const params = new URLSearchParams(location.search);
 				const categorySlug = params.get("category");
-				const uniqueProducts = categorySlug
-					? processedProducts.filter(
-							(p) => p.category?.categorySlug === categorySlug
-						)
-					: processedProducts;
+				const finalProducts = categorySlug
+					? processed.filter((p) => p.category?.categorySlug === categorySlug)
+					: processed;
 
-				setProducts(uniqueProducts);
+				setProducts(finalProducts);
 				setTotalRecords(data.totalRecords || 0);
 				setColors(data.colors || []);
 				setSizes(data.sizes || []);
@@ -169,24 +202,24 @@ const ShopPageMain = () => {
 				]);
 			}
 		});
-	}, [filters, page, location.search, records]);
+	}, [filters, page, records, location.search]);
 
 	useEffect(() => {
 		fetchFilteredProducts();
 		window.setTimeout(() => {
 			window.scrollTo({ top: 0, behavior: "smooth" });
-		}, 500);
+		}, 400);
 	}, [filters, page, fetchFilteredProducts]);
 
-	const handleFilterChange = (key, value) => {
-		setFilters((prevFilters) => ({
-			...prevFilters,
+	function handleFilterChange(key, value) {
+		setFilters((prev) => ({
+			...prev,
 			[key]: value || "",
 		}));
 		setPage(1);
-	};
+	}
 
-	const resetFilters = () => {
+	function resetFilters() {
 		setFilters({
 			color: "",
 			priceMin: 0,
@@ -198,38 +231,35 @@ const ShopPageMain = () => {
 			offers: "",
 		});
 		setPage(1);
-	};
+	}
 
-	// Translate hexa to actual color name from your master color list
-	const getColorNameFromHexa = (hexa) => {
-		const colorObject = allColors.find((color) => color.hexa === hexa);
-		return colorObject ? colorObject.color : "Unknown Color";
-	};
+	function getColorNameFromHexa(hexa) {
+		const colorObject = allColors.find((c) => c.hexa === hexa);
+		return colorObject ? colorObject.color : hexa || "Unknown";
+	}
 
-	const showDrawer = () => {
+	function showDrawer() {
 		setDrawerVisible(true);
-	};
-
-	const closeDrawer = () => {
+	}
+	function closeDrawer() {
 		setDrawerVisible(false);
-	};
+	}
 
+	// Decide product link
+	function getProductLink(product) {
+		if (product.printifyProductDetails?.POD) {
+			return `/custom-gifts/${product._id}`;
+		}
+		return `/single-product/${product.slug}/${product.category?.categorySlug}/${product._id}`;
+	}
+
+	// Example: transform images
 	// eslint-disable-next-line
-	const getTransformedImageUrl = (url, width, height) => {
+	function getTransformedImageUrl(url, width, height) {
 		if (!url) return "";
 		const parts = url.split("upload/");
 		const transformation = `upload/w_${width},h_${height},c_scale/`;
 		return parts[0] + transformation + parts[1];
-	};
-
-	// Decide what link to push user to
-	function getProductLink(product) {
-		// If POD => link to /custom-gifts/<_id>
-		if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
-			return `/custom-gifts/${product._id}`;
-		}
-		// Otherwise => normal route
-		return `/single-product/${product.slug}/${product.category?.categorySlug}/${product._id}`;
 	}
 
 	return (
@@ -250,19 +280,16 @@ const ShopPageMain = () => {
 					{/* ====== DESKTOP FILTERS ====== */}
 					<FiltersSection>
 						<Row gutter={[16, 16]}>
-							<Col span={6} style={{ textTransform: "capitalize" }}>
+							<Col span={6}>
 								<Select
 									placeholder='Color'
 									style={{ width: "100%" }}
 									onChange={(value) => handleFilterChange("color", value)}
-									dropdownRender={(menu) => (
-										<div style={{ textTransform: "capitalize" }}>{menu}</div>
-									)}
 								>
 									<Option value=''>All Colors</Option>
-									{colors.map((color, index) => (
-										<Option key={index} value={color}>
-											{getColorNameFromHexa(color)}
+									{colors.map((c, i) => (
+										<Option key={i} value={c}>
+											{getColorNameFromHexa(c)}
 										</Option>
 									))}
 								</Select>
@@ -274,12 +301,8 @@ const ShopPageMain = () => {
 									onChange={(value) => handleFilterChange("category", value)}
 								>
 									<Option value=''>All Categories</Option>
-									{categories.map((cat, i) => (
-										<Option
-											style={{ textTransform: "capitalize" }}
-											key={i}
-											value={cat.id}
-										>
+									{categories.map((cat) => (
+										<Option key={cat.id} value={cat.id}>
 											{cat.name}
 										</Option>
 									))}
@@ -306,9 +329,9 @@ const ShopPageMain = () => {
 									onChange={(value) => handleFilterChange("gender", value)}
 								>
 									<Option value=''>All Genders</Option>
-									{genders.map((gender, index) => (
-										<Option key={index} value={gender.id}>
-											{gender.name}
+									{genders.map((g, i) => (
+										<Option key={i} value={g.id}>
+											{g.name}
 										</Option>
 									))}
 								</Select>
@@ -322,12 +345,11 @@ const ShopPageMain = () => {
 									value={[filters.priceMin, filters.priceMax]}
 									min={priceRange[0]}
 									max={priceRange[1]}
-									onChange={(value) => {
-										handleFilterChange("priceMin", value[0]);
-										handleFilterChange("priceMax", value[1]);
+									onChange={(val) => {
+										handleFilterChange("priceMin", val[0]);
+										handleFilterChange("priceMax", val[1]);
 									}}
-									onAfterChange={fetchFilteredProducts}
-									tooltip={{ formatter: (value) => `$${value}` }}
+									tooltip={{ formatter: (val) => `$${val}` }}
 								/>
 								<div
 									style={{ display: "flex", justifyContent: "space-between" }}
@@ -370,11 +392,7 @@ const ShopPageMain = () => {
 
 					{/* ====== MOBILE FILTERS ====== */}
 					<SearchInputWrapper>
-						<FiltersButton
-							icon={<FilterOutlined />}
-							onClick={showDrawer}
-							className='mx-2'
-						>
+						<FiltersButton icon={<FilterOutlined />} onClick={showDrawer}>
 							Filters
 						</FiltersButton>
 						<Search
@@ -395,12 +413,12 @@ const ShopPageMain = () => {
 								<Select
 									placeholder='Color'
 									style={{ width: "100%" }}
-									onChange={(value) => handleFilterChange("color", value)}
+									onChange={(val) => handleFilterChange("color", val)}
 								>
 									<Option value=''>All Colors</Option>
-									{colors.map((color, index) => (
-										<Option key={index} value={color}>
-											{getColorNameFromHexa(color)}
+									{colors.map((c, i) => (
+										<Option key={i} value={c}>
+											{getColorNameFromHexa(c)}
 										</Option>
 									))}
 								</Select>
@@ -409,11 +427,11 @@ const ShopPageMain = () => {
 								<Select
 									placeholder='Category'
 									style={{ width: "100%" }}
-									onChange={(value) => handleFilterChange("category", value)}
+									onChange={(val) => handleFilterChange("category", val)}
 								>
 									<Option value=''>All Categories</Option>
-									{categories.map((cat, i) => (
-										<Option key={i} value={cat.id}>
+									{categories.map((cat) => (
+										<Option key={cat.id} value={cat.id}>
 											{cat.name}
 										</Option>
 									))}
@@ -423,11 +441,11 @@ const ShopPageMain = () => {
 								<Select
 									placeholder='Size'
 									style={{ width: "100%" }}
-									onChange={(value) => handleFilterChange("size", value)}
+									onChange={(val) => handleFilterChange("size", val)}
 								>
 									<Option value=''>All Sizes</Option>
-									{sizes.map((size, index) => (
-										<Option key={index} value={size}>
+									{sizes.map((size, i) => (
+										<Option key={i} value={size}>
 											{size}
 										</Option>
 									))}
@@ -437,12 +455,12 @@ const ShopPageMain = () => {
 								<Select
 									placeholder='Gender'
 									style={{ width: "100%" }}
-									onChange={(value) => handleFilterChange("gender", value)}
+									onChange={(val) => handleFilterChange("gender", val)}
 								>
 									<Option value=''>All Genders</Option>
-									{genders.map((gender, index) => (
-										<Option key={index} value={gender.id}>
-											{gender.name}
+									{genders.map((g, i) => (
+										<Option key={i} value={g.id}>
+											{g.name}
 										</Option>
 									))}
 								</Select>
@@ -456,12 +474,11 @@ const ShopPageMain = () => {
 									value={[filters.priceMin, filters.priceMax]}
 									min={priceRange[0]}
 									max={priceRange[1]}
-									onChange={(value) => {
-										handleFilterChange("priceMin", value[0]);
-										handleFilterChange("priceMax", value[1]);
+									onChange={(val) => {
+										handleFilterChange("priceMin", val[0]);
+										handleFilterChange("priceMax", val[1]);
 									}}
-									onAfterChange={fetchFilteredProducts}
-									tooltip={{ formatter: (value) => `$${value}` }}
+									tooltip={{ formatter: (val) => `$${val}` }}
 								/>
 								<div
 									style={{ display: "flex", justifyContent: "space-between" }}
@@ -498,241 +515,133 @@ const ShopPageMain = () => {
 					{/* ====== PRODUCT CARDS ====== */}
 					<ProductsSection>
 						<Row gutter={[16, 16]}>
-							{products &&
-								products.map((product, index) => {
-									const isPOD =
-										product.isPrintifyProduct &&
-										product.printifyProductDetails?.POD;
+							{products.map((prod, idx) => {
+								const isPOD = prod.printifyProductDetails?.POD;
+								// We might have set "displayImages" for the sub-product
+								let productImages = [];
+								if (prod.displayImages) {
+									productImages = prod.displayImages;
+								} else if (
+									prod.thumbnailImage &&
+									prod.thumbnailImage.length > 0 &&
+									prod.thumbnailImage[0].images
+								) {
+									productImages = prod.thumbnailImage[0].images;
+								}
 
-									// 1) Collect all color names
-									let colorNames = [];
-									let mainColor = "";
-									let originalPrice = product.price || 0;
-									let discountedPrice =
-										product.priceAfterDiscount > 0
-											? product.priceAfterDiscount
-											: product.price || 0;
+								const imageUrl =
+									productImages?.[0]?.url ||
+									"https://res.cloudinary.com/infiniteapps/image/upload/v1723694291/janat/default-image.jpg";
 
-									// 2) Decide images to display
-									let productImages =
-										product.thumbnailImage && product.thumbnailImage.length > 0
-											? product.thumbnailImage[0].images
-											: [];
+								const originalPrice = prod.price || 0;
+								const discountedPrice =
+									prod.priceAfterDiscount && prod.priceAfterDiscount > 0
+										? prod.priceAfterDiscount
+										: originalPrice;
+								const discountPercentage =
+									originalPrice > discountedPrice
+										? Math.round(
+												((originalPrice - discountedPrice) / originalPrice) *
+													100
+											)
+										: 0;
 
-									// ========== POD LOGIC ==========
-									if (isPOD) {
-										// Extract color names from all variants
-										const variants =
-											product.printifyProductDetails?.variants || [];
-										colorNames = variants.map((v) =>
-											parsePrintifyColor(v.title)
-										);
-										// Reorder so "white" goes last
-										colorNames = reorderColorsToAvoidWhiteFirst(colorNames);
-										// The first color after re-order is your main color
-										mainColor = colorNames[0] || "";
+								// total quantity
+								const totalQty = prod.quantity || 0;
 
-										// If you store your price in the first variant, you can override:
-										// e.g. originalPrice = variants[0]?.price / 100
-										// etc.
-
-										// For images, if you have product.images from Printify, use it:
-										if (product.images && product.images.length > 0) {
-											productImages = product.images;
-										}
-									} else {
-										// ========== Non-POD LOGIC ==========
-										const attrs = product.productAttributes || [];
-										// Gather color names from all attributes
-										const allAttrColorNames = attrs.map((a) =>
-											getColorNameFromHexa(a.color)
-										);
-										colorNames =
-											reorderColorsToAvoidWhiteFirst(allAttrColorNames);
-										mainColor = colorNames[0] || product.color || "";
-
-										// Find the matching attribute for that mainColor
-										// fallback to the first attribute if none matches
-										let chosenAttr = attrs.find(
-											(a) =>
-												getColorNameFromHexa(a.color).toLowerCase() ===
-												mainColor.toLowerCase()
-										);
-										if (!chosenAttr && attrs.length > 0) {
-											chosenAttr = attrs[0];
-										}
-										if (chosenAttr) {
-											productImages = chosenAttr.productImages || productImages;
-											originalPrice = chosenAttr.price || originalPrice;
-											if (chosenAttr.priceAfterDiscount > 0) {
-												discountedPrice = chosenAttr.priceAfterDiscount;
-											}
-										} else {
-											// fallback if no matching attribute
-											mainColor = product.color || "";
-										}
-									}
-
-									// Calculate discount if any
-									const discountPercentage =
-										((originalPrice - discountedPrice) / originalPrice) * 100;
-
-									// If no images or zero length, fallback
-									const imageUrl =
-										productImages && productImages.length > 0
-											? productImages[0].url
-											: "";
-
-									// If you want a cloudinary transform
-									// const transformedImageUrl = getTransformedImageUrl(imageUrl, 600, 600);
-
-									// Limit colorNames to first 4
-									const displayedColors = colorNames.slice(0, 4);
-
-									// Product stock quantity
-									const totalQuantity =
-										product.productAttributes?.reduce(
-											(acc, attr) => acc + attr.quantity,
-											0
-										) || product.quantity;
-
-									return (
-										<Col key={index} xs={24} sm={12} md={12} lg={6} xl={6}>
-											<ProductCard
-												hoverable
-												cover={
-													<ImageContainer>
-														<BadgeContainer>
-															{/* POD badge */}
-															{isPOD && <PodBadge>Custom Design</PodBadge>}
-															{/* Discount badge if discountPercentage > 0 */}
-															{discountPercentage > 0 && (
-																<DiscountBadge>
-																	{discountPercentage.toFixed(0)}% OFF!
-																</DiscountBadge>
-															)}
-														</BadgeContainer>
-
-														{totalQuantity > 0 ? (
-															<CartIcon
-																onClick={(e) => {
-																	e.stopPropagation();
-																	ReactGA.event({
-																		category: "Add To The Cart Products Page",
-																		action:
-																			"User Added Product From The Products Page",
-																		label: `User added ${product.productName} to the cart`,
-																	});
-																	readProduct(product._id).then((data3) => {
-																		if (data3 && data3.error) {
-																			console.log(data3.error);
-																		} else {
-																			openSidebar2();
-																			// For non-POD, pass chosenAttr
-																			// For POD, pass null or the variant object if you want
-																			const chosenAttr =
-																				product.productAttributes?.[0] || null;
-																			addToCart(
-																				product._id,
-																				null,
-																				1,
-																				data3,
-																				chosenAttr
-																			);
-																		}
-																	});
-																}}
-															/>
-														) : (
-															<OutOfStockBadge>Out of Stock</OutOfStockBadge>
+								return (
+									<Col xs={24} sm={12} md={12} lg={6} xl={6} key={idx}>
+										<ProductCard
+											hoverable
+											cover={
+												<ImageContainer>
+													<BadgeContainer>
+														{isPOD && <PodBadge>Custom Design</PodBadge>}
+														{discountPercentage > 0 && (
+															<DiscountBadge>
+																{discountPercentage}% OFF
+															</DiscountBadge>
 														)}
-
-														<ProductImage
-															src={imageUrl}
-															alt={product.productName}
-															onClick={() => {
+													</BadgeContainer>
+													{totalQty > 0 ? (
+														<CartIcon
+															onClick={(e) => {
+																e.stopPropagation();
 																ReactGA.event({
-																	category: "Single Product Clicked",
+																	category: "Add To Cart",
 																	action:
-																		"User Navigated To Single Product From Products Page",
-																	label: `User viewed ${product.productName}`,
+																		"User added product from Products Page",
+																	label: `User added ${prod.productName}`,
 																});
-																window.scrollTo({ top: 0, behavior: "smooth" });
-																history.push(getProductLink(product));
+																readProduct(prod._id).then((res) => {
+																	if (res.error) {
+																		console.log(res.error);
+																	} else {
+																		openSidebar2();
+																		// pass the first attribute if you want
+																		const chosenAttr =
+																			prod.productAttributes?.[0] || null;
+																		addToCart(
+																			prod._id,
+																			null,
+																			1,
+																			res,
+																			chosenAttr
+																		);
+																	}
+																});
 															}}
 														/>
-													</ImageContainer>
-												}
-											>
-												{/* ======== Product Title & Price ======== */}
-												<Meta
-													title={product.productName}
-													description={
-														originalPrice > discountedPrice ? (
-															<span>
-																<OriginalPrice>
-																	Price: ${originalPrice.toFixed(2)}
-																</OriginalPrice>{" "}
-																<DiscountedPrice>
-																	${discountedPrice.toFixed(2)}
-																</DiscountedPrice>
-															</span>
-														) : (
+													) : (
+														<OutOfStockBadge>Out of Stock</OutOfStockBadge>
+													)}
+
+													<ProductImage
+														src={imageUrl}
+														alt={prod.productName}
+														onClick={() => {
+															ReactGA.event({
+																category: "Single Product Clicked",
+																action:
+																	"User Navigated To Single Product From Products Page",
+																label: `User viewed ${prod.productName}`,
+															});
+															window.scrollTo({ top: 0, behavior: "smooth" });
+															history.push(getProductLink(prod));
+														}}
+													/>
+												</ImageContainer>
+											}
+										>
+											<Meta
+												title={prod.productName}
+												description={
+													originalPrice > discountedPrice ? (
+														<span>
+															<OriginalPrice>
+																Price: ${originalPrice.toFixed(2)}
+															</OriginalPrice>{" "}
 															<DiscountedPrice>
-																Price: ${discountedPrice.toFixed(2)}
+																${discountedPrice.toFixed(2)}
 															</DiscountedPrice>
-														)
-													}
-												/>
-
-												{/* If POD, show cursive text */}
-												{isPOD && (
-													<CursiveText>
-														Your Loved Ones Deserve 3 Minutes From Your Time To
-														Customize Their Present!
-													</CursiveText>
-												)}
-
-												{/* Candles => show scent; otherwise => show mainColor */}
-												{product.category?.categoryName === "candles" &&
-												product.scent ? (
-													<p
-														style={{
-															textTransform: "capitalize",
-															marginBottom: "4px",
-														}}
-													>
-														Scent: {product.scent}
-													</p>
-												) : (
-													mainColor &&
-													displayedColors.length <= 1 && (
-														<p
-															style={{
-																textTransform: "capitalize",
-																marginBottom: "4px",
-															}}
-														>
-															Color: {mainColor}
-														</p>
+														</span>
+													) : (
+														<DiscountedPrice>
+															Price: ${discountedPrice.toFixed(2)}
+														</DiscountedPrice>
 													)
-												)}
-
-												{/* Show up to 4 colors if more exist */}
-												{/* {displayedColors.length > 1 && (
-													<p
-														style={{
-															textTransform: "capitalize",
-															marginBottom: "4px",
-														}}
-													>
-														Colors: {displayedColors.join(", ")}
-													</p>
-												)} */}
-											</ProductCard>
-										</Col>
-									);
-								})}
+												}
+											/>
+											{isPOD && (
+												<CursiveText>
+													Your Loved Ones Deserve 3 Minutes From Your Time To
+													Customize Their Present!
+												</CursiveText>
+											)}
+										</ProductCard>
+									</Col>
+								);
+							})}
 						</Row>
 						<PaginationWrapper
 							onClick={() => {
@@ -742,7 +651,7 @@ const ShopPageMain = () => {
 							<Pagination
 								current={page}
 								pageSize={records}
-								onChange={(page) => setPage(page)}
+								onChange={(pg) => setPage(pg)}
 								total={totalRecords}
 							/>
 						</PaginationWrapper>
@@ -751,11 +660,12 @@ const ShopPageMain = () => {
 			</ShopPageMainOverallWrapper>
 		</ConfigProvider>
 	);
-};
+}
 
 export default ShopPageMain;
 
-/* ======= STYLES ======= */
+/* ============================= STYLES ============================= */
+
 const ShopPageMainOverallWrapper = styled.div`
 	background: white;
 	margin: auto;
@@ -955,7 +865,6 @@ const DiscountedPrice = styled.span`
 	font-weight: bold;
 `;
 
-/* Cursive text for POD products */
 const CursiveText = styled.div`
 	font-family: "Brush Script MT", cursive, sans-serif;
 	color: #222;

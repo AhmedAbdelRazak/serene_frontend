@@ -102,7 +102,10 @@ const PrintifyAvailableProducts = () => {
 			<PrintifyPageHelmet products={products} />
 
 			<Wrapper>
-				<SectionTitle>Customize Your Product For Your Loved Ones!</SectionTitle>
+				<SectionTitle>
+					Show you care with a one-of-a-kind gift—add your own text or photo to
+					any product for a personal touch they’ll never forget!
+				</SectionTitle>
 
 				<GridContainer>
 					{products.map((product) => {
@@ -165,6 +168,10 @@ const Wrapper = styled.section`
 	padding: 40px 20px;
 	background-color: var(--neutral-light);
 	min-height: 100vh;
+
+	@media (max-width: 900px) {
+		padding: 40px 5px;
+	}
 `;
 
 const spinAnimation = keyframes`
@@ -195,15 +202,20 @@ const LoadingText = styled.p`
 `;
 
 const SectionTitle = styled.h1`
+	font-family: "Brush Script MT", cursive, sans-serif;
+	color: var(--secondary-color-darker);
+	font-size: 1.7rem;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	font-style: italic;
+	font-weight: bolder;
+	line-height: 1;
 	text-align: center;
-	margin-bottom: 40px;
-	font-weight: bold;
-	color: var(--text-color-dark);
 `;
 
 const GridContainer = styled.div`
 	display: grid;
-	gap: 24px;
+	gap: 20px;
 	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 `;
 
@@ -312,7 +324,7 @@ const ProductPrice = styled.p`
 
 const CustomizeButton = styled.button`
 	margin-top: 12px;
-	background: var(--secondary-color);
+	background: var(--accent-color-2-dark);
 	color: var(--text-color-light);
 	border: none;
 	border-radius: 4px;

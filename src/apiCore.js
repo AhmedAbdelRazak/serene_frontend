@@ -446,12 +446,13 @@ export const gettingCategoriesAndSubcategories = () => {
 export const gettingSpecificProducts = (
 	featured,
 	newArrivals,
+	customDesigns,
 	sortByRate,
 	offers,
 	records
 ) => {
 	return fetch(
-		`${process.env.REACT_APP_API_URL}/specific/products/${featured}/${newArrivals}/${sortByRate}/${offers}/${records}`,
+		`${process.env.REACT_APP_API_URL}/specific/products/${featured}/${newArrivals}/${customDesigns}/${sortByRate}/${offers}/${records}`,
 		{
 			method: "GET",
 			headers: {
