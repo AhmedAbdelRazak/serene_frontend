@@ -107,18 +107,20 @@ const App = () => {
 
 	// ==================== 7-second one-time Modal logic ====================
 	useEffect(() => {
-		// Only show on non-admin pages:
-		const isAdminRoute = window.location.pathname.includes("admin");
-		if (isAdminRoute) return;
+		// 1. Skip if current route is admin.
+		if (window.location.pathname.includes("admin")) return;
 
-		// If user already dismissed => do nothing
+		// 2. Skip if current route contains "custom".
+		if (window.location.pathname.includes("custom")) return;
+
+		// 3. If user already dismissed => do nothing.
 		const hasSeenModal = localStorage.getItem("customGiftModalDismissed");
 		if (hasSeenModal) return;
 
-		// If user is on checkout => skip
+		// 4. If user is on checkout => skip.
 		if (window.location.pathname.includes("/checkout")) return;
 
-		// Set a 7-second timer:
+		// 5. Set a 7-second timer:
 		const timer = setTimeout(() => {
 			setIsModalVisible(true);
 		}, 4000);
