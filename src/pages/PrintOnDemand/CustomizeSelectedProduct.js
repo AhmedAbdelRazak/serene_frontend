@@ -120,25 +120,58 @@ function cropCanvasToTransparentBounds(originalCanvas) {
 }
 
 /**
+ * Converts a dataURL string into a Blob object
+ * (fallback if canvas.toBlob is not available).
+ */
+function dataURLtoBlob(dataURL) {
+	const [metadata, base64] = dataURL.split(",");
+	const byteString = atob(base64);
+	const mimeString = metadata.split(":")[1].split(";")[0];
+	const buffer = new ArrayBuffer(byteString.length);
+	const view = new Uint8Array(buffer);
+	for (let i = 0; i < byteString.length; i++) {
+		view[i] = byteString.charCodeAt(i);
+	}
+	return new Blob([buffer], { type: mimeString });
+}
+
+/**
  * Compresses (and optionally downscales) an HTMLCanvasElement
  * to reduce base64 size. mimeType can be "image/jpeg" or "image/webp".
  * quality is from 0.0 (worst) to 1.0 (best).
+ *
+ * This now includes a fallback for older browsers that don't support canvas.toBlob.
  */
 function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 	return new Promise((resolve, reject) => {
-		canvas.toBlob(
-			(blob) => {
-				if (!blob) {
-					return reject(new Error("Canvas is empty or toBlob() failed."));
-				}
+		// If canvas.toBlob is supported, use it:
+		if (canvas.toBlob) {
+			canvas.toBlob(
+				(blob) => {
+					if (!blob) {
+						return reject(new Error("Canvas is empty or toBlob() failed."));
+					}
+					const reader = new FileReader();
+					reader.onload = () => resolve(reader.result);
+					reader.onerror = (err) => reject(err);
+					reader.readAsDataURL(blob);
+				},
+				mimeType,
+				quality
+			);
+		} else {
+			// Fallback for older browsers (e.g. older iOS):
+			try {
+				const dataURL = canvas.toDataURL(mimeType, quality);
+				const blob = dataURLtoBlob(dataURL);
 				const reader = new FileReader();
 				reader.onload = () => resolve(reader.result);
 				reader.onerror = (err) => reject(err);
 				reader.readAsDataURL(blob);
-			},
-			mimeType,
-			quality
-		);
+			} catch (error) {
+				return reject(error);
+			}
+		}
 	});
 }
 
@@ -213,7 +246,7 @@ export default function CustomizeSelectedProduct() {
 	const [textModalVisible, setTextModalVisible] = useState(false);
 	const [mobileTextInput, setMobileTextInput] = useState("");
 
-	// File input on mobile
+	// File input on mobile (note the `capture="camera"` for mobile)
 	const hiddenFileInputRef = useRef(null);
 
 	// Dropzone on desktop
@@ -404,7 +437,6 @@ export default function CustomizeSelectedProduct() {
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
 
-		// convert e.g. "1234" to number for reliable matching
 		function numOrStr(val) {
 			return typeof val === "number" ? val : parseInt(val, 10);
 		}
@@ -1051,10 +1083,11 @@ export default function CustomizeSelectedProduct() {
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		try {
+			// Adjusting for older devices: set allowTaint to false if useCORS is true
 			const screenshotOptions = {
 				scale: 3,
 				useCORS: true,
-				allowTaint: true,
+				allowTaint: false, // set false to reduce cross-origin issues on older devices
 				ignoreElements: (element) =>
 					element.classList?.contains("noScreenshot"),
 				backgroundColor: null,
@@ -1286,7 +1319,6 @@ export default function CustomizeSelectedProduct() {
 			? truncateText(productDescription, 30)
 			: productDescription;
 
-	// For checking if a size is valid with the selected color
 	function variantExistsForColorSize(sizeObj) {
 		if (!product) return false;
 
@@ -1299,13 +1331,11 @@ export default function CustomizeSelectedProduct() {
 		function numOrStr(val) {
 			return typeof val === "number" ? val : parseInt(val, 10);
 		}
-		// If there's no color, we only check that the variant has that size
 		if (!colorOption && sizeOption) {
 			return product.variants.some((v) =>
 				v.options.map(numOrStr).includes(numOrStr(sizeObj.id))
 			);
 		}
-		// If there is color, we check both
 		const selColorVal = colorOption?.values.find(
 			(val) => val.title === selectedColor
 		);
@@ -1335,7 +1365,6 @@ export default function CustomizeSelectedProduct() {
 			);
 			if (!selectedColorValue) return;
 
-			// see which sizes are valid with that color
 			const validVariants = product.variants.filter((v) => {
 				const varIds = v.options.map((xx) =>
 					typeof xx === "number" ? xx : parseInt(xx, 10)
@@ -1348,7 +1377,6 @@ export default function CustomizeSelectedProduct() {
 			});
 			if (validVariants.length > 0) {
 				for (let sizeVal of sizeOption.values) {
-					// find if validVariants includes that sizeVal's id
 					if (
 						validVariants.some((v) =>
 							v.options.map(String).includes(String(sizeVal.id))
@@ -1367,7 +1395,7 @@ export default function CustomizeSelectedProduct() {
 			<Helmet>
 				<title>
 					{product.printifyProductDetails?.title || product.productName} |
-					Customize & Print On Demand
+					Customize &amp; Print On Demand
 				</title>
 				<meta
 					name='description'
@@ -1527,9 +1555,14 @@ export default function CustomizeSelectedProduct() {
 												>
 													Upload Image
 												</Button>
+
+												{/**
+												 * Key change for mobile: capture="camera"
+												 * so older devices open the camera or photo library properly
+												 */}
 												<input
 													type='file'
-													accept='image/*'
+													accept='image/*;capture=camera'
 													ref={hiddenFileInputRef}
 													style={{ display: "none" }}
 													onChange={(e) => {
