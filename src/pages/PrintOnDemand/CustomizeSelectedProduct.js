@@ -31,9 +31,9 @@ import {
 	CloudUploadOutlined,
 	ReloadOutlined,
 } from "@ant-design/icons";
-import PrintifyCheckoutModal from "./PrintifyCheckoutModal"; // Adjust path if needed
+import PrintifyCheckoutModal from "./PrintifyCheckoutModal"; // same path as before
 import { isAuthenticated } from "../../auth";
-import { cloudinaryUpload1 } from "../../apiCore"; // Adjust path if needed
+import { cloudinaryUpload1 } from "../../apiCore"; // same path as before
 
 import html2canvas from "html2canvas";
 import { useCartContext } from "../../cart_context";
@@ -44,13 +44,13 @@ import ReactGA from "react-ga4";
 const { Title } = Typography;
 const { Option } = Select;
 
-/** Strip HTML tags */
+/** Strips HTML tags */
 function stripHtmlTags(html) {
 	if (!html) return "";
 	return html.replace(/<[^>]*>?/gm, "");
 }
 
-/** Truncate text by word count */
+/** Truncates text by word count */
 function truncateText(text, wordLimit) {
 	const words = text.split(/\s+/);
 	if (words.length <= wordLimit) return text;
@@ -58,9 +58,8 @@ function truncateText(text, wordLimit) {
 }
 
 /**
- * Helper that scans a <canvas> for fully transparent pixels
- * around the edges and returns a newly cropped canvas bounding
- * just the design itself.
+ * Scans a <canvas> for fully transparent pixels around the edges
+ * and returns a newly cropped canvas bounding just the design itself.
  */
 function cropCanvasToTransparentBounds(originalCanvas) {
 	const ctx = originalCanvas.getContext("2d");
@@ -121,24 +120,17 @@ function cropCanvasToTransparentBounds(originalCanvas) {
 }
 
 /**
- * NEW HELPER FUNCTION:
- * Compresses (and optionally downscales) the HTMLCanvasElement
- * to reduce base64 size.
- * mimeType can be "image/jpeg" or "image/webp".
+ * Compresses (and optionally downscales) an HTMLCanvasElement
+ * to reduce base64 size. mimeType can be "image/jpeg" or "image/webp".
  * quality is from 0.0 (worst) to 1.0 (best).
  */
 function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 	return new Promise((resolve, reject) => {
-		// If you prefer to limit maximum width/height, do it here:
-		// e.g. const maxDim = 2000, etc.
-
-		// Convert canvas to blob
 		canvas.toBlob(
 			(blob) => {
 				if (!blob) {
 					return reject(new Error("Canvas is empty or toBlob() failed."));
 				}
-				// Convert blob back to base64
 				const reader = new FileReader();
 				reader.onload = () => resolve(reader.result);
 				reader.onerror = (err) => reject(err);
@@ -252,7 +244,7 @@ export default function CustomizeSelectedProduct() {
 	// One-time default text
 	const [defaultTextAdded, setDefaultTextAdded] = useState(false);
 
-	// (2) ===> ADD 1-SECOND FADE-IN FOR MOBILE BUTTONS
+	// (2) => 1-second fade-in for mobile buttons
 	const [showMobileButtons, setShowMobileButtons] = useState(false);
 	useEffect(() => {
 		if (isMobile) {
@@ -289,7 +281,7 @@ export default function CustomizeSelectedProduct() {
 						"",
 				};
 
-				// Filter out invalid variants
+				// Filter out invalid variants (must have price > 0)
 				const validVariants = fetchedProduct.variants.filter(
 					(variant) => typeof variant.price === "number" && variant.price > 0
 				);
@@ -308,11 +300,10 @@ export default function CustomizeSelectedProduct() {
 				);
 				if (colorOptionIndex !== -1) {
 					fetchedProduct.options[colorOptionIndex].values =
-						fetchedProduct.options[colorOptionIndex].values.filter(
-							(colorValue) =>
-								validVariants.some((variant) =>
-									variant.options.includes(colorValue.id)
-								)
+						fetchedProduct.options[colorOptionIndex].values.filter((colorVal) =>
+							validVariants.some((variant) =>
+								variant.options.includes(colorVal.id)
+							)
 						);
 				}
 
@@ -322,30 +313,57 @@ export default function CustomizeSelectedProduct() {
 				);
 				if (sizeOptionIndex !== -1) {
 					fetchedProduct.options[sizeOptionIndex].values =
-						fetchedProduct.options[sizeOptionIndex].values.filter((sizeValue) =>
+						fetchedProduct.options[sizeOptionIndex].values.filter((sizeVal) =>
 							validVariants.some((variant) =>
-								variant.options.includes(sizeValue.id)
+								variant.options.includes(sizeVal.id)
 							)
 						);
 				}
 
 				setProduct(fetchedProduct);
 
-				// Default color/size
+				// Pick defaults for color + size
 				const colorOption = fetchedProduct.options.find(
 					(opt) => opt.name.toLowerCase() === "colors"
 				);
 				const sizeOption = fetchedProduct.options.find(
 					(opt) => opt.name.toLowerCase() === "sizes"
 				);
-				if (colorOption?.values?.length > 0) {
-					const uniqueColorTitles = [
-						...new Set(colorOption.values.map((c) => c.title)),
-					];
-					setSelectedColor(uniqueColorTitles[0]);
+
+				// 1) Color if it exists
+				if (colorOption?.values?.length) {
+					if (colorOption.values.length === 1) {
+						setSelectedColor(colorOption.values[0].title);
+					} else {
+						const uniqueColorTitles = [
+							...new Set(colorOption.values.map((c) => c.title)),
+						];
+						setSelectedColor(uniqueColorTitles[0]);
+					}
+				} else {
+					// no color option at all
+					setSelectedColor("");
 				}
-				if (sizeOption?.values?.length > 0) {
-					setSelectedSize(sizeOption.values[0].title);
+
+				// 2) Size if it exists
+				if (sizeOption?.values?.length) {
+					// if there's a default variant
+					const defVar = validVariants.find((v) => v.is_default);
+					if (defVar) {
+						// find which size "id" that default variant uses
+						const defSizeVal = sizeOption.values.find((sv) =>
+							defVar.options.includes(sv.id)
+						);
+						if (defSizeVal) {
+							setSelectedSize(defSizeVal.title);
+						} else {
+							setSelectedSize(sizeOption.values[0].title);
+						}
+					} else {
+						setSelectedSize(sizeOption.values[0].title);
+					}
+				} else {
+					setSelectedSize("");
 				}
 
 				setLoading(false);
@@ -358,7 +376,7 @@ export default function CustomizeSelectedProduct() {
 		fetchProduct();
 	}, [productId]);
 
-	// ADD A DEFAULT TEXTBOX IN THE MIDDLE OF THE PRINT AREA
+	// Add a default textbox in the middle of the print area
 	useEffect(() => {
 		if (!product || defaultTextAdded) return;
 		if (!printAreaRef.current) return;
@@ -395,27 +413,48 @@ export default function CustomizeSelectedProduct() {
 
 	// DETERMINE VARIANT ID
 	useEffect(() => {
-		if (!product || !selectedColor || !selectedSize) return;
+		if (!product || !selectedSize) return;
+
+		const colorOption = product.options.find(
+			(opt) => opt.name.toLowerCase() === "colors"
+		);
+		const sizeOption = product.options.find(
+			(opt) => opt.name.toLowerCase() === "sizes"
+		);
+
+		const selectedColorValue = colorOption?.values.find(
+			(val) => val.title === selectedColor
+		);
+		const selectedSizeValue = sizeOption?.values.find(
+			(val) => val.title === selectedSize
+		);
+
+		// Force numeric check in case the IDs are strings
+		function numOrStr(val) {
+			return typeof val === "number" ? val : parseInt(val, 10);
+		}
+
 		const matchingVariant = product.variants.find((variant) => {
-			const colorOption = product.options.find(
-				(opt) => opt.name.toLowerCase() === "colors"
-			);
-			const sizeOption = product.options.find(
-				(opt) => opt.name.toLowerCase() === "sizes"
-			);
-			const selectedColorValue = colorOption?.values.find(
-				(val) => val.title === selectedColor
-			);
-			const selectedSizeValue = sizeOption?.values.find(
-				(val) => val.title === selectedSize
-			);
-			if (!selectedColorValue || !selectedSizeValue) return false;
-			return (
-				variant.options.includes(selectedColorValue.id) &&
-				variant.options.includes(selectedSizeValue.id)
-			);
+			// each variant has variant.options = [someID], also numeric
+			// cast them to numbers in case of mismatch
+			const varOptionIds = variant.options.map(numOrStr);
+
+			if (colorOption && selectedColorValue) {
+				// must match color & size
+				return (
+					varOptionIds.includes(numOrStr(selectedColorValue.id)) &&
+					varOptionIds.includes(numOrStr(selectedSizeValue?.id))
+				);
+			} else {
+				// no color => match only size
+				return varOptionIds.includes(numOrStr(selectedSizeValue?.id));
+			}
 		});
-		setOrder((prev) => ({ ...prev, variant_id: matchingVariant?.id || null }));
+
+		setOrder((prev) => ({
+			...prev,
+			variant_id: matchingVariant?.id || null,
+		}));
 	}, [product, selectedColor, selectedSize]);
 
 	// ADD ELEMENTS
@@ -457,19 +496,17 @@ export default function CustomizeSelectedProduct() {
 	};
 
 	const addImageElement = async (file) => {
-		const hasColorOption = product?.options.find(
+		const colorOption = product?.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
 		);
-		const hasSizeOption = product?.options.find(
+		const sizeOption = product?.options.find(
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
-		if (
-			(hasColorOption && !selectedColor) ||
-			(hasSizeOption && !selectedSize)
-		) {
+		if ((colorOption && !selectedColor) || (sizeOption && !selectedSize)) {
 			message.warning("Please select required options before customizing.");
 			return;
 		}
+
 		try {
 			const resizedImage = await resizeImage(file, 1200);
 			const base64Image = await convertToBase64(resizedImage);
@@ -484,7 +521,6 @@ export default function CustomizeSelectedProduct() {
 			const boundingRect = printAreaRef.current.getBoundingClientRect();
 			const imgWidth = 150;
 			const imgHeight = 200;
-
 			const centerX = boundingRect.width / 2 - imgWidth / 2;
 			const centerY = boundingRect.height / 2 - imgHeight / 2;
 
@@ -605,14 +641,13 @@ export default function CustomizeSelectedProduct() {
 		}
 	}
 
-	// (1) ===> OVERWRITE "Start typing here..." WHEN USER DOUBLE CLICKS (OR DOUBLE TAPS)
+	// Overwrite "Start typing here..." on double click/tap
 	function handleTextDoubleClick(el) {
-		// If it’s still the default “Start typing here...”, remove it immediately:
 		if (el.text === "Start typing here...") {
 			setElements((prev) =>
 				prev.map((item) => (item.id === el.id ? { ...item, text: "" } : item))
 			);
-			setInlineEditText(""); // start with empty so user doesn't backspace
+			setInlineEditText("");
 		} else {
 			setInlineEditText(el.text);
 		}
@@ -667,32 +702,23 @@ export default function CustomizeSelectedProduct() {
 	}
 
 	// RND DRAG/RESIZE
-
-	// --------------------------------------------------------------------
-	// The new state & function to detect horizontal center (ADDED)
-	// --------------------------------------------------------------------
-	const [showCenterLine, setShowCenterLine] = useState(false); // <-- ADDED
+	const [showCenterLine, setShowCenterLine] = useState(false);
 
 	function handleRndDrag(e, data, elId) {
-		// <-- ADDED
 		if (!printAreaRef.current) return;
 		const boundingRect = printAreaRef.current.getBoundingClientRect();
 		const containerCenterX = boundingRect.width / 2;
 
-		// Find the element so we know its width
 		const theElement = elements.find((x) => x.id === elId);
 		if (!theElement) return;
 
-		// The center of the element relative to the container
 		const elementCenterX = data.x + theElement.width / 2;
-
-		// If it's "close" to containerCenterX, we show the line
 		const isCentered = Math.abs(elementCenterX - containerCenterX) < 5;
 		setShowCenterLine(isCentered);
 	}
 
 	function handleRndDragStop(e, data, elId) {
-		setShowCenterLine(false); // <-- ADDED to hide once user stops
+		setShowCenterLine(false);
 		setElements((prev) =>
 			prev.map((item) =>
 				item.id === elId ? { ...item, x: data.x, y: data.y } : item
@@ -795,40 +821,47 @@ export default function CustomizeSelectedProduct() {
 	// PRICE
 	function getVariantPrice() {
 		if (!product || !product.variants) return 0;
+
+		// forcibly cast variant.options => numbers
+		function numOrStr(val) {
+			return typeof val === "number" ? val : parseInt(val, 10);
+		}
+
+		const colorOption = product.options.find(
+			(opt) => opt.name.toLowerCase() === "colors"
+		);
+		const sizeOption = product.options.find(
+			(opt) => opt.name.toLowerCase() === "sizes"
+		);
+
+		const cVal = colorOption?.values.find((v) => v.title === selectedColor);
+		const sVal = sizeOption?.values.find((v) => v.title === selectedSize);
+
 		const matchingVariant = product.variants.find((v) => {
-			const colorOption = product.options.find(
-				(opt) => opt.name.toLowerCase() === "colors"
-			);
-			const sizeOption = product.options.find(
-				(opt) => opt.name.toLowerCase() === "sizes"
-			);
-
-			let colorValue, sizeValue;
-			if (colorOption) {
-				colorValue = colorOption.values.find(
-					(val) => val.title === selectedColor
+			const varOptionIds = v.options.map(numOrStr);
+			if (colorOption && cVal) {
+				return (
+					varOptionIds.includes(numOrStr(cVal.id)) &&
+					varOptionIds.includes(numOrStr(sVal?.id))
 				);
+			} else if (sVal) {
+				return varOptionIds.includes(numOrStr(sVal.id));
 			}
-			if (sizeOption) {
-				sizeValue = sizeOption.values.find((val) => val.title === selectedSize);
-			}
-			if (!colorValue && !sizeValue) return false;
-
-			const variantOptionIds = [];
-			if (colorValue) variantOptionIds.push(colorValue.id);
-			if (sizeValue) variantOptionIds.push(sizeValue.id);
-
-			return variantOptionIds.every((id) => v.options.includes(id));
+			return false;
 		});
 
-		if (matchingVariant && matchingVariant.price !== null) {
+		if (matchingVariant && typeof matchingVariant.price === "number") {
+			// Printify price is stored as e.g. 761 => $7.61
 			return parseFloat(matchingVariant.price / 100);
 		}
-		if (product.basePrice !== null) {
-			return parseFloat(product.basePrice / 100);
+
+		// If no variant matched, fallback to this product’s stored "price" (like 9.132).
+		if (typeof product.price === "number") {
+			return parseFloat(product.price);
 		}
 		return 0;
 	}
+
 	const displayedPrice = `$${getVariantPrice().toFixed(2)}`;
 
 	// FILTERED IMAGES
@@ -844,22 +877,28 @@ export default function CustomizeSelectedProduct() {
 
 	const filteredImages = useMemo(() => {
 		if (!product) return [];
-		if (!selectedColor) return product.images.slice(0, 6);
-
+		if (!selectedColor) {
+			return product.images.slice(0, 6);
+		}
 		const colorOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
 		);
 		if (!colorOption) return product.images.slice(0, 6);
 
-		const colorValue = colorOption.values.find(
+		function numOrStr(val) {
+			return typeof val === "number" ? val : parseInt(val, 10);
+		}
+
+		const colorVal = colorOption.values.find(
 			(val) => val.title === selectedColor
 		);
-		if (!colorValue) return product.images.slice(0, 6);
+		if (!colorVal) return product.images.slice(0, 6);
 
-		const matchingVariants = product.variants.filter((v) =>
-			v.options.includes(colorValue.id)
-		);
-		const matchingVariantIds = matchingVariants.map((v) => v.id);
+		const matchingVariants = product.variants.filter((v) => {
+			const varIds = v.options.map(numOrStr);
+			return varIds.includes(numOrStr(colorVal.id));
+		});
+		const matchingVariantIds = matchingVariants.map((mv) => mv.id);
 		const filtered = product.images.filter((img) =>
 			img.variant_ids.some((id) => matchingVariantIds.includes(id))
 		);
@@ -888,7 +927,7 @@ export default function CustomizeSelectedProduct() {
 		}
 	}, [filteredImages]);
 
-	// UPDATE ORDER ON CHANGES
+	// Update order on changes
 	useEffect(() => {
 		const texts = elements
 			.filter((el) => el.type === "text")
@@ -952,6 +991,18 @@ export default function CustomizeSelectedProduct() {
 
 	async function handleAddToCart() {
 		if (isAddToCartDisabled) return;
+
+		const colorOption = product.options.find(
+			(opt) => opt.name.toLowerCase() === "colors"
+		);
+		const sizeOption = product.options.find(
+			(opt) => opt.name.toLowerCase() === "sizes"
+		);
+		if ((colorOption && !selectedColor) || (sizeOption && !selectedSize)) {
+			message.warning("Please select required options before adding to cart.");
+			return;
+		}
+
 		if (!order.variant_id) {
 			message.warning("Please select required options before adding to cart.");
 			return;
@@ -959,15 +1010,14 @@ export default function CustomizeSelectedProduct() {
 
 		setIsAddToCartDisabled(true);
 
-		// *** KEY CHANGE: Temporarily deselect any element so no dotted border is visible. ***
+		// Temporarily deselect any element so no dotted border is visible
 		const previouslySelected = selectedElementId;
 		setSelectedElementId(null);
-		// Force a tiny re-render
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		try {
 			const screenshotOptions = {
-				scale: 3, // Keep your high scale
+				scale: 3,
 				useCORS: true,
 				allowTaint: true,
 				ignoreElements: (element) =>
@@ -975,7 +1025,6 @@ export default function CustomizeSelectedProduct() {
 				backgroundColor: null,
 			};
 			if (isMobile) {
-				// Mobile can remain smaller scale if you wish, or keep scale=3
 				screenshotOptions.scale = 2;
 			}
 
@@ -985,11 +1034,9 @@ export default function CustomizeSelectedProduct() {
 				screenshotOptions
 			);
 			const croppedBareCanvas = cropCanvasToTransparentBounds(bareCanvas);
-
-			// ----> NEW: compress to avoid 413
 			const bareDataURL = await compressCanvas(croppedBareCanvas, {
-				mimeType: "image/jpeg", // or "image/webp" if you prefer
-				quality: 0.9, // tweak from 0.7 -> 0.95 as needed
+				mimeType: "image/jpeg",
+				quality: 0.9,
 			});
 			const { url: bareUrl } = await cloudinaryUpload1(user._id, token, {
 				image: bareDataURL,
@@ -1000,8 +1047,6 @@ export default function CustomizeSelectedProduct() {
 				designOverlayRef.current,
 				screenshotOptions
 			);
-
-			// ----> compress again
 			const finalDataURL = await compressCanvas(finalCanvas, {
 				mimeType: "image/jpeg",
 				quality: 0.9,
@@ -1013,32 +1058,37 @@ export default function CustomizeSelectedProduct() {
 			// #3) Attempt to find product variant image
 			let variantImage = "";
 			let matchingVariant = null;
+
+			const cVal = colorOption?.values.find(
+				(val) => val.title === selectedColor
+			);
+			const sVal = sizeOption?.values.find((val) => val.title === selectedSize);
+
+			function numOrStr(val) {
+				return typeof val === "number" ? val : parseInt(val, 10);
+			}
+
 			if (product?.options && product?.variants && product?.images) {
-				const colorOption = product.options.find(
-					(opt) => opt.name.toLowerCase() === "colors"
-				);
-				const sizeOption = product.options.find(
-					(opt) => opt.name.toLowerCase() === "sizes"
-				);
-				const selectedColorValue = colorOption?.values.find(
-					(val) => val.title === selectedColor
-				);
-				const selectedSizeValue = sizeOption?.values.find(
-					(val) => val.title === selectedSize
-				);
-				if (selectedColorValue && selectedSizeValue) {
-					matchingVariant = product.variants.find(
-						(v) =>
-							v.options.includes(selectedColorValue.id) &&
-							v.options.includes(selectedSizeValue.id)
+				if (!colorOption && sVal) {
+					matchingVariant = product.variants.find((v) =>
+						v.options.map(numOrStr).includes(numOrStr(sVal.id))
 					);
-					if (matchingVariant && product.images) {
-						const matchingImageObj = product.images.find((img) =>
-							img.variant_ids?.includes(matchingVariant.id)
+				} else if (cVal && sVal) {
+					matchingVariant = product.variants.find((v) => {
+						const varIds = v.options.map(numOrStr);
+						return (
+							varIds.includes(numOrStr(cVal.id)) &&
+							varIds.includes(numOrStr(sVal.id))
 						);
-						if (matchingImageObj) {
-							variantImage = matchingImageObj.src;
-						}
+					});
+				}
+
+				if (matchingVariant) {
+					const matchingImageObj = product.images.find((img) =>
+						img.variant_ids.includes(matchingVariant.id)
+					);
+					if (matchingImageObj) {
+						variantImage = matchingImageObj.src;
 					}
 				}
 			}
@@ -1046,25 +1096,13 @@ export default function CustomizeSelectedProduct() {
 			const originalPrintifyImageURL =
 				variantImage || (firstImageElement ? firstImageElement.src : "");
 
-			const colorOption = product.options.find(
-				(opt) => opt.name.toLowerCase() === "colors"
-			);
-			const sizeOption = product.options.find(
-				(opt) => opt.name.toLowerCase() === "sizes"
-			);
-			const chosenColorVariant = colorOption?.values.find(
-				(val) => val.title === selectedColor
-			);
-			const chosenSizeVariant = sizeOption?.values.find(
-				(val) => val.title === selectedSize
-			);
-
 			let finalPrice = 0;
 			let finalPriceAfterDiscount = 0;
 			if (matchingVariant && typeof matchingVariant.price === "number") {
-				finalPrice = matchingVariant.price / 100;
+				finalPrice = matchingVariant.price / 100; // e.g. 7.61
 				finalPriceAfterDiscount = finalPrice;
 			} else {
+				// fallback to product.price or product.priceAfterDiscount
 				finalPrice = product.price || 0;
 				finalPriceAfterDiscount = product.priceAfterDiscount || finalPrice;
 			}
@@ -1077,7 +1115,10 @@ export default function CustomizeSelectedProduct() {
 				originalPrintifyImageURL,
 				size: selectedSize,
 				color: selectedColor,
-				variants: { color: chosenColorVariant, size: chosenSizeVariant },
+				variants: {
+					color: cVal,
+					size: sVal,
+				},
 				printArea: "front",
 				PrintifyProductId: product.printifyProductDetails?.id || null,
 			};
@@ -1113,7 +1154,6 @@ export default function CustomizeSelectedProduct() {
 			console.error("Screenshot or upload failed:", error);
 			message.error("Failed to capture your design. Please try again.");
 		} finally {
-			// restore any previously selected element
 			setSelectedElementId(previouslySelected);
 			setIsAddToCartDisabled(false);
 		}
@@ -1199,19 +1239,31 @@ export default function CustomizeSelectedProduct() {
 		const sizeOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
-		if (!colorOption || !sizeOption) return false;
+		if (!sizeOption) return false;
 
-		const selectedColorValue = colorOption.values.find(
+		function numOrStr(val) {
+			return typeof val === "number" ? val : parseInt(val, 10);
+		}
+
+		if (!colorOption) {
+			// no color => only check size
+			return product.variants.some((v) =>
+				v.options.map(numOrStr).includes(numOrStr(sizeObj.id))
+			);
+		}
+
+		const selColorVal = colorOption.values.find(
 			(val) => val.title === selectedColor
 		);
-		if (!selectedColorValue) return false;
+		if (!selColorVal) return false;
 
-		const matchingVariant = product.variants.find(
-			(v) =>
-				v.options.includes(selectedColorValue.id) &&
-				v.options.includes(sizeObj.id)
-		);
-		return Boolean(matchingVariant);
+		return product.variants.some((v) => {
+			const varIds = v.options.map(numOrStr);
+			return (
+				varIds.includes(numOrStr(selColorVal.id)) &&
+				varIds.includes(numOrStr(sizeObj.id))
+			);
+		});
 	}
 
 	function handleColorChange(newColor) {
@@ -1228,12 +1280,25 @@ export default function CustomizeSelectedProduct() {
 			);
 			if (!selectedColorValue) return;
 
-			const validVariants = product.variants.filter((v) =>
-				v.options.includes(selectedColorValue.id)
-			);
+			// see which sizes are valid with that color
+			const validVariants = product.variants.filter((v) => {
+				const varIds = v.options.map((xx) =>
+					typeof xx === "number" ? xx : parseInt(xx, 10)
+				);
+				return varIds.includes(
+					typeof selectedColorValue.id === "number"
+						? selectedColorValue.id
+						: parseInt(selectedColorValue.id, 10)
+				);
+			});
 			if (validVariants.length > 0) {
 				for (let sizeVal of sizeOption.values) {
-					if (validVariants.some((v) => v.options.includes(sizeVal.id))) {
+					// find if validVariants includes that sizeVal's id
+					if (
+						validVariants.some((v) =>
+							v.options.map(String).includes(String(sizeVal.id))
+						)
+					) {
 						setSelectedSize(sizeVal.title);
 						return;
 					}
@@ -1269,7 +1334,9 @@ export default function CustomizeSelectedProduct() {
 				/>
 				<meta
 					property='og:title'
-					content={`Customize ${product.printifyProductDetails?.title || product.productName} – Serene Jannat`}
+					content={`Customize ${
+						product.printifyProductDetails?.title || product.productName
+					} – Serene Jannat`}
 				/>
 				<meta
 					property='og:description'
@@ -1344,17 +1411,14 @@ export default function CustomizeSelectedProduct() {
 					<StyledSlider {...sliderSettings}>
 						{filteredImages.map((image, idx) => {
 							if (idx > 0) {
-								// Additional slides
 								return (
 									<SlideImageWrapper key={image.src}>
 										<img src={image.src} alt={`${product.title}-${idx}`} />
 									</SlideImageWrapper>
 								);
 							}
-							// The main "front" slide
 							return (
 								<div key={image.src}>
-									{/* (2) => FADE IN EFFECT AFTER 1 SEC FOR MOBILE BUTTONS */}
 									{isMobile && (
 										<MobileToolbarWrapper
 											className='noScreenshot'
@@ -1474,7 +1538,6 @@ export default function CustomizeSelectedProduct() {
 										</MobileToolbarWrapper>
 									)}
 
-									{/* The main overlay (with T-shirt image) */}
 									<DesignOverlay ref={designOverlayRef}>
 										<OverlayImage
 											src={image.src}
@@ -1482,7 +1545,6 @@ export default function CustomizeSelectedProduct() {
 											crossOrigin='anonymous'
 										/>
 
-										{/* The bounding box for the design area */}
 										<PrintArea id='print-area' ref={printAreaRef}>
 											{showCenterLine && <CenterIndicator />}
 											<DottedOverlay className='noScreenshot' />
@@ -1534,9 +1596,9 @@ export default function CustomizeSelectedProduct() {
 							<br />
 							<br />
 							The design area is the dotted area w/n the product, so if your
-							design is a little bit bigger than the actual area, it is going to
-							be ok, but we will usually add your design in the designated area
-							which is the dotted area.
+							design is a little bigger than the actual area, that's usually
+							fine—but we will print your design within the dotted area you see
+							here.
 						</span>
 					</div>
 
@@ -1667,7 +1729,7 @@ export default function CustomizeSelectedProduct() {
 				</Col>
 			</Row>
 
-			{/* (3) => ENSURE THE SAME OPTIONS SHOW AT THE BOTTOM ON MOBILE */}
+			{/* For mobile, the bottom options panel */}
 			{isMobile && (
 				<MobileBottomPanel>
 					<Divider />
@@ -1877,9 +1939,7 @@ export default function CustomizeSelectedProduct() {
 		</CustomizeWrapper>
 	);
 
-	/**
-	 * Renders the user’s design elements inside the main #print-area
-	 */
+	/** Renders the user’s design elements inside the #print-area */
 	function renderDesignElements() {
 		return elements.map((el) => {
 			const isSelected = el.id === selectedElementId;
@@ -2025,7 +2085,7 @@ export default function CustomizeSelectedProduct() {
 						</DoubleClickTooltip>
 					)}
 
-					{/* TEXT toolbar if text is selected & not rotating */}
+					{/* TEXT toolbar */}
 					{isSelected && el.type === "text" && !isRotating && (
 						<TextToolbarContainer className='text-toolbar'>
 							<TextToolbar>
@@ -2276,7 +2336,7 @@ export default function CustomizeSelectedProduct() {
 						</TextToolbarContainer>
 					)}
 
-					{/* IMAGE toolbar if image is selected & not rotating */}
+					{/* IMAGE toolbar */}
 					{isSelected && el.type === "image" && !isRotating && (
 						<ImageToolbarContainer className='image-toolbar'>
 							<ImageToolbar>
@@ -2371,7 +2431,6 @@ const DesignOverlay = styled.div`
 	}
 `;
 
-/** The bounding box for the design area. */
 const PrintArea = styled.div`
 	position: absolute;
 	top: 20%;
@@ -2382,7 +2441,6 @@ const PrintArea = styled.div`
 	z-index: 1;
 `;
 
-/** A separate overlay with dashed lines (ignored by screenshot). */
 const DottedOverlay = styled.div`
 	position: absolute;
 	top: 0;
@@ -2592,7 +2650,6 @@ const InlineEditButtons = styled.div`
 	gap: 8px;
 `;
 
-/** Hidden container for the bare/transparent screenshot. */
 const BareDesignOverlay = styled.div`
 	position: absolute;
 	top: -9999px;
@@ -2721,7 +2778,6 @@ const styleTag = document.createElement("style");
 styleTag.innerHTML = mediaCSS;
 document.head.appendChild(styleTag);
 
-// The new vertical center indicator (ADDED)
 const CenterIndicator = styled.div`
 	position: absolute;
 	top: 0;
