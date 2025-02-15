@@ -31,12 +31,12 @@ import {
 	CloudUploadOutlined,
 	ReloadOutlined,
 } from "@ant-design/icons";
-import PrintifyCheckoutModal from "./PrintifyCheckoutModal"; // same path as before
-import { isAuthenticated } from "../../auth";
-import { cloudinaryUpload1 } from "../../apiCore"; // same path as before
+import PrintifyCheckoutModal from "./PrintifyCheckoutModal"; // Adjust path as needed
+import { isAuthenticated } from "../../auth"; // Adjust path as needed
+import { cloudinaryUpload1 } from "../../apiCore"; // Adjust path as needed
 
 import html2canvas from "html2canvas";
-import { useCartContext } from "../../cart_context";
+import { useCartContext } from "../../cart_context"; // Adjust path as needed
 import { Rnd } from "react-rnd";
 import { Helmet } from "react-helmet";
 import ReactGA from "react-ga4";
@@ -148,8 +148,12 @@ export default function CustomizeSelectedProduct() {
 	const [loading, setLoading] = useState(true);
 
 	const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+	// If the product has colors, this holds the user's selected color. If not, empty string.
 	const [selectedColor, setSelectedColor] = useState("");
+	// If the product has sizes, this holds the user's selected size. If not, empty string.
 	const [selectedSize, setSelectedSize] = useState("");
+
+	// For plain text entry in the panel (to add text overlays)
 	const [userText, setUserText] = useState("");
 
 	// Text styling
@@ -160,7 +164,7 @@ export default function CustomizeSelectedProduct() {
 	const [fontStyle, setFontStyle] = useState("normal");
 	const [borderRadius, setBorderRadius] = useState(0);
 
-	// Elements array
+	// The layered design elements
 	const [elements, setElements] = useState([]);
 	const [selectedElementId, setSelectedElementId] = useState(null);
 
@@ -244,7 +248,7 @@ export default function CustomizeSelectedProduct() {
 	// One-time default text
 	const [defaultTextAdded, setDefaultTextAdded] = useState(false);
 
-	// (2) => 1-second fade-in for mobile buttons
+	// A small fade for mobile toolbar
 	const [showMobileButtons, setShowMobileButtons] = useState(false);
 	useEffect(() => {
 		if (isMobile) {
@@ -267,6 +271,7 @@ export default function CustomizeSelectedProduct() {
 					setLoading(false);
 					return;
 				}
+				// Flatten relevant fields
 				let fetchedProduct = {
 					...response.data,
 					variants: response.data.printifyProductDetails?.variants || [],
@@ -281,7 +286,7 @@ export default function CustomizeSelectedProduct() {
 						"",
 				};
 
-				// Filter out invalid variants (must have price > 0)
+				// Filter out invalid variants (price must be > 0)
 				const validVariants = fetchedProduct.variants.filter(
 					(variant) => typeof variant.price === "number" && variant.price > 0
 				);
@@ -294,35 +299,18 @@ export default function CustomizeSelectedProduct() {
 				}
 				fetchedProduct.variants = validVariants;
 
-				// Filter color options
-				const colorOptionIndex = fetchedProduct.options.findIndex(
-					(opt) => opt.name.toLowerCase() === "colors"
-				);
-				if (colorOptionIndex !== -1) {
-					fetchedProduct.options[colorOptionIndex].values =
-						fetchedProduct.options[colorOptionIndex].values.filter((colorVal) =>
-							validVariants.some((variant) =>
-								variant.options.includes(colorVal.id)
-							)
-						);
-				}
-
-				// Filter size options
-				const sizeOptionIndex = fetchedProduct.options.findIndex(
-					(opt) => opt.name.toLowerCase() === "sizes"
-				);
-				if (sizeOptionIndex !== -1) {
-					fetchedProduct.options[sizeOptionIndex].values =
-						fetchedProduct.options[sizeOptionIndex].values.filter((sizeVal) =>
-							validVariants.some((variant) =>
-								variant.options.includes(sizeVal.id)
-							)
-						);
-				}
+				// Just in case we might remove any extraneous option values that do not correspond to valid variants
+				fetchedProduct.options = fetchedProduct.options.map((opt) => {
+					// E.g. opt = { name: "Colors", values: [ {id, title}, ... ] }
+					const newValues = opt.values.filter((val) =>
+						validVariants.some((v) => v.options.includes(val.id))
+					);
+					return { ...opt, values: newValues };
+				});
 
 				setProduct(fetchedProduct);
 
-				// Pick defaults for color + size
+				// Attempt to pick default color + size if they exist
 				const colorOption = fetchedProduct.options.find(
 					(opt) => opt.name.toLowerCase() === "colors"
 				);
@@ -330,24 +318,18 @@ export default function CustomizeSelectedProduct() {
 					(opt) => opt.name.toLowerCase() === "sizes"
 				);
 
-				// 1) Color if it exists
+				// 1) Color
 				if (colorOption?.values?.length) {
-					if (colorOption.values.length === 1) {
-						setSelectedColor(colorOption.values[0].title);
-					} else {
-						const uniqueColorTitles = [
-							...new Set(colorOption.values.map((c) => c.title)),
-						];
-						setSelectedColor(uniqueColorTitles[0]);
-					}
+					// If there is exactly 1 color, pick it automatically
+					// or pick the first one in the array
+					setSelectedColor(colorOption.values[0].title);
 				} else {
-					// no color option at all
 					setSelectedColor("");
 				}
 
-				// 2) Size if it exists
+				// 2) Size
 				if (sizeOption?.values?.length) {
-					// if there's a default variant
+					// If there's a "default" variant from Printify
 					const defVar = validVariants.find((v) => v.is_default);
 					if (defVar) {
 						// find which size "id" that default variant uses
@@ -411,9 +393,9 @@ export default function CustomizeSelectedProduct() {
 		setDefaultTextAdded(true);
 	}, [product, defaultTextAdded]);
 
-	// DETERMINE VARIANT ID
+	// DETERMINE VARIANT ID whenever selected color/size changes
 	useEffect(() => {
-		if (!product || !selectedSize) return;
+		if (!product) return;
 
 		const colorOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
@@ -422,34 +404,59 @@ export default function CustomizeSelectedProduct() {
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
 
-		const selectedColorValue = colorOption?.values.find(
-			(val) => val.title === selectedColor
-		);
-		const selectedSizeValue = sizeOption?.values.find(
-			(val) => val.title === selectedSize
-		);
-
-		// Force numeric check in case the IDs are strings
+		// convert e.g. "1234" to number for reliable matching
 		function numOrStr(val) {
 			return typeof val === "number" ? val : parseInt(val, 10);
 		}
 
-		const matchingVariant = product.variants.find((variant) => {
-			// each variant has variant.options = [someID], also numeric
-			// cast them to numbers in case of mismatch
-			const varOptionIds = variant.options.map(numOrStr);
+		let matchingVariant = null;
 
-			if (colorOption && selectedColorValue) {
-				// must match color & size
+		// If we have neither color nor size, there's effectively only 1 variant
+		if (!colorOption && !sizeOption) {
+			matchingVariant = product.variants[0] || null;
+		}
+		// If we only have color
+		else if (colorOption && !sizeOption) {
+			const selectedColorValue = colorOption.values.find(
+				(val) => val.title === selectedColor
+			);
+			matchingVariant = product.variants.find((variant) => {
+				const varOptionIds = variant.options.map(numOrStr);
+				return selectedColorValue
+					? varOptionIds.includes(numOrStr(selectedColorValue.id))
+					: false;
+			});
+		}
+		// If we only have size
+		else if (!colorOption && sizeOption) {
+			const selectedSizeValue = sizeOption.values.find(
+				(val) => val.title === selectedSize
+			);
+			matchingVariant = product.variants.find((variant) => {
+				const varOptionIds = variant.options.map(numOrStr);
+				return selectedSizeValue
+					? varOptionIds.includes(numOrStr(selectedSizeValue.id))
+					: false;
+			});
+		}
+		// If we have both color and size
+		else if (colorOption && sizeOption) {
+			const selectedColorValue = colorOption.values.find(
+				(val) => val.title === selectedColor
+			);
+			const selectedSizeValue = sizeOption.values.find(
+				(val) => val.title === selectedSize
+			);
+			matchingVariant = product.variants.find((variant) => {
+				const varOptionIds = variant.options.map(numOrStr);
 				return (
+					selectedColorValue &&
+					selectedSizeValue &&
 					varOptionIds.includes(numOrStr(selectedColorValue.id)) &&
-					varOptionIds.includes(numOrStr(selectedSizeValue?.id))
+					varOptionIds.includes(numOrStr(selectedSizeValue.id))
 				);
-			} else {
-				// no color => match only size
-				return varOptionIds.includes(numOrStr(selectedSizeValue?.id));
-			}
-		});
+			});
+		}
 
 		setOrder((prev) => ({
 			...prev,
@@ -496,14 +503,20 @@ export default function CustomizeSelectedProduct() {
 	};
 
 	const addImageElement = async (file) => {
+		// Confirm user has chosen the required options
 		const colorOption = product?.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
 		);
 		const sizeOption = product?.options.find(
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
-		if ((colorOption && !selectedColor) || (sizeOption && !selectedSize)) {
-			message.warning("Please select required options before customizing.");
+
+		if (colorOption && !selectedColor) {
+			message.warning("Please select a color before customizing.");
+			return;
+		}
+		if (sizeOption && !selectedSize) {
+			message.warning("Please select a size before customizing.");
 			return;
 		}
 
@@ -555,6 +568,7 @@ export default function CustomizeSelectedProduct() {
 		if (!oldUrl.includes("/upload/")) {
 			return oldUrl;
 		}
+		// Apply background removal transformation
 		return oldUrl.replace("/upload/", "/upload/e_background_removal/");
 	}
 
@@ -641,7 +655,7 @@ export default function CustomizeSelectedProduct() {
 		}
 	}
 
-	// Overwrite "Start typing here..." on double click/tap
+	// Overwrite "Start typing here..." on double-click or double-tap
 	function handleTextDoubleClick(el) {
 		if (el.text === "Start typing here...") {
 			setElements((prev) =>
@@ -654,7 +668,6 @@ export default function CustomizeSelectedProduct() {
 		setInlineEditId(el.id);
 	}
 
-	// Double-tap for mobile
 	const lastTapTime = useRef(0);
 	function handleTextTouchEnd(el) {
 		if (!isMobile) return;
@@ -822,7 +835,6 @@ export default function CustomizeSelectedProduct() {
 	function getVariantPrice() {
 		if (!product || !product.variants) return 0;
 
-		// forcibly cast variant.options => numbers
 		function numOrStr(val) {
 			return typeof val === "number" ? val : parseInt(val, 10);
 		}
@@ -834,28 +846,40 @@ export default function CustomizeSelectedProduct() {
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
 
-		const cVal = colorOption?.values.find((v) => v.title === selectedColor);
-		const sVal = sizeOption?.values.find((v) => v.title === selectedSize);
+		let matchingVariant = null;
 
-		const matchingVariant = product.variants.find((v) => {
-			const varOptionIds = v.options.map(numOrStr);
-			if (colorOption && cVal) {
+		if (!colorOption && !sizeOption) {
+			// no color or size
+			matchingVariant = product.variants[0];
+		} else if (colorOption && !sizeOption) {
+			const cVal = colorOption.values.find((v) => v.title === selectedColor);
+			matchingVariant = product.variants.find((v) =>
+				v.options.map(numOrStr).includes(numOrStr(cVal?.id))
+			);
+		} else if (!colorOption && sizeOption) {
+			const sVal = sizeOption.values.find((v) => v.title === selectedSize);
+			matchingVariant = product.variants.find((v) =>
+				v.options.map(numOrStr).includes(numOrStr(sVal?.id))
+			);
+		} else if (colorOption && sizeOption) {
+			const cVal = colorOption.values.find((v) => v.title === selectedColor);
+			const sVal = sizeOption.values.find((v) => v.title === selectedSize);
+			matchingVariant = product.variants.find((v) => {
+				const varIds = v.options.map(numOrStr);
 				return (
-					varOptionIds.includes(numOrStr(cVal.id)) &&
-					varOptionIds.includes(numOrStr(sVal?.id))
+					cVal &&
+					sVal &&
+					varIds.includes(numOrStr(cVal.id)) &&
+					varIds.includes(numOrStr(sVal.id))
 				);
-			} else if (sVal) {
-				return varOptionIds.includes(numOrStr(sVal.id));
-			}
-			return false;
-		});
+			});
+		}
 
 		if (matchingVariant && typeof matchingVariant.price === "number") {
-			// Printify price is stored as e.g. 761 => $7.61
 			return parseFloat(matchingVariant.price / 100);
 		}
 
-		// If no variant matched, fallback to this product’s stored "price" (like 9.132).
+		// fallback to the product’s own price
 		if (typeof product.price === "number") {
 			return parseFloat(product.price);
 		}
@@ -870,12 +894,18 @@ export default function CustomizeSelectedProduct() {
 		const colorOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
 		);
-		if (!colorOption) return [];
+		if (!colorOption?.values?.length) return []; // no color or empty
 		const uniqueTitles = new Set(colorOption.values.map((c) => c.title));
 		return Array.from(uniqueTitles);
 	}, [product]);
 
 	const filteredImages = useMemo(() => {
+		/**
+		 * If there's no color, or the user hasn't selected one,
+		 * just show a subset of product.images (first 6).
+		 * If there is color, we attempt to find images assigned
+		 * to the matching variants for that color.
+		 */
 		if (!product) return [];
 		if (!selectedColor) {
 			return product.images.slice(0, 6);
@@ -902,7 +932,6 @@ export default function CustomizeSelectedProduct() {
 		const filtered = product.images.filter((img) =>
 			img.variant_ids.some((id) => matchingVariantIds.includes(id))
 		);
-
 		return filtered.length > 0
 			? filtered.slice(0, 6)
 			: product.images.slice(0, 6);
@@ -992,14 +1021,20 @@ export default function CustomizeSelectedProduct() {
 	async function handleAddToCart() {
 		if (isAddToCartDisabled) return;
 
+		// If color option exists, but user didn't pick one => block
 		const colorOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
 		);
+		if (colorOption && !selectedColor) {
+			message.warning("Please select a color before adding to cart.");
+			return;
+		}
+		// If size option exists, but user didn't pick one => block
 		const sizeOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
-		if ((colorOption && !selectedColor) || (sizeOption && !selectedSize)) {
-			message.warning("Please select required options before adding to cart.");
+		if (sizeOption && !selectedSize) {
+			message.warning("Please select a size before adding to cart.");
 			return;
 		}
 
@@ -1059,24 +1094,40 @@ export default function CustomizeSelectedProduct() {
 			let variantImage = "";
 			let matchingVariant = null;
 
-			const cVal = colorOption?.values.find(
-				(val) => val.title === selectedColor
-			);
-			const sVal = sizeOption?.values.find((val) => val.title === selectedSize);
-
 			function numOrStr(val) {
 				return typeof val === "number" ? val : parseInt(val, 10);
 			}
 
 			if (product?.options && product?.variants && product?.images) {
-				if (!colorOption && sVal) {
-					matchingVariant = product.variants.find((v) =>
-						v.options.map(numOrStr).includes(numOrStr(sVal.id))
+				// Similar logic to above, find the matching variant
+				if (!colorOption && !sizeOption) {
+					matchingVariant = product.variants[0] || null;
+				} else if (colorOption && !sizeOption) {
+					const cVal = colorOption.values.find(
+						(val) => val.title === selectedColor
 					);
-				} else if (cVal && sVal) {
+					matchingVariant = product.variants.find((v) =>
+						v.options.map(numOrStr).includes(numOrStr(cVal?.id))
+					);
+				} else if (!colorOption && sizeOption) {
+					const sVal = sizeOption.values.find(
+						(val) => val.title === selectedSize
+					);
+					matchingVariant = product.variants.find((v) =>
+						v.options.map(numOrStr).includes(numOrStr(sVal?.id))
+					);
+				} else if (colorOption && sizeOption) {
+					const cVal = colorOption.values.find(
+						(val) => val.title === selectedColor
+					);
+					const sVal = sizeOption.values.find(
+						(val) => val.title === selectedSize
+					);
 					matchingVariant = product.variants.find((v) => {
 						const varIds = v.options.map(numOrStr);
 						return (
+							cVal &&
+							sVal &&
 							varIds.includes(numOrStr(cVal.id)) &&
 							varIds.includes(numOrStr(sVal.id))
 						);
@@ -1099,14 +1150,14 @@ export default function CustomizeSelectedProduct() {
 			let finalPrice = 0;
 			let finalPriceAfterDiscount = 0;
 			if (matchingVariant && typeof matchingVariant.price === "number") {
-				finalPrice = matchingVariant.price / 100; // e.g. 7.61
+				finalPrice = matchingVariant.price / 100;
 				finalPriceAfterDiscount = finalPrice;
 			} else {
-				// fallback to product.price or product.priceAfterDiscount
 				finalPrice = product.price || 0;
 				finalPriceAfterDiscount = product.priceAfterDiscount || finalPrice;
 			}
 
+			// Prepare the "customDesign" data
 			const customDesign = {
 				bareScreenshotUrl: bareUrl,
 				finalScreenshotUrl: finalUrl,
@@ -1116,8 +1167,12 @@ export default function CustomizeSelectedProduct() {
 				size: selectedSize,
 				color: selectedColor,
 				variants: {
-					color: cVal,
-					size: sVal,
+					color: colorOption
+						? colorOption.values.find((c) => c.title === selectedColor)
+						: null,
+					size: sizeOption
+						? sizeOption.values.find((s) => s.title === selectedSize)
+						: null,
 				},
 				printArea: "front",
 				PrintifyProductId: product.printifyProductDetails?.id || null,
@@ -1231,28 +1286,27 @@ export default function CustomizeSelectedProduct() {
 			? truncateText(productDescription, 30)
 			: productDescription;
 
+	// For checking if a size is valid with the selected color
 	function variantExistsForColorSize(sizeObj) {
 		if (!product) return false;
+
 		const colorOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
 		);
 		const sizeOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
-		if (!sizeOption) return false;
-
 		function numOrStr(val) {
 			return typeof val === "number" ? val : parseInt(val, 10);
 		}
-
-		if (!colorOption) {
-			// no color => only check size
+		// If there's no color, we only check that the variant has that size
+		if (!colorOption && sizeOption) {
 			return product.variants.some((v) =>
 				v.options.map(numOrStr).includes(numOrStr(sizeObj.id))
 			);
 		}
-
-		const selColorVal = colorOption.values.find(
+		// If there is color, we check both
+		const selColorVal = colorOption?.values.find(
 			(val) => val.title === selectedColor
 		);
 		if (!selColorVal) return false;
@@ -1268,10 +1322,11 @@ export default function CustomizeSelectedProduct() {
 
 	function handleColorChange(newColor) {
 		setSelectedColor(newColor);
+
 		const sizeOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
-		if (sizeOption) {
+		if (sizeOption && sizeOption.values.length) {
 			const colorOption = product.options.find(
 				(opt) => opt.name.toLowerCase() === "colors"
 			);
@@ -1312,7 +1367,7 @@ export default function CustomizeSelectedProduct() {
 			<Helmet>
 				<title>
 					{product.printifyProductDetails?.title || product.productName} |
-					Customize & Print On Demand | Serene Jannat
+					Customize & Print On Demand
 				</title>
 				<meta
 					name='description'
@@ -1329,21 +1384,20 @@ export default function CustomizeSelectedProduct() {
 						"Print On Demand",
 						"Custom Mug",
 						"Ceramic",
-						"Serene Jannat",
 					].join(", ")}
 				/>
 				<meta
 					property='og:title'
 					content={`Customize ${
 						product.printifyProductDetails?.title || product.productName
-					} – Serene Jannat`}
+					}`}
 				/>
 				<meta
 					property='og:description'
 					content={
 						product.printifyProductDetails?.description ||
 						product.description ||
-						"Create a unique personalized product at Serene Jannat with your own design!"
+						"Create a unique personalized product with your own design!"
 					}
 				/>
 				{product.thumbnailImage?.[0]?.images?.[0]?.url && (
@@ -1354,55 +1408,9 @@ export default function CustomizeSelectedProduct() {
 				)}
 				<meta
 					property='og:url'
-					content={`https://serenejannat.com/custom-gifts/${product._id}`}
+					content={`https://yoursite.com/custom-gifts/${product._id}`}
 				/>
 				<meta property='og:type' content='product' />
-
-				<script type='application/ld+json'>
-					{JSON.stringify({
-						"@context": "https://schema.org/",
-						"@type": "Product",
-						name: product.printifyProductDetails?.title || product.productName,
-						image:
-							product.thumbnailImage?.[0]?.images?.[0]?.url ||
-							"https://serenejannat.com/default-product-image.jpg",
-						description:
-							product.printifyProductDetails?.description ||
-							product.description ||
-							"Design your own gift with print-on-demand!",
-						sku: product.productSKU || "",
-						brand: {
-							"@type": "Brand",
-							name: "Serene Jannat",
-						},
-						offers: {
-							"@type": "Offer",
-							price: (product.priceAfterDiscount || product.price || 0).toFixed(
-								2
-							),
-							priceCurrency: "USD",
-							availability:
-								(product.quantity || 0) > 0
-									? "https://schema.org/InStock"
-									: "https://schema.org/OutOfStock",
-							url: `https://serenejannat.com/custom-gifts/${product._id}`,
-						},
-						additionalProperty: [
-							{
-								"@type": "PropertyValue",
-								name: "Print On Demand",
-								value: product.printifyProductDetails?.POD ? "Yes" : "No",
-							},
-							{
-								"@type": "PropertyValue",
-								name: "Available Sizes",
-								value: product.printifyProductDetails?.variants
-									?.map((v) => v.title)
-									.join(", "),
-							},
-						],
-					})}
-				</script>
 			</Helmet>
 
 			<Row gutter={[18, 20]}>
@@ -1411,12 +1419,14 @@ export default function CustomizeSelectedProduct() {
 					<StyledSlider {...sliderSettings}>
 						{filteredImages.map((image, idx) => {
 							if (idx > 0) {
+								// Regular image slides
 								return (
 									<SlideImageWrapper key={image.src}>
 										<img src={image.src} alt={`${product.title}-${idx}`} />
 									</SlideImageWrapper>
 								);
 							}
+							// The first slide is the "customization" slide with the dotted overlay
 							return (
 								<div key={image.src}>
 									{isMobile && (
@@ -1428,60 +1438,54 @@ export default function CustomizeSelectedProduct() {
 											}}
 										>
 											<MobileLeftCorner>
-												<Select
-													style={{ width: "100%", marginBottom: 8 }}
-													placeholder='Color'
-													value={selectedColor}
-													onChange={handleColorChange}
-													disabled={
-														!product.options.find(
-															(opt) => opt.name.toLowerCase() === "colors"
-														)
-													}
-												>
-													{uniqueColorsForDropdown.map((colorTitle) => (
-														<Option key={colorTitle} value={colorTitle}>
-															{colorTitle}
-														</Option>
-													))}
-													{!product.options.find(
-														(opt) => opt.name.toLowerCase() === "colors"
-													) && <Option disabled>No Color</Option>}
-												</Select>
+												{/* If there's truly no color option, we hide it */}
+												{product.options.some(
+													(opt) => opt.name.toLowerCase() === "colors"
+												) && (
+													<Select
+														style={{ width: "100%", marginBottom: 8 }}
+														placeholder='Color'
+														value={selectedColor}
+														onChange={handleColorChange}
+													>
+														{uniqueColorsForDropdown.map((colorTitle) => (
+															<Option key={colorTitle} value={colorTitle}>
+																{colorTitle}
+															</Option>
+														))}
+													</Select>
+												)}
 
-												<Select
-													style={{ width: "100%" }}
-													placeholder='Size'
-													value={selectedSize}
-													onChange={setSelectedSize}
-													disabled={
-														!product.options.find(
-															(opt) => opt.name.toLowerCase() === "sizes"
-														)
-													}
-												>
-													{product.options
-														.find((opt) => opt.name.toLowerCase() === "sizes")
-														?.values.map((sizeObj) => {
-															const isDisabled =
-																!variantExistsForColorSize(sizeObj);
-															return (
-																<Option
-																	key={sizeObj.title}
-																	value={sizeObj.title}
-																	disabled={isDisabled}
-																	style={{
-																		color: isDisabled ? "#aaa" : "inherit",
-																	}}
-																>
-																	{sizeObj.title}
-																</Option>
-															);
-														})}
-													{!product.options.find(
-														(opt) => opt.name.toLowerCase() === "sizes"
-													) && <Option disabled>No Size</Option>}
-												</Select>
+												{/* If there's truly no size option, hide it */}
+												{product.options.some(
+													(opt) => opt.name.toLowerCase() === "sizes"
+												) && (
+													<Select
+														style={{ width: "100%" }}
+														placeholder='Size'
+														value={selectedSize}
+														onChange={setSelectedSize}
+													>
+														{product.options
+															.find((opt) => opt.name.toLowerCase() === "sizes")
+															?.values.map((sizeObj) => {
+																const isDisabled =
+																	!variantExistsForColorSize(sizeObj);
+																return (
+																	<Option
+																		key={sizeObj.title}
+																		value={sizeObj.title}
+																		disabled={isDisabled}
+																		style={{
+																			color: isDisabled ? "#aaa" : "inherit",
+																		}}
+																	>
+																		{sizeObj.title}
+																	</Option>
+																);
+															})}
+													</Select>
+												)}
 											</MobileLeftCorner>
 
 											<FloatingActions>
@@ -1592,13 +1596,10 @@ export default function CustomizeSelectedProduct() {
 					<div style={{ marginBottom: 16 }}>
 						<strong>Note: </strong>
 						<span style={{ fontSize: "1rem", color: "var(--text-color-dark)" }}>
-							Please ensure to design on the design area
+							Please ensure to design within the dotted area.
 							<br />
-							<br />
-							The design area is the dotted area w/n the product, so if your
-							design is a little bigger than the actual area, that's usually
-							fine—but we will print your design within the dotted area you see
-							here.
+							If your design extends slightly beyond the dotted border, it may
+							be cropped. The print area is the dotted rectangle.
 						</span>
 					</div>
 
@@ -1610,64 +1611,60 @@ export default function CustomizeSelectedProduct() {
 							Select Options:
 						</Title>
 						<Row gutter={12}>
-							<Col span={12}>
-								<Select
-									style={{ width: "100%" }}
-									className='selectDesktopOrMobile'
-									placeholder='Color'
-									value={selectedColor}
-									onChange={handleColorChange}
-									disabled={
-										!product.options.find(
-											(opt) => opt.name.toLowerCase() === "colors"
-										)
-									}
-								>
-									{uniqueColorsForDropdown.map((colorTitle) => (
-										<Option key={colorTitle} value={colorTitle}>
-											{colorTitle}
-										</Option>
-									))}
-									{!product.options.find(
-										(opt) => opt.name.toLowerCase() === "colors"
-									) && <Option disabled>No Color</Option>}
-								</Select>
-							</Col>
-							<Col span={12}>
-								<Select
-									style={{ width: "100%" }}
-									className='selectDesktopOrMobile'
-									placeholder='Size'
-									value={selectedSize}
-									onChange={setSelectedSize}
-									disabled={
-										!product.options.find(
-											(opt) => opt.name.toLowerCase() === "sizes"
-										)
-									}
-								>
-									{product.options
-										.find((opt) => opt.name.toLowerCase() === "sizes")
-										?.values.map((sizeObj) => {
-											const isDisabled = !variantExistsForColorSize(sizeObj);
-											return (
-												<Option
-													key={sizeObj.title}
-													value={sizeObj.title}
-													disabled={isDisabled}
-													style={{ color: isDisabled ? "#aaa" : "inherit" }}
-												>
-													{sizeObj.title}
-												</Option>
-											);
-										})}
-									{!product.options.find(
-										(opt) => opt.name.toLowerCase() === "sizes"
-									) && <Option disabled>No Size Options</Option>}
-								</Select>
-							</Col>
+							{/* Color */}
+							{product.options.some(
+								(opt) => opt.name.toLowerCase() === "colors"
+							) && (
+								<Col span={12}>
+									<Select
+										style={{ width: "100%" }}
+										className='selectDesktopOrMobile'
+										placeholder='Color'
+										value={selectedColor}
+										onChange={handleColorChange}
+									>
+										{uniqueColorsForDropdown.map((colorTitle) => (
+											<Option key={colorTitle} value={colorTitle}>
+												{colorTitle}
+											</Option>
+										))}
+									</Select>
+								</Col>
+							)}
+
+							{/* Size */}
+							{product.options.some(
+								(opt) => opt.name.toLowerCase() === "sizes"
+							) && (
+								<Col span={12}>
+									<Select
+										style={{ width: "100%" }}
+										className='selectDesktopOrMobile'
+										placeholder='Size'
+										value={selectedSize}
+										onChange={setSelectedSize}
+									>
+										{product.options
+											.find((opt) => opt.name.toLowerCase() === "sizes")
+											?.values.map((sizeObj) => {
+												const isDisabled = !variantExistsForColorSize(sizeObj);
+												return (
+													<Option
+														key={sizeObj.title}
+														value={sizeObj.title}
+														disabled={isDisabled}
+														style={{ color: isDisabled ? "#aaa" : "inherit" }}
+													>
+														{sizeObj.title}
+													</Option>
+												);
+											})}
+									</Select>
+								</Col>
+							)}
 						</Row>
 						<Divider style={{ margin: "16px 0" }} />
+
 						<Title level={4} style={{ color: "var(--text-color-dark)" }}>
 							Add/Update Text
 						</Title>
@@ -1729,7 +1726,7 @@ export default function CustomizeSelectedProduct() {
 				</Col>
 			</Row>
 
-			{/* For mobile, the bottom options panel */}
+			{/* For mobile, the bottom panel with the same text/image inputs */}
 			{isMobile && (
 				<MobileBottomPanel>
 					<Divider />
@@ -1741,60 +1738,55 @@ export default function CustomizeSelectedProduct() {
 							Select Options:
 						</Title>
 						<Row gutter={12}>
-							<Col span={12}>
-								<Select
-									style={{ width: "100%" }}
-									placeholder='Color'
-									value={selectedColor}
-									onChange={handleColorChange}
-									disabled={
-										!product.options.find(
-											(opt) => opt.name.toLowerCase() === "colors"
-										)
-									}
-								>
-									{uniqueColorsForDropdown.map((colorTitle) => (
-										<Option key={colorTitle} value={colorTitle}>
-											{colorTitle}
-										</Option>
-									))}
-									{!product.options.find(
-										(opt) => opt.name.toLowerCase() === "colors"
-									) && <Option disabled>No Color</Option>}
-								</Select>
-							</Col>
-							<Col span={12}>
-								<Select
-									style={{ width: "100%" }}
-									placeholder='Size'
-									value={selectedSize}
-									onChange={setSelectedSize}
-									disabled={
-										!product.options.find(
-											(opt) => opt.name.toLowerCase() === "sizes"
-										)
-									}
-								>
-									{product.options
-										.find((opt) => opt.name.toLowerCase() === "sizes")
-										?.values.map((sizeObj) => {
-											const isDisabled = !variantExistsForColorSize(sizeObj);
-											return (
-												<Option
-													key={sizeObj.title}
-													value={sizeObj.title}
-													disabled={isDisabled}
-													style={{ color: isDisabled ? "#aaa" : "inherit" }}
-												>
-													{sizeObj.title}
-												</Option>
-											);
-										})}
-									{!product.options.find(
-										(opt) => opt.name.toLowerCase() === "sizes"
-									) && <Option disabled>No Size Options</Option>}
-								</Select>
-							</Col>
+							{/* Color */}
+							{product.options.some(
+								(opt) => opt.name.toLowerCase() === "colors"
+							) && (
+								<Col span={12}>
+									<Select
+										style={{ width: "100%" }}
+										placeholder='Color'
+										value={selectedColor}
+										onChange={handleColorChange}
+									>
+										{uniqueColorsForDropdown.map((colorTitle) => (
+											<Option key={colorTitle} value={colorTitle}>
+												{colorTitle}
+											</Option>
+										))}
+									</Select>
+								</Col>
+							)}
+
+							{/* Size */}
+							{product.options.some(
+								(opt) => opt.name.toLowerCase() === "sizes"
+							) && (
+								<Col span={12}>
+									<Select
+										style={{ width: "100%" }}
+										placeholder='Size'
+										value={selectedSize}
+										onChange={setSelectedSize}
+									>
+										{product.options
+											.find((opt) => opt.name.toLowerCase() === "sizes")
+											?.values.map((sizeObj) => {
+												const isDisabled = !variantExistsForColorSize(sizeObj);
+												return (
+													<Option
+														key={sizeObj.title}
+														value={sizeObj.title}
+														disabled={isDisabled}
+														style={{ color: isDisabled ? "#aaa" : "inherit" }}
+													>
+														{sizeObj.title}
+													</Option>
+												);
+											})}
+									</Select>
+								</Col>
+							)}
 						</Row>
 						<Divider style={{ margin: "16px 0" }} />
 
@@ -2762,21 +2754,6 @@ const DoubleClickTooltip = styled.div`
 		}
 	}
 `;
-
-const mediaCSS = `
-  @media (max-width: 800px) {
-    .slick-dots {
-      bottom: 0 !important;
-      margin-bottom: 0 !important;
-    }
-    .slick-slider {
-      margin-bottom: 0 !important;
-    }
-  }
-`;
-const styleTag = document.createElement("style");
-styleTag.innerHTML = mediaCSS;
-document.head.appendChild(styleTag);
 
 const CenterIndicator = styled.div`
 	position: absolute;
