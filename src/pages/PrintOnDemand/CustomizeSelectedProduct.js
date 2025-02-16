@@ -247,12 +247,12 @@ export default function CustomizeSelectedProduct() {
 	const [textModalVisible, setTextModalVisible] = useState(false);
 	const [mobileTextInput, setMobileTextInput] = useState("");
 
-	// File input on mobile (now includes all typical image extensions)
+	// File input on mobile
 	const hiddenFileInputRef = useRef(null);
 
 	// Dropzone on desktop
-	// === KEY: accept includes .heic, .heif, etc. to capture Apple’s formats, etc. ===
 	const { getRootProps, getInputProps } = useDropzone({
+		/** Accept common image types plus extra potential phone formats. */
 		accept: {
 			"image/*": [
 				".jpg",
@@ -305,7 +305,7 @@ export default function CustomizeSelectedProduct() {
 		}
 	}, [isMobile]);
 
-	// === NEW STATE for showing a spinner/overlay while uploading ===
+	// Show spinner/overlay while uploading
 	const [uploadingImage, setUploadingImage] = useState(false);
 
 	// LOAD PRODUCT
@@ -349,7 +349,7 @@ export default function CustomizeSelectedProduct() {
 				}
 				fetchedProduct.variants = validVariants;
 
-				// Just in case we might remove any extraneous option values that do not correspond to valid variants
+				// Remove extraneous option values that do not correspond to valid variants
 				fetchedProduct.options = fetchedProduct.options.map((opt) => {
 					const newValues = opt.values.filter((val) =>
 						validVariants.some((v) => v.options.includes(val.id))
@@ -367,14 +367,13 @@ export default function CustomizeSelectedProduct() {
 					(opt) => opt.name.toLowerCase() === "sizes"
 				);
 
-				// 1) Color
+				// Color
 				if (colorOption?.values?.length) {
 					setSelectedColor(colorOption.values[0].title);
 				} else {
 					setSelectedColor("");
 				}
-
-				// 2) Size
+				// Size
 				if (sizeOption?.values?.length) {
 					const defVar = validVariants.find((v) => v.is_default);
 					if (defVar) {
@@ -502,9 +501,7 @@ export default function CustomizeSelectedProduct() {
 	}, [product, selectedColor, selectedSize]);
 
 	/**
-	 * ******* UPDATED addImageElement() ******
-	 *   => Accept any valid image (png/jpg/heic/etc.)
-	 *   => If resizing fails, fallback to original file
+	 * ====== UPDATED addImageElement with Fallback Logic ======
 	 */
 	const addImageElement = async (file) => {
 		const colorOption = product?.options.find(
@@ -523,68 +520,28 @@ export default function CustomizeSelectedProduct() {
 			return;
 		}
 
+		setUploadingImage(true);
+
 		try {
-			// Check up to 5MB
+			// 1) File-size check
 			if (file.size > 5 * 1024 * 1024) {
-				message.error(
-					"The selected image is larger than 5MB. Please choose a smaller image."
-				);
-				return;
+				// Over 5MB => attempt resizing first
+				await handleImageResizingThenUpload(file);
+			} else {
+				// Under 5MB => try direct upload first
+				try {
+					await uploadDirectly(file);
+				} catch (directErr) {
+					console.warn(
+						"Direct upload failed; now attempting to resize.",
+						directErr
+					);
+					// If direct fails => fallback to resizing approach
+					await handleImageResizingThenUpload(file);
+				}
 			}
-			setUploadingImage(true);
-
-			// Attempt to resize
-			let base64Image;
-			try {
-				const resizedFile = await resizeImage(file, 1200);
-				base64Image = await convertToBase64(resizedFile);
-			} catch (errResizing) {
-				// If resizing fails for some image type => fallback to original
-				console.error(
-					"Resizing attempt failed, using original file:",
-					errResizing
-				);
-				base64Image = await convertToBase64(file);
-			}
-
-			// Upload to Cloudinary
-			const { public_id, url } = await cloudinaryUpload1(user._id, token, {
-				image: base64Image,
-			});
-			if (!public_id || !url) {
-				throw new Error("Missing public_id or url in upload response");
-			}
-			if (!printAreaRef.current) return;
-
-			const boundingRect = printAreaRef.current.getBoundingClientRect();
-			const imgWidth = 150;
-			const imgHeight = 200;
-			const centerX = boundingRect.width / 2 - imgWidth / 2;
-			const centerY = boundingRect.height / 2 - imgHeight / 2;
-
-			const newId = Date.now();
-			const removedBg = removeImageBackground(url);
-
-			const newImgEl = {
-				id: newId,
-				type: "image",
-				src: url,
-				public_id,
-				rotation: 0,
-				x: centerX,
-				y: centerY,
-				width: imgWidth,
-				height: imgHeight,
-				borderRadius: 0,
-				originalSrc: url,
-				removedBgSrc: removedBg,
-				bgRemoved: false,
-				wasReset: false,
-			};
-			setElements((prev) => [...prev, newImgEl]);
-			setSelectedElementId(newId);
-		} catch (error) {
-			console.error("Image upload failed:", error);
+		} catch (finalErr) {
+			console.error("Image upload (including fallback) failed:", finalErr);
 			message.error(
 				"We encountered an issue uploading your image. Please check your connection and try again."
 			);
@@ -593,6 +550,74 @@ export default function CustomizeSelectedProduct() {
 		}
 	};
 
+	/**
+	 * Upload the file "as is".
+	 */
+	async function uploadDirectly(file) {
+		// Convert the raw file to base64 and upload
+		const base64Image = await convertToBase64(file);
+		const { public_id, url } = await cloudinaryUpload1(user._id, token, {
+			image: base64Image,
+		});
+		if (!public_id || !url) {
+			throw new Error("Missing public_id or url in direct upload response");
+		}
+		addImageElementToCanvas(public_id, url);
+	}
+
+	/**
+	 * Attempt to resize, then upload
+	 */
+	async function handleImageResizingThenUpload(file) {
+		const resizedFile = await resizeImage(file, 1200); // e.g. 1200 px max dimension
+		const base64Image = await convertToBase64(resizedFile);
+		const { public_id, url } = await cloudinaryUpload1(user._id, token, {
+			image: base64Image,
+		});
+		if (!public_id || !url) {
+			throw new Error("Missing public_id or url after resizing");
+		}
+		addImageElementToCanvas(public_id, url);
+	}
+
+	/**
+	 * Add the newly uploaded image to the design canvas
+	 */
+	function addImageElementToCanvas(public_id, url) {
+		if (!printAreaRef.current) return;
+
+		const boundingRect = printAreaRef.current.getBoundingClientRect();
+		const imgWidth = 150;
+		const imgHeight = 200;
+		const centerX = boundingRect.width / 2 - imgWidth / 2;
+		const centerY = boundingRect.height / 2 - imgHeight / 2;
+
+		const newId = Date.now();
+		const removedBg = removeImageBackground(url);
+
+		const newImgEl = {
+			id: newId,
+			type: "image",
+			src: url,
+			public_id,
+			rotation: 0,
+			x: centerX,
+			y: centerY,
+			width: imgWidth,
+			height: imgHeight,
+			borderRadius: 0,
+			originalSrc: url,
+			removedBgSrc: removedBg,
+			bgRemoved: false,
+			wasReset: false,
+		};
+		setElements((prev) => [...prev, newImgEl]);
+		setSelectedElementId(newId);
+	}
+
+	/**
+	 * Removes background if possible
+	 */
 	function removeImageBackground(oldUrl) {
 		if (!oldUrl.includes("/upload/")) {
 			return oldUrl;
@@ -662,7 +687,6 @@ export default function CustomizeSelectedProduct() {
 		});
 	}
 
-	// ADD TEXT
 	const addTextElement = (textValue) => {
 		const finalText = textValue ? textValue.trim() : userText.trim();
 		if (!finalText) {
@@ -1105,6 +1129,7 @@ export default function CustomizeSelectedProduct() {
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		try {
+			// === Attempt #1 (original settings)
 			const screenshotOptions = {
 				scale: 3,
 				useCORS: true,
@@ -1117,31 +1142,86 @@ export default function CustomizeSelectedProduct() {
 				screenshotOptions.scale = 2;
 			}
 
-			const bareCanvas = await html2canvas(
-				bareDesignRef.current,
-				screenshotOptions
-			);
-			const croppedBareCanvas = cropCanvasToTransparentBounds(bareCanvas);
-			const bareDataURL = await compressCanvas(croppedBareCanvas, {
-				mimeType: "image/jpeg",
-				quality: 0.9,
-			});
-			const { url: bareUrl } = await cloudinaryUpload1(user._id, token, {
-				image: bareDataURL,
-			});
+			let bareUrl, finalUrl;
+			try {
+				// #1) bare design screenshot
+				const bareCanvas = await html2canvas(
+					bareDesignRef.current,
+					screenshotOptions
+				);
+				const croppedBareCanvas = cropCanvasToTransparentBounds(bareCanvas);
+				const bareDataURL = await compressCanvas(croppedBareCanvas, {
+					mimeType: "image/jpeg",
+					quality: 0.9,
+				});
+				const bareUpload = await cloudinaryUpload1(user._id, token, {
+					image: bareDataURL,
+				});
+				bareUrl = bareUpload.url;
 
-			const finalCanvas = await html2canvas(
-				designOverlayRef.current,
-				screenshotOptions
-			);
-			const finalDataURL = await compressCanvas(finalCanvas, {
-				mimeType: "image/jpeg",
-				quality: 0.9,
-			});
-			const { url: finalUrl } = await cloudinaryUpload1(user._id, token, {
-				image: finalDataURL,
-			});
+				// #2) final overlay screenshot
+				const finalCanvas = await html2canvas(
+					designOverlayRef.current,
+					screenshotOptions
+				);
+				const finalDataURL = await compressCanvas(finalCanvas, {
+					mimeType: "image/jpeg",
+					quality: 0.9,
+				});
+				const finalUpload = await cloudinaryUpload1(user._id, token, {
+					image: finalDataURL,
+				});
+				finalUrl = finalUpload.url;
+			} catch (attemptOneErr) {
+				console.warn(
+					"Screenshot attempt #1 failed, trying fallback...",
+					attemptOneErr
+				);
+				// === Attempt #2 fallback with looser options
+				const fallbackOptions = {
+					scale: 2,
+					useCORS: false,
+					allowTaint: true,
+					ignoreElements: (element) =>
+						element.classList?.contains("noScreenshot"),
+					backgroundColor: null,
+				};
 
+				// bare
+				const bareCanvas2 = await html2canvas(
+					bareDesignRef.current,
+					fallbackOptions
+				);
+				const croppedBare2 = cropCanvasToTransparentBounds(bareCanvas2);
+				const bareDataURL2 = await compressCanvas(croppedBare2, {
+					mimeType: "image/jpeg",
+					quality: 0.85,
+				});
+				const bareUp2 = await cloudinaryUpload1(user._id, token, {
+					image: bareDataURL2,
+				});
+				bareUrl = bareUp2.url;
+
+				// final
+				const finalCanvas2 = await html2canvas(
+					designOverlayRef.current,
+					fallbackOptions
+				);
+				const finalDataURL2 = await compressCanvas(finalCanvas2, {
+					mimeType: "image/jpeg",
+					quality: 0.85,
+				});
+				const finalUp2 = await cloudinaryUpload1(user._id, token, {
+					image: finalDataURL2,
+				});
+				finalUrl = finalUp2.url;
+			}
+
+			if (!bareUrl || !finalUrl) {
+				throw new Error("Screenshot fallback also failed.");
+			}
+
+			// Attempt to find matching variant image
 			let variantImage = "";
 			let matchingVariant = null;
 
@@ -1196,6 +1276,7 @@ export default function CustomizeSelectedProduct() {
 					}
 				}
 			}
+
 			const firstImageElement = elements.find((el) => el.type === "image");
 			const originalPrintifyImageURL =
 				variantImage || (firstImageElement ? firstImageElement.src : "");
@@ -1210,6 +1291,7 @@ export default function CustomizeSelectedProduct() {
 				finalPriceAfterDiscount = product.priceAfterDiscount || finalPrice;
 			}
 
+			// Prepare customDesign
 			const customDesign = {
 				bareScreenshotUrl: bareUrl,
 				finalScreenshotUrl: finalUrl,
@@ -1258,7 +1340,7 @@ export default function CustomizeSelectedProduct() {
 			openSidebar2();
 			message.success("Added to cart with custom design!");
 		} catch (error) {
-			console.error("Screenshot or upload failed:", error);
+			console.error("Screenshot or upload final failed:", error);
 			message.error(
 				"There was an issue capturing your design screenshot. Please refresh or try again on a different device."
 			);
@@ -1574,9 +1656,6 @@ export default function CustomizeSelectedProduct() {
 													Upload Image
 												</Button>
 
-												{/**
-												 * Key: allow all typical image extensions
-												 */}
 												<input
 													type='file'
 													accept='image/*,.jpg,.jpeg,.png,.gif,.webp,.heic,.HEIC,.heif,.HEIF'
@@ -1773,6 +1852,7 @@ export default function CustomizeSelectedProduct() {
 				</Col>
 			</Row>
 
+			{/* For mobile, the bottom panel with the same text/image inputs */}
 			{isMobile && (
 				<MobileBottomPanel>
 					<Divider />
