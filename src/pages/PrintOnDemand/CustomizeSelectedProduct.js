@@ -15,6 +15,7 @@ import {
 	Popover,
 	InputNumber,
 	Modal,
+	Spin,
 } from "antd";
 import Slider from "react-slick";
 import { useDropzone } from "react-dropzone";
@@ -251,6 +252,10 @@ export default function CustomizeSelectedProduct() {
 
 	// Dropzone on desktop
 	const { getRootProps, getInputProps } = useDropzone({
+		/**
+		 * Accept only images - disallows videos.
+		 * Note: This ensures the user can only pick image files.
+		 */
 		accept: { "image/*": [] },
 		onDrop: (acceptedFiles) => {
 			ReactGA.event({
@@ -290,6 +295,9 @@ export default function CustomizeSelectedProduct() {
 			}, 1000);
 		}
 	}, [isMobile]);
+
+	// === NEW STATE for showing a spinner/overlay while uploading ===
+	const [uploadingImage, setUploadingImage] = useState(false);
 
 	// LOAD PRODUCT
 	useEffect(() => {
@@ -553,6 +561,17 @@ export default function CustomizeSelectedProduct() {
 		}
 
 		try {
+			// === NEW FILE-SIZE CHECK (up to 5MB) ===
+			if (file.size > 5 * 1024 * 1024) {
+				message.error(
+					"The selected image is larger than 5MB. Please choose a smaller image."
+				);
+				return;
+			}
+
+			// === Show uploading spinner overlay ===
+			setUploadingImage(true);
+
 			const resizedImage = await resizeImage(file, 1200);
 			const base64Image = await convertToBase64(resizedImage);
 			const { public_id, url } = await cloudinaryUpload1(user._id, token, {
@@ -592,7 +611,13 @@ export default function CustomizeSelectedProduct() {
 			setSelectedElementId(newId);
 		} catch (error) {
 			console.error("Image upload failed:", error);
-			message.error("Failed to upload image. Please try again.");
+			// === NEW, more descriptive error message ===
+			message.error(
+				"We encountered an issue uploading your image. Please check your connection and try again."
+			);
+		} finally {
+			// === Hide spinner once upload is done (success or failure) ===
+			setUploadingImage(false);
 		}
 	};
 
@@ -1240,7 +1265,10 @@ export default function CustomizeSelectedProduct() {
 			message.success("Added to cart with custom design!");
 		} catch (error) {
 			console.error("Screenshot or upload failed:", error);
-			message.error("Failed to capture your design. Please try again.");
+			// === NEW, more descriptive screenshot error message ===
+			message.error(
+				"There was an issue capturing your design screenshot. Please refresh or try again on a different device."
+			);
 		} finally {
 			setSelectedElementId(previouslySelected);
 			setIsAddToCartDisabled(false);
@@ -1562,7 +1590,8 @@ export default function CustomizeSelectedProduct() {
 												 */}
 												<input
 													type='file'
-													accept='image/*;capture=camera'
+													accept='image/*'
+													capture='camera'
 													ref={hiddenFileInputRef}
 													style={{ display: "none" }}
 													onChange={(e) => {
@@ -1885,6 +1914,13 @@ export default function CustomizeSelectedProduct() {
 					onChange={(e) => setMobileTextInput(e.target.value)}
 				/>
 			</Modal>
+
+			{/* === Spinner Overlay While Uploading Images === */}
+			{uploadingImage && (
+				<UploadOverlay>
+					<Spin size='large' tip='Uploading image...' />
+				</UploadOverlay>
+			)}
 
 			{/* Hidden container for bare design screenshot */}
 			<BareDesignOverlay ref={bareDesignRef}>
@@ -2797,4 +2833,21 @@ const CenterIndicator = styled.div`
 	pointer-events: none;
 	z-index: 9999;
 	border: 1px dotted rgba(255, 0, 0, 0.3);
+`;
+
+/*
+ * === NEW: Overlay while uploading images ===
+ * position: fixed so it covers the entire screen
+ */
+const UploadOverlay = styled.div`
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(128, 128, 128, 0.5);
+	z-index: 9999999; /* high z-index to appear above everything */
+	display: flex;
+	align-items: center;
+	justify-content: center;
 `;
