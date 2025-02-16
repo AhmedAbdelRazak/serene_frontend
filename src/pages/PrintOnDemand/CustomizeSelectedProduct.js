@@ -247,7 +247,7 @@ export default function CustomizeSelectedProduct() {
 	const [textModalVisible, setTextModalVisible] = useState(false);
 	const [mobileTextInput, setMobileTextInput] = useState("");
 
-	// File input on mobile (note the `capture="camera"` for mobile)
+	// File input on mobile
 	const hiddenFileInputRef = useRef(null);
 
 	// Dropzone on desktop
@@ -361,8 +361,6 @@ export default function CustomizeSelectedProduct() {
 
 				// 1) Color
 				if (colorOption?.values?.length) {
-					// If there is exactly 1 color, pick it automatically
-					// or pick the first one in the array
 					setSelectedColor(colorOption.values[0].title);
 				} else {
 					setSelectedColor("");
@@ -1585,13 +1583,12 @@ export default function CustomizeSelectedProduct() {
 												</Button>
 
 												{/**
-												 * Key change for mobile: capture="camera"
-												 * so older devices open the camera or photo library properly
+												 * Removed capture='camera' so users can choose
+												 * either camera or gallery from their phone.
 												 */}
 												<input
 													type='file'
 													accept='image/*'
-													capture='camera'
 													ref={hiddenFileInputRef}
 													style={{ display: "none" }}
 													onChange={(e) => {
