@@ -42,8 +42,8 @@ import { Rnd } from "react-rnd";
 import { Helmet } from "react-helmet";
 import ReactGA from "react-ga4";
 
-// ★★★ ADDED THIS ★★★
-import heic2any from "heic2any"; // to handle .heic mobile images
+// ★ We still need heic2any for HEIC → JPEG
+import heic2any from "heic2any";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -107,10 +107,8 @@ function cropCanvasToTransparentBounds(originalCanvas) {
 	const croppedWidth = right - left;
 	const croppedHeight = bottom - top;
 	if (croppedWidth <= 0 || croppedHeight <= 0) {
-		// everything is transparent => return original
-		return originalCanvas;
+		return originalCanvas; // everything is transparent => return original
 	}
-
 	const newCanvas = document.createElement("canvas");
 	newCanvas.width = croppedWidth;
 	newCanvas.height = croppedHeight;
@@ -160,7 +158,7 @@ function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 				quality
 			);
 		} else {
-			// fallback for older browsers (Safari iOS ~12, etc.)
+			// fallback for older browsers
 			try {
 				const dataURL = canvas.toDataURL(mimeType, quality);
 				const blob = dataURLtoBlob(dataURL);
@@ -175,24 +173,23 @@ function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 	});
 }
 
-// ★★★ ADDED THIS ★★★
-// Convert HEIC file to a standard (e.g. JPEG) if needed.
+/**
+ * 1) If file is .heic => convert it to JPEG using heic2any.
+ * 2) Otherwise return original.
+ */
 async function convertHeicToJpegIfNeeded(file) {
 	const fileType = file.type?.toLowerCase() || "";
 	const fileName = file.name?.toLowerCase() || "";
 
-	// If the file is not HEIC, just return it as is.
 	if (!fileType.includes("heic") && !fileName.endsWith(".heic")) {
 		return file;
 	}
-
 	try {
 		const convertedBlob = await heic2any({
 			blob: file,
 			toType: "image/jpeg",
 			quality: 0.9,
 		});
-		// `convertedBlob` is a Blob, wrap it back in a File if you want a File object
 		const convertedFile = new File(
 			[convertedBlob],
 			file.name.replace(/\.heic$/i, ".jpg"),
@@ -206,6 +203,56 @@ async function convertHeicToJpegIfNeeded(file) {
 		console.warn("HEIC conversion failed. Using original file:", err);
 		return file;
 	}
+}
+
+/**
+ * Ultimate fallback: draw the file into a <canvas> and produce a new file
+ * in case normal FileReader or heic2any fails on iOS.
+ */
+async function fallbackCanvasConvert(file) {
+	// If iOS user took a Live Photo, sometimes it comes back as .mov or .quicktime
+	if (
+		file.type?.toLowerCase().includes("video") ||
+		file.name?.endsWith(".mov")
+	) {
+		throw new Error(
+			"This file is a video (possibly a Live Photo). Cannot convert to image."
+		);
+	}
+	return new Promise((resolve, reject) => {
+		const url = URL.createObjectURL(file);
+		const img = new Image();
+		img.onload = () => {
+			try {
+				const canvas = document.createElement("canvas");
+				canvas.width = img.width;
+				canvas.height = img.height;
+				const ctx = canvas.getContext("2d");
+				ctx.drawImage(img, 0, 0);
+				canvas.toBlob(
+					(blob) => {
+						if (!blob) return reject(new Error("Canvas toBlob produced null"));
+						const newFile = new File([blob], file.name || "fallback.jpg", {
+							type: "image/jpeg",
+							lastModified: Date.now(),
+						});
+						resolve(newFile);
+					},
+					"image/jpeg",
+					0.9
+				);
+			} catch (err) {
+				reject(err);
+			} finally {
+				URL.revokeObjectURL(url);
+			}
+		};
+		img.onerror = (err) => {
+			URL.revokeObjectURL(url);
+			reject(err);
+		};
+		img.src = url;
+	});
 }
 
 export default function CustomizeSelectedProduct() {
@@ -268,6 +315,7 @@ export default function CustomizeSelectedProduct() {
 
 	const hiddenFileInputRef = useRef(null);
 
+	// Our dropzone for desktop drag/drop
 	const { getRootProps, getInputProps } = useDropzone({
 		accept: {
 			"image/*": [
@@ -288,9 +336,7 @@ export default function CustomizeSelectedProduct() {
 				action: "User Uploaded Image In Custom Design",
 				label: `User Uploaded Image In Custom Design`,
 			});
-			acceptedFiles.forEach((file) => {
-				addImageElement(file);
-			});
+			acceptedFiles.forEach((file) => addImageElement(file));
 		},
 	});
 
@@ -439,7 +485,7 @@ export default function CustomizeSelectedProduct() {
 		setDefaultTextAdded(true);
 	}, [product, defaultTextAdded]);
 
-	// Update variant_id when color/size changes
+	// Update variant_id whenever color/size changes
 	useEffect(() => {
 		if (!product) return;
 
@@ -502,7 +548,9 @@ export default function CustomizeSelectedProduct() {
 		}));
 	}, [product, selectedColor, selectedSize]);
 
-	// ★★★ MAIN ADD-IMAGE LOGIC ★★★
+	/**
+	 * ============ MAIN ADD-IMAGE LOGIC ============
+	 */
 	const addImageElement = async (file) => {
 		const colorOption = product?.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
@@ -520,29 +568,57 @@ export default function CustomizeSelectedProduct() {
 			return;
 		}
 
+		// If user tries to upload a .mov or .quicktime file from a Live Photo
+		if (
+			file.type?.includes("video") ||
+			file.name?.toLowerCase().endsWith(".mov")
+		) {
+			message.error(
+				"This file is a video/Live Photo. Please select a standard image."
+			);
+			return;
+		}
+
 		setUploadingImage(true);
-
 		try {
-			// ★★★ Convert HEIC if needed before anything else ★★★
-			const maybeConverted = await convertHeicToJpegIfNeeded(file);
+			// 1) Convert from HEIC if needed
+			let workingFile = await convertHeicToJpegIfNeeded(file);
 
-			// 1) Check file size
-			if (maybeConverted.size > 5 * 1024 * 1024) {
-				// Over 5MB => attempt resizing
-				await handleImageResizingThenUpload(maybeConverted);
-			} else {
-				// Under 5MB => try direct
+			// 2) If workingFile still bigger than 5 MB => compress it.
+			if (workingFile.size > 5 * 1024 * 1024) {
 				try {
-					await uploadDirectly(maybeConverted);
-				} catch (directErr) {
-					console.warn("Direct upload failed; resizing fallback...", directErr);
-					await handleImageResizingThenUpload(maybeConverted);
+					await handleImageResizingThenUpload(workingFile);
+					return;
+				} catch (resizeErr) {
+					console.warn(
+						"Resizing failed, trying final fallback canvas approach...",
+						resizeErr
+					);
+					workingFile = await fallbackCanvasConvert(workingFile);
+					await uploadDirectly(workingFile);
+					return;
+				}
+			}
+
+			// 3) Attempt direct upload
+			try {
+				await uploadDirectly(workingFile);
+			} catch (directErr) {
+				// 4) If direct fails => try resizing
+				console.warn("Direct upload failed; resizing fallback...", directErr);
+				try {
+					await handleImageResizingThenUpload(workingFile);
+				} catch (resizeErr) {
+					// 5) If resizing also fails => final fallback: canvas approach
+					console.warn("Resize also failed. Canvas fallback...", resizeErr);
+					const fallbackFile = await fallbackCanvasConvert(workingFile);
+					await uploadDirectly(fallbackFile);
 				}
 			}
 		} catch (finalErr) {
-			console.error("Image upload (including fallback) failed:", finalErr);
+			console.error("Image upload (all fallback attempts) failed:", finalErr);
 			message.error(
-				"We encountered an issue uploading your image. Please check your connection and try again."
+				"We encountered an issue uploading your image. Please try again or pick a different photo."
 			);
 		} finally {
 			setUploadingImage(false);
@@ -610,55 +686,50 @@ export default function CustomizeSelectedProduct() {
 		return oldUrl.replace("/upload/", "/upload/e_background_removal/");
 	}
 
-	function resizeImage(file, maxSize) {
+	async function resizeImage(file, maxSize) {
 		return new Promise((resolve, reject) => {
-			let img = new Image();
-			let canvas = document.createElement("canvas");
-			let reader = new FileReader();
+			const img = new Image();
+			const canvas = document.createElement("canvas");
+			const reader = new FileReader();
 
-			reader.readAsDataURL(file);
 			reader.onload = (e) => {
 				img.src = e.target.result;
-				img.onload = () => {
-					let width = img.width;
-					let height = img.height;
-
-					if (width > height) {
-						if (width > maxSize) {
-							height *= maxSize / width;
-							width = maxSize;
-						}
-					} else {
-						if (height > maxSize) {
-							width *= maxSize / height;
-							height = maxSize;
-						}
-					}
-
-					canvas.width = width;
-					canvas.height = height;
-					let ctx = canvas.getContext("2d");
-					ctx.drawImage(img, 0, 0, width, height);
-
-					canvas.toBlob(
-						(blob) => {
-							if (!blob) {
-								console.error("Canvas is empty");
-								return;
-							}
-							let resizedFile = new File([blob], file.name, {
-								type: "image/jpeg",
-								lastModified: Date.now(),
-							});
-							resolve(resizedFile);
-						},
-						"image/jpeg",
-						1
-					);
-				};
-				img.onerror = (error) => reject(error);
 			};
-			reader.onerror = (error) => reject(error);
+			reader.onerror = reject;
+			reader.readAsDataURL(file);
+
+			img.onload = () => {
+				let width = img.width;
+				let height = img.height;
+				if (width > height && width > maxSize) {
+					height = Math.round((height * maxSize) / width);
+					width = maxSize;
+				} else if (height > width && height > maxSize) {
+					width = Math.round((width * maxSize) / height);
+					height = maxSize;
+				}
+				canvas.width = width;
+				canvas.height = height;
+				const ctx = canvas.getContext("2d");
+				ctx.drawImage(img, 0, 0, width, height);
+
+				canvas.toBlob(
+					(blob) => {
+						if (!blob) {
+							return reject(new Error("Canvas is empty."));
+						}
+						const resizedFile = new File([blob], file.name, {
+							type: "image/jpeg",
+							lastModified: Date.now(),
+						});
+						resolve(resizedFile);
+					},
+					"image/jpeg",
+					0.9
+				);
+			};
+
+			img.onerror = (err) => reject(err);
 		});
 	}
 
@@ -709,9 +780,10 @@ export default function CustomizeSelectedProduct() {
 	};
 
 	function handleElementClick(el) {
+		// Bring element to front
 		setElements((prev) => {
-			const withoutClicked = prev.filter((item) => item.id !== el.id);
-			return [...withoutClicked, el];
+			const rest = prev.filter((item) => item.id !== el.id);
+			return [...rest, el];
 		});
 		setSelectedElementId(el.id);
 
@@ -763,6 +835,7 @@ export default function CustomizeSelectedProduct() {
 		const el = elements.find((x) => x.id === elId);
 		if (!el) return;
 
+		// If this image is on Cloudinary, remove it
 		if (el.type === "image" && el.public_id) {
 			try {
 				const userId = user && user._id;
@@ -775,13 +848,12 @@ export default function CustomizeSelectedProduct() {
 					{ public_id: el.public_id },
 					{ headers: { Authorization: `Bearer ${token}` } }
 				);
-				message.success("Image Successfully Deleted.");
+				message.success("Image Successfully Deleted from Cloudinary.");
 			} catch (error) {
 				console.error("Failed to delete image from Cloudinary:", error);
-				message.error("Failed to delete image.");
+				message.error("Failed to delete image from server.");
 			}
 		}
-
 		setElements((prev) => prev.filter((item) => item.id !== elId));
 		setSelectedElementId(null);
 	}
@@ -830,10 +902,10 @@ export default function CustomizeSelectedProduct() {
 
 	const DRAGGABLE_REGION_CLASS = "drag-handle";
 
+	// Rotation
 	function onRotationStart(evt, elId) {
 		evt.stopPropagation();
 		evt.preventDefault();
-
 		rotationData.current.rotatingElementId = elId;
 		const el = elements.find((x) => x.id === elId);
 		if (!el) return;
@@ -858,8 +930,8 @@ export default function CustomizeSelectedProduct() {
 		const { rotatingElementId, startAngle, startRotation } =
 			rotationData.current;
 		if (!rotatingElementId) return;
-
 		evt.preventDefault();
+
 		const el = elements.find((x) => x.id === rotatingElementId);
 		if (!el) return;
 
@@ -916,7 +988,6 @@ export default function CustomizeSelectedProduct() {
 		);
 
 		let matchingVariant = null;
-
 		if (!colorOption && !sizeOption) {
 			matchingVariant = product.variants[0];
 		} else if (colorOption && !sizeOption) {
@@ -942,7 +1013,6 @@ export default function CustomizeSelectedProduct() {
 				);
 			});
 		}
-
 		if (matchingVariant && typeof matchingVariant.price === "number") {
 			return parseFloat(matchingVariant.price / 100);
 		}
@@ -977,7 +1047,6 @@ export default function CustomizeSelectedProduct() {
 		function numOrStr(val) {
 			return typeof val === "number" ? val : parseInt(val, 10);
 		}
-
 		const colorVal = colorOption.values.find(
 			(val) => val.title === selectedColor
 		);
@@ -991,9 +1060,7 @@ export default function CustomizeSelectedProduct() {
 		const filtered = product.images.filter((img) =>
 			img.variant_ids.some((id) => matchingVariantIds.includes(id))
 		);
-		return filtered.length > 0
-			? filtered.slice(0, 6)
-			: product.images.slice(0, 6);
+		return filtered.length ? filtered.slice(0, 6) : product.images.slice(0, 6);
 	}, [selectedColor, product]);
 
 	const sliderSettings = {
@@ -1014,6 +1081,7 @@ export default function CustomizeSelectedProduct() {
 		}
 	}, [filteredImages]);
 
+	// Keep order updated
 	useEffect(() => {
 		const texts = elements
 			.filter((el) => el.type === "text")
@@ -1042,7 +1110,6 @@ export default function CustomizeSelectedProduct() {
 				bg_removed: el.bgRemoved || false,
 				was_reset: el.wasReset || false,
 			}));
-
 		setOrder((prev) => ({
 			...prev,
 			customizations: { texts, images },
@@ -1074,9 +1141,11 @@ export default function CustomizeSelectedProduct() {
 
 	const [isCheckoutModalVisible, setIsCheckoutModalVisible] = useState(false);
 
+	/**
+	 * ADD TO CART => screenshot logic
+	 */
 	async function handleAddToCart() {
 		if (isAddToCartDisabled) return;
-
 		const colorOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
 		);
@@ -1091,12 +1160,10 @@ export default function CustomizeSelectedProduct() {
 			message.warning("Please select a size before adding to cart.");
 			return;
 		}
-
 		if (!order.variant_id) {
 			message.warning("Please select required options before adding to cart.");
 			return;
 		}
-
 		setIsAddToCartDisabled(true);
 
 		const previouslySelected = selectedElementId;
@@ -1160,7 +1227,7 @@ export default function CustomizeSelectedProduct() {
 						element.classList?.contains("noScreenshot"),
 					backgroundColor: null,
 				};
-
+				// bare
 				const bareCanvas2 = await html2canvas(
 					bareDesignRef.current,
 					fallbackOptions
@@ -1175,6 +1242,7 @@ export default function CustomizeSelectedProduct() {
 				});
 				bareUrl = bareUp2.url;
 
+				// final
 				const finalCanvas2 = await html2canvas(
 					designOverlayRef.current,
 					fallbackOptions
@@ -1196,11 +1264,9 @@ export default function CustomizeSelectedProduct() {
 			// Attempt to find matching variant image
 			let variantImage = "";
 			let matchingVariant = null;
-
 			function numOrStr(val) {
 				return typeof val === "number" ? val : parseInt(val, 10);
 			}
-
 			const colorOpt = product?.options?.find(
 				(opt) => opt.name.toLowerCase() === "colors"
 			);
@@ -1238,7 +1304,6 @@ export default function CustomizeSelectedProduct() {
 						);
 					});
 				}
-
 				if (matchingVariant) {
 					const matchingImageObj = product.images.find((img) =>
 						img.variant_ids.includes(matchingVariant.id)
@@ -1301,13 +1366,11 @@ export default function CustomizeSelectedProduct() {
 				chosenProductAttributes,
 				customDesign
 			);
-
 			ReactGA.event({
 				category: "Add To The Cart Custom Products",
 				action: "User Added Product From The Custom Products",
 				label: `User added ${product.productName} to the cart from Custom Products`,
 			});
-
 			openSidebar2();
 			message.success("Added to cart with custom design!");
 		} catch (error) {
@@ -1352,6 +1415,7 @@ export default function CustomizeSelectedProduct() {
 		);
 	}
 
+	// Show tooltip for text
 	useEffect(() => {
 		if (selectedElementId) {
 			const el = elements.find((e) => e.id === selectedElementId);
@@ -1392,7 +1456,6 @@ export default function CustomizeSelectedProduct() {
 
 	function variantExistsForColorSize(sizeObj) {
 		if (!product) return false;
-
 		const colorOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
 		);
@@ -1411,7 +1474,6 @@ export default function CustomizeSelectedProduct() {
 			(val) => val.title === selectedColor
 		);
 		if (!selColorVal) return false;
-
 		return product.variants.some((v) => {
 			const varIds = v.options.map(numOrStr);
 			return (
@@ -1423,7 +1485,6 @@ export default function CustomizeSelectedProduct() {
 
 	function handleColorChange(newColor) {
 		setSelectedColor(newColor);
-
 		const sizeOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
@@ -1435,7 +1496,6 @@ export default function CustomizeSelectedProduct() {
 				(val) => val.title === newColor
 			);
 			if (!selectedColorValue) return;
-
 			const validVariants = product.variants.filter((v) => {
 				const varIds = v.options.map((xx) =>
 					typeof xx === "number" ? xx : parseInt(xx, 10)
@@ -1513,6 +1573,7 @@ export default function CustomizeSelectedProduct() {
 			</Helmet>
 
 			<Row gutter={[18, 20]}>
+				{/* LEFT COLUMN: SLIDER/IMAGES */}
 				<Col xs={24} md={12}>
 					<StyledSlider {...sliderSettings}>
 						{filteredImages.map((image, idx) => {
@@ -1523,6 +1584,7 @@ export default function CustomizeSelectedProduct() {
 									</SlideImageWrapper>
 								);
 							}
+							// First slide is the customization area
 							return (
 								<div key={image.src}>
 									{isMobile && (
@@ -1622,9 +1684,11 @@ export default function CustomizeSelectedProduct() {
 													Upload Image
 												</Button>
 
+												{/* ★ capture="environment" helps iOS open the rear camera if user taps "Camera" */}
 												<input
 													type='file'
 													accept='image/*,.jpg,.jpeg,.png,.gif,.webp,.heic,.HEIC,.heif,.HEIF'
+													capture='environment'
 													ref={hiddenFileInputRef}
 													style={{ display: "none" }}
 													onChange={(e) => {
@@ -1655,6 +1719,7 @@ export default function CustomizeSelectedProduct() {
 					</StyledSlider>
 				</Col>
 
+				{/* RIGHT COLUMN: PRODUCT INFO & CUSTOM PANEL */}
 				<Col xs={24} md={12}>
 					<ProductTitle level={3}>{product.title}</ProductTitle>
 					<ProductDescription>
@@ -1759,7 +1824,7 @@ export default function CustomizeSelectedProduct() {
 						<Title level={4} style={{ color: "var(--text-color-dark)" }}>
 							Add/Update Text
 						</Title>
-
+						{/* Desktop text input */}
 						{!isMobile && (
 							<>
 								<Row gutter={8}>
@@ -1787,6 +1852,7 @@ export default function CustomizeSelectedProduct() {
 
 						<Divider />
 						<Title level={4}>Upload Your Image</Title>
+						{/* Desktop drag/drop zone */}
 						{!isMobile && (
 							<UploadZone {...getRootProps()}>
 								<input {...getInputProps()} />
@@ -1817,6 +1883,7 @@ export default function CustomizeSelectedProduct() {
 				</Col>
 			</Row>
 
+			{/* MOBILE BOTTOM PANEL */}
 			{isMobile && (
 				<MobileBottomPanel>
 					<Divider />
@@ -1904,13 +1971,13 @@ export default function CustomizeSelectedProduct() {
 
 						<Divider />
 						<Title level={4}>Upload Your Image</Title>
+						{/* Mobile dropzone */}
 						<UploadZone {...getRootProps()}>
 							<input {...getInputProps()} />
-							<p>Drag &amp; drop or click to select an image</p>
+							<p>Drag &amp; drop or tap to select an image</p>
 						</UploadZone>
 
 						<Divider />
-
 						<Button
 							type='primary'
 							icon={<ShoppingCartOutlined />}
@@ -1946,6 +2013,7 @@ export default function CustomizeSelectedProduct() {
 				</UploadOverlay>
 			)}
 
+			{/* BARE DESIGN (for screenshot) */}
 			<BareDesignOverlay ref={bareDesignRef}>
 				<BarePrintArea id='bare-print-area' ref={barePrintAreaRef}>
 					{elements.map((el) => (
@@ -2026,7 +2094,6 @@ export default function CustomizeSelectedProduct() {
 	function renderDesignElements() {
 		return elements.map((el) => {
 			const isSelected = el.id === selectedElementId;
-
 			return (
 				<Rnd
 					key={el.id}
@@ -2145,7 +2212,7 @@ export default function CustomizeSelectedProduct() {
 							/>
 						)}
 					</div>
-
+					{/* Rotate handle */}
 					{isSelected && (
 						<RotateHandle
 							className='rotate-handle'
@@ -2157,15 +2224,18 @@ export default function CustomizeSelectedProduct() {
 							↻
 						</RotateHandle>
 					)}
-
-					{isSelected && el.type === "text" && showTooltipForText === el.id && (
-						<DoubleClickTooltip>
-							{isMobile
-								? "Double-tap to edit text"
-								: "Double-click to edit text"}
-						</DoubleClickTooltip>
-					)}
-
+					{/* 5s text tooltip */}
+					{isSelected &&
+						el.type === "text" &&
+						showTooltipForText === el.id &&
+						!isRotating && (
+							<DoubleClickTooltip>
+								{isMobile
+									? "Double-tap to edit text"
+									: "Double-click to edit text"}
+							</DoubleClickTooltip>
+						)}
+					{/* TEXT toolbar */}
 					{isSelected && el.type === "text" && !isRotating && (
 						<TextToolbarContainer className='text-toolbar'>
 							<TextToolbar>
@@ -2403,7 +2473,6 @@ export default function CustomizeSelectedProduct() {
 										<DeleteOutlined />
 									</DeleteIcon>
 								</ToolbarRowTwo>
-
 								<ToolbarRowReset>
 									<ResetIcon
 										onClick={() => handleResetStyling(el.id)}
@@ -2416,6 +2485,7 @@ export default function CustomizeSelectedProduct() {
 						</TextToolbarContainer>
 					)}
 
+					{/* IMAGE toolbar */}
 					{isSelected && el.type === "image" && !isRotating && (
 						<ImageToolbarContainer className='image-toolbar'>
 							<ImageToolbar>
@@ -2439,11 +2509,9 @@ export default function CustomizeSelectedProduct() {
 										placeholder='Radius'
 										title='Border Radius'
 									/>
-
 									<RemoveBgButton onClick={() => handleRemoveBgToggle(el.id)}>
 										{el.bgRemoved ? "Default" : "Remove BG"}
 									</RemoveBgButton>
-
 									<DeleteIcon
 										onClick={() => deleteSelectedElement(el.id)}
 										title='Delete Image'
@@ -2451,7 +2519,6 @@ export default function CustomizeSelectedProduct() {
 										<DeleteOutlined />
 									</DeleteIcon>
 								</ToolbarRowImage>
-
 								<ToolbarRowReset>
 									<ResetIcon
 										onClick={() => handleResetStyling(el.id)}
@@ -2469,7 +2536,7 @@ export default function CustomizeSelectedProduct() {
 	}
 }
 
-/* ========== Styled Components (unchanged or minimally changed) ========== */
+/* ========== Styled Components ========== */
 
 const CustomizeWrapper = styled.section`
 	padding: 40px;
@@ -2540,7 +2607,7 @@ const OverlayImage = styled.img`
 	top: 0;
 	left: 0;
 	z-index: 0;
-	crossorigin: anonymous;
+	crossorigin: "anonymous";
 `;
 
 const SlideImageWrapper = styled.div`
@@ -2803,7 +2870,6 @@ const RemoveBgButton = styled(Button)`
 	background: #ffc069;
 	border-color: #ffc069;
 	color: #000;
-
 	&:hover {
 		background: #ffd591;
 		border-color: #ffd591;
