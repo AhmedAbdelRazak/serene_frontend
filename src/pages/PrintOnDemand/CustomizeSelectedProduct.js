@@ -31,6 +31,7 @@ import {
 	EditOutlined,
 	CloudUploadOutlined,
 	ReloadOutlined,
+	CameraOutlined, // ★ added for camera icon
 } from "@ant-design/icons";
 import PrintifyCheckoutModal from "./PrintifyCheckoutModal"; // Adjust path if needed
 import { isAuthenticated } from "../../auth"; // Adjust path if needed
@@ -42,7 +43,7 @@ import { Rnd } from "react-rnd";
 import { Helmet } from "react-helmet";
 import ReactGA from "react-ga4";
 
-// ★ We still need heic2any for HEIC → JPEG
+// heic2any for .heic → jpeg
 import heic2any from "heic2any";
 
 const { Title } = Typography;
@@ -206,17 +207,16 @@ async function convertHeicToJpegIfNeeded(file) {
 }
 
 /**
- * Ultimate fallback: draw the file into a <canvas> and produce a new file
- * in case normal FileReader or heic2any fails on iOS.
+ * final fallback: draw the file into a <canvas> and produce a new file
+ * in case normal FileReader or heic2any fails on iOS
  */
 async function fallbackCanvasConvert(file) {
-	// If iOS user took a Live Photo, sometimes it comes back as .mov or .quicktime
 	if (
 		file.type?.toLowerCase().includes("video") ||
 		file.name?.endsWith(".mov")
 	) {
 		throw new Error(
-			"This file is a video (possibly a Live Photo). Cannot convert to image."
+			"This file is a video/Live Photo. Cannot convert to image."
 		);
 	}
 	return new Promise((resolve, reject) => {
@@ -313,7 +313,9 @@ export default function CustomizeSelectedProduct() {
 	const [textModalVisible, setTextModalVisible] = useState(false);
 	const [mobileTextInput, setMobileTextInput] = useState("");
 
-	const hiddenFileInputRef = useRef(null);
+	// For separate "gallery" vs "camera"
+	const hiddenGalleryInputRef = useRef(null);
+	const hiddenCameraInputRef = useRef(null);
 
 	// Our dropzone for desktop drag/drop
 	const { getRootProps, getInputProps } = useDropzone({
@@ -568,9 +570,9 @@ export default function CustomizeSelectedProduct() {
 			return;
 		}
 
-		// If user tries to upload a .mov or .quicktime file from a Live Photo
+		// If user picks a .mov or .quicktime (Live Photo) => show an error
 		if (
-			file.type?.includes("video") ||
+			file.type?.toLowerCase().includes("video") ||
 			file.name?.toLowerCase().endsWith(".mov")
 		) {
 			message.error(
@@ -584,14 +586,14 @@ export default function CustomizeSelectedProduct() {
 			// 1) Convert from HEIC if needed
 			let workingFile = await convertHeicToJpegIfNeeded(file);
 
-			// 2) If workingFile still bigger than 5 MB => compress it.
+			// 2) If workingFile still bigger than 5 MB => compress it
 			if (workingFile.size > 5 * 1024 * 1024) {
 				try {
 					await handleImageResizingThenUpload(workingFile);
 					return;
 				} catch (resizeErr) {
 					console.warn(
-						"Resizing failed, trying final fallback canvas approach...",
+						"Resizing failed; final fallback to canvas...",
 						resizeErr
 					);
 					workingFile = await fallbackCanvasConvert(workingFile);
@@ -609,7 +611,7 @@ export default function CustomizeSelectedProduct() {
 				try {
 					await handleImageResizingThenUpload(workingFile);
 				} catch (resizeErr) {
-					// 5) If resizing also fails => final fallback: canvas approach
+					// 5) final fallback => canvas
 					console.warn("Resize also failed. Canvas fallback...", resizeErr);
 					const fallbackFile = await fallbackCanvasConvert(workingFile);
 					await uploadDirectly(fallbackFile);
@@ -848,7 +850,7 @@ export default function CustomizeSelectedProduct() {
 					{ public_id: el.public_id },
 					{ headers: { Authorization: `Bearer ${token}` } }
 				);
-				message.success("Image Successfully Deleted from Cloudinary.");
+				message.success("Image Successfully Deleted.");
 			} catch (error) {
 				console.error("Failed to delete image from Cloudinary:", error);
 				message.error("Failed to delete image from server.");
@@ -1670,6 +1672,28 @@ export default function CustomizeSelectedProduct() {
 												>
 													Add Text
 												</Button>
+
+												{/* Dedicated "Take Photo" button for live images */}
+												<Button
+													icon={<CameraOutlined />}
+													onClick={() => hiddenCameraInputRef.current.click()}
+												>
+													Take Photo
+												</Button>
+												<input
+													type='file'
+													accept='image/*'
+													capture='environment'
+													ref={hiddenCameraInputRef}
+													style={{ display: "none" }}
+													onChange={(e) => {
+														if (e.target.files?.length) {
+															addImageElement(e.target.files[0]);
+														}
+													}}
+												/>
+
+												{/* "Upload from Gallery" button */}
 												<Button
 													icon={<CloudUploadOutlined />}
 													onClick={() => {
@@ -1678,18 +1702,15 @@ export default function CustomizeSelectedProduct() {
 															action: "User Uploaded Image In Custom Design",
 															label: `User Uploaded Image In Custom Design`,
 														});
-														hiddenFileInputRef.current.click();
+														hiddenGalleryInputRef.current.click();
 													}}
 												>
 													Upload Image
 												</Button>
-
-												{/* ★ capture="environment" helps iOS open the rear camera if user taps "Camera" */}
 												<input
 													type='file'
 													accept='image/*,.jpg,.jpeg,.png,.gif,.webp,.heic,.HEIC,.heif,.HEIF'
-													capture='environment'
-													ref={hiddenFileInputRef}
+													ref={hiddenGalleryInputRef}
 													style={{ display: "none" }}
 													onChange={(e) => {
 														if (e.target.files?.length) {
@@ -1971,7 +1992,7 @@ export default function CustomizeSelectedProduct() {
 
 						<Divider />
 						<Title level={4}>Upload Your Image</Title>
-						{/* Mobile dropzone */}
+						{/* Mobile drag/drop zone */}
 						<UploadZone {...getRootProps()}>
 							<input {...getInputProps()} />
 							<p>Drag &amp; drop or tap to select an image</p>
