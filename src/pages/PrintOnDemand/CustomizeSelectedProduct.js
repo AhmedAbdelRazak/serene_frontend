@@ -247,16 +247,25 @@ export default function CustomizeSelectedProduct() {
 	const [textModalVisible, setTextModalVisible] = useState(false);
 	const [mobileTextInput, setMobileTextInput] = useState("");
 
-	// File input on mobile
+	// File input on mobile (now includes all typical image extensions)
 	const hiddenFileInputRef = useRef(null);
 
 	// Dropzone on desktop
+	// === KEY: accept includes .heic, .heif, etc. to capture Apple’s formats, etc. ===
 	const { getRootProps, getInputProps } = useDropzone({
-		/**
-		 * Accept only images - disallows videos.
-		 * Note: This ensures the user can only pick image files.
-		 */
-		accept: { "image/*": [] },
+		accept: {
+			"image/*": [
+				".jpg",
+				".jpeg",
+				".png",
+				".gif",
+				".webp",
+				".heic",
+				".HEIC",
+				".heif",
+				".HEIF",
+			],
+		},
 		onDrop: (acceptedFiles) => {
 			ReactGA.event({
 				category: "User Uploaded Image In Custom Design",
@@ -342,7 +351,6 @@ export default function CustomizeSelectedProduct() {
 
 				// Just in case we might remove any extraneous option values that do not correspond to valid variants
 				fetchedProduct.options = fetchedProduct.options.map((opt) => {
-					// E.g. opt = { name: "Colors", values: [ {id, title}, ... ] }
 					const newValues = opt.values.filter((val) =>
 						validVariants.some((v) => v.options.includes(val.id))
 					);
@@ -368,10 +376,8 @@ export default function CustomizeSelectedProduct() {
 
 				// 2) Size
 				if (sizeOption?.values?.length) {
-					// If there's a "default" variant from Printify
 					const defVar = validVariants.find((v) => v.is_default);
 					if (defVar) {
-						// find which size "id" that default variant uses
 						const defSizeVal = sizeOption.values.find((sv) =>
 							defVar.options.includes(sv.id)
 						);
@@ -449,12 +455,9 @@ export default function CustomizeSelectedProduct() {
 
 		let matchingVariant = null;
 
-		// If we have neither color nor size, there's effectively only 1 variant
 		if (!colorOption && !sizeOption) {
 			matchingVariant = product.variants[0] || null;
-		}
-		// If we only have color
-		else if (colorOption && !sizeOption) {
+		} else if (colorOption && !sizeOption) {
 			const selectedColorValue = colorOption.values.find(
 				(val) => val.title === selectedColor
 			);
@@ -464,9 +467,7 @@ export default function CustomizeSelectedProduct() {
 					? varOptionIds.includes(numOrStr(selectedColorValue.id))
 					: false;
 			});
-		}
-		// If we only have size
-		else if (!colorOption && sizeOption) {
+		} else if (!colorOption && sizeOption) {
 			const selectedSizeValue = sizeOption.values.find(
 				(val) => val.title === selectedSize
 			);
@@ -476,9 +477,7 @@ export default function CustomizeSelectedProduct() {
 					? varOptionIds.includes(numOrStr(selectedSizeValue.id))
 					: false;
 			});
-		}
-		// If we have both color and size
-		else if (colorOption && sizeOption) {
+		} else if (colorOption && sizeOption) {
 			const selectedColorValue = colorOption.values.find(
 				(val) => val.title === selectedColor
 			);
@@ -502,46 +501,12 @@ export default function CustomizeSelectedProduct() {
 		}));
 	}, [product, selectedColor, selectedSize]);
 
-	// ADD ELEMENTS
-	const addTextElement = (textValue) => {
-		const finalText = textValue ? textValue.trim() : userText.trim();
-		if (!finalText) {
-			message.warning("Please enter some text first.");
-			return;
-		}
-		if (!printAreaRef.current) return;
-
-		const boundingRect = printAreaRef.current.getBoundingClientRect();
-		const boxWidth = 200;
-		const boxHeight = 100;
-		const centerX = boundingRect.width / 2 - boxWidth / 2;
-		const centerY = boundingRect.height / 2 - boxHeight / 2;
-
-		const newId = Date.now();
-		const newEl = {
-			id: newId,
-			type: "text",
-			text: finalText,
-			color: textColor,
-			backgroundColor: "transparent",
-			fontFamily,
-			fontSize,
-			fontWeight,
-			fontStyle,
-			borderRadius,
-			rotation: 0,
-			x: centerX,
-			y: centerY,
-			width: boxWidth,
-			height: boxHeight,
-			wasReset: false,
-		};
-		setElements((prev) => [...prev, newEl]);
-		setSelectedElementId(newId);
-	};
-
+	/**
+	 * ******* UPDATED addImageElement() ******
+	 *   => Accept any valid image (png/jpg/heic/etc.)
+	 *   => If resizing fails, fallback to original file
+	 */
 	const addImageElement = async (file) => {
-		// Confirm user has chosen the required options
 		const colorOption = product?.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
 		);
@@ -559,19 +524,30 @@ export default function CustomizeSelectedProduct() {
 		}
 
 		try {
-			// === NEW FILE-SIZE CHECK (up to 5MB) ===
+			// Check up to 5MB
 			if (file.size > 5 * 1024 * 1024) {
 				message.error(
 					"The selected image is larger than 5MB. Please choose a smaller image."
 				);
 				return;
 			}
-
-			// === Show uploading spinner overlay ===
 			setUploadingImage(true);
 
-			const resizedImage = await resizeImage(file, 1200);
-			const base64Image = await convertToBase64(resizedImage);
+			// Attempt to resize
+			let base64Image;
+			try {
+				const resizedFile = await resizeImage(file, 1200);
+				base64Image = await convertToBase64(resizedFile);
+			} catch (errResizing) {
+				// If resizing fails for some image type => fallback to original
+				console.error(
+					"Resizing attempt failed, using original file:",
+					errResizing
+				);
+				base64Image = await convertToBase64(file);
+			}
+
+			// Upload to Cloudinary
 			const { public_id, url } = await cloudinaryUpload1(user._id, token, {
 				image: base64Image,
 			});
@@ -609,12 +585,10 @@ export default function CustomizeSelectedProduct() {
 			setSelectedElementId(newId);
 		} catch (error) {
 			console.error("Image upload failed:", error);
-			// === NEW, more descriptive error message ===
 			message.error(
 				"We encountered an issue uploading your image. Please check your connection and try again."
 			);
 		} finally {
-			// === Hide spinner once upload is done (success or failure) ===
 			setUploadingImage(false);
 		}
 	};
@@ -688,9 +662,46 @@ export default function CustomizeSelectedProduct() {
 		});
 	}
 
+	// ADD TEXT
+	const addTextElement = (textValue) => {
+		const finalText = textValue ? textValue.trim() : userText.trim();
+		if (!finalText) {
+			message.warning("Please enter some text first.");
+			return;
+		}
+		if (!printAreaRef.current) return;
+
+		const boundingRect = printAreaRef.current.getBoundingClientRect();
+		const boxWidth = 200;
+		const boxHeight = 100;
+		const centerX = boundingRect.width / 2 - boxWidth / 2;
+		const centerY = boundingRect.height / 2 - boxHeight / 2;
+
+		const newId = Date.now();
+		const newEl = {
+			id: newId,
+			type: "text",
+			text: finalText,
+			color: textColor,
+			backgroundColor: "transparent",
+			fontFamily,
+			fontSize,
+			fontWeight,
+			fontStyle,
+			borderRadius,
+			rotation: 0,
+			x: centerX,
+			y: centerY,
+			width: boxWidth,
+			height: boxHeight,
+			wasReset: false,
+		};
+		setElements((prev) => [...prev, newEl]);
+		setSelectedElementId(newId);
+	};
+
 	// SELECT / DESELECT / EDIT / DELETE
 	function handleElementClick(el) {
-		// Bring to top
 		setElements((prev) => {
 			const withoutClicked = prev.filter((item) => item.id !== el.id);
 			return [...withoutClicked, el];
@@ -710,7 +721,6 @@ export default function CustomizeSelectedProduct() {
 		}
 	}
 
-	// Overwrite "Start typing here..." on double-click or double-tap
 	function handleTextDoubleClick(el) {
 		if (el.text === "Start typing here...") {
 			setElements((prev) =>
@@ -904,7 +914,6 @@ export default function CustomizeSelectedProduct() {
 		let matchingVariant = null;
 
 		if (!colorOption && !sizeOption) {
-			// no color or size
 			matchingVariant = product.variants[0];
 		} else if (colorOption && !sizeOption) {
 			const cVal = colorOption.values.find((v) => v.title === selectedColor);
@@ -934,7 +943,6 @@ export default function CustomizeSelectedProduct() {
 			return parseFloat(matchingVariant.price / 100);
 		}
 
-		// fallback to the product’s own price
 		if (typeof product.price === "number") {
 			return parseFloat(product.price);
 		}
@@ -949,18 +957,12 @@ export default function CustomizeSelectedProduct() {
 		const colorOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
 		);
-		if (!colorOption?.values?.length) return []; // no color or empty
+		if (!colorOption?.values?.length) return [];
 		const uniqueTitles = new Set(colorOption.values.map((c) => c.title));
 		return Array.from(uniqueTitles);
 	}, [product]);
 
 	const filteredImages = useMemo(() => {
-		/**
-		 * If there's no color, or the user hasn't selected one,
-		 * just show a subset of product.images (first 6).
-		 * If there is color, we attempt to find images assigned
-		 * to the matching variants for that color.
-		 */
 		if (!product) return [];
 		if (!selectedColor) {
 			return product.images.slice(0, 6);
@@ -1076,7 +1078,6 @@ export default function CustomizeSelectedProduct() {
 	async function handleAddToCart() {
 		if (isAddToCartDisabled) return;
 
-		// If color option exists, but user didn't pick one => block
 		const colorOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
 		);
@@ -1084,7 +1085,6 @@ export default function CustomizeSelectedProduct() {
 			message.warning("Please select a color before adding to cart.");
 			return;
 		}
-		// If size option exists, but user didn't pick one => block
 		const sizeOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
@@ -1100,17 +1100,15 @@ export default function CustomizeSelectedProduct() {
 
 		setIsAddToCartDisabled(true);
 
-		// Temporarily deselect any element so no dotted border is visible
 		const previouslySelected = selectedElementId;
 		setSelectedElementId(null);
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		try {
-			// Adjusting for older devices: set allowTaint to false if useCORS is true
 			const screenshotOptions = {
 				scale: 3,
 				useCORS: true,
-				allowTaint: false, // set false to reduce cross-origin issues on older devices
+				allowTaint: false,
 				ignoreElements: (element) =>
 					element.classList?.contains("noScreenshot"),
 				backgroundColor: null,
@@ -1119,7 +1117,6 @@ export default function CustomizeSelectedProduct() {
 				screenshotOptions.scale = 2;
 			}
 
-			// #1) Screenshot of bareDesignRef
 			const bareCanvas = await html2canvas(
 				bareDesignRef.current,
 				screenshotOptions
@@ -1133,7 +1130,6 @@ export default function CustomizeSelectedProduct() {
 				image: bareDataURL,
 			});
 
-			// #2) Screenshot of final design overlay
 			const finalCanvas = await html2canvas(
 				designOverlayRef.current,
 				screenshotOptions
@@ -1146,7 +1142,6 @@ export default function CustomizeSelectedProduct() {
 				image: finalDataURL,
 			});
 
-			// #3) Attempt to find product variant image
 			let variantImage = "";
 			let matchingVariant = null;
 
@@ -1154,31 +1149,33 @@ export default function CustomizeSelectedProduct() {
 				return typeof val === "number" ? val : parseInt(val, 10);
 			}
 
+			const colorOpt = product?.options?.find(
+				(opt) => opt.name.toLowerCase() === "colors"
+			);
+			const sizeOpt = product?.options?.find(
+				(opt) => opt.name.toLowerCase() === "sizes"
+			);
+
 			if (product?.options && product?.variants && product?.images) {
-				// Similar logic to above, find the matching variant
-				if (!colorOption && !sizeOption) {
+				if (!colorOpt && !sizeOpt) {
 					matchingVariant = product.variants[0] || null;
-				} else if (colorOption && !sizeOption) {
-					const cVal = colorOption.values.find(
+				} else if (colorOpt && !sizeOpt) {
+					const cVal = colorOpt.values.find(
 						(val) => val.title === selectedColor
 					);
 					matchingVariant = product.variants.find((v) =>
 						v.options.map(numOrStr).includes(numOrStr(cVal?.id))
 					);
-				} else if (!colorOption && sizeOption) {
-					const sVal = sizeOption.values.find(
-						(val) => val.title === selectedSize
-					);
+				} else if (!colorOpt && sizeOpt) {
+					const sVal = sizeOpt.values.find((val) => val.title === selectedSize);
 					matchingVariant = product.variants.find((v) =>
 						v.options.map(numOrStr).includes(numOrStr(sVal?.id))
 					);
-				} else if (colorOption && sizeOption) {
-					const cVal = colorOption.values.find(
+				} else if (colorOpt && sizeOpt) {
+					const cVal = colorOpt.values.find(
 						(val) => val.title === selectedColor
 					);
-					const sVal = sizeOption.values.find(
-						(val) => val.title === selectedSize
-					);
+					const sVal = sizeOpt.values.find((val) => val.title === selectedSize);
 					matchingVariant = product.variants.find((v) => {
 						const varIds = v.options.map(numOrStr);
 						return (
@@ -1213,7 +1210,6 @@ export default function CustomizeSelectedProduct() {
 				finalPriceAfterDiscount = product.priceAfterDiscount || finalPrice;
 			}
 
-			// Prepare the "customDesign" data
 			const customDesign = {
 				bareScreenshotUrl: bareUrl,
 				finalScreenshotUrl: finalUrl,
@@ -1223,11 +1219,11 @@ export default function CustomizeSelectedProduct() {
 				size: selectedSize,
 				color: selectedColor,
 				variants: {
-					color: colorOption
-						? colorOption.values.find((c) => c.title === selectedColor)
+					color: colorOpt
+						? colorOpt.values.find((c) => c.title === selectedColor)
 						: null,
-					size: sizeOption
-						? sizeOption.values.find((s) => s.title === selectedSize)
+					size: sizeOpt
+						? sizeOpt.values.find((s) => s.title === selectedSize)
 						: null,
 				},
 				printArea: "front",
@@ -1263,7 +1259,6 @@ export default function CustomizeSelectedProduct() {
 			message.success("Added to cart with custom design!");
 		} catch (error) {
 			console.error("Screenshot or upload failed:", error);
-			// === NEW, more descriptive screenshot error message ===
 			message.error(
 				"There was an issue capturing your design screenshot. Please refresh or try again on a different device."
 			);
@@ -1473,7 +1468,6 @@ export default function CustomizeSelectedProduct() {
 					<StyledSlider {...sliderSettings}>
 						{filteredImages.map((image, idx) => {
 							if (idx > 0) {
-								// Regular image slides
 								return (
 									<SlideImageWrapper key={image.src}>
 										<img src={image.src} alt={`${product.title}-${idx}`} />
@@ -1492,7 +1486,6 @@ export default function CustomizeSelectedProduct() {
 											}}
 										>
 											<MobileLeftCorner>
-												{/* If there's truly no color option, we hide it */}
 												{product.options.some(
 													(opt) => opt.name.toLowerCase() === "colors"
 												) && (
@@ -1510,7 +1503,6 @@ export default function CustomizeSelectedProduct() {
 													</Select>
 												)}
 
-												{/* If there's truly no size option, hide it */}
 												{product.options.some(
 													(opt) => opt.name.toLowerCase() === "sizes"
 												) && (
@@ -1583,12 +1575,11 @@ export default function CustomizeSelectedProduct() {
 												</Button>
 
 												{/**
-												 * Removed capture='camera' so users can choose
-												 * either camera or gallery from their phone.
+												 * Key: allow all typical image extensions
 												 */}
 												<input
 													type='file'
-													accept='image/*'
+													accept='image/*,.jpg,.jpeg,.png,.gif,.webp,.heic,.HEIC,.heif,.HEIF'
 													ref={hiddenFileInputRef}
 													style={{ display: "none" }}
 													onChange={(e) => {
@@ -1607,7 +1598,6 @@ export default function CustomizeSelectedProduct() {
 											alt={`${product.title}-front`}
 											crossOrigin='anonymous'
 										/>
-
 										<PrintArea id='print-area' ref={printAreaRef}>
 											{showCenterLine && <CenterIndicator />}
 											<DottedOverlay className='noScreenshot' />
@@ -1670,7 +1660,6 @@ export default function CustomizeSelectedProduct() {
 							Select Options:
 						</Title>
 						<Row gutter={12}>
-							{/* Color */}
 							{product.options.some(
 								(opt) => opt.name.toLowerCase() === "colors"
 							) && (
@@ -1691,7 +1680,6 @@ export default function CustomizeSelectedProduct() {
 								</Col>
 							)}
 
-							{/* Size */}
 							{product.options.some(
 								(opt) => opt.name.toLowerCase() === "sizes"
 							) && (
@@ -1785,7 +1773,6 @@ export default function CustomizeSelectedProduct() {
 				</Col>
 			</Row>
 
-			{/* For mobile, the bottom panel with the same text/image inputs */}
 			{isMobile && (
 				<MobileBottomPanel>
 					<Divider />
@@ -1797,7 +1784,6 @@ export default function CustomizeSelectedProduct() {
 							Select Options:
 						</Title>
 						<Row gutter={12}>
-							{/* Color */}
 							{product.options.some(
 								(opt) => opt.name.toLowerCase() === "colors"
 							) && (
@@ -1817,7 +1803,6 @@ export default function CustomizeSelectedProduct() {
 								</Col>
 							)}
 
-							{/* Size */}
 							{product.options.some(
 								(opt) => opt.name.toLowerCase() === "sizes"
 							) && (
@@ -1895,7 +1880,6 @@ export default function CustomizeSelectedProduct() {
 				</MobileBottomPanel>
 			)}
 
-			{/* Mobile "Add Text" Modal */}
 			<Modal
 				title='Add Your Text'
 				open={textModalVisible}
@@ -1912,14 +1896,12 @@ export default function CustomizeSelectedProduct() {
 				/>
 			</Modal>
 
-			{/* === Spinner Overlay While Uploading Images === */}
 			{uploadingImage && (
 				<UploadOverlay>
 					<Spin size='large' tip='Uploading image...' />
 				</UploadOverlay>
 			)}
 
-			{/* Hidden container for bare design screenshot */}
 			<BareDesignOverlay ref={bareDesignRef}>
 				<BarePrintArea id='bare-print-area' ref={barePrintAreaRef}>
 					{elements.map((el) => (
@@ -1997,7 +1979,6 @@ export default function CustomizeSelectedProduct() {
 		</CustomizeWrapper>
 	);
 
-	/** Renders the user’s design elements inside the #print-area */
 	function renderDesignElements() {
 		return elements.map((el) => {
 			const isSelected = el.id === selectedElementId;
@@ -2832,10 +2813,6 @@ const CenterIndicator = styled.div`
 	border: 1px dotted rgba(255, 0, 0, 0.3);
 `;
 
-/*
- * === NEW: Overlay while uploading images ===
- * position: fixed so it covers the entire screen
- */
 const UploadOverlay = styled.div`
 	position: fixed;
 	top: 0;
@@ -2843,7 +2820,7 @@ const UploadOverlay = styled.div`
 	width: 100%;
 	height: 100%;
 	background: rgba(128, 128, 128, 0.5);
-	z-index: 9999999; /* high z-index to appear above everything */
+	z-index: 9999999;
 	display: flex;
 	align-items: center;
 	justify-content: center;
