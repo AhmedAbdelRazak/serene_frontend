@@ -31,20 +31,23 @@ import {
 	EditOutlined,
 	CloudUploadOutlined,
 	ReloadOutlined,
-	CameraOutlined, // ★ added for camera icon
+	CameraOutlined, // ★ for camera icon
 } from "@ant-design/icons";
-import PrintifyCheckoutModal from "./PrintifyCheckoutModal"; // Adjust path if needed
-import { isAuthenticated } from "../../auth"; // Adjust path if needed
-import { cloudinaryUpload1 } from "../../apiCore"; // Adjust path if needed
+import PrintifyCheckoutModal from "./PrintifyCheckoutModal"; // adjust path as needed
+import { isAuthenticated } from "../../auth"; // adjust path as needed
+import { cloudinaryUpload1 } from "../../apiCore"; // adjust path as needed
 
 import html2canvas from "html2canvas";
-import { useCartContext } from "../../cart_context"; // Adjust path if needed
+import { useCartContext } from "../../cart_context"; // adjust path as needed
 import { Rnd } from "react-rnd";
 import { Helmet } from "react-helmet";
 import ReactGA from "react-ga4";
 
 // heic2any for .heic → jpeg
 import heic2any from "heic2any";
+
+// NEW: fallback library for final image conversion
+import domtoimage from "dom-to-image-more";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -252,6 +255,61 @@ async function fallbackCanvasConvert(file) {
 			reject(err);
 		};
 		img.src = url;
+	});
+}
+
+/**
+ * NEW: final-final fallback: use dom-to-image-more to render an <img> to a Blob
+ */
+async function fallbackDomToImageConvert(file) {
+	return new Promise((resolve, reject) => {
+		const containerDiv = document.createElement("div");
+		containerDiv.style.position = "absolute";
+		containerDiv.style.top = "-9999px";
+		containerDiv.style.left = "-9999px";
+		containerDiv.style.opacity = "0";
+		containerDiv.style.pointerEvents = "none";
+
+		const img = new Image();
+		img.crossOrigin = "anonymous";
+		img.style.maxWidth = "100%";
+		containerDiv.appendChild(img);
+		document.body.appendChild(containerDiv);
+
+		const objectURL = URL.createObjectURL(file);
+		img.onload = async () => {
+			try {
+				// Render containerDiv with the <img> inside
+				const blob = await domtoimage.toBlob(containerDiv, {
+					style: {
+						// scale it if needed
+						transform: "scale(1)",
+						transformOrigin: "top left",
+					},
+				});
+				const newFile = new File(
+					[blob],
+					file.name || "fallback-domtoimage.jpg",
+					{
+						type: "image/jpeg",
+						lastModified: Date.now(),
+					}
+				);
+				document.body.removeChild(containerDiv);
+				URL.revokeObjectURL(objectURL);
+				resolve(newFile);
+			} catch (err) {
+				document.body.removeChild(containerDiv);
+				URL.revokeObjectURL(objectURL);
+				reject(err);
+			}
+		};
+		img.onerror = (err) => {
+			document.body.removeChild(containerDiv);
+			URL.revokeObjectURL(objectURL);
+			reject(err);
+		};
+		img.src = objectURL;
 	});
 }
 
@@ -550,9 +608,9 @@ export default function CustomizeSelectedProduct() {
 		}));
 	}, [product, selectedColor, selectedSize]);
 
-	/**
-	 * ============ MAIN ADD-IMAGE LOGIC ============
-	 */
+	// =====================================================
+	// MAIN IMAGE-UPLOAD LOGIC (with final fallback added)
+	// =====================================================
 	const addImageElement = async (file) => {
 		const colorOption = product?.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
@@ -586,19 +644,34 @@ export default function CustomizeSelectedProduct() {
 			// 1) Convert from HEIC if needed
 			let workingFile = await convertHeicToJpegIfNeeded(file);
 
-			// 2) If workingFile still bigger than 5 MB => compress it
+			// 2) If workingFile is bigger than 5 MB => try resizing
 			if (workingFile.size > 5 * 1024 * 1024) {
 				try {
 					await handleImageResizingThenUpload(workingFile);
 					return;
 				} catch (resizeErr) {
-					console.warn(
-						"Resizing failed; final fallback to canvas...",
-						resizeErr
-					);
-					workingFile = await fallbackCanvasConvert(workingFile);
-					await uploadDirectly(workingFile);
-					return;
+					console.warn("Resizing failed; fallback to canvas...", resizeErr);
+					try {
+						workingFile = await fallbackCanvasConvert(workingFile);
+						await uploadDirectly(workingFile);
+						return;
+					} catch (canvasErr) {
+						console.warn(
+							"Canvas fallback failed; try dom-to-image fallback...",
+							canvasErr
+						);
+						try {
+							workingFile = await fallbackDomToImageConvert(workingFile);
+							await uploadDirectly(workingFile);
+							return;
+						} catch (domImageErr) {
+							console.error(
+								"All fallback attempts for large file failed:",
+								domImageErr
+							);
+							throw domImageErr; // Let outer catch handle final error message
+						}
+					}
 				}
 			}
 
@@ -606,15 +679,34 @@ export default function CustomizeSelectedProduct() {
 			try {
 				await uploadDirectly(workingFile);
 			} catch (directErr) {
-				// 4) If direct fails => try resizing
 				console.warn("Direct upload failed; resizing fallback...", directErr);
+				// 4) Try resizing
 				try {
 					await handleImageResizingThenUpload(workingFile);
-				} catch (resizeErr) {
-					// 5) final fallback => canvas
-					console.warn("Resize also failed. Canvas fallback...", resizeErr);
-					const fallbackFile = await fallbackCanvasConvert(workingFile);
-					await uploadDirectly(fallbackFile);
+				} catch (resizeErr2) {
+					console.warn("Resize also failed; fallback to canvas...", resizeErr2);
+					// 5) fallback => canvas
+					try {
+						const fallbackFile = await fallbackCanvasConvert(workingFile);
+						await uploadDirectly(fallbackFile);
+					} catch (canvasErr2) {
+						console.warn(
+							"Canvas fallback also failed; do dom-to-image fallback...",
+							canvasErr2
+						);
+						// 6) final fallback => dom-to-image
+						try {
+							const fallbackFile2 =
+								await fallbackDomToImageConvert(workingFile);
+							await uploadDirectly(fallbackFile2);
+						} catch (dom2Err) {
+							console.error(
+								"dom-to-image fallback also failed for uploading the file...",
+								dom2Err
+							);
+							throw dom2Err;
+						}
+					}
 				}
 			}
 		} catch (finalErr) {
@@ -627,17 +719,7 @@ export default function CustomizeSelectedProduct() {
 		}
 	};
 
-	async function uploadDirectly(file) {
-		const base64Image = await convertToBase64(file);
-		const { public_id, url } = await cloudinaryUpload1(user._id, token, {
-			image: base64Image,
-		});
-		if (!public_id || !url) {
-			throw new Error("Missing public_id or url in direct upload response");
-		}
-		addImageElementToCanvas(public_id, url);
-	}
-
+	// Helpers inside addImageElement
 	async function handleImageResizingThenUpload(file) {
 		const resizedFile = await resizeImage(file, 1200);
 		const base64Image = await convertToBase64(resizedFile);
@@ -646,6 +728,17 @@ export default function CustomizeSelectedProduct() {
 		});
 		if (!public_id || !url) {
 			throw new Error("Missing public_id or url after resizing");
+		}
+		addImageElementToCanvas(public_id, url);
+	}
+
+	async function uploadDirectly(file) {
+		const base64Image = await convertToBase64(file);
+		const { public_id, url } = await cloudinaryUpload1(user._id, token, {
+			image: base64Image,
+		});
+		if (!public_id || !url) {
+			throw new Error("Missing public_id or url in direct upload response");
 		}
 		addImageElementToCanvas(public_id, url);
 	}
@@ -743,6 +836,7 @@ export default function CustomizeSelectedProduct() {
 			reader.onerror = (error) => reject(error);
 		});
 	}
+	// =====================================================
 
 	const addTextElement = (textValue) => {
 		const finalText = textValue ? textValue.trim() : userText.trim();
@@ -852,7 +946,7 @@ export default function CustomizeSelectedProduct() {
 				);
 				message.success("Image Successfully Deleted.");
 			} catch (error) {
-				console.error("Failed to delete image from Cloudinary:", error);
+				console.error("Failed to delete image:", error);
 				message.error("Failed to delete image from server.");
 			}
 		}
@@ -1144,7 +1238,7 @@ export default function CustomizeSelectedProduct() {
 	const [isCheckoutModalVisible, setIsCheckoutModalVisible] = useState(false);
 
 	/**
-	 * ADD TO CART => screenshot logic
+	 * ADD TO CART => screenshot logic (unchanged, but already has fallback)
 	 */
 	async function handleAddToCart() {
 		if (isAddToCartDisabled) return;
@@ -1172,7 +1266,10 @@ export default function CustomizeSelectedProduct() {
 		setSelectedElementId(null);
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
+		let bareUrl, finalUrl;
+
 		try {
+			// #1) Attempt normal html2canvas
 			const screenshotOptions = {
 				scale: 3,
 				useCORS: true,
@@ -1185,42 +1282,41 @@ export default function CustomizeSelectedProduct() {
 				screenshotOptions.scale = 2;
 			}
 
-			let bareUrl, finalUrl;
-			try {
-				// #1) bare screenshot
-				const bareCanvas = await html2canvas(
-					bareDesignRef.current,
-					screenshotOptions
-				);
-				const croppedBareCanvas = cropCanvasToTransparentBounds(bareCanvas);
-				const bareDataURL = await compressCanvas(croppedBareCanvas, {
-					mimeType: "image/jpeg",
-					quality: 0.9,
-				});
-				const bareUpload = await cloudinaryUpload1(user._id, token, {
-					image: bareDataURL,
-				});
-				bareUrl = bareUpload.url;
+			// bare
+			const bareCanvas = await html2canvas(
+				bareDesignRef.current,
+				screenshotOptions
+			);
+			const croppedBareCanvas = cropCanvasToTransparentBounds(bareCanvas);
+			const bareDataURL = await compressCanvas(croppedBareCanvas, {
+				mimeType: "image/jpeg",
+				quality: 0.9,
+			});
+			const bareUpload = await cloudinaryUpload1(user._id, token, {
+				image: bareDataURL,
+			});
+			bareUrl = bareUpload.url;
 
-				// #2) final overlay screenshot
-				const finalCanvas = await html2canvas(
-					designOverlayRef.current,
-					screenshotOptions
-				);
-				const finalDataURL = await compressCanvas(finalCanvas, {
-					mimeType: "image/jpeg",
-					quality: 0.9,
-				});
-				const finalUpload = await cloudinaryUpload1(user._id, token, {
-					image: finalDataURL,
-				});
-				finalUrl = finalUpload.url;
-			} catch (attemptOneErr) {
-				console.warn(
-					"Screenshot attempt #1 failed, trying fallback...",
-					attemptOneErr
-				);
-				// fallback
+			// final
+			const finalCanvas = await html2canvas(
+				designOverlayRef.current,
+				screenshotOptions
+			);
+			const finalDataURL = await compressCanvas(finalCanvas, {
+				mimeType: "image/jpeg",
+				quality: 0.9,
+			});
+			const finalUpload = await cloudinaryUpload1(user._id, token, {
+				image: finalDataURL,
+			});
+			finalUrl = finalUpload.url;
+		} catch (attemptOneErr) {
+			console.warn(
+				"Screenshot attempt #1 failed, trying fallback #2 with relaxed config...",
+				attemptOneErr
+			);
+			try {
+				// #2) Attempt relaxed config
 				const fallbackOptions = {
 					scale: 2,
 					useCORS: false,
@@ -1229,6 +1325,7 @@ export default function CustomizeSelectedProduct() {
 						element.classList?.contains("noScreenshot"),
 					backgroundColor: null,
 				};
+
 				// bare
 				const bareCanvas2 = await html2canvas(
 					bareDesignRef.current,
@@ -1257,12 +1354,76 @@ export default function CustomizeSelectedProduct() {
 					image: finalDataURL2,
 				});
 				finalUrl = finalUp2.url;
-			}
+			} catch (attemptTwoErr) {
+				console.warn(
+					"Screenshot fallback #2 also failed, let's try dom-to-image approach...",
+					attemptTwoErr
+				);
 
-			if (!bareUrl || !finalUrl) {
-				throw new Error("Screenshot fallback also failed.");
-			}
+				// #3) final fallback => dom-to-image-more
+				try {
+					const domOptions = {
+						quality: 0.9,
+						bgcolor: null,
+						style: {
+							transform: "scale(2)",
+							transformOrigin: "top left",
+						},
+						filter: (node) => !node.classList?.contains("noScreenshot"),
+					};
 
+					// bare
+					const bareBlob3 = await domtoimage.toBlob(
+						bareDesignRef.current,
+						domOptions
+					);
+					const bareCanvas3 = await blobToCanvas(bareBlob3);
+					const croppedBare3 = cropCanvasToTransparentBounds(bareCanvas3);
+					const bareDataURL3 = await compressCanvas(croppedBare3, {
+						mimeType: "image/jpeg",
+						quality: 0.9,
+					});
+					const bareUp3 = await cloudinaryUpload1(user._id, token, {
+						image: bareDataURL3,
+					});
+					bareUrl = bareUp3.url;
+
+					// final
+					const finalBlob3 = await domtoimage.toBlob(
+						designOverlayRef.current,
+						domOptions
+					);
+					const finalCanvas3 = await blobToCanvas(finalBlob3);
+					const finalDataURL3 = await compressCanvas(finalCanvas3, {
+						mimeType: "image/jpeg",
+						quality: 0.9,
+					});
+					const finalUp3 = await cloudinaryUpload1(user._id, token, {
+						image: finalDataURL3,
+					});
+					finalUrl = finalUp3.url;
+				} catch (finalErr) {
+					console.error("All screenshot attempts failed. Sorry!", finalErr);
+					message.error(
+						"We encountered a problem capturing your design. Please refresh or try on another device."
+					);
+					setSelectedElementId(previouslySelected);
+					setIsAddToCartDisabled(false);
+					return;
+				}
+			}
+		}
+
+		if (!bareUrl || !finalUrl) {
+			message.error(
+				"Screenshot attempts all failed. Please refresh or try on another device."
+			);
+			setSelectedElementId(previouslySelected);
+			setIsAddToCartDisabled(false);
+			return;
+		}
+
+		try {
 			// Attempt to find matching variant image
 			let variantImage = "";
 			let matchingVariant = null;
@@ -1384,6 +1545,27 @@ export default function CustomizeSelectedProduct() {
 			setSelectedElementId(previouslySelected);
 			setIsAddToCartDisabled(false);
 		}
+	}
+
+	// Helper for final screenshot fallback
+	async function blobToCanvas(blob) {
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			const url = URL.createObjectURL(blob);
+			img.onload = () => {
+				const canvas = document.createElement("canvas");
+				canvas.width = img.width;
+				canvas.height = img.height;
+				canvas.getContext("2d").drawImage(img, 0, 0);
+				URL.revokeObjectURL(url);
+				resolve(canvas);
+			};
+			img.onerror = (err) => {
+				URL.revokeObjectURL(url);
+				reject(err);
+			};
+			img.src = url;
+		});
 	}
 
 	function handleRemoveBgToggle(elementId) {
@@ -1673,7 +1855,7 @@ export default function CustomizeSelectedProduct() {
 													Add Text
 												</Button>
 
-												{/* Dedicated "Take Photo" button for live images */}
+												{/* Dedicated "Take Photo" button */}
 												<Button
 													icon={<CameraOutlined />}
 													onClick={() => hiddenCameraInputRef.current.click()}
