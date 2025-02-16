@@ -32,15 +32,18 @@ import {
 	CloudUploadOutlined,
 	ReloadOutlined,
 } from "@ant-design/icons";
-import PrintifyCheckoutModal from "./PrintifyCheckoutModal"; // Adjust path as needed
-import { isAuthenticated } from "../../auth"; // Adjust path as needed
-import { cloudinaryUpload1 } from "../../apiCore"; // Adjust path as needed
+import PrintifyCheckoutModal from "./PrintifyCheckoutModal"; // Adjust path if needed
+import { isAuthenticated } from "../../auth"; // Adjust path if needed
+import { cloudinaryUpload1 } from "../../apiCore"; // Adjust path if needed
 
 import html2canvas from "html2canvas";
-import { useCartContext } from "../../cart_context"; // Adjust path as needed
+import { useCartContext } from "../../cart_context"; // Adjust path if needed
 import { Rnd } from "react-rnd";
 import { Helmet } from "react-helmet";
 import ReactGA from "react-ga4";
+
+// ★★★ ADDED THIS ★★★
+import heic2any from "heic2any"; // to handle .heic mobile images
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -121,8 +124,7 @@ function cropCanvasToTransparentBounds(originalCanvas) {
 }
 
 /**
- * Converts a dataURL string into a Blob object
- * (fallback if canvas.toBlob is not available).
+ * Converts a dataURL string into a Blob object.
  */
 function dataURLtoBlob(dataURL) {
 	const [metadata, base64] = dataURL.split(",");
@@ -137,15 +139,12 @@ function dataURLtoBlob(dataURL) {
 }
 
 /**
- * Compresses (and optionally downscales) an HTMLCanvasElement
- * to reduce base64 size. mimeType can be "image/jpeg" or "image/webp".
+ * Compress (downscale) an HTMLCanvasElement to reduce base64 size.
+ * mimeType can be "image/jpeg" or "image/webp" for best results.
  * quality is from 0.0 (worst) to 1.0 (best).
- *
- * This now includes a fallback for older browsers that don't support canvas.toBlob.
  */
 function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 	return new Promise((resolve, reject) => {
-		// If canvas.toBlob is supported, use it:
 		if (canvas.toBlob) {
 			canvas.toBlob(
 				(blob) => {
@@ -161,7 +160,7 @@ function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 				quality
 			);
 		} else {
-			// Fallback for older browsers (e.g. older iOS):
+			// fallback for older browsers (Safari iOS ~12, etc.)
 			try {
 				const dataURL = canvas.toDataURL(mimeType, quality);
 				const blob = dataURLtoBlob(dataURL);
@@ -176,21 +175,49 @@ function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 	});
 }
 
+// ★★★ ADDED THIS ★★★
+// Convert HEIC file to a standard (e.g. JPEG) if needed.
+async function convertHeicToJpegIfNeeded(file) {
+	const fileType = file.type?.toLowerCase() || "";
+	const fileName = file.name?.toLowerCase() || "";
+
+	// If the file is not HEIC, just return it as is.
+	if (!fileType.includes("heic") && !fileName.endsWith(".heic")) {
+		return file;
+	}
+
+	try {
+		const convertedBlob = await heic2any({
+			blob: file,
+			toType: "image/jpeg",
+			quality: 0.9,
+		});
+		// `convertedBlob` is a Blob, wrap it back in a File if you want a File object
+		const convertedFile = new File(
+			[convertedBlob],
+			file.name.replace(/\.heic$/i, ".jpg"),
+			{
+				type: "image/jpeg",
+				lastModified: Date.now(),
+			}
+		);
+		return convertedFile;
+	} catch (err) {
+		console.warn("HEIC conversion failed. Using original file:", err);
+		return file;
+	}
+}
+
 export default function CustomizeSelectedProduct() {
 	const { productId } = useParams();
 	const [product, setProduct] = useState(null);
 	const [loading, setLoading] = useState(true);
 
 	const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-	// If the product has colors, this holds the user's selected color. If not, empty string.
 	const [selectedColor, setSelectedColor] = useState("");
-	// If the product has sizes, this holds the user's selected size. If not, empty string.
 	const [selectedSize, setSelectedSize] = useState("");
 
-	// For plain text entry in the panel (to add text overlays)
 	const [userText, setUserText] = useState("");
-
-	// Text styling
 	const [textColor, setTextColor] = useState("#000000");
 	const [fontFamily, setFontFamily] = useState("Arial");
 	const [fontSize, setFontSize] = useState(24);
@@ -198,15 +225,11 @@ export default function CustomizeSelectedProduct() {
 	const [fontStyle, setFontStyle] = useState("normal");
 	const [borderRadius, setBorderRadius] = useState(0);
 
-	// The layered design elements
 	const [elements, setElements] = useState([]);
 	const [selectedElementId, setSelectedElementId] = useState(null);
-
-	// Inline text editing
 	const [inlineEditId, setInlineEditId] = useState(null);
 	const [inlineEditText, setInlineEditText] = useState("");
 
-	// The order object
 	const [order, setOrder] = useState({
 		product_id: null,
 		variant_id: null,
@@ -224,7 +247,6 @@ export default function CustomizeSelectedProduct() {
 		shipping_method: "",
 	});
 
-	// Mobile vs desktop
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 	useEffect(() => {
 		const handleResize = () => setIsMobile(window.innerWidth < 800);
@@ -232,27 +254,21 @@ export default function CustomizeSelectedProduct() {
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
 
-	// Cart context
 	const { addToCart, openSidebar2 } = useCartContext();
 	const { user, token } = isAuthenticated();
 
-	// Refs
 	const sliderRef = useRef(null);
 	const designOverlayRef = useRef(null);
 	const bareDesignRef = useRef(null);
 	const printAreaRef = useRef(null);
 	const barePrintAreaRef = useRef(null);
 
-	// “Add Text” on mobile
 	const [textModalVisible, setTextModalVisible] = useState(false);
 	const [mobileTextInput, setMobileTextInput] = useState("");
 
-	// File input on mobile
 	const hiddenFileInputRef = useRef(null);
 
-	// Dropzone on desktop
 	const { getRootProps, getInputProps } = useDropzone({
-		/** Accept common image types plus extra potential phone formats. */
 		accept: {
 			"image/*": [
 				".jpg",
@@ -278,24 +294,16 @@ export default function CustomizeSelectedProduct() {
 		},
 	});
 
-	// For disabling Add to Cart while capturing screenshots
 	const [isAddToCartDisabled, setIsAddToCartDisabled] = useState(false);
-
-	// Tooltip for text
 	const [showTooltipForText, setShowTooltipForText] = useState(null);
-
-	// Rotation
 	const [isRotating, setIsRotating] = useState(false);
 	const rotationData = useRef({
 		rotatingElementId: null,
 		startAngle: 0,
 		startRotation: 0,
 	});
-
-	// One-time default text
 	const [defaultTextAdded, setDefaultTextAdded] = useState(false);
 
-	// A small fade for mobile toolbar
 	const [showMobileButtons, setShowMobileButtons] = useState(false);
 	useEffect(() => {
 		if (isMobile) {
@@ -305,7 +313,6 @@ export default function CustomizeSelectedProduct() {
 		}
 	}, [isMobile]);
 
-	// Show spinner/overlay while uploading
 	const [uploadingImage, setUploadingImage] = useState(false);
 
 	// LOAD PRODUCT
@@ -321,7 +328,6 @@ export default function CustomizeSelectedProduct() {
 					setLoading(false);
 					return;
 				}
-				// Flatten relevant fields
 				let fetchedProduct = {
 					...response.data,
 					variants: response.data.printifyProductDetails?.variants || [],
@@ -336,7 +342,6 @@ export default function CustomizeSelectedProduct() {
 						"",
 				};
 
-				// Filter out invalid variants (price must be > 0)
 				const validVariants = fetchedProduct.variants.filter(
 					(variant) => typeof variant.price === "number" && variant.price > 0
 				);
@@ -349,7 +354,6 @@ export default function CustomizeSelectedProduct() {
 				}
 				fetchedProduct.variants = validVariants;
 
-				// Remove extraneous option values that do not correspond to valid variants
 				fetchedProduct.options = fetchedProduct.options.map((opt) => {
 					const newValues = opt.values.filter((val) =>
 						validVariants.some((v) => v.options.includes(val.id))
@@ -359,7 +363,7 @@ export default function CustomizeSelectedProduct() {
 
 				setProduct(fetchedProduct);
 
-				// Attempt to pick default color + size if they exist
+				// Attempt to pick default color + size
 				const colorOption = fetchedProduct.options.find(
 					(opt) => opt.name.toLowerCase() === "colors"
 				);
@@ -367,13 +371,11 @@ export default function CustomizeSelectedProduct() {
 					(opt) => opt.name.toLowerCase() === "sizes"
 				);
 
-				// Color
 				if (colorOption?.values?.length) {
 					setSelectedColor(colorOption.values[0].title);
 				} else {
 					setSelectedColor("");
 				}
-				// Size
 				if (sizeOption?.values?.length) {
 					const defVar = validVariants.find((v) => v.is_default);
 					if (defVar) {
@@ -402,7 +404,7 @@ export default function CustomizeSelectedProduct() {
 		fetchProduct();
 	}, [productId]);
 
-	// Add a default textbox in the middle of the print area
+	// Add a default text box in the middle
 	useEffect(() => {
 		if (!product || defaultTextAdded) return;
 		if (!printAreaRef.current) return;
@@ -437,7 +439,7 @@ export default function CustomizeSelectedProduct() {
 		setDefaultTextAdded(true);
 	}, [product, defaultTextAdded]);
 
-	// DETERMINE VARIANT ID whenever selected color/size changes
+	// Update variant_id when color/size changes
 	useEffect(() => {
 		if (!product) return;
 
@@ -500,9 +502,7 @@ export default function CustomizeSelectedProduct() {
 		}));
 	}, [product, selectedColor, selectedSize]);
 
-	/**
-	 * ====== UPDATED addImageElement with Fallback Logic ======
-	 */
+	// ★★★ MAIN ADD-IMAGE LOGIC ★★★
 	const addImageElement = async (file) => {
 		const colorOption = product?.options.find(
 			(opt) => opt.name.toLowerCase() === "colors"
@@ -523,21 +523,20 @@ export default function CustomizeSelectedProduct() {
 		setUploadingImage(true);
 
 		try {
-			// 1) File-size check
-			if (file.size > 5 * 1024 * 1024) {
-				// Over 5MB => attempt resizing first
-				await handleImageResizingThenUpload(file);
+			// ★★★ Convert HEIC if needed before anything else ★★★
+			const maybeConverted = await convertHeicToJpegIfNeeded(file);
+
+			// 1) Check file size
+			if (maybeConverted.size > 5 * 1024 * 1024) {
+				// Over 5MB => attempt resizing
+				await handleImageResizingThenUpload(maybeConverted);
 			} else {
-				// Under 5MB => try direct upload first
+				// Under 5MB => try direct
 				try {
-					await uploadDirectly(file);
+					await uploadDirectly(maybeConverted);
 				} catch (directErr) {
-					console.warn(
-						"Direct upload failed; now attempting to resize.",
-						directErr
-					);
-					// If direct fails => fallback to resizing approach
-					await handleImageResizingThenUpload(file);
+					console.warn("Direct upload failed; resizing fallback...", directErr);
+					await handleImageResizingThenUpload(maybeConverted);
 				}
 			}
 		} catch (finalErr) {
@@ -550,11 +549,7 @@ export default function CustomizeSelectedProduct() {
 		}
 	};
 
-	/**
-	 * Upload the file "as is".
-	 */
 	async function uploadDirectly(file) {
-		// Convert the raw file to base64 and upload
 		const base64Image = await convertToBase64(file);
 		const { public_id, url } = await cloudinaryUpload1(user._id, token, {
 			image: base64Image,
@@ -565,11 +560,8 @@ export default function CustomizeSelectedProduct() {
 		addImageElementToCanvas(public_id, url);
 	}
 
-	/**
-	 * Attempt to resize, then upload
-	 */
 	async function handleImageResizingThenUpload(file) {
-		const resizedFile = await resizeImage(file, 1200); // e.g. 1200 px max dimension
+		const resizedFile = await resizeImage(file, 1200);
 		const base64Image = await convertToBase64(resizedFile);
 		const { public_id, url } = await cloudinaryUpload1(user._id, token, {
 			image: base64Image,
@@ -580,12 +572,8 @@ export default function CustomizeSelectedProduct() {
 		addImageElementToCanvas(public_id, url);
 	}
 
-	/**
-	 * Add the newly uploaded image to the design canvas
-	 */
 	function addImageElementToCanvas(public_id, url) {
 		if (!printAreaRef.current) return;
-
 		const boundingRect = printAreaRef.current.getBoundingClientRect();
 		const imgWidth = 150;
 		const imgHeight = 200;
@@ -615,14 +603,10 @@ export default function CustomizeSelectedProduct() {
 		setSelectedElementId(newId);
 	}
 
-	/**
-	 * Removes background if possible
-	 */
 	function removeImageBackground(oldUrl) {
 		if (!oldUrl.includes("/upload/")) {
 			return oldUrl;
 		}
-		// Apply background removal transformation
 		return oldUrl.replace("/upload/", "/upload/e_background_removal/");
 	}
 
@@ -724,7 +708,6 @@ export default function CustomizeSelectedProduct() {
 		setSelectedElementId(newId);
 	};
 
-	// SELECT / DESELECT / EDIT / DELETE
 	function handleElementClick(el) {
 		setElements((prev) => {
 			const withoutClicked = prev.filter((item) => item.id !== el.id);
@@ -803,7 +786,6 @@ export default function CustomizeSelectedProduct() {
 		setSelectedElementId(null);
 	}
 
-	// RND DRAG/RESIZE
 	const [showCenterLine, setShowCenterLine] = useState(false);
 
 	function handleRndDrag(e, data, elId) {
@@ -848,7 +830,6 @@ export default function CustomizeSelectedProduct() {
 
 	const DRAGGABLE_REGION_CLASS = "drag-handle";
 
-	// ROTATION
 	function onRotationStart(evt, elId) {
 		evt.stopPropagation();
 		evt.preventDefault();
@@ -920,7 +901,6 @@ export default function CustomizeSelectedProduct() {
 		return { x: evt.clientX, y: evt.clientY };
 	}
 
-	// PRICE
 	function getVariantPrice() {
 		if (!product || !product.variants) return 0;
 
@@ -966,7 +946,6 @@ export default function CustomizeSelectedProduct() {
 		if (matchingVariant && typeof matchingVariant.price === "number") {
 			return parseFloat(matchingVariant.price / 100);
 		}
-
 		if (typeof product.price === "number") {
 			return parseFloat(product.price);
 		}
@@ -975,7 +954,6 @@ export default function CustomizeSelectedProduct() {
 
 	const displayedPrice = `$${getVariantPrice().toFixed(2)}`;
 
-	// FILTERED IMAGES
 	const uniqueColorsForDropdown = useMemo(() => {
 		if (!product) return [];
 		const colorOption = product.options.find(
@@ -1018,7 +996,6 @@ export default function CustomizeSelectedProduct() {
 			: product.images.slice(0, 6);
 	}, [selectedColor, product]);
 
-	// CAROUSEL SETTINGS
 	const sliderSettings = {
 		ref: sliderRef,
 		dots: true,
@@ -1037,7 +1014,6 @@ export default function CustomizeSelectedProduct() {
 		}
 	}, [filteredImages]);
 
-	// Update order on changes
 	useEffect(() => {
 		const texts = elements
 			.filter((el) => el.type === "text")
@@ -1073,7 +1049,7 @@ export default function CustomizeSelectedProduct() {
 		}));
 	}, [elements]);
 
-	// GLOBAL CLICK => DESELECT
+	// Global click => deselect
 	useEffect(() => {
 		function handleGlobalClick(e) {
 			if (!selectedElementId) return;
@@ -1096,7 +1072,6 @@ export default function CustomizeSelectedProduct() {
 		};
 	}, [selectedElementId]);
 
-	// ADD TO CART => SCREENSHOTS
 	const [isCheckoutModalVisible, setIsCheckoutModalVisible] = useState(false);
 
 	async function handleAddToCart() {
@@ -1129,7 +1104,6 @@ export default function CustomizeSelectedProduct() {
 		await new Promise((resolve) => setTimeout(resolve, 50));
 
 		try {
-			// === Attempt #1 (original settings)
 			const screenshotOptions = {
 				scale: 3,
 				useCORS: true,
@@ -1144,7 +1118,7 @@ export default function CustomizeSelectedProduct() {
 
 			let bareUrl, finalUrl;
 			try {
-				// #1) bare design screenshot
+				// #1) bare screenshot
 				const bareCanvas = await html2canvas(
 					bareDesignRef.current,
 					screenshotOptions
@@ -1177,7 +1151,7 @@ export default function CustomizeSelectedProduct() {
 					"Screenshot attempt #1 failed, trying fallback...",
 					attemptOneErr
 				);
-				// === Attempt #2 fallback with looser options
+				// fallback
 				const fallbackOptions = {
 					scale: 2,
 					useCORS: false,
@@ -1187,7 +1161,6 @@ export default function CustomizeSelectedProduct() {
 					backgroundColor: null,
 				};
 
-				// bare
 				const bareCanvas2 = await html2canvas(
 					bareDesignRef.current,
 					fallbackOptions
@@ -1202,7 +1175,6 @@ export default function CustomizeSelectedProduct() {
 				});
 				bareUrl = bareUp2.url;
 
-				// final
 				const finalCanvas2 = await html2canvas(
 					designOverlayRef.current,
 					fallbackOptions
@@ -1291,7 +1263,6 @@ export default function CustomizeSelectedProduct() {
 				finalPriceAfterDiscount = product.priceAfterDiscount || finalPrice;
 			}
 
-			// Prepare customDesign
 			const customDesign = {
 				bareScreenshotUrl: bareUrl,
 				finalScreenshotUrl: finalUrl,
@@ -1350,7 +1321,6 @@ export default function CustomizeSelectedProduct() {
 		}
 	}
 
-	// REMOVE BG / RESET
 	function handleRemoveBgToggle(elementId) {
 		setElements((prev) =>
 			prev.map((item) => {
@@ -1382,7 +1352,6 @@ export default function CustomizeSelectedProduct() {
 		);
 	}
 
-	// Show 5s tooltip on text selection
 	useEffect(() => {
 		if (selectedElementId) {
 			const el = elements.find((e) => e.id === selectedElementId);
@@ -1397,7 +1366,6 @@ export default function CustomizeSelectedProduct() {
 		setShowTooltipForText(null);
 	}, [selectedElementId, elements]);
 
-	// RENDER
 	if (loading) {
 		return (
 			<CustomizeWrapper>
@@ -1545,7 +1513,6 @@ export default function CustomizeSelectedProduct() {
 			</Helmet>
 
 			<Row gutter={[18, 20]}>
-				{/* Left: Images Carousel */}
 				<Col xs={24} md={12}>
 					<StyledSlider {...sliderSettings}>
 						{filteredImages.map((image, idx) => {
@@ -1556,7 +1523,6 @@ export default function CustomizeSelectedProduct() {
 									</SlideImageWrapper>
 								);
 							}
-							// The first slide is the "customization" slide with the dotted overlay
 							return (
 								<div key={image.src}>
 									{isMobile && (
@@ -1689,7 +1655,6 @@ export default function CustomizeSelectedProduct() {
 					</StyledSlider>
 				</Col>
 
-				{/* Right: Product Info & Custom Panel (Desktop Only) */}
 				<Col xs={24} md={12}>
 					<ProductTitle level={3}>{product.title}</ProductTitle>
 					<ProductDescription>
@@ -1852,7 +1817,6 @@ export default function CustomizeSelectedProduct() {
 				</Col>
 			</Row>
 
-			{/* For mobile, the bottom panel with the same text/image inputs */}
 			{isMobile && (
 				<MobileBottomPanel>
 					<Divider />
@@ -2182,7 +2146,6 @@ export default function CustomizeSelectedProduct() {
 						)}
 					</div>
 
-					{/* Rotation handle */}
 					{isSelected && (
 						<RotateHandle
 							className='rotate-handle'
@@ -2195,7 +2158,6 @@ export default function CustomizeSelectedProduct() {
 						</RotateHandle>
 					)}
 
-					{/* 5s tooltip if text is selected */}
 					{isSelected && el.type === "text" && showTooltipForText === el.id && (
 						<DoubleClickTooltip>
 							{isMobile
@@ -2204,7 +2166,6 @@ export default function CustomizeSelectedProduct() {
 						</DoubleClickTooltip>
 					)}
 
-					{/* TEXT toolbar */}
 					{isSelected && el.type === "text" && !isRotating && (
 						<TextToolbarContainer className='text-toolbar'>
 							<TextToolbar>
@@ -2455,7 +2416,6 @@ export default function CustomizeSelectedProduct() {
 						</TextToolbarContainer>
 					)}
 
-					{/* IMAGE toolbar */}
 					{isSelected && el.type === "image" && !isRotating && (
 						<ImageToolbarContainer className='image-toolbar'>
 							<ImageToolbar>
@@ -2509,7 +2469,7 @@ export default function CustomizeSelectedProduct() {
 	}
 }
 
-/* ========== Styled Components ========== */
+/* ========== Styled Components (unchanged or minimally changed) ========== */
 
 const CustomizeWrapper = styled.section`
 	padding: 40px;
