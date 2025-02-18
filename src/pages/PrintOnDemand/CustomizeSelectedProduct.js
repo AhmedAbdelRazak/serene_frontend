@@ -53,9 +53,32 @@ const { Title } = Typography;
 const { Option } = Select;
 
 /**
- * -------------------------
- *  A) HELPER FUNCTIONS
- * -------------------------
+ * ------------------------------------------------------------------------------
+ * A) PERMISSION HELPER: we only call this in the last fallback if everything else fails
+ * ------------------------------------------------------------------------------
+ */
+async function requestImagePermissions() {
+	try {
+		// Attempt camera permission (mobile, environment camera)
+		if (navigator?.mediaDevices?.getUserMedia) {
+			await navigator.mediaDevices.getUserMedia({
+				video: { facingMode: "environment" },
+				audio: false,
+			});
+			console.log("Camera permission requested as last fallback…");
+		}
+	} catch (err) {
+		console.warn(
+			"User denied or device not supported for camera permission:",
+			err
+		);
+	}
+}
+
+/**
+ * ------------------------------------------------------------------------------
+ * B) HELPER FUNCTIONS
+ * ------------------------------------------------------------------------------
  */
 
 /** Strips HTML tags */
@@ -394,11 +417,10 @@ async function fallbackVanillaJSXHRUploadScreenshot(blob, userId, token) {
 }
 
 /**
- * --------------
- * B) COMPONENT
- * --------------
+ * ------------------------------------------------------------------------------
+ * C) COMPONENT
+ * ------------------------------------------------------------------------------
  */
-
 export default function CustomizeSelectedProduct() {
 	const { productId } = useParams();
 	const [product, setProduct] = useState(null);
@@ -699,10 +721,9 @@ export default function CustomizeSelectedProduct() {
 	}, [product, selectedColor, selectedSize]);
 
 	/**
-	 * -----------------------------
-	 * 2) IMAGE UPLOAD LOGIC
-	 *  (with final Vanilla‐JS fallback)
-	 * -----------------------------
+	 * ------------------------------------------------------------------------------
+	 * 2) IMAGE UPLOAD LOGIC (with final fallback)
+	 * ------------------------------------------------------------------------------
 	 */
 	const addImageElement = async (file) => {
 		// Check color/size selected first:
@@ -767,7 +788,7 @@ export default function CustomizeSelectedProduct() {
 								"dom-to-image fallback also failed => final attempt vanilla XHR.",
 								dom2Err
 							);
-							// 6) final => plain XHR
+							// 6) final => plain XHR => THEN ask permission
 							try {
 								const { public_id, url } = await fallbackVanillaJSXHRUpload(
 									workingFile,
@@ -780,9 +801,32 @@ export default function CustomizeSelectedProduct() {
 									"All fallback attempts for upload failed!",
 									vanillaFail
 								);
-								message.error(
-									"We encountered an issue uploading your image. Please try again or pick a different photo."
-								);
+
+								// =========== ASK PERMISSION & re-try final attempt ===========
+								try {
+									// Ask for camera/files permission
+									await requestImagePermissions();
+									message.info(
+										"Trying final fallback once more with permission granted..."
+									);
+
+									// Attempt the final plain XHR again
+									const { public_id, url } = await fallbackVanillaJSXHRUpload(
+										workingFile,
+										user._id,
+										token
+									);
+									addImageElementToCanvas(public_id, url);
+								} catch (vanillaPermFail) {
+									console.error(
+										"Even after permissions, final fallback attempt failed.",
+										vanillaPermFail
+									);
+									message.error(
+										"We encountered an issue uploading your image. Please try again or pick a different photo."
+									);
+								}
+								// =============================================================
 							}
 						}
 					}
@@ -798,7 +842,6 @@ export default function CustomizeSelectedProduct() {
 		}
 	};
 
-	// ---- Helpers for addImageElement ----
 	async function uploadDirectly(file) {
 		const base64Image = await convertToBase64(file);
 		const { public_id, url } = await cloudinaryUpload1(user._id, token, {
@@ -917,9 +960,9 @@ export default function CustomizeSelectedProduct() {
 	}
 
 	/**
-	 * -----------------------------
+	 * ------------------------------------------------------------------------------
 	 * 3) TEXT + ELEMENT EDITING
-	 * -----------------------------
+	 * ------------------------------------------------------------------------------
 	 */
 	function addTextElement(textValue) {
 		const finalText = textValue ? textValue.trim() : userText.trim();
@@ -1320,10 +1363,9 @@ export default function CustomizeSelectedProduct() {
 	const [isCheckoutModalVisible, setIsCheckoutModalVisible] = useState(false);
 
 	/**
-	 * -----------------------------
-	 * 4) ADD TO CART => SCREENSHOT
-	 *    (with final Vanilla XHR fallback)
-	 * -----------------------------
+	 * ------------------------------------------------------------------------------
+	 * 4) ADD TO CART => SCREENSHOT (with final fallback)
+	 * ------------------------------------------------------------------------------
 	 */
 	async function handleAddToCart() {
 		if (isAddToCartDisabled) return;
@@ -1491,7 +1533,7 @@ export default function CustomizeSelectedProduct() {
 						finalErr
 					);
 
-					// #4) final final fallback => do XHR with a minimal or dummy <canvas>
+					// #4) final final fallback => do XHR => THEN ask for permission
 					try {
 						// Create a fallback 300x300 white canvas
 						const fallbackCanvas = document.createElement("canvas");
@@ -1519,7 +1561,6 @@ export default function CustomizeSelectedProduct() {
 							}
 						);
 
-						// Upload with plain XHR
 						const { url: fallbackScreenshotUrl } =
 							await fallbackVanillaJSXHRUploadScreenshot(
 								screenshotBlob,
@@ -1527,20 +1568,67 @@ export default function CustomizeSelectedProduct() {
 								token
 							);
 
-						// We'll use the same fallback image for both bare & final:
 						bareUrl = fallbackScreenshotUrl;
 						finalUrl = fallbackScreenshotUrl;
 					} catch (vanillaScreenshotErr) {
+						// =========== ASK PERMISSION & re-try final screenshot attempt =============
 						console.error(
 							"Even final vanilla screenshot fallback failed",
 							vanillaScreenshotErr
 						);
-						message.error(
-							"Screenshot attempts all failed. Please refresh or try on another device."
-						);
-						setSelectedElementId(previouslySelected);
-						setIsAddToCartDisabled(false);
-						return;
+						try {
+							// ask permission
+							await requestImagePermissions();
+							message.info("Retrying screenshot after permission…");
+
+							// We do the same 300x300 fallback approach again:
+							const fallbackCanvas2 = document.createElement("canvas");
+							fallbackCanvas2.width = 300;
+							fallbackCanvas2.height = 300;
+							fallbackCanvas2.getContext("2d").fillStyle = "#fff";
+							fallbackCanvas2.getContext("2d").fillRect(0, 0, 300, 300);
+
+							const screenshotBlob2 = await new Promise(
+								(resolveBlob, rejectBlob) => {
+									fallbackCanvas2.toBlob(
+										(blob) => {
+											if (!blob) {
+												rejectBlob(
+													new Error(
+														"Could not create fallback canvas blob again"
+													)
+												);
+											} else {
+												resolveBlob(blob);
+											}
+										},
+										"image/jpeg",
+										0.8
+									);
+								}
+							);
+
+							const { url: fallbackScreenshotUrl2 } =
+								await fallbackVanillaJSXHRUploadScreenshot(
+									screenshotBlob2,
+									user._id,
+									token
+								);
+
+							bareUrl = fallbackScreenshotUrl2;
+							finalUrl = fallbackScreenshotUrl2;
+						} catch (permScreenshotErr) {
+							console.error(
+								"Last fallback screenshot attempt after permission also failed",
+								permScreenshotErr
+							);
+							message.error(
+								"Screenshot attempts all failed. Please refresh or try on another device."
+							);
+							setSelectedElementId(previouslySelected);
+							setIsAddToCartDisabled(false);
+							return;
+						}
 					}
 				}
 			}
@@ -1838,9 +1926,11 @@ export default function CustomizeSelectedProduct() {
 		}
 	}
 
-	// ---------------------------
-	// RENDER
-	// ---------------------------
+	/**
+	 * ------------------------------------------------------------------------------
+	 * RENDER
+	 * ------------------------------------------------------------------------------
+	 */
 	return (
 		<CustomizeWrapper>
 			<Helmet>
@@ -2399,9 +2489,9 @@ export default function CustomizeSelectedProduct() {
 	);
 
 	/**
-	 * ----------------------
-	 * RENDER DESIGN ELEMENTS
-	 * ----------------------
+	 * ------------------------------------------------------------------------------
+	 * Render RND design elements
+	 * ------------------------------------------------------------------------------
 	 */
 	function renderDesignElements() {
 		return elements.map((el) => {
@@ -2848,9 +2938,9 @@ export default function CustomizeSelectedProduct() {
 }
 
 /**
- * -------------------------
- *  C) STYLED COMPONENTS
- * -------------------------
+ * ------------------------------------------------------------------------------
+ * D) STYLED COMPONENTS
+ * ------------------------------------------------------------------------------
  */
 const CustomizeWrapper = styled.section`
 	padding: 40px;
