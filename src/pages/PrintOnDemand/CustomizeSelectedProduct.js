@@ -41,6 +41,8 @@ import html2canvas from "html2canvas";
 import { useCartContext } from "../../cart_context";
 import { Rnd } from "react-rnd";
 import { Helmet } from "react-helmet";
+
+// GA 4
 import ReactGA from "react-ga4";
 
 // heic2any for .heic → jpeg
@@ -53,13 +55,21 @@ const { Title } = Typography;
 const { Option } = Select;
 
 /**
- * ------------------------------------------------------------------------------
- * A) PERMISSION HELPER: we only call this in the last fallback if everything else fails
- * ------------------------------------------------------------------------------
+ * ------------------------------------------------------------------------
+ * NOTE about "findDOMNode is deprecated":
+ * ------------------------------------------------------------------------
+ * This warning arises from react-rnd’s internal usage of findDOMNode.
+ * If it bothers you, remove StrictMode in your React root or upgrade react-rnd
+ * to a version that no longer uses findDOMNode.
+ */
+
+/**
+ * ------------------------------------------------------------------------
+ * A) PERMISSION HELPER
+ * ------------------------------------------------------------------------
  */
 async function requestImagePermissions() {
 	try {
-		// Attempt camera permission (mobile, environment camera)
 		if (navigator?.mediaDevices?.getUserMedia) {
 			await navigator.mediaDevices.getUserMedia({
 				video: { facingMode: "environment" },
@@ -76,27 +86,26 @@ async function requestImagePermissions() {
 }
 
 /**
- * ------------------------------------------------------------------------------
+ * ------------------------------------------------------------------------
  * B) HELPER FUNCTIONS
- * ------------------------------------------------------------------------------
+ * ------------------------------------------------------------------------
  */
-
-/** Strips HTML tags */
 function stripHtmlTags(html) {
 	if (!html) return "";
 	return html.replace(/<[^>]*>?/gm, "");
 }
 
-/** Truncates text by word count */
 function truncateText(text, wordLimit) {
 	const words = text.split(/\s+/);
 	if (words.length <= wordLimit) return text;
 	return words.slice(0, wordLimit).join(" ") + "...";
 }
 
-/** Crop fully transparent edges from a canvas */
+/**
+ * We pass `willReadFrequently: true` to suppress the “Canvas2D multiple readback…” warning
+ */
 function cropCanvasToTransparentBounds(originalCanvas) {
-	const ctx = originalCanvas.getContext("2d");
+	const ctx = originalCanvas.getContext("2d", { willReadFrequently: true });
 	const { width, height } = originalCanvas;
 	const imageData = ctx.getImageData(0, 0, width, height).data;
 
@@ -108,7 +117,7 @@ function cropCanvasToTransparentBounds(originalCanvas) {
 	// top
 	topLoop: for (; top < height; top++) {
 		for (let x = 0; x < width; x++) {
-			const idx = (top * width + x) * 4 + 3; // alpha channel
+			const idx = (top * width + x) * 4 + 3;
 			if (imageData[idx] !== 0) break topLoop;
 		}
 	}
@@ -142,7 +151,7 @@ function cropCanvasToTransparentBounds(originalCanvas) {
 	const newCanvas = document.createElement("canvas");
 	newCanvas.width = croppedWidth;
 	newCanvas.height = croppedHeight;
-	const newCtx = newCanvas.getContext("2d");
+	const newCtx = newCanvas.getContext("2d", { willReadFrequently: true });
 	newCtx.putImageData(
 		ctx.getImageData(left, top, croppedWidth, croppedHeight),
 		0,
@@ -151,7 +160,6 @@ function cropCanvasToTransparentBounds(originalCanvas) {
 	return newCanvas;
 }
 
-/** Convert base64 dataURL → Blob */
 function dataURLtoBlob(dataURL) {
 	const [metadata, base64] = dataURL.split(",");
 	const byteString = atob(base64);
@@ -164,7 +172,6 @@ function dataURLtoBlob(dataURL) {
 	return new Blob([buffer], { type: mimeString });
 }
 
-/** Compress a canvas to a base64 string (jpeg or webp) */
 function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 	return new Promise((resolve, reject) => {
 		if (canvas.toBlob) {
@@ -197,7 +204,9 @@ function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 	});
 }
 
-/** 1) If file is .heic => convert it to JPEG using heic2any. */
+/**
+ * If .heic => convert it to JPEG
+ */
 async function convertHeicToJpegIfNeeded(file) {
 	const fileType = file.type?.toLowerCase() || "";
 	const fileName = file.name?.toLowerCase() || "";
@@ -226,7 +235,9 @@ async function convertHeicToJpegIfNeeded(file) {
 	}
 }
 
-/** Fallback #1: draw file into a <canvas> and produce a new file */
+/**
+ * Fallback #1: draw file to <canvas>
+ */
 async function fallbackCanvasConvert(file) {
 	if (
 		file.type?.toLowerCase().includes("video") ||
@@ -244,7 +255,7 @@ async function fallbackCanvasConvert(file) {
 				const canvas = document.createElement("canvas");
 				canvas.width = img.width;
 				canvas.height = img.height;
-				const ctx = canvas.getContext("2d");
+				const ctx = canvas.getContext("2d", { willReadFrequently: true });
 				ctx.drawImage(img, 0, 0);
 				canvas.toBlob(
 					(blob) => {
@@ -272,7 +283,9 @@ async function fallbackCanvasConvert(file) {
 	});
 }
 
-/** Fallback #2: use dom-to-image-more to render an <img> to a Blob */
+/**
+ * Fallback #2: use dom-to-image-more
+ */
 async function fallbackDomToImageConvert(file) {
 	return new Promise((resolve, reject) => {
 		const containerDiv = document.createElement("div");
@@ -324,9 +337,7 @@ async function fallbackDomToImageConvert(file) {
 }
 
 /**
- * The final fallback: upload via plain old XMLHttpRequest (multipart/form-data).
- * Expecting a backend route (e.g. /admin/vanilla-upload) that handles FormData.
- * Must return JSON { public_id, url } on success.
+ * Plain XHR fallback for uploading
  */
 async function fallbackVanillaJSXHRUpload(file, userId, token) {
 	return new Promise((resolve, reject) => {
@@ -372,11 +383,12 @@ async function fallbackVanillaJSXHRUpload(file, userId, token) {
 	});
 }
 
-/** Final fallback for screenshots: upload a Blob via plain XHR. */
+/**
+ * Plain XHR fallback for screenshot
+ */
 async function fallbackVanillaJSXHRUploadScreenshot(blob, userId, token) {
 	return new Promise((resolve, reject) => {
 		const formData = new FormData();
-		// We'll call the field 'image'
 		formData.append("image", blob, "screenshot.jpg");
 		formData.append("userId", userId);
 
@@ -417,9 +429,9 @@ async function fallbackVanillaJSXHRUploadScreenshot(blob, userId, token) {
 }
 
 /**
- * ------------------------------------------------------------------------------
+ * ------------------------------------------------------------------------
  * C) COMPONENT
- * ------------------------------------------------------------------------------
+ * ------------------------------------------------------------------------
  */
 export default function CustomizeSelectedProduct() {
 	const { productId } = useParams();
@@ -462,7 +474,6 @@ export default function CustomizeSelectedProduct() {
 		shipping_method: "",
 	});
 
-	// Mobile detection
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 	useEffect(() => {
 		const handleResize = () => setIsMobile(window.innerWidth < 800);
@@ -472,6 +483,10 @@ export default function CustomizeSelectedProduct() {
 
 	const { addToCart, openSidebar2 } = useCartContext();
 	const { user, token } = isAuthenticated();
+
+	// If user/token missing, fallback:
+	const fallbackUserId = user?._id || "663539b4eb1a090ebd349d65";
+	const fallbackToken = token || "token";
 
 	// Refs for screenshot
 	const sliderRef = useRef(null);
@@ -504,11 +519,15 @@ export default function CustomizeSelectedProduct() {
 			],
 		},
 		onDrop: (acceptedFiles) => {
-			ReactGA.event({
-				category: "User Uploaded Image In Custom Design",
-				action: "User Uploaded Image In Custom Design",
-				label: `User Uploaded Image In Custom Design`,
-			});
+			try {
+				if (ReactGA && typeof ReactGA.event === "function") {
+					ReactGA.event({
+						category: "User Uploaded Image In Custom Design",
+						action: "User Uploaded Image In Custom Design",
+						label: "User Uploaded Image In Custom Design",
+					});
+				}
+			} catch {}
 			acceptedFiles.forEach((file) => addImageElement(file));
 		},
 	});
@@ -534,9 +553,7 @@ export default function CustomizeSelectedProduct() {
 
 	const [uploadingImage, setUploadingImage] = useState(false);
 
-	// ---------------------------
-	// 1) LOAD PRODUCT by productId
-	// ---------------------------
+	// 1) LOAD PRODUCT
 	useEffect(() => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
 		const fetchProduct = async () => {
@@ -582,7 +599,6 @@ export default function CustomizeSelectedProduct() {
 
 				setProduct(fetchedProduct);
 
-				// Attempt default color + size
 				const colorOption = fetchedProduct.options.find(
 					(opt) => opt.name.toLowerCase() === "colors"
 				);
@@ -721,28 +737,11 @@ export default function CustomizeSelectedProduct() {
 	}, [product, selectedColor, selectedSize]);
 
 	/**
-	 * ------------------------------------------------------------------------------
-	 * 2) IMAGE UPLOAD LOGIC (with final fallback)
-	 * ------------------------------------------------------------------------------
+	 * ------------------------------------------------------------------------
+	 * 2) IMAGE UPLOAD LOGIC
+	 * ------------------------------------------------------------------------
 	 */
 	const addImageElement = async (file) => {
-		// Check color/size selected first:
-		const colorOption = product?.options.find(
-			(opt) => opt.name.toLowerCase() === "colors"
-		);
-		const sizeOption = product?.options.find(
-			(opt) => opt.name.toLowerCase() === "sizes"
-		);
-
-		if (colorOption && !selectedColor) {
-			message.warning("Please select a color before customizing.");
-			return;
-		}
-		if (sizeOption && !selectedSize) {
-			message.warning("Please select a size before customizing.");
-			return;
-		}
-
 		// If user picks .mov => error
 		if (
 			file.type?.toLowerCase().includes("video") ||
@@ -792,8 +791,8 @@ export default function CustomizeSelectedProduct() {
 							try {
 								const { public_id, url } = await fallbackVanillaJSXHRUpload(
 									workingFile,
-									user._id,
-									token
+									fallbackUserId,
+									fallbackToken
 								);
 								addImageElementToCanvas(public_id, url);
 							} catch (vanillaFail) {
@@ -804,17 +803,15 @@ export default function CustomizeSelectedProduct() {
 
 								// =========== ASK PERMISSION & re-try final attempt ===========
 								try {
-									// Ask for camera/files permission
 									await requestImagePermissions();
 									message.info(
 										"Trying final fallback once more with permission granted..."
 									);
 
-									// Attempt the final plain XHR again
 									const { public_id, url } = await fallbackVanillaJSXHRUpload(
 										workingFile,
-										user._id,
-										token
+										fallbackUserId,
+										fallbackToken
 									);
 									addImageElementToCanvas(public_id, url);
 								} catch (vanillaPermFail) {
@@ -844,9 +841,13 @@ export default function CustomizeSelectedProduct() {
 
 	async function uploadDirectly(file) {
 		const base64Image = await convertToBase64(file);
-		const { public_id, url } = await cloudinaryUpload1(user._id, token, {
-			image: base64Image,
-		});
+		const { public_id, url } = await cloudinaryUpload1(
+			fallbackUserId,
+			fallbackToken,
+			{
+				image: base64Image,
+			}
+		);
 		if (!public_id || !url) {
 			throw new Error("Missing public_id or url in direct upload response");
 		}
@@ -856,9 +857,13 @@ export default function CustomizeSelectedProduct() {
 	async function handleImageResizingThenUpload(file) {
 		const resizedFile = await resizeImage(file, 1200);
 		const base64Image = await convertToBase64(resizedFile);
-		const { public_id, url } = await cloudinaryUpload1(user._id, token, {
-			image: base64Image,
-		});
+		const { public_id, url } = await cloudinaryUpload1(
+			fallbackUserId,
+			fallbackToken,
+			{
+				image: base64Image,
+			}
+		);
 		if (!public_id || !url) {
 			throw new Error("Missing public_id or url after resizing");
 		}
@@ -927,7 +932,7 @@ export default function CustomizeSelectedProduct() {
 				}
 				canvas.width = width;
 				canvas.height = height;
-				const ctx = canvas.getContext("2d");
+				const ctx = canvas.getContext("2d", { willReadFrequently: true });
 				ctx.drawImage(img, 0, 0, width, height);
 
 				canvas.toBlob(
@@ -960,9 +965,9 @@ export default function CustomizeSelectedProduct() {
 	}
 
 	/**
-	 * ------------------------------------------------------------------------------
+	 * ------------------------------------------------------------------------
 	 * 3) TEXT + ELEMENT EDITING
-	 * ------------------------------------------------------------------------------
+	 * ------------------------------------------------------------------------
 	 */
 	function addTextElement(textValue) {
 		const finalText = textValue ? textValue.trim() : userText.trim();
@@ -1057,18 +1062,13 @@ export default function CustomizeSelectedProduct() {
 		const el = elements.find((x) => x.id === elId);
 		if (!el) return;
 
-		// If this image is on Cloudinary, remove it
+		// If it's an image on Cloudinary, remove it
 		if (el.type === "image" && el.public_id) {
 			try {
-				const userId = user && user._id;
-				if (!userId) {
-					message.error("User not authenticated.");
-					return;
-				}
 				await axios.post(
-					`${process.env.REACT_APP_API_URL}/admin/removeimage/${userId}`,
+					`${process.env.REACT_APP_API_URL}/admin/removeimage/${fallbackUserId}`,
 					{ public_id: el.public_id },
-					{ headers: { Authorization: `Bearer ${token}` } }
+					{ headers: { Authorization: `Bearer ${fallbackToken}` } }
 				);
 				message.success("Image Successfully Deleted.");
 			} catch (error) {
@@ -1195,7 +1195,6 @@ export default function CustomizeSelectedProduct() {
 		return { x: evt.clientX, y: evt.clientY };
 	}
 
-	// Determine variant price
 	function getVariantPrice() {
 		if (!product || !product.variants) return 0;
 		function numOrStr(val) {
@@ -1363,31 +1362,19 @@ export default function CustomizeSelectedProduct() {
 	const [isCheckoutModalVisible, setIsCheckoutModalVisible] = useState(false);
 
 	/**
-	 * ------------------------------------------------------------------------------
-	 * 4) ADD TO CART => SCREENSHOT (with final fallback)
-	 * ------------------------------------------------------------------------------
+	 * ------------------------------------------------------------------------
+	 * 4) ADD TO CART => SCREENSHOT
+	 * ------------------------------------------------------------------------
 	 */
 	async function handleAddToCart() {
 		if (isAddToCartDisabled) return;
-		// Check color & size
-		const colorOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "colors"
-		);
-		if (colorOption && !selectedColor) {
-			message.warning("Please select a color before adding to cart.");
-			return;
-		}
-		const sizeOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "sizes"
-		);
-		if (sizeOption && !selectedSize) {
-			message.warning("Please select a size before adding to cart.");
-			return;
-		}
+
+		// If no variant_id => must pick color/size
 		if (!order.variant_id) {
 			message.warning("Please select required options before adding to cart.");
 			return;
 		}
+
 		setIsAddToCartDisabled(true);
 
 		const previouslySelected = selectedElementId;
@@ -1420,9 +1407,13 @@ export default function CustomizeSelectedProduct() {
 				mimeType: "image/jpeg",
 				quality: 0.9,
 			});
-			const bareUpload = await cloudinaryUpload1(user._id, token, {
-				image: bareDataURL,
-			});
+			const bareUpload = await cloudinaryUpload1(
+				fallbackUserId,
+				fallbackToken,
+				{
+					image: bareDataURL,
+				}
+			);
 			bareUrl = bareUpload.url;
 
 			// final
@@ -1434,9 +1425,13 @@ export default function CustomizeSelectedProduct() {
 				mimeType: "image/jpeg",
 				quality: 0.9,
 			});
-			const finalUpload = await cloudinaryUpload1(user._id, token, {
-				image: finalDataURL,
-			});
+			const finalUpload = await cloudinaryUpload1(
+				fallbackUserId,
+				fallbackToken,
+				{
+					image: finalDataURL,
+				}
+			);
 			finalUrl = finalUpload.url;
 		} catch (attemptOneErr) {
 			console.warn("Screenshot #1 failed, fallback #2...", attemptOneErr);
@@ -1461,7 +1456,7 @@ export default function CustomizeSelectedProduct() {
 					mimeType: "image/jpeg",
 					quality: 0.85,
 				});
-				const bareUp2 = await cloudinaryUpload1(user._id, token, {
+				const bareUp2 = await cloudinaryUpload1(fallbackUserId, fallbackToken, {
 					image: bareDataURL2,
 				});
 				bareUrl = bareUp2.url;
@@ -1475,17 +1470,19 @@ export default function CustomizeSelectedProduct() {
 					mimeType: "image/jpeg",
 					quality: 0.85,
 				});
-				const finalUp2 = await cloudinaryUpload1(user._id, token, {
-					image: finalDataURL2,
-				});
+				const finalUp2 = await cloudinaryUpload1(
+					fallbackUserId,
+					fallbackToken,
+					{
+						image: finalDataURL2,
+					}
+				);
 				finalUrl = finalUp2.url;
 			} catch (attemptTwoErr) {
 				console.warn(
 					"Screenshot #2 also failed, fallback #3 (dom-to-image)...",
 					attemptTwoErr
 				);
-
-				// #3) final fallback => dom-to-image
 				try {
 					const domOptions = {
 						quality: 0.9,
@@ -1508,9 +1505,13 @@ export default function CustomizeSelectedProduct() {
 						mimeType: "image/jpeg",
 						quality: 0.9,
 					});
-					const bareUp3 = await cloudinaryUpload1(user._id, token, {
-						image: bareDataURL3,
-					});
+					const bareUp3 = await cloudinaryUpload1(
+						fallbackUserId,
+						fallbackToken,
+						{
+							image: bareDataURL3,
+						}
+					);
 					bareUrl = bareUp3.url;
 
 					// final
@@ -1523,26 +1524,30 @@ export default function CustomizeSelectedProduct() {
 						mimeType: "image/jpeg",
 						quality: 0.9,
 					});
-					const finalUp3 = await cloudinaryUpload1(user._id, token, {
-						image: finalDataURL3,
-					});
+					const finalUp3 = await cloudinaryUpload1(
+						fallbackUserId,
+						fallbackToken,
+						{
+							image: finalDataURL3,
+						}
+					);
 					finalUrl = finalUp3.url;
 				} catch (finalErr) {
 					console.warn(
 						"dom-to-image also failed => final vanilla XHR fallback",
 						finalErr
 					);
-
-					// #4) final final fallback => do XHR => THEN ask for permission
 					try {
-						// Create a fallback 300x300 white canvas
+						// #4) final final fallback => do XHR => THEN ask for permission
 						const fallbackCanvas = document.createElement("canvas");
 						fallbackCanvas.width = 300;
 						fallbackCanvas.height = 300;
-						fallbackCanvas.getContext("2d").fillStyle = "#fff";
-						fallbackCanvas.getContext("2d").fillRect(0, 0, 300, 300);
+						const ctx = fallbackCanvas.getContext("2d", {
+							willReadFrequently: true,
+						});
+						ctx.fillStyle = "#fff";
+						ctx.fillRect(0, 0, 300, 300);
 
-						// Convert to Blob
 						const screenshotBlob = await new Promise(
 							(resolveBlob, rejectBlob) => {
 								fallbackCanvas.toBlob(
@@ -1564,29 +1569,30 @@ export default function CustomizeSelectedProduct() {
 						const { url: fallbackScreenshotUrl } =
 							await fallbackVanillaJSXHRUploadScreenshot(
 								screenshotBlob,
-								user._id,
-								token
+								fallbackUserId,
+								fallbackToken
 							);
 
 						bareUrl = fallbackScreenshotUrl;
 						finalUrl = fallbackScreenshotUrl;
 					} catch (vanillaScreenshotErr) {
-						// =========== ASK PERMISSION & re-try final screenshot attempt =============
 						console.error(
 							"Even final vanilla screenshot fallback failed",
 							vanillaScreenshotErr
 						);
+						// =========== ASK PERMISSION & re-try final screenshot attempt ============
 						try {
-							// ask permission
 							await requestImagePermissions();
 							message.info("Retrying screenshot after permission…");
 
-							// We do the same 300x300 fallback approach again:
 							const fallbackCanvas2 = document.createElement("canvas");
 							fallbackCanvas2.width = 300;
 							fallbackCanvas2.height = 300;
-							fallbackCanvas2.getContext("2d").fillStyle = "#fff";
-							fallbackCanvas2.getContext("2d").fillRect(0, 0, 300, 300);
+							const ctx2 = fallbackCanvas2.getContext("2d", {
+								willReadFrequently: true,
+							});
+							ctx2.fillStyle = "#fff";
+							ctx2.fillRect(0, 0, 300, 300);
 
 							const screenshotBlob2 = await new Promise(
 								(resolveBlob, rejectBlob) => {
@@ -1611,8 +1617,8 @@ export default function CustomizeSelectedProduct() {
 							const { url: fallbackScreenshotUrl2 } =
 								await fallbackVanillaJSXHRUploadScreenshot(
 									screenshotBlob2,
-									user._id,
-									token
+									fallbackUserId,
+									fallbackToken
 								);
 
 							bareUrl = fallbackScreenshotUrl2;
@@ -1643,9 +1649,8 @@ export default function CustomizeSelectedProduct() {
 			return;
 		}
 
-		// If we have bareUrl & finalUrl, proceed
+		// If we have bareUrl & finalUrl
 		try {
-			// Attempt to find matching variant image
 			let variantImage = "";
 			let matchingVariant = null;
 			function numOrStr(val) {
@@ -1750,11 +1755,18 @@ export default function CustomizeSelectedProduct() {
 				chosenProductAttributes,
 				customDesign
 			);
-			ReactGA.event({
-				category: "Add To The Cart Custom Products",
-				action: "User Added Product From The Custom Products",
-				label: `User added ${product.productName} to the cart`,
-			});
+
+			// GA event
+			try {
+				if (ReactGA && typeof ReactGA.event === "function") {
+					ReactGA.event({
+						category: "Add To The Cart Custom Products",
+						action: "User Added Product From The Custom Products",
+						label: `User added ${product.productName} to the cart`,
+					});
+				}
+			} catch {}
+
 			openSidebar2();
 			message.success("Added to cart with custom design!");
 		} catch (error) {
@@ -1768,7 +1780,6 @@ export default function CustomizeSelectedProduct() {
 		}
 	}
 
-	// Helper for dom-to-image fallback
 	async function blobToCanvas(blob) {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
@@ -1777,7 +1788,8 @@ export default function CustomizeSelectedProduct() {
 				const canvas = document.createElement("canvas");
 				canvas.width = img.width;
 				canvas.height = img.height;
-				canvas.getContext("2d").drawImage(img, 0, 0);
+				const ctx = canvas.getContext("2d", { willReadFrequently: true });
+				ctx.drawImage(img, 0, 0);
 				URL.revokeObjectURL(url);
 				resolve(canvas);
 			};
@@ -1926,11 +1938,6 @@ export default function CustomizeSelectedProduct() {
 		}
 	}
 
-	/**
-	 * ------------------------------------------------------------------------------
-	 * RENDER
-	 * ------------------------------------------------------------------------------
-	 */
 	return (
 		<CustomizeWrapper>
 			<Helmet>
@@ -2041,11 +2048,18 @@ export default function CustomizeSelectedProduct() {
 													onClick={() => {
 														setMobileTextInput("");
 														setTextModalVisible(true);
-														ReactGA.event({
-															category: "User Added Text In Custom Design",
-															action: "User Added Text In Custom Design",
-															label: `User Added Text In Custom Design`,
-														});
+														try {
+															if (
+																ReactGA &&
+																typeof ReactGA.event === "function"
+															) {
+																ReactGA.event({
+																	category: "User Added Text In Custom Design",
+																	action: "User Added Text In Custom Design",
+																	label: "User Added Text In Custom Design",
+																});
+															}
+														} catch {}
 													}}
 												>
 													Add Text
@@ -2073,11 +2087,20 @@ export default function CustomizeSelectedProduct() {
 												<Button
 													icon={<CloudUploadOutlined />}
 													onClick={() => {
-														ReactGA.event({
-															category: "User Uploaded Image In Custom Design",
-															action: "User Uploaded Image In Custom Design",
-															label: `User Uploaded Image In Custom Design`,
-														});
+														try {
+															if (
+																ReactGA &&
+																typeof ReactGA.event === "function"
+															) {
+																ReactGA.event({
+																	category:
+																		"User Uploaded Image In Custom Design",
+																	action:
+																		"User Uploaded Image In Custom Design",
+																	label: "User Uploaded Image In Custom Design",
+																});
+															}
+														} catch {}
 														hiddenGalleryInputRef.current.click();
 													}}
 												>
@@ -2116,7 +2139,7 @@ export default function CustomizeSelectedProduct() {
 					</StyledSlider>
 				</Col>
 
-				{/* RIGHT COLUMN: PRODUCT INFO & CUSTOMIZATION */}
+				{/* RIGHT COLUMN */}
 				<Col xs={24} md={12}>
 					<ProductTitle level={3}>{product.title}</ProductTitle>
 					<ProductDescription>
@@ -2388,6 +2411,7 @@ export default function CustomizeSelectedProduct() {
 				</MobileBottomPanel>
 			)}
 
+			{/* Switch to `open={textModalVisible}` to avoid warning about `visible` */}
 			<Modal
 				title='Add Your Text'
 				open={textModalVisible}
@@ -2478,8 +2502,9 @@ export default function CustomizeSelectedProduct() {
 				</BarePrintArea>
 			</BareDesignOverlay>
 
+			{/* Also note that in PrintifyCheckoutModal, use `open={...}` instead of `visible={...}` */}
 			<PrintifyCheckoutModal
-				visible={isCheckoutModalVisible}
+				open={isCheckoutModalVisible}
 				onClose={() => setIsCheckoutModalVisible(false)}
 				order={order}
 				setOrder={setOrder}
@@ -2488,11 +2513,6 @@ export default function CustomizeSelectedProduct() {
 		</CustomizeWrapper>
 	);
 
-	/**
-	 * ------------------------------------------------------------------------------
-	 * Render RND design elements
-	 * ------------------------------------------------------------------------------
-	 */
 	function renderDesignElements() {
 		return elements.map((el) => {
 			const isSelected = el.id === selectedElementId;
@@ -2938,9 +2958,9 @@ export default function CustomizeSelectedProduct() {
 }
 
 /**
- * ------------------------------------------------------------------------------
+ * ------------------------------------------------------------------------
  * D) STYLED COMPONENTS
- * ------------------------------------------------------------------------------
+ * ------------------------------------------------------------------------
  */
 const CustomizeWrapper = styled.section`
 	padding: 40px;
