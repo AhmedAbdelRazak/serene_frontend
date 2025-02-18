@@ -599,6 +599,13 @@ export default function CustomizeSelectedProduct() {
 
 				setProduct(fetchedProduct);
 
+				// -----------------------------------------
+				// ADDITION: check query params for color/size
+				// -----------------------------------------
+				const queryParams = new URLSearchParams(window.location.search);
+				const colorParam = queryParams.get("color");
+				const sizeParam = queryParams.get("size");
+
 				const colorOption = fetchedProduct.options.find(
 					(opt) => opt.name.toLowerCase() === "colors"
 				);
@@ -606,28 +613,51 @@ export default function CustomizeSelectedProduct() {
 					(opt) => opt.name.toLowerCase() === "sizes"
 				);
 
+				// If we have colorOption:
 				if (colorOption?.values?.length) {
-					setSelectedColor(colorOption.values[0].title);
+					// If there's a ?color= in the URL and it matches a valid color, use it; otherwise fallback to the first
+					if (
+						colorParam &&
+						colorOption.values.some((val) => val.title === colorParam)
+					) {
+						setSelectedColor(colorParam);
+					} else {
+						setSelectedColor(colorOption.values[0].title);
+					}
 				} else {
 					setSelectedColor("");
 				}
+
+				// If we have sizeOption:
 				if (sizeOption?.values?.length) {
-					const defVar = validVariants.find((v) => v.is_default);
-					if (defVar) {
-						const defSizeVal = sizeOption.values.find((sv) =>
-							defVar.options.includes(sv.id)
-						);
-						if (defSizeVal) {
-							setSelectedSize(defSizeVal.title);
+					// If there's a ?size= in the URL and it matches a valid size, use it
+					if (
+						sizeParam &&
+						sizeOption.values.some((val) => val.title === sizeParam)
+					) {
+						setSelectedSize(sizeParam);
+					} else {
+						// original logic: pick default variant if it exists, else pick first
+						const defVar = validVariants.find((v) => v.is_default);
+						if (defVar) {
+							const defSizeVal = sizeOption.values.find((sv) =>
+								defVar.options.includes(sv.id)
+							);
+							if (defSizeVal) {
+								setSelectedSize(defSizeVal.title);
+							} else {
+								setSelectedSize(sizeOption.values[0].title);
+							}
 						} else {
 							setSelectedSize(sizeOption.values[0].title);
 						}
-					} else {
-						setSelectedSize(sizeOption.values[0].title);
 					}
 				} else {
 					setSelectedSize("");
 				}
+				// -----------------------------------------
+				// END of addition
+				// -----------------------------------------
 
 				setLoading(false);
 			} catch (err) {
@@ -1003,7 +1033,6 @@ export default function CustomizeSelectedProduct() {
 			wasReset: false,
 		};
 		setElements((prev) => [...prev, newEl]);
-		setSelectedElementId(newId);
 	}
 
 	function handleElementClick(el) {
@@ -2411,7 +2440,7 @@ export default function CustomizeSelectedProduct() {
 				</MobileBottomPanel>
 			)}
 
-			{/* Switch to `open={textModalVisible}` to avoid warning about `visible` */}
+			{/* MOBILE TEXT MODAL */}
 			<Modal
 				title='Add Your Text'
 				open={textModalVisible}
@@ -2502,7 +2531,6 @@ export default function CustomizeSelectedProduct() {
 				</BarePrintArea>
 			</BareDesignOverlay>
 
-			{/* Also note that in PrintifyCheckoutModal, use `open={...}` instead of `visible={...}` */}
 			<PrintifyCheckoutModal
 				open={isCheckoutModalVisible}
 				onClose={() => setIsCheckoutModalVisible(false)}
