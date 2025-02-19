@@ -2,11 +2,13 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import { useLocation } from "react-router-dom";
 
-const capitalizeWords = (str) => {
+// Safely capitalize words; provide a default to avoid .replace on undefined
+const capitalizeWords = (str = "") => {
 	return str.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
-const escapeJsonString = (str) => {
+// Safely escape JSON strings; provide a default to avoid .replace on undefined
+const escapeJsonString = (str = "") => {
 	return str
 		.replace(/\\/g, "\\\\")
 		.replace(/"/g, '\\"')
@@ -17,9 +19,10 @@ const escapeJsonString = (str) => {
 		.replace(/\f/g, "\\f");
 };
 
+// (Optional) Utility for GTIN if you need it
 // eslint-disable-next-line
-const formatGTIN = (sku) => {
-	let formattedSKU = sku.toString().replace(/[^0-9]/g, ""); // Remove non-numeric characters
+const formatGTIN = (sku = "") => {
+	let formattedSKU = sku.replace(/[^0-9]/g, ""); // Remove non-numeric characters
 	if (formattedSKU.length > 14) {
 		formattedSKU = formattedSKU.substring(0, 14);
 	} else {
@@ -31,58 +34,66 @@ const formatGTIN = (sku) => {
 };
 
 // Generate keywords from products array
-const generateKeywords = (products) => {
+const generateKeywords = (products = []) => {
 	const categoryKeywords = products.map(
-		(product) => product.category.categoryName
+		(product) => product?.category?.categoryName || ""
 	);
-	const productKeywords = products.map((product) => product.productName);
+	const productKeywords = products.map((product) => product?.productName || "");
 	return [...new Set([...categoryKeywords, ...productKeywords])].join(", ");
 };
 
 // Generate structured data for products
-const generateProductSchema = (products) => {
-	return products.map((product) => {
-		const hasVariables =
-			product.productAttributes && product.productAttributes.length > 0;
+const generateProductSchema = (products = []) => {
+	return products.map((product = {}) => {
+		// Safely handle arrays; fallback to empty arrays
+		const productAttributes = product.productAttributes || [];
+		const productRatings = product.ratings || [];
+		const productComments = product.comments || [];
 
+		const hasVariables = productAttributes.length > 0;
+
+		// Price
 		const price = hasVariables
-			? product.productAttributes[0].priceAfterDiscount
-			: product.priceAfterDiscount;
+			? productAttributes[0]?.priceAfterDiscount
+			: product?.priceAfterDiscount;
 
+		// Quantity
 		const quantity = hasVariables
-			? product.productAttributes.reduce((acc, attr) => acc + attr.quantity, 0)
-			: product.quantity;
+			? productAttributes.reduce((acc, attr) => acc + (attr.quantity || 0), 0)
+			: product?.quantity || 0;
 
-		const priceValidUntil = "2026-12-31";
-
+		// Ratings
 		const ratingValue =
-			product.ratings.length > 0
+			productRatings.length > 0
 				? (
-						product.ratings.reduce((acc, rating) => acc + rating.star, 0) /
-						product.ratings.length
+						productRatings.reduce(
+							(acc, rating) => acc + (rating.star || 0),
+							0
+						) / productRatings.length
 					).toFixed(1)
 				: "5.0";
 
-		const reviewCount = product.ratings.length > 0 ? product.ratings.length : 1;
+		const reviewCount = productRatings.length > 0 ? productRatings.length : 1;
 
+		// Comments -> reviews
 		const reviews =
-			product.comments.length > 0
-				? product.comments.map((comment) => ({
+			productComments.length > 0
+				? productComments.map((comment) => ({
 						"@type": "Review",
 						reviewRating: {
 							"@type": "Rating",
-							ratingValue: comment.rating || 5,
+							ratingValue: comment?.rating || 5,
 							bestRating: 5,
 							worstRating: 1,
 						},
 						author: {
 							"@type": "Person",
-							name: escapeJsonString(
-								comment.postedBy ? comment.postedBy.name : "Anonymous"
-							),
+							name: escapeJsonString(comment?.postedBy?.name || "Anonymous"),
 						},
-						reviewBody: escapeJsonString(comment.text),
-						datePublished: new Date(comment.created).toISOString(),
+						reviewBody: escapeJsonString(comment?.text || ""),
+						datePublished: new Date(
+							comment?.created || Date.now()
+						).toISOString(),
 					}))
 				: [
 						{
@@ -102,19 +113,22 @@ const generateProductSchema = (products) => {
 						},
 					];
 
+		// MPN
 		const mpn = hasVariables
-			? product.productAttributes
-					.map((attr) => `${product.productSKU}-${attr.SubSKU}`)
+			? productAttributes
+					.map((attr) => `${product?.productSKU || ""}-${attr?.SubSKU || ""}`)
 					.join(", ")
-			: product.productSKU;
+			: product?.productSKU || "";
 
+		// Build schema
 		const productSchema = {
 			"@context": "http://schema.org",
 			"@type": "Product",
-			name: capitalizeWords(escapeJsonString(product.productName)),
-			image: product.thumbnailImage[0]?.images[0]?.url || "",
+			name: capitalizeWords(escapeJsonString(product?.productName || "")),
+			image: product?.thumbnailImage?.[0]?.images?.[0]?.url || "",
 			description: escapeJsonString(
-				product.description.replace(/<[^>]+>/g, "")
+				// remove HTML tags if description is present
+				(product?.description || "").replace(/<[^>]+>/g, "")
 			),
 			brand: {
 				"@type": "Brand",
@@ -124,8 +138,8 @@ const generateProductSchema = (products) => {
 			offers: {
 				"@type": "Offer",
 				priceCurrency: "USD",
-				price: Number(price).toFixed(2),
-				priceValidUntil,
+				price: Number(price || 0).toFixed(2),
+				priceValidUntil: "2026-12-31",
 				availability:
 					quantity > 0
 						? "http://schema.org/InStock"
@@ -187,29 +201,29 @@ const generateProductSchema = (products) => {
 				reviewCount,
 			},
 			review: reviews,
-			productID: product._id,
-			url: `https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`,
+			productID: product?._id || "",
+			url: `https://serenejannat.com/single-product/${product?.slug || ""}/${
+				product?.category?.categorySlug || ""
+			}/${product?._id || ""}`,
+			identifier_exists: false, // For GTIN
 		};
-
-		// if (product.productSKU && /\d/.test(product.productSKU)) {
-		// 	productSchema.gtin = formatGTIN(product.productSKU); // Ensure GTIN is numeric and padded to 12 digits
-		// } else {
-		// 	productSchema["identifier_exists"] = false;
-		// }
-		productSchema["identifier_exists"] = false;
 
 		return productSchema;
 	});
 };
 
-const ShopPageHelmet = ({ products }) => {
+const ShopPageHelmet = ({ products = [] }) => {
 	const location = useLocation();
 
 	const title = "Our Products - Serene Jannat Gift Store";
 	const description =
 		"Explore our wide range of products including candles, glass items, and more at Serene Jannat Gift Store. Find the perfect gift for any occasion.";
+
+	// Safely generate keywords
 	const keywords = generateKeywords(products);
 	const productSchema = generateProductSchema(products);
+
+	// Full canonical URL
 	const canonicalUrl = `https://serenejannat.com${location.pathname}${location.search}`;
 
 	return (

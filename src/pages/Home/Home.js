@@ -15,44 +15,44 @@ import ZNewArrival from "./ZNewArrival";
 import ZCustomDesigns from "./ZCustomDesigns";
 
 const Home = () => {
-	const [allCategories, setAllCategories] = useState("");
-	const [allSubcategories, setAllSubcategories] = useState("");
-	const [featuredProducts, setFeaturedProducts] = useState("");
-	const [newArrivalProducts, setNewArrivalProducts] = useState("");
-	const [customDesignProducts, setCustomDesignProducts] = useState("");
+	const [allCategories, setAllCategories] = useState([]);
+	const [allSubcategories, setAllSubcategories] = useState([]);
+	const [featuredProducts, setFeaturedProducts] = useState([]);
+	const [newArrivalProducts, setNewArrivalProducts] = useState([]);
+	const [customDesignProducts, setCustomDesignProducts] = useState([]);
 	const [loading, setLoading] = useState(true);
 
 	const distinctCategoriesAndSubcategories = () => {
 		setLoading(true);
 		gettingCategoriesAndSubcategories().then((data) => {
-			if (data && data.error) {
+			if (data?.error) {
 				console.log(data.error);
+				setLoading(false);
 			} else {
 				gettingSpecificProducts(1, 0, 0, 0, 0, 20).then((data2) => {
-					if (data2 && data2.error) {
+					if (data2?.error) {
 						console.log(data2.error);
 					} else {
 						const sortedFeaturedProducts = data2.sort(
 							(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
 						);
-
 						setFeaturedProducts(sortedFeaturedProducts);
-						setAllCategories(data && data.categories);
-						setAllSubcategories(data && data.subcategories);
+						setAllCategories(data.categories || []);
+						setAllSubcategories(data.subcategories || []);
 					}
 				});
 
 				gettingSpecificProducts(0, 1, 0, 0, 0, 20).then((data3) => {
-					if (data3 && data3.error) {
+					if (data3?.error) {
 						console.log(data3.error);
 					} else {
-						setNewArrivalProducts(data3);
+						setNewArrivalProducts(data3 || []);
 
 						gettingSpecificProducts(0, 0, 1, 0, 0, 20).then((data4) => {
-							if (data4 && data4.error) {
+							if (data4?.error) {
 								console.log(data4.error);
 							} else {
-								setCustomDesignProducts(data4);
+								setCustomDesignProducts(data4 || []);
 							}
 						});
 
@@ -72,22 +72,22 @@ const Home = () => {
 	useEffect(() => {
 		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
 		ReactGA.send(window.location.pathname + window.location.search);
-
 		// eslint-disable-next-line
 	}, [window.location.pathname]);
 
 	useEffect(() => {
-		AOS.init({ duration: 2000 }); // Initializes AOS; 2000 is the animation duration in milliseconds
-		// Optionally, you can add settings for offset, delay, etc.
+		// Initializes AOS; 2000 is the animation duration in milliseconds
+		AOS.init({ duration: 2000 });
 	}, []);
 
 	// Utility function to capitalize the first letter of each word
-	const capitalizeWords = (str) => {
+	const capitalizeWords = (str = "") => {
 		return str.replace(/\b\w/g, (char) => char.toUpperCase());
 	};
 
 	// Utility function to escape JSON strings
-	const escapeJsonString = (str) => {
+	const escapeJsonString = (str = "") => {
+		// Provide a default empty string to avoid `.replace` errors
 		return str
 			.replace(/\\/g, "\\\\")
 			.replace(/"/g, '\\"')
@@ -98,10 +98,10 @@ const Home = () => {
 			.replace(/\f/g, "\\f");
 	};
 
-	// Utility function to format the GTIN
+	// (Optional) Utility function to format the GTIN
 	// eslint-disable-next-line
-	const formatGTIN = (sku) => {
-		let formattedSKU = sku.toString().replace(/[^0-9]/g, ""); // Remove non-numeric characters
+	const formatGTIN = (sku = "") => {
+		let formattedSKU = sku.toString().replace(/[^0-9]/g, "");
 		if (formattedSKU.length > 14) {
 			formattedSKU = formattedSKU.substring(0, 14);
 		} else if (formattedSKU.length < 14) {
@@ -113,35 +113,39 @@ const Home = () => {
 	};
 
 	// Generate keywords from products array
-	const generateKeywords = (products) => {
+	const generateKeywords = (products = []) => {
 		const categoryKeywords = products.map(
-			(product) => product.category.categoryName
+			(product) => product?.category?.categoryName || ""
 		);
-		const productKeywords = products.map((product) => product.productName);
+		const productKeywords = products.map(
+			(product) => product?.productName || ""
+		);
 		return [...new Set([...categoryKeywords, ...productKeywords])].join(", ");
 	};
 
 	// Generate structured data for products
-	const generateProductSchema = (products) => {
+	const generateProductSchema = (products = []) => {
 		return products.map((product) => {
+			// Defensive checks
 			const hasVariables =
-				product.productAttributes && product.productAttributes.length > 0;
+				product?.productAttributes && product.productAttributes.length > 0;
 
 			const price = hasVariables
 				? product.productAttributes[0].priceAfterDiscount
-				: product.priceAfterDiscount;
+				: product?.priceAfterDiscount || 0;
 
 			const quantity = hasVariables
 				? product.productAttributes.reduce(
 						(acc, attr) => acc + attr.quantity,
 						0
 					)
-				: product.quantity;
+				: product?.quantity || 0;
 
 			const priceValidUntil = "2026-12-31";
 
+			// Ratings
 			const ratingValue =
-				product.ratings.length > 0
+				product?.ratings?.length > 0
 					? (
 							product.ratings.reduce((acc, rating) => acc + rating.star, 0) /
 							product.ratings.length
@@ -149,25 +153,26 @@ const Home = () => {
 					: "5.0";
 
 			const reviewCount =
-				product.ratings.length > 0 ? product.ratings.length : 1;
+				product?.ratings?.length > 0 ? product.ratings.length : 1;
 
+			// Reviews
 			const reviews =
-				product.comments.length > 0
+				product?.comments?.length > 0
 					? product.comments.map((comment) => ({
 							"@type": "Review",
 							reviewRating: {
 								"@type": "Rating",
-								ratingValue: comment.rating || 5,
+								ratingValue: comment?.rating || 5,
 								bestRating: 5,
 								worstRating: 1,
 							},
 							author: {
 								"@type": "Person",
 								name: escapeJsonString(
-									comment.postedBy ? comment.postedBy.name : "Anonymous"
+									comment?.postedBy ? comment.postedBy.name : "Anonymous"
 								),
 							},
-							reviewBody: escapeJsonString(comment.text),
+							reviewBody: escapeJsonString(comment?.text || ""),
 							datePublished: new Date(comment.created).toISOString(),
 						}))
 					: [
@@ -188,19 +193,21 @@ const Home = () => {
 							},
 						];
 
+			// MPN
 			const mpn = hasVariables
 				? product.productAttributes
-						.map((attr) => `${product.productSKU}-${attr.SubSKU}`)
+						.map((attr) => `${product?.productSKU || ""}-${attr.SubSKU || ""}`)
 						.join(", ")
-				: product.productSKU;
+				: product?.productSKU || "N/A";
 
 			const productSchema = {
 				"@context": "http://schema.org",
 				"@type": "Product",
-				name: capitalizeWords(escapeJsonString(product.productName)),
-				image: product.thumbnailImage[0]?.images[0]?.url || "",
+				name: capitalizeWords(escapeJsonString(product?.productName || "")),
+				image: product?.thumbnailImage?.[0]?.images?.[0]?.url || "",
 				description: escapeJsonString(
-					product.description.replace(/<[^>]+>/g, "")
+					// Remove any HTML tags if product.description exists
+					(product?.description || "").replace(/<[^>]+>/g, "")
 				),
 				brand: {
 					"@type": "Brand",
@@ -273,22 +280,29 @@ const Home = () => {
 					reviewCount,
 				},
 				review: reviews,
-				productID: product._id,
-				url: `https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`,
+				productID: product?._id,
+				url: `https://serenejannat.com/single-product/${product?.slug || ""}/${
+					product?.category?.categorySlug || ""
+				}/${product?._id}`,
 			};
 
+			// If you want to add GTIN checking logic:
 			// if (product.productSKU && /\d/.test(product.productSKU)) {
-			// 	productSchema.gtin = formatGTIN(product.productSKU); // Ensure GTIN is numeric and padded to 12 digits
+			//   productSchema.gtin = formatGTIN(product.productSKU);
 			// } else {
-			// 	productSchema["identifier_exists"] = false;
+			//   productSchema.identifier_exists = false;
 			// }
-			productSchema["identifier_exists"] = false;
+			// For safety:
+			productSchema.identifier_exists = false;
 
 			return productSchema;
 		});
 	};
 
-	const HomePageHelmet = ({ featuredProducts, newArrivalProducts }) => {
+	const HomePageHelmet = ({
+		featuredProducts = [],
+		newArrivalProducts = [],
+	}) => {
 		const title = "Serene Jannat | Best Gifts and Candles Online Shop";
 		const description =
 			"Discover the best offers at Serene Jannat, your online gift store for candles, glass items, and more. Show love to your loved ones with our exquisite collection.";
@@ -310,7 +324,9 @@ const Home = () => {
 				<meta property='og:description' content={description} />
 				<meta
 					property='og:image'
-					content={featuredProducts[0]?.thumbnailImage[0]?.images[0]?.url || ""}
+					content={
+						featuredProducts?.[0]?.thumbnailImage?.[0]?.images?.[0]?.url || ""
+					}
 				/>
 				<meta property='og:url' content='https://serenejannat.com' />
 				<meta property='og:type' content='website' />
@@ -324,40 +340,44 @@ const Home = () => {
 
 	return (
 		<HomeWrapper>
+			{/* Helmet / SEO */}
 			<HomePageHelmet
 				featuredProducts={featuredProducts}
 				newArrivalProducts={newArrivalProducts}
 			/>
+
 			<div>
 				<Z1HeroComponent />
 			</div>
-			{/* <div className='pt-3'>
-				<ZSearch />
-			</div> */}
 
-			{!loading && allCategories && allCategories.length > 0 ? (
+			{/* Categories */}
+			{!loading && allCategories.length > 0 && (
 				<ZCategories
 					allCategories={allCategories}
 					allSubcategories={allSubcategories}
 				/>
-			) : null}
+			)}
 
-			{!loading && customDesignProducts && customDesignProducts.length > 0 ? (
+			{/* Custom Designs */}
+			{!loading && customDesignProducts.length > 0 && (
 				<div data-aos='fade-up'>
 					<ZCustomDesigns customDesignProducts={customDesignProducts} />
 				</div>
-			) : null}
+			)}
 
-			{!loading && featuredProducts && featuredProducts.length > 0 ? (
+			{/* Featured Products */}
+			{!loading && featuredProducts.length > 0 && (
 				<div data-aos='fade-up'>
 					<ZFeaturedProducts featuredProducts={featuredProducts} />
 				</div>
-			) : null}
-			{!loading && newArrivalProducts && newArrivalProducts.length > 0 ? (
+			)}
+
+			{/* New Arrivals */}
+			{!loading && newArrivalProducts.length > 0 && (
 				<div data-aos='fade-up'>
 					<ZNewArrival newArrivalProducts={newArrivalProducts} />
 				</div>
-			) : null}
+			)}
 		</HomeWrapper>
 	);
 };

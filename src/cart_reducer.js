@@ -71,7 +71,6 @@ const cart_reducer = (state, action) => {
 		return { ...state, isSidebarOpen: true };
 	}
 	if (action.type === SIDEBAR_CLOSE) {
-		window.scrollTo({ top: 0, behavior: "smooth" });
 		return { ...state, isSidebarOpen: false };
 	}
 
@@ -79,7 +78,6 @@ const cart_reducer = (state, action) => {
 		return { ...state, isSidebarOpen2: true };
 	}
 	if (action.type === SIDEBAR_CLOSE2) {
-		window.scrollTo({ top: 0, behavior: "smooth" });
 		return { ...state, isSidebarOpen2: false };
 	}
 
