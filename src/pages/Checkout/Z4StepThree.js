@@ -312,13 +312,6 @@ const Z4StepThree = ({
 						currency: "USD",
 						transaction_id: orderId,
 					});
-
-					window.gtag("event", "conversion", {
-						send_to: "AW-16877390739/qz5ECM35zJ4aEJOX4u8-",
-						value: orderValue,
-						currency: "USD",
-						transaction_id: orderId,
-					});
 				}
 
 				setTimeout(() => {
