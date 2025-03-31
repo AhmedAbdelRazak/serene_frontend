@@ -13,7 +13,6 @@ import ZCategories from "./ZCategories";
 import ZFeaturedProducts from "./ZFeaturedProducts";
 import ZNewArrival from "./ZNewArrival";
 import ZCustomDesigns from "./ZCustomDesigns";
-// eslint-disable-next-line
 import Hero from "./Hero";
 
 /* Keyframes for the fade-up animation */
@@ -281,7 +280,6 @@ const Home = () => {
 		newArrivalProducts,
 		customDesignProducts,
 		loading,
-		// eslint-disable-next-line
 		websiteSetup,
 	} = useCartContext();
 
@@ -321,7 +319,7 @@ const Home = () => {
 			/>
 
 			{/* Hero */}
-			{/* <Hero websiteSetup={websiteSetup} /> */}
+			<Hero websiteSetup={websiteSetup} />
 
 			{/* Categories */}
 			{categories.length > 0 && (
