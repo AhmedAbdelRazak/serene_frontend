@@ -3,8 +3,6 @@ import styled, { keyframes } from "styled-components";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import ReactGA from "react-ga4";
 // 1) Import your PrintifyPageHelmet component:
 import PrintifyPageHelmet from "./PrintifyPageHelmet";

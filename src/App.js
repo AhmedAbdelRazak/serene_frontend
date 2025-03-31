@@ -16,10 +16,16 @@ import { Modal, Button } from "antd"; // for the modal
 import NavbarTop from "./NavbarUpdate/NavbarTop";
 import NavbarBottom from "./NavbarUpdate/NavbarBottom";
 import Footer from "./Footer";
-import PrintifyAvailableProducts from "./pages/PrintOnDemand/PrintifyAvailableProducts";
-import CustomizeSelectedProduct from "./pages/PrintOnDemand/CustomizeSelectedProduct";
-import PrintifyMain from "./Admin/PrintifyProductManagement/PrintifyMain";
-import WebsiteMain from "./Admin/EditingWebsite/WebsiteMain";
+const PrintifyAvailableProducts = lazy(
+	() => import("./pages/PrintOnDemand/PrintifyAvailableProducts")
+);
+const CustomizeSelectedProduct = lazy(
+	() => import("./pages/PrintOnDemand/CustomizeSelectedProduct")
+);
+const PrintifyMain = lazy(
+	() => import("./Admin/PrintifyProductManagement/PrintifyMain")
+);
+const WebsiteMain = lazy(() => import("./Admin/EditingWebsite/WebsiteMain"));
 
 // Lazy load components
 const Login = lazy(() => import("./pages/Login"));
@@ -164,7 +170,7 @@ const AppContent = () => {
 
 	//Add Expenses to each order line
 	//Chat icon adjustment
-	//Signin With Google
+	//Signin With google
 	//Adding Seller Signup page
 	//Adding Seller Dashboard (CRUD Product, CRUD Order)
 

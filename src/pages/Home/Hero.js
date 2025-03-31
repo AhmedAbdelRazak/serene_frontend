@@ -21,9 +21,6 @@ const getCloudinaryOptimizedUrl = (url) => {
 	// Insert transformations right after '/upload/'
 	const parts = url.split("/upload/");
 	if (parts.length === 2) {
-		// Example:
-		// original:  https://res.cloudinary.com/.../upload/v123456/serene_janat/...
-		// transformed: https://res.cloudinary.com/.../upload/f_auto,q_auto/v123456/serene_janat/...
 		return `${parts[0]}/upload/f_auto,q_auto/${parts[1]}`;
 	}
 
@@ -37,14 +34,14 @@ const Hero = ({ websiteSetup }) => {
 
 	// React Slick settings
 	const settings = {
-		dots: true, // show pagination dots
-		infinite: true, // loop
-		speed: 1000, // slide transition speed (ms)
+		dots: true,
+		infinite: true,
+		speed: 1000,
 		slidesToShow: 1,
 		slidesToScroll: 1,
-		autoplay: true, // auto-play slides
+		autoplay: true,
 		autoplaySpeed: 4000,
-		arrows: true, // show next/prev arrows
+		arrows: true,
 	};
 
 	return (
@@ -64,13 +61,19 @@ const Hero = ({ websiteSetup }) => {
 						// Insert Cloudinary transformations if possible
 						const optimizedUrl = getCloudinaryOptimizedUrl(url);
 
+						// We'll set fetchpriority="high" only for the *very first* banner
+						const isFirstSlide = idx === 0;
+
 						return (
 							<Slide key={idx}>
 								{optimizedUrl ? (
 									<BannerImage
 										src={optimizedUrl}
 										alt={`Banner ${idx + 1}`}
-										loading={idx === 0 ? "eager" : "lazy"}
+										// The *first* slide has high priority, subsequent slides are lazy
+										loading={isFirstSlide ? "eager" : "lazy"}
+										fetchpriority={isFirstSlide ? "high" : undefined}
+										decoding='async'
 									/>
 								) : (
 									<Placeholder>Banner {idx + 1}</Placeholder>
@@ -101,7 +104,7 @@ const Hero = ({ websiteSetup }) => {
 
 export default Hero;
 
-/* ============== Same Styling as Before ============== */
+/* ============== Styled Components ============== */
 
 const HeroSection = styled.section`
 	width: 100%;
@@ -116,7 +119,7 @@ const HeroSection = styled.section`
 const SliderContainer = styled.div`
 	width: 100%;
 	height: 100%;
-	position: relative; /* crucial for absolutely positioned arrows */
+	position: relative; /* for absolutely positioned arrows */
 
 	.slick-slider {
 		width: 100%;
@@ -133,7 +136,7 @@ const SliderContainer = styled.div`
 		transform: translateY(-50%);
 		width: 40px;
 		height: 40px;
-		z-index: 10; /* Ensure arrows are over slides */
+		z-index: 10; /* ensures arrows are over slides */
 		background: var(--primaryBlueDarker);
 		color: #fff;
 		border-radius: 4px;
@@ -185,19 +188,22 @@ const Slide = styled.div`
 	width: 100%;
 	height: 100%;
 	max-height: 700px !important;
-
-	@media (max-width: 768px) {
-		/* you can further adjust or remove the height constraints as needed */
-	}
 `;
 
 const BannerImage = styled.img`
 	width: 100%;
+	height: auto;
 	object-fit: cover;
 	max-height: 600px;
-	/* aspect-ratio: 16 / 9; or choose the ratio that fits your banner */
+
+	/* 
+    Optional: Give the browser a clue about the aspect ratio.
+    E.g., 16:9 for wide banners.
+    aspect-ratio: 16 / 9; 
+  */
 
 	@media (max-width: 600px) {
+		/* you can tweak as needed */
 		min-height: 450px !important;
 	}
 `;
@@ -206,6 +212,7 @@ const Placeholder = styled.div`
 	background-color: #ccc;
 	width: 100%;
 	height: 100%;
+	min-height: 400px;
 `;
 
 const BannerContent = styled.div`
@@ -248,7 +255,6 @@ const BannerContent = styled.div`
 
 	@media (max-width: 992px) {
 		max-width: 60%;
-
 		h2 {
 			font-size: 4rem;
 		}

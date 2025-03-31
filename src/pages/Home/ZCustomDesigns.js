@@ -2,8 +2,6 @@ import React, { useMemo, useCallback } from "react";
 import styled from "styled-components";
 import Slider from "react-slick";
 import { Card } from "antd";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import { useHistory } from "react-router-dom";
 import ReactGA from "react-ga4";
 
