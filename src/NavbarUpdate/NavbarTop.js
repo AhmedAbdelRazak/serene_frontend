@@ -6,8 +6,27 @@ import { Link, useHistory } from "react-router-dom";
 import { isAuthenticated, signout } from "../auth";
 import { useCartContext } from "../cart_context";
 
+// Lazy-loaded components
 const Sidebar = React.lazy(() => import("./Sidebar"));
 const SidebarCart = React.lazy(() => import("./SidebarCart"));
+
+/**
+ * Helper to transform Cloudinary URLs by inserting f_auto,q_auto
+ * (and optionally a width param, e.g., w_300).
+ * If it's not a Cloudinary URL or already has transformations, return as is.
+ */
+const getCloudinaryOptimizedUrl = (url, { width = 300 } = {}) => {
+	if (!url?.includes("res.cloudinary.com")) return url;
+	if (url.includes("f_auto") || url.includes("q_auto")) return url;
+
+	// Insert transformations right after '/upload/'
+	const parts = url.split("/upload/");
+	if (parts.length === 2) {
+		// e.g. https://res.cloudinary.com/.../upload/f_auto,q_auto,w_300/...
+		return `${parts[0]}/upload/f_auto,q_auto,w_${width}/${parts[1]}`;
+	}
+	return url;
+};
 
 const NavbarTop = React.memo(() => {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -18,7 +37,7 @@ const NavbarTop = React.memo(() => {
 	const { openSidebar2, total_items, websiteSetup } = useCartContext();
 	const navigate = useHistory();
 
-	// Memoize the first name to avoid recalculations
+	// Memoize the first name
 	const firstName = useMemo(() => {
 		return user && user.name ? user.name.split(" ")[0] : "";
 	}, [user]);
@@ -36,26 +55,37 @@ const NavbarTop = React.memo(() => {
 		});
 	}, [navigate]);
 
+	// If we have a Cloudinary logo URL, generate an optimized version
+	let optimizedLogoUrl = "";
+	if (websiteSetup?.sereneJannatLogo?.url) {
+		optimizedLogoUrl = getCloudinaryOptimizedUrl(
+			websiteSetup.sereneJannatLogo.url,
+			{
+				width: 300, // or any width you prefer for your logo
+			}
+		);
+	}
+
 	return (
 		<>
 			{isSidebarOpen && <Overlay onClick={() => setIsSidebarOpen(false)} />}
 
-			{/* No scroll logic; just a normal Navbar wrapper */}
 			<NavbarTopWrapper>
+				{/* Hamburger menu icon (mobile) */}
 				<MenuIcon onClick={() => setIsSidebarOpen(true)} />
 
-				{websiteSetup?.sereneJannatLogo?.url && (
+				{/* Logo (only if we have a URL) */}
+				{optimizedLogoUrl && (
 					<Link to='/' style={{ textDecoration: "none", display: "flex" }}>
-						<Logo
-							src={websiteSetup.sereneJannatLogo.url}
-							alt='Serene Jannat Shop'
-						/>
+						<Logo src={optimizedLogoUrl} alt='Serene Jannat Shop' />
 					</Link>
 				)}
 
+				{/* Nav links (desktop) */}
 				<NavLinks
 					onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 				>
+					{/* Admin user */}
 					{user && user.name && user.role === 1 && (
 						<>
 							<NavLink
@@ -66,7 +96,6 @@ const NavbarTop = React.memo(() => {
 							>
 								<FaUserPlus /> Hello {firstName}
 							</NavLink>
-
 							<NavLink
 								as={Link}
 								to='#signout'
@@ -79,6 +108,8 @@ const NavbarTop = React.memo(() => {
 							</NavLink>
 						</>
 					)}
+
+					{/* Regular user */}
 					{user && user.name && user.role === 0 && (
 						<>
 							<FaUserPlus />
@@ -102,6 +133,8 @@ const NavbarTop = React.memo(() => {
 							</NavLink>
 						</>
 					)}
+
+					{/* Not logged in */}
 					{(!user || !user.name) && (
 						<>
 							<NavLink
@@ -124,10 +157,12 @@ const NavbarTop = React.memo(() => {
 					)}
 				</NavLinks>
 
+				{/* Cart icon (mobile) */}
 				<CartIcon onClick={() => openSidebar2()} />
 				{total_items > 0 && <Badge>{total_items}</Badge>}
 			</NavbarTopWrapper>
 
+			{/* Sidebar overlays */}
 			<Sidebar
 				isSidebarOpen={isSidebarOpen}
 				setIsSidebarOpen={setIsSidebarOpen}
@@ -146,10 +181,9 @@ const NavbarTop = React.memo(() => {
 
 export default NavbarTop;
 
-/* ========== Styled Components ========== */
+/* ========== Styled Components (unchanged) ========== */
 
 const NavbarTopWrapper = styled.nav`
-	/* Normal appearance on wider screens */
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -157,17 +191,12 @@ const NavbarTopWrapper = styled.nav`
 	background-color: var(--neutral-light);
 	box-shadow: var(--box-shadow-light);
 
-	/* Below 600px, we keep the navbar “sticky” at the top */
 	@media (max-width: 600px) {
-		/* position: sticky; */
 		top: 0;
 		z-index: 200;
-		/* If you prefer fixed instead of sticky, just replace the above with position: fixed */
 	}
-
 	@media (max-width: 768px) {
 		padding: 0.5rem 0.5rem;
-
 		.nav-links {
 			display: none;
 		}
@@ -175,7 +204,6 @@ const NavbarTopWrapper = styled.nav`
 			flex-grow: 1;
 		}
 	}
-
 	@media (min-width: 769px) {
 		.menu-icon,
 		.cart-icon {

@@ -2,6 +2,35 @@ import React from "react";
 import Slider from "react-slick";
 import styled from "styled-components";
 
+/**
+ * Helper to add Cloudinary transformations (f_auto,q_auto).
+ * If the URL is not Cloudinary, or it already has transformations,
+ * it returns the original URL unchanged.
+ */
+const getCloudinaryOptimizedUrl = (url) => {
+	if (!url?.includes("res.cloudinary.com")) {
+		// Not a Cloudinary URL => leave as is
+		return url;
+	}
+
+	// If we've already added f_auto or q_auto, skip
+	if (url.includes("f_auto") || url.includes("q_auto")) {
+		return url;
+	}
+
+	// Insert transformations right after '/upload/'
+	const parts = url.split("/upload/");
+	if (parts.length === 2) {
+		// Example:
+		// original:  https://res.cloudinary.com/.../upload/v123456/serene_janat/...
+		// transformed: https://res.cloudinary.com/.../upload/f_auto,q_auto/v123456/serene_janat/...
+		return `${parts[0]}/upload/f_auto,q_auto/${parts[1]}`;
+	}
+
+	// Fallback
+	return url;
+};
+
 const Hero = ({ websiteSetup }) => {
 	// Banners array from your global setup
 	const banners = websiteSetup?.homeMainBanners || [];
@@ -14,7 +43,7 @@ const Hero = ({ websiteSetup }) => {
 		slidesToShow: 1,
 		slidesToScroll: 1,
 		autoplay: true, // auto-play slides
-		autoplaySpeed: 4000, // each slide visible for 4s
+		autoplaySpeed: 4000,
 		arrows: true, // show next/prev arrows
 	};
 
@@ -32,11 +61,13 @@ const Hero = ({ websiteSetup }) => {
 							pageRedirectURL,
 						} = banner;
 
+						// Insert Cloudinary transformations if possible
+						const optimizedUrl = getCloudinaryOptimizedUrl(url);
+
 						return (
 							<Slide key={idx}>
-								{/* If there's an image URL, show it; otherwise you could show a fallback */}
-								{url ? (
-									<BannerImage src={url} alt={`Banner ${idx + 1}`} />
+								{optimizedUrl ? (
+									<BannerImage src={optimizedUrl} alt={`Banner ${idx + 1}`} />
 								) : (
 									<Placeholder>Banner {idx + 1}</Placeholder>
 								)}
@@ -66,6 +97,8 @@ const Hero = ({ websiteSetup }) => {
 
 export default Hero;
 
+/* ============== Same Styling as Before ============== */
+
 const HeroSection = styled.section`
 	width: 100%;
 	margin: 0 auto;
@@ -81,9 +114,6 @@ const SliderContainer = styled.div`
 	height: 100%;
 	position: relative; /* crucial for absolutely positioned arrows */
 
-	/* --------------------------------------------
-    Some slick classes for customizing dots/arrows
-  --------------------------------------------- */
 	.slick-slider {
 		width: 100%;
 		height: 100%;
@@ -93,14 +123,6 @@ const SliderContainer = styled.div`
 		bottom: 10px;
 	}
 
-	/* 
-    ================
-    Slick Arrows
-    ================
-    By default, slick might position them outside the container or
-    add negative margins. We'll manually position them so they do
-    not create horizontal overflow.
-  */
 	.slick-prev,
 	.slick-next {
 		top: 50%;
@@ -109,7 +131,7 @@ const SliderContainer = styled.div`
 		height: 40px;
 		z-index: 10; /* Ensure arrows are over slides */
 		background: var(--primaryBlueDarker);
-		color: #fff; /* We'll rely on the pseudo-element for the arrow glyph. */
+		color: #fff;
 		border-radius: 4px;
 		display: flex;
 		align-items: center;
@@ -124,8 +146,6 @@ const SliderContainer = styled.div`
 		opacity: 1;
 	}
 
-	/* Use left & right so they don't cause overflow. 
-     Adjust the px as you prefer for spacing. */
 	.slick-prev {
 		left: 10px;
 	}
@@ -134,21 +154,16 @@ const SliderContainer = styled.div`
 		right: 10px;
 	}
 
-	/*
-    Slick arrows are actually generated via the ::before pseudo-element. 
-    Change its font-size, color, etc. as needed:
-  */
 	.slick-prev:before,
 	.slick-next:before {
 		font-family: "slick";
 		font-size: 20px;
 		line-height: 1;
 		opacity: 1;
-		color: #fff; /* arrow icon color */
+		color: #fff;
 	}
 
 	@media (max-width: 768px) {
-		/* Make arrows smaller on mobile */
 		.slick-prev,
 		.slick-next {
 			width: 30px;
@@ -226,7 +241,6 @@ const BannerContent = styled.div`
 		}
 	}
 
-	/* Keep desktop look until 992px */
 	@media (max-width: 992px) {
 		max-width: 60%;
 
@@ -238,16 +252,11 @@ const BannerContent = styled.div`
 		}
 	}
 
-	/* Mobile adjustments */
 	@media (max-width: 768px) {
-		/* Center horizontally and vertically */
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-
-		/* Make sure we don't run into the arrows on smaller screens */
 		min-width: 85%;
-
 		background-color: rgba(0, 0, 0, 0.5);
 		padding: 11px 10px;
 		border-radius: 8px;

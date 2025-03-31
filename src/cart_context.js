@@ -199,7 +199,7 @@ export const CartProvider = ({ children }) => {
 				}
 
 				// (C) Featured Products
-				const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 20);
+				const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 12);
 				if (featuredData?.error) {
 					console.log(featuredData.error);
 				} else {
@@ -211,7 +211,7 @@ export const CartProvider = ({ children }) => {
 				}
 
 				// (D) New Arrival Products
-				const newArrivalData = await gettingSpecificProducts(0, 1, 0, 0, 0, 20);
+				const newArrivalData = await gettingSpecificProducts(0, 1, 0, 0, 0, 12);
 				if (newArrivalData?.error) {
 					console.log(newArrivalData.error);
 				} else {
@@ -228,7 +228,7 @@ export const CartProvider = ({ children }) => {
 					1,
 					0,
 					0,
-					20
+					12
 				);
 				if (customDesignData?.error) {
 					console.log(customDesignData.error);

@@ -162,6 +162,11 @@ const AppContent = () => {
 	const modalText =
 		"Your loved ones deserve just 3 minutes of your time to create their perfect gift. Click below to be unique! ❤️😉";
 
+	//Add Expenses to each order line
+	//Chat icon adjustment
+	//Adding Seller Signup page
+	//Adding Seller Dashboard (CRUD Product, CRUD Order)
+
 	return (
 		<>
 			<ToastContainer className='toast-top-center' position='top-center' />
