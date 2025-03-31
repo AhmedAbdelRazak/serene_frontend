@@ -61,6 +61,40 @@ function ShopPageMain() {
 
 	const { openSidebar2, addToCart } = useCartContext();
 
+	// (1) Cloudinary Transform Helper
+	//     If the URL isn't Cloudinary, returns original.
+	//     Otherwise, inserts f_auto,q_auto,w_{width} + optional f_webp.
+	const getCloudinaryOptimizedUrl = (
+		url,
+		{ width = 600, forceWebP = false } = {}
+	) => {
+		if (!url || !url.includes("res.cloudinary.com")) {
+			return url; // Not a Cloudinary URL
+		}
+
+		// If we've already inserted something like f_auto,q_auto, skip
+		if (url.includes("f_auto") || url.includes("q_auto")) {
+			return url;
+		}
+
+		// Split at '/upload/' to insert transformations
+		const parts = url.split("/upload/");
+		if (parts.length !== 2) {
+			return url; // Can't parse, return original
+		}
+
+		// Build transformation string
+		// Example: f_auto,q_auto,w_600 or f_auto,q_auto,w_600,f_webp
+		const baseTransform = `f_auto,q_auto,w_${width}`;
+		const finalTransform = forceWebP
+			? `${baseTransform},f_webp`
+			: baseTransform;
+
+		// Reconstruct URL
+		// e.g. https://res.cloudinary.com/.../upload/f_auto,q_auto,w_600/...
+		return `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
+	};
+
 	// Initialize GA and track page views
 	useEffect(() => {
 		// Fix: Pass an object to avoid the "Send command doesn't exist" error
@@ -576,9 +610,19 @@ function ShopPageMain() {
 									productImages = prod.thumbnailImage[0].images;
 								}
 
-								const imageUrl =
+								const rawImageUrl =
 									productImages?.[0]?.url ||
 									"https://res.cloudinary.com/infiniteapps/image/upload/v1723694291/janat/default-image.jpg";
+
+								// (2) Use Cloudinary Helper for WebP + fallback
+								const webpUrl = getCloudinaryOptimizedUrl(rawImageUrl, {
+									width: 600,
+									forceWebP: true,
+								});
+								const fallbackUrl = getCloudinaryOptimizedUrl(rawImageUrl, {
+									width: 600,
+									forceWebP: false,
+								});
 
 								// Price logic
 								const originalPrice = prod?.price || 0;
@@ -645,20 +689,23 @@ function ShopPageMain() {
 														<OutOfStockBadge>Out of Stock</OutOfStockBadge>
 													)}
 
-													<ProductImage
-														src={imageUrl}
-														alt={prod?.productName || "Product Image"}
-														onClick={() => {
-															ReactGA.event({
-																category: "Single Product Clicked",
-																action:
-																	"User Navigated To Single Product From Products Page",
-																label: `User viewed ${prod?.productName || "unknown"}`,
-															});
-															window.scrollTo({ top: 0, behavior: "smooth" });
-															history.push(getProductLink(prod));
-														}}
-													/>
+													<picture>
+														<source srcSet={webpUrl} type='image/webp' />
+														<ProductImage
+															src={fallbackUrl}
+															alt={prod?.productName || "Product Image"}
+															onClick={() => {
+																ReactGA.event({
+																	category: "Single Product Clicked",
+																	action:
+																		"User Navigated To Single Product From Products Page",
+																	label: `User viewed ${prod?.productName || "unknown"}`,
+																});
+																window.scrollTo({ top: 0, behavior: "smooth" });
+																history.push(getProductLink(prod));
+															}}
+														/>
+													</picture>
 												</ImageContainer>
 											}
 										>

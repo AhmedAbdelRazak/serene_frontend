@@ -164,6 +164,7 @@ const AppContent = () => {
 
 	//Add Expenses to each order line
 	//Chat icon adjustment
+	//Signin With Google
 	//Adding Seller Signup page
 	//Adding Seller Dashboard (CRUD Product, CRUD Order)
 

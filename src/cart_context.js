@@ -20,7 +20,7 @@ import {
 	// Removed FEATURED_PROPERTIES since it's not used
 	SET_WEBSITE_SETUP,
 	SET_CATEGORIES_SUBCATEGORIES,
-	SET_FEATURED_PRODUCTS,
+	// SET_FEATURED_PRODUCTS,
 	SET_NEW_ARRIVAL_PRODUCTS,
 	SET_CUSTOM_DESIGN_PRODUCTS,
 	SET_LOADING,
@@ -199,16 +199,16 @@ export const CartProvider = ({ children }) => {
 				}
 
 				// (C) Featured Products
-				const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 20);
-				if (featuredData?.error) {
-					console.log(featuredData.error);
-				} else {
-					// Sort by date descending
-					const sortedFeatured = featuredData.sort(
-						(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-					);
-					dispatch({ type: SET_FEATURED_PRODUCTS, payload: sortedFeatured });
-				}
+				// const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 20);
+				// if (featuredData?.error) {
+				// 	console.log(featuredData.error);
+				// } else {
+				// 	// Sort by date descending
+				// 	const sortedFeatured = featuredData.sort(
+				// 		(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+				// 	);
+				// 	dispatch({ type: SET_FEATURED_PRODUCTS, payload: sortedFeatured });
+				// }
 
 				// (D) New Arrival Products
 				const newArrivalData = await gettingSpecificProducts(0, 1, 0, 0, 0, 20);
@@ -228,7 +228,7 @@ export const CartProvider = ({ children }) => {
 					1,
 					0,
 					0,
-					20
+					10
 				);
 				if (customDesignData?.error) {
 					console.log(customDesignData.error);

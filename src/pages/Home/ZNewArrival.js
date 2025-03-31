@@ -12,11 +12,43 @@ import ReactGA from "react-ga4";
 
 const { Meta } = Card;
 
+// 1) Cloudinary Transform Helper
+//    If the URL isn't Cloudinary, returns original.
+//    Otherwise, inserts f_auto,q_auto,w_{width} + optional f_webp.
+const getCloudinaryOptimizedUrl = (
+	url,
+	{ width = 600, forceWebP = false } = {}
+) => {
+	if (!url || !url.includes("res.cloudinary.com")) {
+		return url; // Not a Cloudinary URL
+	}
+
+	// If we've already inserted something like f_auto,q_auto, skip
+	if (url.includes("f_auto") || url.includes("q_auto")) {
+		return url;
+	}
+
+	// Split at '/upload/' to insert transformations
+	const parts = url.split("/upload/");
+	if (parts.length !== 2) {
+		return url; // Can't parse, return original
+	}
+
+	// Build transformation string
+	// Example: f_auto,q_auto,w_600 or f_auto,q_auto,w_600,f_webp
+	const baseTransform = `f_auto,q_auto,w_${width}`;
+	const finalTransform = forceWebP ? `${baseTransform},f_webp` : baseTransform;
+
+	// Reconstruct URL
+	// e.g. https://res.cloudinary.com/.../upload/f_auto,q_auto,w_600/...
+	return `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
+};
+
 const ZNewArrival = ({ newArrivalProducts }) => {
 	const { openSidebar2, addToCart } = useCartContext();
 	const history = useHistory();
 
-	// Memoize main slider settings so they're computed only once.
+	// Main slider settings for the outer "New Arrivals" carousel
 	const settings = useMemo(
 		() => ({
 			dots: true,
@@ -59,21 +91,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 		[]
 	);
 
-	// Memoize the inner image slider settings.
-	const imageSettings = useMemo(
-		() => ({
-			dots: true,
-			infinite: true,
-			speed: 1500,
-			slidesToShow: 1,
-			slidesToScroll: 1,
-			autoplay: true,
-			autoplaySpeed: 4000,
-		}),
-		[]
-	);
-
-	// Memoize the add-to-cart handler.
+	// Add-to-cart handler (memoized)
 	const handleCartIconClick = useCallback(
 		async (product, e) => {
 			e.stopPropagation();
@@ -100,7 +118,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 		[history, openSidebar2, addToCart]
 	);
 
-	// Memoize the navigation handler.
+	// Navigation handler (memoized)
 	const navigateToProduct = useCallback(
 		(product) => {
 			// If it's a POD product, redirect accordingly.
@@ -132,6 +150,24 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 							const images =
 								chosenProductAttributes?.productImages ||
 								product.thumbnailImage[0].images;
+
+							// Always just take the first image
+							const firstImage = images[0];
+
+							// Get optimized URLs (similar to ZCategories)
+							let imageUrl = "";
+							let webpUrl = "";
+							if (firstImage?.url) {
+								const originalUrl = firstImage.url;
+								imageUrl = getCloudinaryOptimizedUrl(originalUrl, {
+									width: 600,
+									forceWebP: false,
+								});
+								webpUrl = getCloudinaryOptimizedUrl(originalUrl, {
+									width: 600,
+									forceWebP: true,
+								});
+							}
 
 							const originalPrice = product.price || 0;
 							const discountedPrice =
@@ -171,39 +207,16 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 													<OutOfStockBadge>Out of Stock</OutOfStockBadge>
 												)}
 
-												{images.length > 1 ? (
-													<Slider {...imageSettings}>
-														{images.map((img, index) => (
-															<ImageWrapper key={index}>
-																<picture>
-																	<source
-																		srcSet={`${img.url}?auto=format&fit=max&w=600&format=webp`}
-																		type='image/webp'
-																	/>
-																	<ProductImage
-																		src={`${img.url}?auto=format&fit=max&w=600`}
-																		alt={`${product.productName} - view ${index + 1}`}
-																		loading='lazy'
-																	/>
-																</picture>
-															</ImageWrapper>
-														))}
-													</Slider>
-												) : (
-													<ImageWrapper>
-														<picture>
-															<source
-																srcSet={`${images[0].url}?auto=format&fit=max&w=600&format=webp`}
-																type='image/webp'
-															/>
-															<ProductImage
-																src={`${images[0].url}?auto=format&fit=max&w=600`}
-																alt={`${product.productName} - single view`}
-																loading='lazy'
-															/>
-														</picture>
-													</ImageWrapper>
-												)}
+												<ImageWrapper>
+													<picture>
+														<source srcSet={webpUrl} type='image/webp' />
+														<ProductImage
+															src={imageUrl}
+															alt={`${product.productName} - single view`}
+															loading='lazy'
+														/>
+													</picture>
+												</ImageWrapper>
 											</ImageContainer>
 										}
 									>

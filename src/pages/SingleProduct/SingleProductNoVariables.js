@@ -20,6 +20,32 @@ import ReactGA from "react-ga4";
 
 const { Panel } = Collapse;
 
+// (1) Cloudinary Transform Helper
+//     If the URL isn't Cloudinary, returns original.
+//     Otherwise, inserts f_auto,q_auto,w_{width}.
+const getCloudinaryOptimizedUrl = (url, { width = 700 } = {}) => {
+	if (!url || !url.includes("res.cloudinary.com")) {
+		return url; // Not a Cloudinary URL
+	}
+
+	// If we've already inserted something like f_auto,q_auto, skip
+	if (url.includes("f_auto") || url.includes("q_auto")) {
+		return url;
+	}
+
+	// Split at '/upload/' to insert transformations
+	const parts = url.split("/upload/");
+	if (parts.length !== 2) {
+		return url; // Can't parse, return original
+	}
+
+	// Build transformation string, e.g. f_auto,q_auto,w_700
+	const transform = `f_auto,q_auto,w_${width}`;
+
+	// Reconstruct URL
+	return `${parts[0]}/upload/${transform}/${parts[1]}`;
+};
+
 // Utility function to escape JSON strings
 const escapeJsonString = (str) => {
 	return str
@@ -46,7 +72,10 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 
 	useEffect(() => {
 		if (product.thumbnailImage.length > 0) {
-			const images = product.thumbnailImage[0].images.map((img) => img.url);
+			// (2) Optimize each image URL before storing in state
+			const images = product.thumbnailImage[0].images.map((img) =>
+				getCloudinaryOptimizedUrl(img.url, { width: 700 })
+			);
 			setChosenImages(images);
 		}
 

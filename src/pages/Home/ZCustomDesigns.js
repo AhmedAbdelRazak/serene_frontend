@@ -9,6 +9,40 @@ import ReactGA from "react-ga4";
 
 const { Meta } = Card;
 
+// =============
+// (1) Cloudinary Transform Helper
+// If the URL isn't Cloudinary, returns original.
+// Otherwise, inserts f_auto,q_auto,w_{width} + optional f_webp.
+// =============
+const getCloudinaryOptimizedUrl = (
+	url,
+	{ width = 600, forceWebP = false } = {}
+) => {
+	if (!url || !url.includes("res.cloudinary.com")) {
+		return url; // Not a Cloudinary URL
+	}
+
+	// If we've already inserted something like f_auto,q_auto, skip
+	if (url.includes("f_auto") || url.includes("q_auto")) {
+		return url;
+	}
+
+	// Split at '/upload/' to insert transformations
+	const parts = url.split("/upload/");
+	if (parts.length !== 2) {
+		return url; // Can't parse, return original
+	}
+
+	// Build transformation string
+	// Example: f_auto,q_auto,w_600 or f_auto,q_auto,w_600,f_webp
+	const baseTransform = `f_auto,q_auto,w_${width}`;
+	const finalTransform = forceWebP ? `${baseTransform},f_webp` : baseTransform;
+
+	// Reconstruct URL
+	// e.g. https://res.cloudinary.com/.../upload/f_auto,q_auto,w_600/...
+	return `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
+};
+
 const ZCustomDesigns = ({ customDesignProducts }) => {
 	const history = useHistory();
 
@@ -70,6 +104,7 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 	);
 
 	// Memoize the add-to-cart handler.
+	// (Intentionally empty, preserving comment)
 
 	// Memoize the navigation handler.
 	const navigateToProduct = useCallback(
@@ -134,31 +169,59 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 
 												{images.length > 1 ? (
 													<Slider {...imageSettings}>
-														{images.map((img, index) => (
-															<ImageWrapper key={index}>
-																<picture>
-																	<source
-																		srcSet={`${img.url}?auto=format&fit=max&w=600&format=webp`}
-																		type='image/webp'
-																	/>
-																	<ProductImage
-																		src={`${img.url}?auto=format&fit=max&w=600`}
-																		alt={`${product.productName} - view ${index + 1}`}
-																		loading='lazy'
-																	/>
-																</picture>
-															</ImageWrapper>
-														))}
+														{images.map((img, index) => {
+															// (2) Image optimization logic
+															const webpUrl = getCloudinaryOptimizedUrl(
+																img.url,
+																{
+																	width: 600,
+																	forceWebP: true,
+																}
+															);
+															const fallbackUrl = getCloudinaryOptimizedUrl(
+																img.url,
+																{
+																	width: 600,
+																	forceWebP: false,
+																}
+															);
+
+															return (
+																<ImageWrapper key={index}>
+																	<picture>
+																		<source
+																			srcSet={webpUrl}
+																			type='image/webp'
+																		/>
+																		<ProductImage
+																			src={fallbackUrl}
+																			alt={`${product.productName} - view ${index + 1}`}
+																			loading='lazy'
+																		/>
+																	</picture>
+																</ImageWrapper>
+															);
+														})}
 													</Slider>
 												) : (
 													<ImageWrapper>
+														{/* (2) Image optimization logic for single image */}
 														<picture>
 															<source
-																srcSet={`${images[0].url}?auto=format&fit=max&w=600&format=webp`}
+																srcSet={getCloudinaryOptimizedUrl(
+																	images[0].url,
+																	{
+																		width: 600,
+																		forceWebP: true,
+																	}
+																)}
 																type='image/webp'
 															/>
 															<ProductImage
-																src={`${images[0].url}?auto=format&fit=max&w=600`}
+																src={getCloudinaryOptimizedUrl(images[0].url, {
+																	width: 600,
+																	forceWebP: false,
+																})}
 																alt={`${product.productName} - single view`}
 																loading='lazy'
 															/>
