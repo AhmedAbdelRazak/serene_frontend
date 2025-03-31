@@ -1,23 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en_US">
 	<head>
 		<meta charset="utf-8" />
-		<!-- Tell IE to use the latest engine -->
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<!-- Mobile Responsiveness -->
+		<link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<!-- Theme color -->
 		<meta name="theme-color" content="#000000" />
-
-		<!-- Primary SEO Metas -->
 		<meta
 			name="description"
 			content="Discover the best offers at Serene Jannat, your online gift store for candles, glass items, and more. Show love to your loved ones with our exquisite collection."
 		/>
+
 		<meta
 			name="keywords"
 			content="Serene Jannat, gifts, candles, glass items, online shop, best offers, gift store"
 		/>
+
 		<meta
 			property="og:title"
 			content="Serene Jannat | Best Gifts and Candles Online Shop"
@@ -30,35 +27,24 @@
 		<meta property="og:url" content="https://serenejannat.com" />
 		<meta property="og:type" content="website" />
 		<meta property="og:locale" content="en_US" />
+
+		<!-- Optional SEO enhancements -->
 		<meta name="robots" content="index, follow" />
 		<link rel="canonical" href="https://serenejannat.com/" />
 
-		<!-- Title -->
 		<title>Serene Jannat | Best Gifts and Candles Online Shop</title>
 
-		<!-- Favicons -->
-		<link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-
 		<!-- 
-      (1) Preconnect / DNS Prefetch for performance
-      Helps speed up resource retrieval from these domains
+      Preconnect for faster font loading
+      IMPORTANT: put preconnect links as early as possible.
     -->
-		<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-		<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-		<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
-		<link rel="dns-prefetch" href="https://stackpath.bootstrapcdn.com" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-		<link
-			rel="preconnect"
-			href="https://stackpath.bootstrapcdn.com"
-			crossorigin
-		/>
 
 		<!-- 
-      (2) Preload combined Google Fonts, then swap to "stylesheet"
-      onload="this.onload=null;this.rel='stylesheet'"
+      Preload combined Google Fonts stylesheet (for Rastantly Cortez, 
+      Montserrat, Open Sans, Great Vibes, Allison, Allura, Dancing Script, Lobster).
+      onload="this.onload=null;this.rel='stylesheet'" switches from preload to stylesheet once loaded.
     -->
 		<link
 			rel="preload"
@@ -73,93 +59,35 @@
 			/>
 		</noscript>
 
-		<!--
-      (3) Preload + async technique for CSS libraries
-      We do the same approach for Font Awesome, Bootstrap, Animate.css, Slick
-      This helps reduce render-blocking. They will be swapped to rel="stylesheet" once loaded.
-    -->
-
-		<!-- Font Awesome -->
+		<!-- Stylesheets -->
 		<link
-			rel="preload"
-			as="style"
+			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-			onload="this.onload=null;this.rel='stylesheet'"
 			integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
 			crossorigin="anonymous"
 			referrerpolicy="no-referrer"
 		/>
-		<noscript>
-			<link
-				rel="stylesheet"
-				href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-				integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-				crossorigin="anonymous"
-				referrerpolicy="no-referrer"
-			/>
-		</noscript>
-
-		<!-- Bootstrap -->
 		<link
-			rel="preload"
-			as="style"
+			rel="stylesheet"
 			href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-			onload="this.onload=null;this.rel='stylesheet'"
 			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
 			crossorigin="anonymous"
 		/>
-		<noscript>
-			<link
-				rel="stylesheet"
-				href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-				integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-				crossorigin="anonymous"
-			/>
-		</noscript>
-
-		<!-- Animate.css -->
 		<link
-			rel="preload"
-			as="style"
+			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"
-			onload="this.onload=null;this.rel='stylesheet'"
 		/>
-		<noscript>
-			<link
-				rel="stylesheet"
-				href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"
-			/>
-		</noscript>
-
-		<!-- Slick Carousel -->
 		<link
-			rel="preload"
-			as="style"
+			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
-			onload="this.onload=null;this.rel='stylesheet'"
 		/>
-		<noscript>
-			<link
-				rel="stylesheet"
-				href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
-			/>
-		</noscript>
 		<link
-			rel="preload"
-			as="style"
+			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
-			onload="this.onload=null;this.rel='stylesheet'"
 		/>
-		<noscript>
-			<link
-				rel="stylesheet"
-				href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
-			/>
-		</noscript>
 
-		<!-- 
-      (4) GA4 - remains async as you had 
-    -->
+		<!-- Comment The GA4 when developing (localhost) -->
+		<!-- Google Tag (GA4) -->
 		<script
 			async
 			src="https://www.googletagmanager.com/gtag/js?id=G-XJPBMN7HH5"
