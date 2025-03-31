@@ -68,7 +68,6 @@ const NavbarTop = React.memo(() => {
 
 	return (
 		<>
-			{/* Dimmed overlay when sidebar is open */}
 			{isSidebarOpen && <Overlay onClick={() => setIsSidebarOpen(false)} />}
 
 			<NavbarTopWrapper>
@@ -78,17 +77,7 @@ const NavbarTop = React.memo(() => {
 				{/* Logo (only if we have a URL) */}
 				{optimizedLogoUrl && (
 					<Link to='/' style={{ textDecoration: "none", display: "flex" }}>
-						{/* 
-              Aspect-ratio container so the logo never gets cut off.
-              Adjust the ratio (3/1, 2.5/1, etc.) to match your logo’s shape.
-            */}
-						<LogoContainer>
-							<img
-								src={optimizedLogoUrl}
-								alt='Serene Jannat Shop'
-								loading='lazy'
-							/>
-						</LogoContainer>
+						<Logo src={optimizedLogoUrl} alt='Serene Jannat Shop' />
 					</Link>
 				)}
 
@@ -192,7 +181,7 @@ const NavbarTop = React.memo(() => {
 
 export default NavbarTop;
 
-/* ========== Styled Components ========== */
+/* ========== Styled Components (unchanged) ========== */
 
 const NavbarTopWrapper = styled.nav`
 	display: flex;
@@ -226,20 +215,10 @@ const NavbarTopWrapper = styled.nav`
 	}
 `;
 
-/** Aspect‐ratio container so the logo never gets cropped.
- *  Adjust width & ratio to match your actual logo dimensions. */
-const LogoContainer = styled.div`
-	width: 150px;
-	/* If your logo is roughly 3 times as wide as tall, 3/1 is good. 
-     Adjust to fit your real logo dimensions. */
-	aspect-ratio: 3 / 1;
-	overflow: hidden;
-
-	img {
-		width: 100%;
-		height: 100%;
-		object-fit: contain; /* ensures the entire logo is visible */
-	}
+const Logo = styled.img`
+	height: 50px;
+	cursor: pointer;
+	object-fit: cover !important;
 `;
 
 const MenuIcon = styled(FaBars)`

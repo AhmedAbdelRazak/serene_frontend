@@ -1,20 +1,29 @@
 <!doctype html>
-<html lang="en_US">
+<html lang="en">
 	<head>
+		<!-- Required Meta Tags -->
 		<meta charset="utf-8" />
-		<link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="theme-color" content="#000000" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, shrink-to-fit=no"
+		/>
+		<!-- Helps systems automatically switch between light/dark UI if relevant -->
+		<meta name="color-scheme" content="light dark" />
+
+		<!-- Primary SEO Meta Tags -->
+		<title>Serene Jannat | Best Gifts and Candles Online Shop</title>
 		<meta
 			name="description"
 			content="Discover the best offers at Serene Jannat, your online gift store for candles, glass items, and more. Show love to your loved ones with our exquisite collection."
 		/>
-
 		<meta
 			name="keywords"
 			content="Serene Jannat, gifts, candles, glass items, online shop, best offers, gift store"
 		/>
+		<meta name="theme-color" content="#000000" />
 
+		<!-- Open Graph / Facebook -->
 		<meta
 			property="og:title"
 			content="Serene Jannat | Best Gifts and Candles Online Shop"
@@ -28,24 +37,34 @@
 		<meta property="og:type" content="website" />
 		<meta property="og:locale" content="en_US" />
 
-		<!-- Optional SEO enhancements -->
+		<!-- Optional: Twitter Cards -->
+		<!-- <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@yourhandle" /> -->
+
+		<!-- Robots & Canonical -->
 		<meta name="robots" content="index, follow" />
 		<link rel="canonical" href="https://serenejannat.com/" />
 
-		<title>Serene Jannat | Best Gifts and Candles Online Shop</title>
+		<!-- Favicon -->
+		<link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
 
-		<!-- 
-      Preconnect for faster font loading
-      IMPORTANT: put preconnect links as early as possible.
+		<!--
+      Optional: PWA / Apple Touch Icons
+      (Uncomment if you have a manifest.json and app icons)
     -->
+		<!-- <link rel="manifest" href="%PUBLIC_URL%/manifest.json" /> -->
+		<!-- <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.png" /> -->
+		<!-- <meta name="apple-mobile-web-app-capable" content="yes" /> -->
+		<!-- <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /> -->
+
+		<!-- Preconnect: Google Fonts & possibly Cloudinary if used heavily -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-		<!-- 
-      Preload combined Google Fonts stylesheet (for Rastantly Cortez, 
-      Montserrat, Open Sans, Great Vibes, Allison, Allura, Dancing Script, Lobster).
-      onload="this.onload=null;this.rel='stylesheet'" switches from preload to stylesheet once loaded.
+		<!-- If you load many images from Cloudinary frequently, you can also do:
+         <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
     -->
+
+		<!-- Preload combined Google Fonts, then swap to stylesheet on load -->
 		<link
 			rel="preload"
 			as="style"
@@ -59,35 +78,25 @@
 			/>
 		</noscript>
 
-		<!-- Stylesheets -->
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-			integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-			crossorigin="anonymous"
-			referrerpolicy="no-referrer"
-		/>
+		<!-- Latest Bootstrap 5 (choose the version you prefer) -->
+		<!-- <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      integrity="sha384-X6aSsQhpDphpERWRv7fMK6ogE0i2H2s/r1B23sfzBz55MKqMK+NDaxM8RQk6xg9l"
+      crossorigin="anonymous"
+    /> -->
+
 		<link
 			rel="stylesheet"
 			href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
 			crossorigin="anonymous"
 		/>
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
-		/>
 
-		<!-- Comment The GA4 when developing (localhost) -->
-		<!-- Google Tag (GA4) -->
+		<!-- (Optional) Custom or Global Styles -->
+		<!-- <link rel="stylesheet" href="%PUBLIC_URL%/your-custom.css" /> -->
+
+		<!-- GA4 Analytics - comment out on localhost -->
 		<script
 			async
 			src="https://www.googletagmanager.com/gtag/js?id=G-XJPBMN7HH5"
@@ -105,5 +114,15 @@
 	<body>
 		<noscript>You need to enable JavaScript to run this app.</noscript>
 		<div id="root"></div>
+
+		<!-- (Optional) Bootstrap JS if you're using any of its JS components -->
+		<!-- (Place scripts at the end of body for best performance) -->
+		<!-- 
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ENjdO4Dr2bkBIFxQZDIcwHaZITXgjn6k3+MD44odVFBchXw+Wrn7NldHerXK9aS0"
+      crossorigin="anonymous"
+    ></script>
+    -->
 	</body>
 </html>
