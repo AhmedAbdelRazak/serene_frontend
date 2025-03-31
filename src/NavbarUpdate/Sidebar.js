@@ -85,14 +85,19 @@ const Sidebar = ({
 			<SidebarWrapper $isOpen={isSidebarOpen}>
 				<CloseIcon onClick={() => setIsSidebarOpen(false)} />
 
+				{/* Logo (only if we have a URL) */}
 				{websiteSetup?.sereneJannatLogo?.url && (
-					<Logo $isOpen={isSidebarOpen}>
+					<LogoContainer $isOpen={isSidebarOpen}>
+						{/*
+              Aspect-ratio container so the logo never gets cropped.
+              Adjust width & aspect-ratio to match your actual logo dimensions.
+            */}
 						<img
 							src={websiteSetup.sereneJannatLogo.url}
 							alt='Serene Janat Shop Logo'
 							loading='lazy'
 						/>
-					</Logo>
+					</LogoContainer>
 				)}
 
 				<HorizontalLine />
@@ -202,7 +207,7 @@ const Overlay = styled.div`
 	animation: ${fadeIn} 0.3s ease-in-out;
 `;
 
-/* The sidebar container (no more withConfig) */
+/* The sidebar container */
 const SidebarWrapper = styled.div`
 	position: fixed;
 	top: 0;
@@ -221,10 +226,10 @@ const SidebarWrapper = styled.div`
 	animation: ${(props) =>
 		props.$isOpen
 			? css`
-					${fadeIn} 0.3s ease forwards
+					${fadeIn} 0.3s ease forwards;
 				`
 			: css`
-					${fadeOut} 0.3s ease forwards
+					${fadeOut} 0.3s ease forwards;
 				`};
 `;
 
@@ -237,29 +242,31 @@ const CloseIcon = styled(FaTimes)`
 	font-size: 20px;
 `;
 
-/* The logo container, also using $isOpen */
-const Logo = styled.div`
-	width: 95%;
+/** Aspect‐ratio container for the logo to prevent cropping.
+ *  Adjust width & ratio for your real logo dimensions. */
+const LogoContainer = styled.div`
+	width: 150px; /* total width of the logo area */
+	aspect-ratio: 3 / 1; /* e.g., 3:1 aspect ratio; tweak as needed */
+	overflow: hidden;
+	margin-top: 20px;
 	margin-bottom: 20px;
 	padding: 5px;
 	border-radius: 5px;
 	background-color: var(--neutral-light);
-	margin-top: 20px;
 
 	animation: ${(props) =>
 		props.$isOpen
 			? css`
-					${fadeIn} 1s ease forwards
+					${fadeIn} 1s ease forwards;
 				`
 			: "none"};
 
 	img {
-		width: 70%;
-		height: auto;
+		width: 100%;
+		height: 100%;
 		display: block;
-		text-align: center;
 		margin: auto;
-		object-fit: cover !important;
+		object-fit: contain;
 	}
 `;
 
@@ -274,7 +281,7 @@ const NavContainer = styled.div`
 	width: 100%;
 `;
 
-/* We rename isActive => $isActive for styling */
+/* We rename isActive => $isActive for styling consistency */
 const StyledLink = styled(Link)`
 	display: flex;
 	align-items: center;

@@ -67,7 +67,11 @@ const Hero = ({ websiteSetup }) => {
 						return (
 							<Slide key={idx}>
 								{optimizedUrl ? (
-									<BannerImage src={optimizedUrl} alt={`Banner ${idx + 1}`} />
+									<BannerImage
+										src={optimizedUrl}
+										alt={`Banner ${idx + 1}`}
+										loading={idx === 0 ? "eager" : "lazy"}
+									/>
 								) : (
 									<Placeholder>Banner {idx + 1}</Placeholder>
 								)}
@@ -191,6 +195,7 @@ const BannerImage = styled.img`
 	width: 100%;
 	object-fit: cover;
 	max-height: 600px;
+	/* aspect-ratio: 16 / 9; or choose the ratio that fits your banner */
 
 	@media (max-width: 600px) {
 		min-height: 450px !important;
