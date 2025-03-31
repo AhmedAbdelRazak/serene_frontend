@@ -5,8 +5,6 @@ import styled from "styled-components";
 import { getGenders } from "../apiAdmin";
 import { isAuthenticated } from "../../auth/index";
 import { Link } from "react-router-dom";
-import Aos from "aos";
-import "aos/dist/aos.css";
 import UpdateGenderSingle from "./UpdateCategorySingle";
 
 const UpdateGender = () => {
@@ -34,13 +32,9 @@ const UpdateGender = () => {
 		// eslint-disable-next-line
 	}, []);
 
-	useEffect(() => {
-		Aos.init({ duration: 1500 });
-	}, []);
-
 	return (
 		<UpdateGenderWrapper>
-			<div className='contentWrapper' data-aos='fade-down'>
+			<div className='contentWrapper'>
 				<h3
 					style={{ color: "#009ef7", fontWeight: "bold" }}
 					className='mt-1 mb-3 text-center'

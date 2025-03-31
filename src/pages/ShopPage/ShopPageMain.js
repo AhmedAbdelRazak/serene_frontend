@@ -63,10 +63,13 @@ function ShopPageMain() {
 
 	// Initialize GA and track page views
 	useEffect(() => {
-		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
-		ReactGA.send(window.location.pathname + window.location.search);
+		// Fix: Pass an object to avoid the "Send command doesn't exist" error
+		ReactGA.send({
+			hitType: "pageview",
+			page: window.location.pathname + window.location.search,
+		});
 		// eslint-disable-next-line
-	}, [window.location.pathname]);
+	}, [window.location.pathname, window.location.search]);
 
 	// Fetch master color list
 	useEffect(() => {
@@ -436,12 +439,13 @@ function ShopPageMain() {
 						/>
 					</SearchInputWrapper>
 
+					{/* Replace "visible" with "open" to remove Drawer warning */}
 					<FiltersDrawer
 						title='Filters'
 						placement='left'
 						closable
 						onClose={closeDrawer}
-						visible={drawerVisible}
+						open={drawerVisible}
 					>
 						<Row gutter={[16, 16]}>
 							<Col span={24}>
@@ -761,6 +765,7 @@ const SearchInputWrapper = styled.div`
 	}
 `;
 
+/* Replaced "visible" with "open" to avoid the Drawer warning */
 const FiltersDrawer = styled(Drawer)`
 	@media (min-width: 577px) {
 		display: none; /* Hide drawer on larger screens */

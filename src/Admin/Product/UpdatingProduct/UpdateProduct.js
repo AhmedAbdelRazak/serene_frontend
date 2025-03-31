@@ -1,28 +1,64 @@
 /** @format */
-
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { getProducts } from "../../apiAdmin";
+import {
+	Table,
+	Card,
+	Row,
+	Col,
+	Button,
+	Modal,
+	Spin,
+	Tooltip,
+	Input,
+} from "antd";
+import { Link } from "react-router-dom";
+import {
+	FilterOutlined,
+	DeploymentUnitOutlined,
+	InboxOutlined,
+	StarOutlined,
+	StarFilled,
+} from "@ant-design/icons";
 import CountUp from "react-countup";
-import AttributesModal from "./AttributesModal";
-import { isAuthenticated } from "../../../auth";
-import UpdateProductSingle from "./UpdateProductSingle";
-import { Button, Modal, Spin } from "antd";
-import { gettingPrintifyProducts } from "../../apiAdmin";
 
+import { getProducts, gettingPrintifyProducts } from "../../apiAdmin";
+import { isAuthenticated } from "../../../auth";
+import AttributesModal from "./AttributesModal";
+import UpdateProductSingle from "./UpdateProductSingle";
+
+/**
+ * The main UpdateProduct component:
+ *  - Scorecards
+ *  - Quick filter buttons
+ *  - Table with search + filters
+ *  - Printify sync
+ *  - Update single product details
+ */
 const UpdateProduct = () => {
 	const [allProducts, setAllProducts] = useState([]);
-	const [modalVisible, setModalVisible] = useState(false);
-	const [printifyModalVisible, setPrintifyModalVisible] = useState(false);
-	const [clickedProduct, setClickedProduct] = useState({});
-	const [selectedProductToUpdate, setSelectedProductToUpdate] =
-		useState(undefined);
-	const [q, setQ] = useState("");
-	const [loading, setLoading] = useState(false);
-	const [printifyResponse, setPrintifyResponse] = useState(null);
+	const [filteredProducts, setFilteredProducts] = useState([]);
 
-	const gettingAllProducts = () => {
+	const [modalVisible, setModalVisible] = useState(false); // For variable attributes
+	const [clickedProduct, setClickedProduct] = useState({}); // For attributes modal
+
+	const [selectedProductToUpdate, setSelectedProductToUpdate] = useState(null);
+
+	const [printifyModalVisible, setPrintifyModalVisible] = useState(false);
+	const [printifyResponse, setPrintifyResponse] = useState(null);
+	const [loading, setLoading] = useState(false);
+
+	const [searchQuery, setSearchQuery] = useState("");
+	const [filterType, setFilterType] = useState("All");
+	// "OutOfStock" | "InStock" | "Featured" | "NotFeatured" | "All"
+
+	const { user } = isAuthenticated();
+
+	useEffect(() => {
+		loadAllProducts();
+	}, []);
+
+	const loadAllProducts = () => {
 		getProducts().then((data) => {
 			if (data.error) {
 				console.log(data.error);
@@ -32,11 +68,26 @@ const UpdateProduct = () => {
 		});
 	};
 
+	// Each time allProducts, searchQuery, or filterType changes, recalc displayed table data
 	useEffect(() => {
-		gettingAllProducts();
-		// eslint-disable-next-line
-	}, []);
+		let modified = modifyForTable(allProducts);
 
+		// Filter
+		modified = applyFilters(modified, filterType);
+
+		// Search
+		if (searchQuery.trim()) {
+			modified = applySearch(modified, searchQuery.trim().toLowerCase());
+		}
+
+		setFilteredProducts(modified);
+	}, [allProducts, filterType, searchQuery]);
+
+	/* =========================================
+     PRINTIFY SYNC
+  ========================================== */
+
+	// eslint-disable-next-line
 	const fetchPrintifyProducts = async () => {
 		setLoading(true);
 		setPrintifyResponse(null);
@@ -55,32 +106,29 @@ const UpdateProduct = () => {
 
 	const renderPrintifyResponse = () => {
 		if (!printifyResponse) return null;
-
 		const { addedProducts, failedProducts, message } = printifyResponse;
 
 		return (
 			<div>
 				<p>{message}</p>
-				{addedProducts && addedProducts.length > 0 && (
+				{Array.isArray(addedProducts) && addedProducts.length > 0 && (
 					<div>
 						<h3>Added Products</h3>
 						<ul>
-							{addedProducts.map((product, index) => (
-								<li key={index}>{product}</li>
+							{addedProducts.map((p, i) => (
+								<li key={i}>{p}</li>
 							))}
 						</ul>
 					</div>
 				)}
-				{failedProducts && failedProducts.length > 0 && (
+
+				{Array.isArray(failedProducts) && failedProducts.length > 0 && (
 					<div>
 						<h3>Failed Products</h3>
 						<ul>
-							{failedProducts.map((product, index) => (
-								<li
-									key={index}
-									style={{ color: "darkred", fontWeight: "bold" }}
-								>
-									{product.title}: {product.reason}
+							{failedProducts.map((fp, i) => (
+								<li key={i} style={{ color: "darkred", fontWeight: "bold" }}>
+									{fp.title}: {fp.reason}
 								</li>
 							))}
 						</ul>
@@ -90,579 +138,570 @@ const UpdateProduct = () => {
 		);
 	};
 
-	function search(orders) {
-		return orders.filter((row) => {
-			const productName = row.productName ? row.productName.toLowerCase() : "";
-			const description = row.description ? row.description.toLowerCase() : "";
-			const productSKU = row.productSKU ? row.productSKU.toLowerCase() : "";
-			return (
-				productName.indexOf(q) > -1 ||
-				description.indexOf(q) > -1 ||
-				productSKU.indexOf(q) > -1
-			);
+	/* =========================================
+     FILTER / SEARCH HELPER FUNCTIONS
+  ========================================== */
+	function modifyForTable(products) {
+		// Convert DB products => array for Table
+		// We store everything needed in each row object
+		return products.map((p) => ({
+			productId: p._id,
+			productName: p.productName,
+			productSKU: p.productSKU,
+			price: p.priceAfterDiscount,
+			quantity: p.addVariables
+				? p.productAttributes.reduce((acc, attr) => acc + attr.quantity, 0)
+				: p.quantity,
+			createdAt: p.createdAt,
+			addedBy:
+				p?.addedByEmployee?.name || (p.isPrintifyProduct ? "Printify" : ""),
+			thumbnailUrl: p.thumbnailImage?.[0]?.images?.[0]?.url || "",
+
+			isPrintify: p.isPrintifyProduct || false,
+			featured: p.featuredProduct || false,
+			// Keep original entire object if needed
+			originalProduct: p,
+		}));
+	}
+
+	function applyFilters(rows, filterType) {
+		if (filterType === "All") return rows;
+
+		if (filterType === "OutOfStock") {
+			return rows.filter((r) => Number(r.quantity) <= 0);
+		}
+		if (filterType === "InStock") {
+			return rows.filter((r) => Number(r.quantity) > 0);
+		}
+		if (filterType === "Featured") {
+			return rows.filter((r) => r.originalProduct.featuredProduct === true);
+		}
+		if (filterType === "NotFeatured") {
+			return rows.filter((r) => r.originalProduct.featuredProduct === false);
+		}
+		return rows;
+	}
+
+	function applySearch(rows, query) {
+		return rows.filter((row) => {
+			const productName = row.productName?.toLowerCase() || "";
+			const productSKU = row.productSKU?.toLowerCase() || "";
+			return productName.includes(query) || productSKU.includes(query);
 		});
 	}
 
-	const modifyingInventoryTable = () => {
-		let modifiedArray = allProducts.map((i) => {
-			return {
-				productId: i._id,
-				productName: i.productName,
-				productName_Arabic: i.productName_Arabic,
-				productPrice: i.priceAfterDiscount,
-				productQty: i.addVariables
-					? i.productAttributes
-							.map((iii) => iii.quantity)
-							.reduce((a, b) => a + b, 0)
-					: i.quantity,
-				productImage: i.thumbnailImage,
-				productSKU: i.productSKU,
-				addedBy: i.addedByEmployee,
-				createdAt: i.createdAt,
-				addVariables: i.addVariables,
-				productAttributes: i.productAttributes,
-				isPrintifyProduct: i.isPrintifyProduct,
-			};
-		});
+	/* =========================================
+     STOCK / SELLING PRICE CALCULATIONS
+  ========================================== */
 
-		return modifiedArray;
-	};
-
-	const dataTable = () => {
-		return (
-			<div className='tableData'>
-				<AttributesModal
-					product={clickedProduct}
-					modalVisible={modalVisible}
-					setModalVisible={setModalVisible}
-				/>
-				<div className=' mb-3 form-group mx-3 text-center'>
-					<label
-						className='mt-3 mx-3'
-						style={{
-							fontWeight: "bold",
-							fontSize: "1.05rem",
-							color: "black",
-							borderRadius: "20px",
-						}}
-					>
-						Search
-					</label>
-					<input
-						className='p-2 my-5 '
-						type='text'
-						value={q}
-						onChange={(e) => setQ(e.target.value.toLowerCase())}
-						placeholder='Search By Product Name Or SKU'
-						style={{
-							borderRadius: "20px",
-							width: "50%",
-							border: "1px lightgrey solid",
-						}}
-					/>
-				</div>
-				<table
-					className='table table-bordered table-md-responsive table-hover'
-					style={{ fontSize: "0.75rem", overflowX: "auto" }}
-				>
-					<thead className='thead-light'>
-						<tr
-							style={{
-								fontSize: "0.8rem",
-								textTransform: "capitalize",
-								textAlign: "center",
-							}}
-						>
-							<th scope='col'>Item #</th>
-							<th scope='col'>Product Name</th>
-							<th scope='col'>Product Main SKU</th>
-							<th scope='col'>Product Price</th>
-							<th scope='col'>Stock Onhand</th>
-							<th scope='col'>Product Creation Date</th>
-							<th scope='col'>Product Created By</th>
-							<th scope='col'>Product Image</th>
-							<th scope='col'>Update Product</th>
-						</tr>
-					</thead>
-					<tbody
-						className='my-auto'
-						style={{
-							fontSize: "0.75rem",
-							textTransform: "capitalize",
-							fontWeight: "bolder",
-						}}
-					>
-						{search(modifyingInventoryTable()).map((s, i) => {
-							return (
-								<tr key={i} className=''>
-									<td className='my-auto'>{i + 1}</td>
-
-									<td>{s.productName}</td>
-									<td>{s.productSKU}</td>
-									<td>
-										{s.addVariables ? (
-											<span
-												onClick={() => {
-													setModalVisible(true);
-													setClickedProduct(s);
-												}}
-												style={{
-													fontWeight: "bold",
-													textDecoration: "underline",
-													color: "darkblue",
-													cursor: "pointer",
-												}}
-											>
-												Check Product Attributes
-											</span>
-										) : (
-											s.productPrice
-										)}
-									</td>
-									<td
-										style={{
-											background: s.productQty <= 0 ? "#fdd0d0" : "",
-										}}
-									>
-										{s.productQty}
-									</td>
-									<td>{new Date(s.createdAt).toLocaleDateString()}</td>
-									<td>{s.isPrintifyProduct ? "Printify" : s.addedBy.name}</td>
-									<td style={{ width: "15%", textAlign: "center" }}>
-										<img
-											width='30%'
-											height='30%'
-											style={{ marginLeft: "20px" }}
-											src={
-												s.productImage[0].images[0]
-													? s.productImage[0].images[0].url
-													: null
-											}
-											alt={s.productName}
-										/>
-									</td>
-									<Link
-										to={`/admin/products?updateproduct`}
-										onClick={() => {
-											setSelectedProductToUpdate(s);
-										}}
-									>
-										<td
-											onClick={() => {
-												setSelectedProductToUpdate(s);
-											}}
-											style={{
-												color: "blue",
-												fontWeight: "bold",
-												cursor: "pointer",
-											}}
-										>
-											Update Product...
-										</td>
-									</Link>
-
-									{/* <td>{Invoice(s)}</td> */}
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-			</div>
-		);
-	};
-
+	// Sum of on-hand quantity
 	function calculateStockLevel(products) {
-		// Products without variables
-		const noVarQty = products
-			.filter((p) => !p.addVariables)
-			.reduce((acc, p) => acc + Number(p.quantity), 0);
-
-		// Products with variables
-		const varQty = products
-			.filter((p) => p.addVariables)
-			.reduce((acc, p) => {
-				const totalAttributesQty = p.productAttributes.reduce(
-					(sum, attr) => sum + Number(attr.quantity),
+		let total = 0;
+		products.forEach((p) => {
+			if (!p.addVariables) total += p.quantity || 0;
+			else {
+				total += p.productAttributes.reduce(
+					(acc, attr) => acc + (attr.quantity || 0),
 					0
 				);
-				return acc + totalAttributesQty;
-			}, 0);
-
-		return noVarQty + varQty;
+			}
+		});
+		return total;
 	}
 
+	// Sum of (quantity * priceAfterDiscount)
 	function calculateStockWorth(products) {
-		const noVarWorth = products
-			.filter((p) => !p.addVariables)
-			.reduce(
-				(acc, p) => acc + Number(p.quantity) * Number(p.priceAfterDiscount),
-				0
-			);
-
-		const varWorth = products
-			.filter((p) => p.addVariables)
-			.reduce((acc, p) => {
-				const totalAttributesWorth = p.productAttributes.reduce(
-					(sum, attr) =>
-						sum + Number(attr.quantity) * Number(attr.priceAfterDiscount),
+		let total = 0;
+		products.forEach((p) => {
+			if (!p.addVariables) {
+				total += (p.quantity || 0) * (p.priceAfterDiscount || 0);
+			} else {
+				const subTotal = p.productAttributes.reduce(
+					(acc, attr) =>
+						acc + (attr.quantity || 0) * (attr.priceAfterDiscount || 0),
 					0
 				);
-				return acc + totalAttributesWorth;
-			}, 0);
-
-		return noVarWorth + varWorth;
+				total += subTotal;
+			}
+		});
+		return total;
 	}
 
+	// Sum of (quantity * price)
 	function calculateStockCost(products) {
-		const noVarCost = products
-			.filter((p) => !p.addVariables)
-			.reduce((acc, p) => acc + Number(p.quantity) * Number(p.price), 0);
-
-		const varCost = products
-			.filter((p) => p.addVariables)
-			.reduce((acc, p) => {
-				const totalAttributesCost = p.productAttributes.reduce(
-					(sum, attr) => sum + Number(attr.quantity) * Number(attr.price),
+		let total = 0;
+		products.forEach((p) => {
+			if (!p.addVariables) {
+				total += (p.quantity || 0) * (p.price || 0);
+			} else {
+				const subTotal = p.productAttributes.reduce(
+					(acc, attr) => acc + (attr.quantity || 0) * (attr.price || 0),
 					0
 				);
-				return acc + totalAttributesCost;
-			}, 0);
-
-		return noVarCost + varCost;
+				total += subTotal;
+			}
+		});
+		return total;
 	}
 
+	// Sum of (quantity * MSRPPriceBasic or attribute.MSRP)
 	function calculatePurchasePrice(products) {
-		const noVarCost = products
-			.filter((p) => !p.addVariables)
-			.reduce(
-				(acc, p) => acc + Number(p.quantity) * Number(p.MSRPPriceBasic),
-				0
-			);
-
-		const varCost = products
-			.filter((p) => p.addVariables)
-			.reduce((acc, p) => {
-				const totalAttributesCost = p.productAttributes.reduce(
-					(sum, attr) => sum + Number(attr.quantity) * Number(attr.MSRP),
+		let total = 0;
+		products.forEach((p) => {
+			if (!p.addVariables) {
+				total += (p.quantity || 0) * (p.MSRPPriceBasic || 0);
+			} else {
+				const subTotal = p.productAttributes.reduce(
+					(acc, attr) => acc + (attr.quantity || 0) * (attr.MSRP || 0),
 					0
 				);
-				return acc + totalAttributesCost;
-			}, 0);
-
-		return noVarCost + varCost;
+				total += subTotal;
+			}
+		});
+		return total;
 	}
 
-	console.log(selectedProductToUpdate, "selectedProductToUpdate");
-	return (
-		<UpdateProductWrapper>
-			<div className='mainContent'>
-				<div className='tableWrapper container-fluid'>
-					<div className='flex-container'>
-						{" "}
-						{/* Use flex layout */}
-						<div className='card' style={{ background: "#f1416c" }}>
-							<div className='card-body'>
-								<h5 style={{ fontWeight: "bolder", color: "white" }}>
-									Overall Products Count
-								</h5>
-								<CountUp
-									style={{ color: "white" }}
-									duration='3'
-									delay={1}
-									end={allProducts.length}
-									separator=','
-								/>
-								<span
-									style={{
-										color: "white",
-										marginLeft: "5px",
-										fontSize: "1.2rem",
-									}}
-								>
-									Products
-								</span>
-							</div>
-						</div>
-						<div className='card' style={{ background: "#009ef7" }}>
-							<div className='card-body'>
-								<h5 style={{ fontWeight: "bolder", color: "white" }}>
-									Overall Inventory Level
-								</h5>
-								<CountUp
-									style={{ color: "white" }}
-									duration='3'
-									delay={1}
-									end={calculateStockLevel(allProducts)}
-									separator=','
-								/>
-								<span
-									style={{
-										color: "white",
-										marginLeft: "5px",
-										fontSize: "1.2rem",
-									}}
-								>
-									Items
-								</span>
-							</div>
-						</div>
-						{isAuthenticated().user.userRole === "Order Taker" ||
-						isAuthenticated().user.userRole === "Operations" ||
-						isAuthenticated().user.userRole === "Stock Keeper" ? null : (
-							<div className='card' style={{ background: "#541838" }}>
-								<div className='card-body'>
-									<h5 style={{ fontWeight: "bolder", color: "white" }}>
-										Purchase Price
-									</h5>
-									<CountUp
-										style={{ color: "white" }}
-										duration='3'
-										delay={1}
-										end={calculatePurchasePrice(allProducts)}
-										separator=','
-									/>
-									<span
-										style={{
-											color: "white",
-											marginLeft: "5px",
-											fontSize: "1.2rem",
-										}}
-									>
-										USD
-									</span>
-								</div>
-							</div>
-						)}
-						{isAuthenticated().user.userRole === "Order Taker" ||
-						isAuthenticated().user.userRole === "Operations" ||
-						isAuthenticated().user.userRole === "Stock Keeper" ? null : (
-							<div className='card' style={{ background: "#50cd89" }}>
-								<div className='card-body'>
-									<h5 style={{ fontWeight: "bolder", color: "white" }}>
-										Total Selling Price
-									</h5>
-									<CountUp
-										style={{ color: "white" }}
-										duration='3'
-										delay={1}
-										end={calculateStockWorth(allProducts)}
-										separator=','
-									/>
-									<span
-										style={{
-											color: "white",
-											marginLeft: "5px",
-											fontSize: "1.2rem",
-										}}
-									>
-										USD
-									</span>
-								</div>
-							</div>
-						)}
-						{isAuthenticated().user.userRole === "Order Taker" ||
-						isAuthenticated().user.userRole === "Operations" ||
-						isAuthenticated().user.userRole === "Stock Keeper" ? null : (
-							<div className='card' style={{ background: "#185434" }}>
-								<div className='card-body'>
-									<h5 style={{ fontWeight: "bolder", color: "white" }}>
-										Stock Worth
-									</h5>
-									<CountUp
-										style={{ color: "white" }}
-										duration='3'
-										delay={1}
-										end={calculateStockCost(allProducts)}
-										separator=','
-									/>
-									<span
-										style={{
-											color: "white",
-											marginLeft: "5px",
-											fontSize: "1.2rem",
-										}}
-									>
-										USD
-									</span>
-								</div>
-							</div>
-						)}
-					</div>
-					{selectedProductToUpdate && selectedProductToUpdate.productId ? (
-						<div className='my-4'>
-							<h4
+	/* =========================================
+     TABLE COLUMNS
+  ========================================== */
+	const columns = [
+		{
+			title: "Item #",
+			dataIndex: "index",
+			key: "index",
+			width: 90,
+			render: (_val, _record, index) => index + 1,
+		},
+		{
+			title: "Product Name",
+			dataIndex: "productName",
+			key: "productName",
+			width: 250,
+			ellipsis: {
+				showTitle: false,
+			},
+			render: (text) => (
+				<Tooltip title={text || "N/A"}>
+					<span style={{ textTransform: "capitalize" }}>{text}</span>
+				</Tooltip>
+			),
+		},
+		{
+			title: "SKU",
+			dataIndex: "productSKU",
+			key: "productSKU",
+			width: 120,
+			ellipsis: {
+				showTitle: false,
+			},
+			render: (text) => (
+				<Tooltip title={text || "N/A"}>
+					<span>{text}</span>
+				</Tooltip>
+			),
+		},
+		{
+			title: "Price",
+			dataIndex: "price",
+			key: "price",
+			width: 100,
+			render: (val, record) => {
+				const product = record.originalProduct;
+				if (product.addVariables) {
+					// show link "Check Product Attributes"
+					return (
+						<Tooltip title='Click to view attribute-level pricing'>
+							<span
+								style={{
+									fontWeight: "bold",
+									textDecoration: "underline",
+									color: "darkblue",
+									cursor: "pointer",
+								}}
 								onClick={() => {
-									setSelectedProductToUpdate(undefined);
-									window.scrollTo({ top: 0, behavior: "smooth" });
+									setClickedProduct(product);
+									setModalVisible(true);
 								}}
 							>
-								Back To Products List
-							</h4>
-							<div className='my-3'>
-								<UpdateProductSingle
-									productId={selectedProductToUpdate.productId}
-								/>
-							</div>
-						</div>
-					) : (
-						<div>
-							<div className='mt-5 float-right'>
-								<Button
-									style={{ fontWeight: "bold", fontSize: "1rem" }}
-									type='primary'
-									onClick={fetchPrintifyProducts}
-								>
-									Update Website With Printify Products
-								</Button>
-							</div>
-
-							{dataTable()}
-						</div>
-					)}
-
-					<Modal
-						title='Printify Product Sync'
-						open={printifyModalVisible}
-						onCancel={() => setPrintifyModalVisible(false)}
-						footer={null}
-					>
-						{loading ? <Spin /> : renderPrintifyResponse()}
-					</Modal>
+								Check Attributes
+							</span>
+						</Tooltip>
+					);
+				}
+				return val;
+			},
+		},
+		{
+			title: "Stock",
+			dataIndex: "quantity",
+			key: "quantity",
+			width: 80,
+			render: (val) => (
+				<div
+					style={{
+						background: val <= 0 ? "#fdd0d0" : "",
+						textAlign: "center",
+						borderRadius: "4px",
+					}}
+				>
+					{val}
 				</div>
-			</div>
+			),
+		},
+		{
+			title: "Created On",
+			dataIndex: "createdAt",
+			key: "createdAt",
+			width: 120,
+			render: (val) => (val ? new Date(val).toLocaleDateString() : "N/A"),
+		},
+		{
+			title: "Created By",
+			dataIndex: "addedBy",
+			key: "addedBy",
+			width: 120,
+			ellipsis: {
+				showTitle: false,
+			},
+			render: (text) => (
+				<Tooltip title={text || "N/A"}>
+					<span>{text}</span>
+				</Tooltip>
+			),
+		},
+		{
+			title: "Thumbnail",
+			dataIndex: "thumbnailUrl",
+			key: "thumbnailUrl",
+			width: 120,
+			render: (url, record) => {
+				return url ? (
+					<Tooltip title={record.productName}>
+						<img
+							src={url}
+							alt={record.productName}
+							style={{
+								width: "50px",
+								height: "50px",
+								objectFit: "cover",
+								borderRadius: "4px",
+							}}
+						/>
+					</Tooltip>
+				) : (
+					"N/A"
+				);
+			},
+		},
+		{
+			title: "Action",
+			key: "action",
+			width: 120,
+			render: (_val, record) => (
+				<Tooltip title='Update Product'>
+					<Link
+						to='/admin/products?updateproduct'
+						onClick={() => {
+							setSelectedProductToUpdate(record);
+						}}
+						style={{ fontWeight: "bold", color: "blue" }}
+					>
+						Update...
+					</Link>
+				</Tooltip>
+			),
+		},
+	];
+
+	/* =========================================
+     RENDER
+  ========================================== */
+	const overallProductsCount = allProducts.length;
+	const overallInventoryLevel = calculateStockLevel(allProducts);
+	const overallPurchasePrice = calculatePurchasePrice(allProducts);
+	const overallSellingPrice = calculateStockWorth(allProducts); // "Total Selling Price"
+	const overallStockWorth = calculateStockCost(allProducts); // "Stock Worth"
+
+	const handleBackToList = () => {
+		setSelectedProductToUpdate(null);
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	};
+
+	return (
+		<UpdateProductWrapper>
+			{/* SCORECARDS */}
+			{!selectedProductToUpdate && (
+				<Row
+					gutter={[16, 16]}
+					style={{
+						marginTop: 20,
+						marginBottom: 20,
+						display: "flex",
+						flexWrap: "wrap",
+						alignItems: "stretch",
+					}}
+				>
+					<Col xs={24} sm={12} md={8} lg={5} style={{ display: "flex" }}>
+						<Card
+							style={{
+								background: "#f1416c",
+								color: "white",
+								width: "100%",
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "center",
+							}}
+							hoverable
+						>
+							<h5 style={{ fontWeight: "bolder" }}>Overall Products Count</h5>
+							<CountUp
+								style={{ color: "white", fontSize: "1.4rem" }}
+								duration={3}
+								delay={1}
+								end={overallProductsCount}
+								separator=','
+							/>
+							<span style={{ color: "white", marginLeft: "5px" }}>
+								Products
+							</span>
+						</Card>
+					</Col>
+
+					<Col xs={24} sm={12} md={8} lg={5} style={{ display: "flex" }}>
+						<Card
+							style={{
+								background: "#009ef7",
+								color: "white",
+								width: "100%",
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "center",
+							}}
+							hoverable
+						>
+							<h5 style={{ fontWeight: "bolder" }}>Overall Inventory Level</h5>
+							<CountUp
+								style={{ color: "white", fontSize: "1.4rem" }}
+								duration={3}
+								delay={1}
+								end={overallInventoryLevel}
+								separator=','
+							/>
+							<span style={{ color: "white", marginLeft: "5px" }}>Items</span>
+						</Card>
+					</Col>
+
+					{/* These next 3 only show if the user role is not "Order Taker", "Operations", or "Stock Keeper" */}
+					{!["Order Taker", "Operations", "Stock Keeper"].includes(
+						user.userRole
+					) && (
+						<>
+							<Col xs={24} sm={12} md={8} lg={5} style={{ display: "flex" }}>
+								<Card
+									style={{
+										background: "#541838",
+										color: "white",
+										width: "100%",
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "center",
+									}}
+									hoverable
+								>
+									<h5 style={{ fontWeight: "bolder" }}>Purchase Price</h5>
+									<CountUp
+										style={{ color: "white", fontSize: "1.4rem" }}
+										duration={3}
+										delay={1}
+										end={overallPurchasePrice}
+										separator=','
+									/>
+									<span style={{ color: "white", marginLeft: "5px" }}>USD</span>
+								</Card>
+							</Col>
+							<Col xs={24} sm={12} md={8} lg={5} style={{ display: "flex" }}>
+								<Card
+									style={{
+										background: "#50cd89",
+										color: "white",
+										width: "100%",
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "center",
+									}}
+									hoverable
+								>
+									<h5 style={{ fontWeight: "bolder" }}>Total Selling Price</h5>
+									<CountUp
+										style={{ color: "white", fontSize: "1.4rem" }}
+										duration={3}
+										delay={1}
+										end={overallSellingPrice}
+										separator=','
+									/>
+									<span style={{ color: "white", marginLeft: "5px" }}>USD</span>
+								</Card>
+							</Col>
+							<Col xs={24} sm={12} md={8} lg={4} style={{ display: "flex" }}>
+								<Card
+									style={{
+										background: "#185434",
+										color: "white",
+										width: "100%",
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "center",
+									}}
+									hoverable
+								>
+									<h5 style={{ fontWeight: "bolder" }}>Stock Worth</h5>
+									<CountUp
+										style={{ color: "white", fontSize: "1.4rem" }}
+										duration={3}
+										delay={1}
+										end={overallStockWorth}
+										separator=','
+									/>
+									<span style={{ color: "white", marginLeft: "5px" }}>USD</span>
+								</Card>
+							</Col>
+						</>
+					)}
+				</Row>
+			)}
+
+			{/* IF SELECTED PRODUCT => SHOW SINGLE EDIT. ELSE => SHOW FILTER, TABLE, ETC. */}
+			{selectedProductToUpdate && selectedProductToUpdate.productId ? (
+				<div style={{ marginTop: 30 }}>
+					<h4
+						onClick={handleBackToList}
+						style={{ cursor: "pointer", textDecoration: "underline" }}
+					>
+						Back To Products List
+					</h4>
+					<div className='my-3'>
+						<UpdateProductSingle
+							productId={selectedProductToUpdate.productId}
+						/>
+					</div>
+				</div>
+			) : (
+				<>
+					{/* FILTER BUTTONS + PRINTIFY SYNC + SEARCH BAR */}
+					<div
+						style={{
+							display: "flex",
+							flexWrap: "wrap",
+							gap: 10,
+							alignItems: "center",
+							marginBottom: 16,
+						}}
+					>
+						{/* Filter Buttons */}
+						<Button
+							icon={<DeploymentUnitOutlined />}
+							onClick={() => setFilterType("All")}
+							type={filterType === "All" ? "primary" : "default"}
+						>
+							All
+						</Button>
+						<Button
+							icon={<InboxOutlined />}
+							onClick={() => setFilterType("OutOfStock")}
+							type={filterType === "OutOfStock" ? "primary" : "default"}
+						>
+							Out Of Stock
+						</Button>
+						<Button
+							icon={<InboxOutlined />}
+							onClick={() => setFilterType("InStock")}
+							type={filterType === "InStock" ? "primary" : "default"}
+						>
+							In Stock
+						</Button>
+						<Button
+							icon={<StarFilled />}
+							onClick={() => setFilterType("Featured")}
+							type={filterType === "Featured" ? "primary" : "default"}
+						>
+							Featured
+						</Button>
+						<Button
+							icon={<StarOutlined />}
+							onClick={() => setFilterType("NotFeatured")}
+							type={filterType === "NotFeatured" ? "primary" : "default"}
+						>
+							Not Featured
+						</Button>
+
+						{/* Printify sync button */}
+						{/* <Button
+							style={{
+								marginLeft: "auto",
+								fontWeight: "bold",
+								fontSize: "1rem",
+							}}
+							type='primary'
+							onClick={fetchPrintifyProducts}
+						>
+							Update Website With Printify Products
+						</Button> */}
+
+						{/* Search Input */}
+						<Input
+							placeholder='Search product name or SKU...'
+							allowClear
+							style={{ width: 300 }}
+							prefix={<FilterOutlined />}
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+						/>
+					</div>
+
+					{/* TABLE */}
+					<Table
+						columns={columns}
+						dataSource={filteredProducts}
+						rowKey={(record) => record.productId}
+						pagination={{ pageSize: 40 }}
+						style={{ background: "white", overflowY: "auto", height: "700px" }}
+						scroll={{ x: 900 }}
+					/>
+				</>
+			)}
+
+			{/* ATTRIBUTES MODAL */}
+			<AttributesModal
+				product={clickedProduct}
+				modalVisible={modalVisible}
+				setModalVisible={setModalVisible}
+			/>
+
+			{/* PRINTIFY SYNC MODAL */}
+			<Modal
+				title='Printify Product Sync'
+				open={printifyModalVisible}
+				onCancel={() => setPrintifyModalVisible(false)}
+				footer={null}
+			>
+				{loading ? <Spin /> : renderPrintifyResponse()}
+			</Modal>
 		</UpdateProductWrapper>
 	);
 };
 
 export default UpdateProduct;
 
+/* ================== STYLES ================== */
 const UpdateProductWrapper = styled.div`
 	min-height: 980px;
-	/* overflow-x: hidden; */
-	/* background: #ededed; */
-
-	.tableData {
-		background: white;
-		padding: 10px;
-	}
-	.grid-container {
-		display: grid;
-		grid-template-columns: ${(props) =>
-			props.show ? "4.5% 95.5%" : "15.2% 84.8%"};
-		margin: auto;
-		/* border: 1px solid red; */
-		/* grid-auto-rows: minmax(60px, auto); */
-	}
-
-	.tableWrapper {
-		overflow-x: auto;
-		margin-top: 80px;
-	}
-
-	.card-body span {
-		font-size: 1.5rem;
-		font-weight: bold;
-	}
-
-	/* tr:nth-child(even) {
-		background: #fafafa !important;
-	}
-	tr:nth-child(odd) {
-		background: #d3d3d3 !important;
-	} */
-
-	tr:hover {
-		background: #009ef7 !important;
-		color: white !important;
-	}
-
-	.flex-container {
-		display: flex;
-		flex-wrap: wrap; /* Wraps to the next line if cards exceed container width */
-		justify-content: space-between; /* Adds spacing between cards */
-		gap: 10px; /* Adjust gap between cards as needed */
-	}
-
-	.card {
-		flex: 1; /* Cards evenly distribute space */
-		min-width: 150px; /* Prevent cards from shrinking too much */
-		text-align: center !important;
-	}
-
-	.card-body span {
-		font-size: 1.5rem;
-		font-weight: bold;
-	}
+	margin: 0 20px;
 
 	h4 {
 		font-weight: bold;
 		text-decoration: underline;
 		font-size: 1.3rem;
-		text-align: center;
-		cursor: pointer;
-	}
-
-	@media (max-width: 1550px) {
-		li {
-			font-size: 0.85rem !important;
-		}
-
-		label {
-			font-size: 0.8rem !important;
-		}
-
-		h3 {
-			font-size: 1.2rem !important;
-		}
-	}
-
-	@media (max-width: 1750px) {
-		background: white;
-
-		.grid-container {
-			display: grid;
-			/* grid-template-columns: 18% 82%; */
-			grid-template-columns: ${(props) => (props.show ? "7% 93%" : "18% 82%")};
-			margin: auto;
-			/* border: 1px solid red; */
-			/* grid-auto-rows: minmax(60px, auto); */
-		}
-	}
-
-	@media (max-width: 1400px) {
-		background: white;
-
-		.grid-container {
-			display: grid;
-			grid-template-columns: 10% 95%;
-			margin: auto;
-			/* border: 1px solid red; */
-			/* grid-auto-rows: minmax(60px, auto); */
-		}
-	}
-
-	@media (max-width: 1200px) {
-		.card-grid {
-			grid-template-columns: repeat(2, 1fr); /* Adjust for smaller screens */
-		}
-	}
-
-	@media (max-width: 750px) {
-		.grid-container {
-			display: grid;
-			/* grid-template-columns: 16% 84%; */
-			grid-template-columns: ${(props) => (props.show ? "0% 99%" : "0% 100%")};
-			margin: auto;
-			/* border: 1px solid red; */
-			/* grid-auto-rows: minmax(60px, auto); */
-		}
-		h3 {
-			margin-top: 60px !important;
-		}
-
-		.rightContentWrapper {
-			margin-top: 20px;
-			margin-left: ${(props) => (props.show ? "0px" : "20px")};
-		}
+		text-align: left;
+		margin-bottom: 20px;
 	}
 `;

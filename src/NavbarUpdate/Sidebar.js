@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { Link } from "react-router-dom";
 import {
@@ -11,8 +11,9 @@ import {
 	FaUserPlus,
 } from "react-icons/fa";
 import { isAuthenticated, signout } from "../auth";
-import { getOnlineStoreData } from "../Global";
+import { useCartContext } from "../cart_context";
 
+/* Keyframes for the fade animations */
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -42,11 +43,9 @@ const Sidebar = ({
 	activeLink,
 	setActiveLink,
 }) => {
-	const [storeLogo, setStoreLogo] = useState("");
-
 	const { user } = isAuthenticated();
-
-	const firstName = user && user.name ? user.name.split(" ")[0] : "";
+	const { websiteSetup } = useCartContext();
+	const firstName = user?.name ? user.name.split(" ")[0] : "";
 
 	useEffect(() => {
 		const handleLocationChange = () => {
@@ -74,15 +73,6 @@ const Sidebar = ({
 		};
 	}, [setActiveLink]);
 
-	useEffect(() => {
-		const fetchData = async () => {
-			const url = await getOnlineStoreData();
-			setStoreLogo(url);
-		};
-
-		fetchData();
-	}, []);
-
 	const handleSignout = () => {
 		signout(() => {
 			window.location.href = "/";
@@ -92,49 +82,63 @@ const Sidebar = ({
 	return (
 		<>
 			{isSidebarOpen && <Overlay onClick={() => setIsSidebarOpen(false)} />}
-			<SidebarWrapper isOpen={isSidebarOpen}>
+			<SidebarWrapper $isOpen={isSidebarOpen}>
 				<CloseIcon onClick={() => setIsSidebarOpen(false)} />
-				<Logo isOpen={isSidebarOpen}>
-					<img src={storeLogo} alt='Serene Janat Shop Logo' loading='lazy' />
-				</Logo>
+
+				{websiteSetup?.sereneJannatLogo?.url && (
+					<Logo $isOpen={isSidebarOpen}>
+						<img
+							src={websiteSetup.sereneJannatLogo.url}
+							alt='Serene Janat Shop Logo'
+							loading='lazy'
+						/>
+					</Logo>
+				)}
+
 				<HorizontalLine />
+
 				<NavContainer>
 					<StyledLink
 						to='/'
 						onClick={() => handleNavLinkClick("home")}
-						isActive={activeLink === "home"}
+						$isActive={activeLink === "home"}
 					>
 						<FaHome /> Home
 					</StyledLink>
+
 					<StyledLink
 						to='/our-products'
 						onClick={() => handleNavLinkClick("products")}
-						isActive={activeLink === "products"}
+						$isActive={activeLink === "products"}
 					>
 						<FaProductHunt /> Products
 					</StyledLink>
+
 					<StyledLink
 						to='/custom-gifts'
 						onClick={() => handleNavLinkClick("customgifts")}
-						isActive={activeLink === "customgifts"}
+						$isActive={activeLink === "customgifts"}
 					>
 						<FaProductHunt /> Custom Gifts
 					</StyledLink>
+
 					<StyledLink
 						to='/about'
 						onClick={() => handleNavLinkClick("about")}
-						isActive={activeLink === "about"}
+						$isActive={activeLink === "about"}
 					>
 						<FaUserAlt /> About
 					</StyledLink>
+
 					<StyledLink
 						to='/contact'
 						onClick={() => handleNavLinkClick("contact")}
-						isActive={activeLink === "contact"}
+						$isActive={activeLink === "contact"}
 					>
 						<FaMailBulk /> Contact Us
 					</StyledLink>
 				</NavContainer>
+
 				<AuthLinksContainer>
 					{user && user.role === 1 ? (
 						<>
@@ -146,6 +150,7 @@ const Sidebar = ({
 							</AuthLink>
 						</>
 					) : null}
+
 					{user && user.role === 0 ? (
 						<>
 							<AuthLink to='/dashboard' onClick={() => setIsSidebarOpen(false)}>
@@ -156,19 +161,20 @@ const Sidebar = ({
 							</AuthLink>
 						</>
 					) : null}
+
 					{(!user || !user.name) && (
 						<>
 							<AuthLink
 								to='/signin'
 								onClick={() => handleNavLinkClick("login")}
-								isActive={activeLink === "login"}
+								$isActive={activeLink === "login"}
 							>
 								<FaSignInAlt /> Login
 							</AuthLink>
 							<AuthLink
 								to='/signup'
 								onClick={() => handleNavLinkClick("register")}
-								isActive={activeLink === "register"}
+								$isActive={activeLink === "register"}
 							>
 								<FaUserPlus /> Register
 							</AuthLink>
@@ -182,6 +188,9 @@ const Sidebar = ({
 
 export default Sidebar;
 
+/* -------------- STYLED COMPONENTS -------------- */
+
+/* Overlay behind the sidebar */
 const Overlay = styled.div`
 	position: fixed;
 	top: 0;
@@ -193,6 +202,7 @@ const Overlay = styled.div`
 	animation: ${fadeIn} 0.3s ease-in-out;
 `;
 
+/* The sidebar container (no more withConfig) */
 const SidebarWrapper = styled.div`
 	position: fixed;
 	top: 0;
@@ -201,14 +211,15 @@ const SidebarWrapper = styled.div`
 	height: 100vh;
 	background: var(--primary-color-darker);
 	padding: 20px;
-	transform: translateX(${(props) => (props.isOpen ? "0" : "-100%")});
+	transform: translateX(${(props) => (props.$isOpen ? "0" : "-100%")});
 	transition: transform 0.3s ease;
-	z-index: 15;
+	z-index: 201;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+
 	animation: ${(props) =>
-		props.isOpen
+		props.$isOpen
 			? css`
 					${fadeIn} 0.3s ease forwards
 				`
@@ -226,6 +237,7 @@ const CloseIcon = styled(FaTimes)`
 	font-size: 20px;
 `;
 
+/* The logo container, also using $isOpen */
 const Logo = styled.div`
 	width: 95%;
 	margin-bottom: 20px;
@@ -233,12 +245,14 @@ const Logo = styled.div`
 	border-radius: 5px;
 	background-color: var(--neutral-light);
 	margin-top: 20px;
+
 	animation: ${(props) =>
-		props.isOpen
+		props.$isOpen
 			? css`
 					${fadeIn} 1s ease forwards
 				`
 			: "none"};
+
 	img {
 		width: 70%;
 		height: auto;
@@ -260,12 +274,13 @@ const NavContainer = styled.div`
 	width: 100%;
 `;
 
+/* We rename isActive => $isActive for styling */
 const StyledLink = styled(Link)`
 	display: flex;
 	align-items: center;
 	gap: 10px;
 	color: ${(props) =>
-		props.isActive ? "var(--accent-color-1)" : "var(--neutral-light)"};
+		props.$isActive ? "var(--accent-color-1)" : "var(--neutral-light)"};
 	font-size: 18px;
 	text-decoration: none;
 	padding: 10px;
@@ -291,10 +306,12 @@ const AuthLinksContainer = styled.div`
 	}
 `;
 
+/* Reuse StyledLink for AuthLink */
 const AuthLink = styled(StyledLink)`
 	display: flex;
 	align-items: center;
 	gap: 5px;
+
 	span {
 		font-size: 16px;
 	}

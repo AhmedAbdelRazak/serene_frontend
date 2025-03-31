@@ -1,29 +1,12 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { Helmet } from "react-helmet";
-import { getJanatWebsiteRecord } from "../Admin/apiAdmin";
+import { useCartContext } from "../cart_context";
 
 const PrivacyPolicy = () => {
-	const [termsAndConditionEnglish, setTermsAndConditionEnglish] = useState("");
-
-	const gettingJanatWebsiteRecord = () => {
-		getJanatWebsiteRecord().then((data) => {
-			if (data && data.error) {
-				console.log(data.error, "data.error");
-			} else {
-				if (data && data[0]) {
-					setTermsAndConditionEnglish(data[0].termsAndConditionEnglish || "");
-				}
-			}
-		});
-	};
-
-	useEffect(() => {
-		gettingJanatWebsiteRecord();
-		// eslint-disable-next-line
-	}, []);
+	const { websiteSetup } = useCartContext();
 
 	const title = "Privacy Policy | Terms & Conditions | Serene Jannat";
 	const description =
@@ -48,13 +31,16 @@ const PrivacyPolicy = () => {
 				<meta property='og:type' content='website' />
 			</Helmet>
 			<ContentWrapper>
-				<DescriptionWrapper>
-					<div
-						dangerouslySetInnerHTML={{
-							__html: termsAndConditionEnglish,
-						}}
-					/>
-				</DescriptionWrapper>
+				{websiteSetup && websiteSetup.termsAndCondition && (
+					<DescriptionWrapper>
+						<div
+							dangerouslySetInnerHTML={{
+								__html: websiteSetup.termsAndCondition,
+							}}
+						/>
+					</DescriptionWrapper>
+				)}
+
 				<br />
 				<br />
 			</ContentWrapper>

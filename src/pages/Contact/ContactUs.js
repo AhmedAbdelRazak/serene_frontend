@@ -8,9 +8,9 @@ import {
 import { contactUs } from "../../auth/index";
 import { ToastContainer, toast } from "react-toastify";
 import { Helmet } from "react-helmet";
-import { getContacts } from "../../apiCore";
 import styled from "styled-components";
 import ReactGA from "react-ga4";
+import { useCartContext } from "../../cart_context";
 
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -24,16 +24,16 @@ const ContactUs = () => {
 		success: false,
 		loading: false,
 	});
-	const [contact, setContact] = useState({});
 	const { name, email, subject, text, loading } = values;
+	const { websiteSetup } = useCartContext();
 
 	useEffect(() => {
-		if (window !== "undefined") {
-			localStorage.removeItem("reservationData");
-		}
-		gettingAllContacts();
-		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
-		ReactGA.send(window.location.pathname + window.location.search);
+		// GA4 pageview fix: Instead of passing a string to send(),
+		// we pass an object with hitType & page.
+		ReactGA.send({
+			hitType: "pageview",
+			page: window.location.pathname + window.location.search,
+		});
 	}, []);
 
 	const handleChange = (name) => (event) => {
@@ -70,23 +70,6 @@ const ContactUs = () => {
 		});
 	};
 
-	const gettingAllContacts = () => {
-		getContacts().then((data) => {
-			if (data.error) {
-				console.log(data.error);
-			} else {
-				const lastContact = data[data.length - 1];
-				if (lastContact) {
-					setContact({
-						...lastContact,
-						email: lastContact.email.replace(/<br>/g, ""),
-						phone: lastContact.phone.replace(/<br>/g, ""),
-					});
-				}
-			}
-		});
-	};
-
 	return (
 		<ContactUsWrapper>
 			<Helmet>
@@ -115,6 +98,7 @@ const ContactUs = () => {
 				<link rel='icon' href='serene_frontend/src/GeneralImgs/favicon.ico' />
 				<link rel='canonical' href='https://serenejannat.com/contact' />
 			</Helmet>
+
 			<Row justify='center' align='middle'>
 				<Col xs={24} sm={20} md={16} lg={12} xl={16}>
 					<ContactUsContent>
@@ -130,10 +114,17 @@ const ContactUs = () => {
 						</Paragraph>
 						<Paragraph>
 							<MailOutlined /> Email:{" "}
-							{contact.email || "support@yourecommerce.com"}
+							{(websiteSetup &&
+								websiteSetup.contactUsPage &&
+								websiteSetup.contactUsPage.email) ||
+								"support@yourecommerce.com"}
 						</Paragraph>
 						<Paragraph>
-							<PhoneOutlined /> Phone: {contact.phone || "(123) 456-7890"}
+							<PhoneOutlined /> Phone:{" "}
+							{(websiteSetup &&
+								websiteSetup.contactUsPage &&
+								websiteSetup.contactUsPage.phone) ||
+								"(123) 456-7890"}
 						</Paragraph>
 						<Paragraph>
 							Please allow us 24 hours to respond to your inquiry.
@@ -218,6 +209,8 @@ const ContactUs = () => {
 };
 
 export default ContactUs;
+
+/* --------------- STYLED COMPONENTS --------------- */
 
 const ContactUsWrapper = styled.div`
 	padding: 50px 20px;

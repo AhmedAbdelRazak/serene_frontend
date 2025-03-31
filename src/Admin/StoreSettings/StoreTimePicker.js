@@ -80,8 +80,8 @@ const StoreTimePicker = ({
 			hour < 12
 				? `${hour} صباحا`
 				: hour === 12
-				? `12 مساءا`
-				: `${hour - 12} مساءا`;
+					? `12 مساءا`
+					: `${hour - 12} مساءا`;
 		return { display, value: time };
 	});
 

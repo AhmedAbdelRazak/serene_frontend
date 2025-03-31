@@ -214,6 +214,11 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 							</StyledText>
 							<div>
 								<FaTruck style={{ marginRight: "5px" }} />
+								<strong>Carrier:</strong>{" "}
+								{order.chosenShippingOption.carrierName}
+							</div>
+							<div>
+								<FaTruck style={{ marginRight: "5px" }} />
 								<strong>Ship To Address:</strong>{" "}
 								{order.customerDetails.address}, {order.customerDetails.city},{" "}
 								{order.customerDetails.state} {order.customerDetails.zipcode}

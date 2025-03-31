@@ -19,8 +19,6 @@ import BasicDataForm from "./BasicDataForm";
 import { isAuthenticated } from "../../../auth";
 import AddingProductVariable from "./AddingProductVariable";
 import { toast } from "react-toastify";
-import Aos from "aos";
-import "aos/dist/aos.css";
 import ImageCard from "./ImageCard";
 
 const { Option } = Select;
@@ -989,10 +987,6 @@ const AddProduct = () => {
 		inheritParentSKU,
 	]);
 
-	useEffect(() => {
-		Aos.init({ duration: 1500 });
-	}, []);
-
 	const upperMainMenu = () => {
 		return (
 			<ul className='mainUL'>
@@ -1061,7 +1055,7 @@ const AddProduct = () => {
 		<AddProductWrapper>
 			<div className='mainContent'>
 				<div className='row mt-4'>
-					<div className='col-md-3' data-aos='fade-up'>
+					<div className='col-md-3'>
 						<h3
 							className='ml-5'
 							style={{

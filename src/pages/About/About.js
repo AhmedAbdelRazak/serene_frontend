@@ -3,49 +3,46 @@ import styled from "styled-components";
 import { useLocation } from "react-router-dom";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
-import { getAbouts } from "../../apiCore";
+import { useCartContext } from "../../cart_context";
 
 const About = () => {
-	const [aboutus, setAboutUs] = useState({});
 	const [cleanedDescription, setCleanedDescription] = useState("");
 	const [plainDescription, setPlainDescription] = useState("");
 	const location = useLocation();
 
-	const gettingAllAbouts = () => {
-		getAbouts().then((data) => {
-			if (data.error) {
-				console.log(data.error);
-			} else {
-				setAboutUs(data[data.length - 1]);
-			}
+	const { websiteSetup } = useCartContext();
+
+	// GA4 pageview tracking
+	useEffect(() => {
+		ReactGA.send({
+			hitType: "pageview",
+			page: location.pathname + location.search,
 		});
-	};
-
-	useEffect(() => {
-		gettingAllAbouts();
-	}, []);
-
-	useEffect(() => {
-		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
-		ReactGA.send(location.pathname + location.search);
 	}, [location.pathname, location.search]);
 
+	// On mount, clean the aboutUsBanner paragraph
 	useEffect(() => {
-		if (aboutus.description_1) {
-			const cleanedDescription = aboutus.description_1.replace(/<br>/g, "");
-			setCleanedDescription(cleanedDescription);
-			const plainTextDescription = cleanedDescription.replace(/<[^>]+>/g, "");
+		if (websiteSetup.aboutUsBanner?.paragraph) {
+			const cleanedDesc = websiteSetup.aboutUsBanner.paragraph.replace(
+				/<br>/g,
+				""
+			);
+			setCleanedDescription(cleanedDesc);
+
+			// Remove HTML tags for meta descriptions
+			const plainTextDescription = cleanedDesc.replace(/<[^>]+>/g, "");
 			setPlainDescription(plainTextDescription);
 		}
-	}, [aboutus]);
+		// eslint-disable-next-line
+	}, []);
 
 	return (
-		<AboutPageWrapper>
-			{aboutus && aboutus.header_1 ? (
+		<AboutPageWrapper className='container'>
+			{websiteSetup?.aboutUsBanner?.paragraph && (
 				<>
 					<Helmet>
 						<meta charSet='utf-8' />
-						<title>Serene Jannat | About Us - {aboutus.header_1}</title>
+						<title>Serene Jannat | About Us</title>
 						<meta
 							name='description'
 							content={`Discover the story behind Serene Jannat Gift Shop. Learn about our commitment to providing the best gifts, candles, and glass items to show love to your loved ones. Our customer-first approach ensures the highest level of satisfaction. ${plainDescription}`}
@@ -54,10 +51,7 @@ const About = () => {
 							name='keywords'
 							content='Serene Jannat, about us, gift shop, candles, glass items, customer-first, best gifts, gift store, our story, commitment, satisfaction'
 						/>
-						<meta
-							property='og:title'
-							content={`Serene Jannat | About Us - ${aboutus.header_1}`}
-						/>
+						<meta property='og:title' content='Serene Jannat | About Us' />
 						<meta
 							property='og:description'
 							content={`Discover the story behind Serene Jannat Gift Shop. Learn about our commitment to providing the best gifts, candles, and glass items to show love to your loved ones. Our customer-first approach ensures the highest level of satisfaction. ${plainDescription}`}
@@ -69,14 +63,12 @@ const About = () => {
 						<link rel='icon' href='gq_frontend/src/GeneralImgs/favicon.ico' />
 						<link rel='canonical' href='https://serenejannat.com/about' />
 					</Helmet>
+
 					<div className='my-4'>
 						<ImageWrapper>
-							{aboutus &&
-							aboutus.thumbnail &&
-							aboutus.thumbnail[0] &&
-							aboutus.thumbnail[0].url ? (
+							{websiteSetup?.aboutUsBanner?.url ? (
 								<img
-									src={aboutus.thumbnail[0].url}
+									src={websiteSetup.aboutUsBanner.url}
 									decoding='async'
 									alt='Powered By infinite-apps.com'
 									style={{
@@ -101,9 +93,6 @@ const About = () => {
 
 						<DescriptionWrapper>
 							<div className='about-us'>
-								<p className='about-title' style={{ textAlign: "center" }}>
-									{aboutus.header_1}
-								</p>
 								<CollapseContainer>
 									<div
 										dangerouslySetInnerHTML={{ __html: cleanedDescription }}
@@ -113,16 +102,18 @@ const About = () => {
 						</DescriptionWrapper>
 					</div>
 				</>
-			) : null}
+			)}
 		</AboutPageWrapper>
 	);
 };
 
 export default About;
 
+/* ----------------- STYLED COMPONENTS ----------------- */
+
 const AboutPageWrapper = styled.section`
 	background: var(--neutral-light);
-	padding-bottom: 200px;
+	padding-bottom: 40px; /* Reduced the bottom padding */
 	overflow: hidden;
 
 	.title {
@@ -135,10 +126,12 @@ const AboutPageWrapper = styled.section`
 		font-size: 40px;
 		font-weight: 600;
 		color: var(--accent-color-2);
-		margin-left: 55px;
+		margin-left: 0px; /* no forced left margin */
+		margin-top: 15px; /* add a bit of top space if needed */
 
 		@media (max-width: 1000px) {
 			margin-top: 15px;
+			text-align: left; /* remove center alignment on smaller screens too */
 		}
 	}
 
@@ -148,22 +141,17 @@ const AboutPageWrapper = styled.section`
 	}
 
 	@media (max-width: 1000px) {
-		text-align: center;
-		padding-bottom: 0px;
+		padding-bottom: 20px;
 		padding-top: 0px;
 
 		.about-title {
-			font-size: 40px;
-			font-weight: 600;
-			margin-top: 0%;
-			color: var(--accent-color-2);
-			margin-left: 0px;
+			font-size: 32px;
+			margin-left: 0;
 		}
 	}
 `;
 
 const ImageWrapper = styled.div`
-	text-align: center;
 	margin-bottom: 15px;
 
 	img {
@@ -174,43 +162,25 @@ const ImageWrapper = styled.div`
 
 		@media (max-width: 800px) {
 			width: 100%;
-			height: 100% !important;
+			height: auto !important;
 			border-radius: 8px;
 		}
 	}
 `;
 
 const DescriptionWrapper = styled.div`
-	display: flex;
-	justify-content: center;
+	/* No forced centering or flex here */
 	margin-top: 15px;
 `;
 
 const CollapseContainer = styled.div`
 	width: 100%;
-	max-width: 900px;
-	margin: 15px auto;
+	margin: 0 auto; /* center horizontally only if smaller than container */
+	/* or remove margin entirely if not needed */
 
-	.ant-collapse-header {
-		font-size: 1.5rem;
-		color: var(--primary-color);
-	}
-
-	.ant-collapse-content {
-		background-color: var(--background-light);
-	}
-
-	.ant-collapse-item {
-		border-bottom: 1px solid var(--border-color-light);
-	}
-
-	.ant-collapse-arrow {
-		color: var (--primary-color);
-	}
-
-	/* Add styles to reduce the spacing between paragraphs */
+	/* Slightly smaller spacing between paragraphs */
 	p {
-		margin: 0; /* Remove default margin */
-		padding: 0.5em 0; /* Add some padding for space between paragraphs */
+		margin: 0;
+		padding: 0.2em 0; /* less spacing than default */
 	}
 `;

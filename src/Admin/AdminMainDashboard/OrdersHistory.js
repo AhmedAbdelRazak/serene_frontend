@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { DatePicker, Table, Button, Input, Modal } from "antd";
+import {
+	DatePicker,
+	Table,
+	Button,
+	Input,
+	Modal,
+	Card,
+	Row,
+	Col,
+	Tooltip,
+} from "antd";
 import styled from "styled-components";
 import CountUp from "react-countup";
+import dayjs from "dayjs"; // using dayjs instead of moment
 import { getListOfOrdersAggregated, getSearchOrder } from "../apiAdmin";
 import { isAuthenticated } from "../../auth";
-import moment from "moment";
+import { SearchOutlined, EyeOutlined } from "@ant-design/icons";
 
 const { RangePicker } = DatePicker;
 const { Search } = Input;
@@ -14,12 +25,10 @@ const OrdersHistory = ({ showModal }) => {
 	const [totalOrders, setTotalOrders] = useState(0);
 	const [totalQuantity, setTotalQuantity] = useState(0);
 	const [totalAmount, setTotalAmount] = useState(0);
-	const [startDate, setStartDate] = useState(moment().subtract(5, "months"));
-	const [endDate, setEndDate] = useState(moment());
+	const [startDate, setStartDate] = useState(dayjs().subtract(5, "months"));
+	const [endDate, setEndDate] = useState(dayjs());
 	const [loading, setLoading] = useState(false);
 	const [expandedRowKeys, setExpandedRowKeys] = useState([]);
-
-	// For image modal
 	const [modalImage, setModalImage] = useState(null);
 
 	const { user, token } = isAuthenticated();
@@ -35,13 +44,8 @@ const OrdersHistory = ({ showModal }) => {
 		const status = "all";
 		const userId = user._id;
 
-		// If no start/end, fallback to default 3 months => today
-		const startDateStr = start
-			? start.format("YYYY-MM-DD")
-			: moment().subtract(3, "months").format("YYYY-MM-DD");
-		const endDateStr = end
-			? end.format("YYYY-MM-DD")
-			: moment().format("YYYY-MM-DD");
+		const startDateStr = start.format("YYYY-MM-DD");
+		const endDateStr = end.format("YYYY-MM-DD");
 
 		try {
 			const response = await getListOfOrdersAggregated(
@@ -81,7 +85,6 @@ const OrdersHistory = ({ showModal }) => {
 	// ─────────────────────────────────────────────────────────
 	const handleSearch = async (value) => {
 		if (!value) {
-			// If search query is empty => re-fetch with current date range
 			fetchOrders(startDate, endDate);
 		} else {
 			setLoading(true);
@@ -116,9 +119,6 @@ const OrdersHistory = ({ showModal }) => {
 		}
 	};
 
-	// ─────────────────────────────────────────────────────────
-	// EFFECT: FETCH DATA
-	// ─────────────────────────────────────────────────────────
 	useEffect(() => {
 		fetchOrders(startDate, endDate);
 		// eslint-disable-next-line
@@ -165,11 +165,10 @@ const OrdersHistory = ({ showModal }) => {
 									borderRadius: 5,
 									cursor: "pointer",
 								}}
-								onClick={() => setModalImage(displayImg)} // Open modal on click
+								onClick={() => setModalImage(displayImg)}
 							/>
 							<div>
 								<div style={{ fontWeight: "bold" }}>{product.name}</div>
-								{/* color / size */}
 								{product.chosenAttributes && (
 									<div style={{ margin: "2px 0" }}>
 										<strong>Color:</strong> {product.chosenAttributes.color} |{" "}
@@ -179,7 +178,6 @@ const OrdersHistory = ({ showModal }) => {
 								<div>Quantity: {product.ordered_quantity}</div>
 								<div>Price: ${product.price}</div>
 
-								{/* POD details */}
 								{product.isPrintifyProduct &&
 									product.printifyProductDetails?.POD && (
 										<>
@@ -190,7 +188,6 @@ const OrdersHistory = ({ showModal }) => {
 											</div>
 											{product.customDesign && (
 												<div style={{ marginTop: "5px" }}>
-													{/* Final design preview */}
 													{product.customDesign.finalScreenshotUrl && (
 														<>
 															<strong>Final Design Preview:</strong>
@@ -213,7 +210,6 @@ const OrdersHistory = ({ showModal }) => {
 															/>
 														</>
 													)}
-													{/* Custom texts */}
 													{product.customDesign.texts &&
 														product.customDesign.texts.length > 0 && (
 															<div style={{ marginTop: "5px" }}>
@@ -253,6 +249,7 @@ const OrdersHistory = ({ showModal }) => {
 			dataIndex: "index",
 			key: "index",
 			render: (_, __, index) => index + 1,
+			width: 50,
 		},
 		{
 			title: "Customer Name",
@@ -260,17 +257,19 @@ const OrdersHistory = ({ showModal }) => {
 			key: "customerName",
 		},
 		{
-			title: "Customer Phone",
+			title: "Phone",
 			dataIndex: ["customerDetails", "phone"],
 			key: "customerPhone",
+			width: 150,
 		},
 		{
-			title: "Customer State",
+			title: "State",
 			dataIndex: ["customerDetails", "state"],
 			key: "customerState",
+			width: 100,
 		},
 		{
-			title: "Customer Address",
+			title: "ShipTo Address",
 			dataIndex: ["customerDetails", "address"],
 			key: "customerAddress",
 		},
@@ -279,16 +278,19 @@ const OrdersHistory = ({ showModal }) => {
 			dataIndex: "status",
 			key: "status",
 			render: (text) => text.charAt(0).toUpperCase() + text.slice(1),
+			width: 110,
 		},
 		{
-			title: "Invoice Number",
+			title: "Invoice #",
 			dataIndex: "invoiceNumber",
 			key: "invoiceNumber",
+			width: 110,
 		},
 		{
-			title: "Tracking Number",
+			title: "Tracking #",
 			dataIndex: "trackingNumber",
 			key: "trackingNumber",
+			width: 130,
 			render: (_, record) => {
 				if (record.printifyOrderDetails && record.printifyOrderDetails.id) {
 					return record.trackingNumber ? (
@@ -309,107 +311,125 @@ const OrdersHistory = ({ showModal }) => {
 		{
 			title: "Order Details",
 			key: "details",
+			width: 120,
 			render: (_, record) => (
-				<DetailsLink onClick={() => showModal(record)}>
-					Show Details
-				</DetailsLink>
+				<Tooltip title='Show Full Details'>
+					<DetailsLink onClick={() => showModal(record)}>
+						<EyeOutlined />
+						&nbsp; Details
+					</DetailsLink>
+				</Tooltip>
 			),
 		},
 	];
 
-	// ─────────────────────────────────────────────────────────
-	// RENDER
-	// ─────────────────────────────────────────────────────────
 	return (
 		<>
-			{/* SCORE CARDS */}
-			<ScoreCardsWrapper>
-				<Card bgColor='#2f556b'>
-					<Title>Total Orders</Title>
-					<Count>
-						<CountUp
-							start={0}
-							end={totalOrders}
-							duration={1.5}
-							separator=','
-							decimals={0}
-						/>
-					</Count>
-				</Card>
-				<Card bgColor='#6b452f'>
-					<Title>Total Quantity</Title>
-					<Count>
-						<CountUp
-							start={0}
-							end={totalQuantity}
-							duration={2}
-							separator=','
-							decimals={0}
-						/>
-					</Count>
-				</Card>
-				<Card bgColor='#376b2f'>
-					<Title>Total Amount $</Title>
-					<Count>
-						<CountUp
-							start={0}
-							end={totalAmount}
-							duration={2.5}
-							separator=','
-							decimals={2}
-							prefix='$'
-						/>
-					</Count>
-				</Card>
-			</ScoreCardsWrapper>
+			<Row gutter={16} style={{ marginTop: "20px", marginBottom: "20px" }}>
+				<Col xs={24} md={8}>
+					<Card
+						style={{
+							backgroundColor: "var(--primary-color-dark)",
+							color: "#fff",
+						}}
+						hoverable
+					>
+						<CardTitle>Total Orders</CardTitle>
+						<CardCount>
+							<CountUp
+								start={0}
+								end={totalOrders}
+								duration={1.5}
+								separator=','
+							/>
+						</CardCount>
+					</Card>
+				</Col>
+				<Col xs={24} md={8}>
+					<Card
+						style={{
+							backgroundColor: "var(--secondary-color-dark)",
+							color: "#fff",
+						}}
+						hoverable
+					>
+						<CardTitle>Total Quantity</CardTitle>
+						<CardCount>
+							<CountUp
+								start={0}
+								end={totalQuantity}
+								duration={2}
+								separator=','
+							/>
+						</CardCount>
+					</Card>
+				</Col>
+				<Col xs={24} md={8}>
+					<Card
+						style={{
+							backgroundColor: "var(--accent-color-1-dark)",
+							color: "#fff",
+						}}
+						hoverable
+					>
+						<CardTitle>Total Amount</CardTitle>
+						<CardCount>
+							<CountUp
+								start={0}
+								end={totalAmount}
+								duration={2.5}
+								separator=','
+								decimals={2}
+								prefix='$'
+							/>
+						</CardCount>
+					</Card>
+				</Col>
+			</Row>
 
-			{/* DATE RANGE PICKER & RESET */}
 			<div className='my-3 mx-auto text-center'>
 				<RangePicker
 					className='w-25'
-					// Display the 3-month range as default
 					value={[startDate, endDate]}
 					onChange={(dates) => {
-						setStartDate(dates ? dates[0] : null);
-						setEndDate(dates ? dates[1] : null);
+						setStartDate(dates ? dates[0] : dayjs().subtract(3, "months"));
+						setEndDate(dates ? dates[1] : dayjs());
 					}}
+					style={{ marginBottom: 10, marginRight: 10 }}
 				/>
 				<Button
 					onClick={() => {
-						// Reset to entire range => 3 months -> today
-						setStartDate(moment().subtract(3, "months"));
-						setEndDate(moment());
+						setStartDate(dayjs().subtract(3, "months"));
+						setEndDate(dayjs());
 					}}
-					style={{ marginLeft: 10 }}
 				>
 					Select Last 3 Months
 				</Button>
 			</div>
 
-			{/* SEARCH BAR */}
 			<div className='my-3 mx-auto text-center'>
-				<ControlsWrapper className='my-3 mx-auto text-center'>
-					<Search
-						placeholder='Search Orders'
-						onSearch={handleSearch}
-						style={{ marginLeft: 10, width: "25%" }}
-					/>
-				</ControlsWrapper>
+				<Search
+					placeholder='Search Orders'
+					onSearch={handleSearch}
+					enterButton={<SearchOutlined />}
+					style={{ width: "25%" }}
+				/>
 			</div>
 
-			{/* DATA TABLE */}
 			<Table
 				columns={columns}
 				dataSource={data}
 				loading={loading}
-				expandedRowRender={expandedRowRender}
-				expandedRowKeys={expandedRowKeys}
-				onExpand={handleExpand}
+				expandable={{
+					expandedRowRender: expandedRowRender,
+					expandedRowKeys: expandedRowKeys,
+					onExpand: handleExpand,
+				}}
 				rowKey={(record) => record._id}
 				style={{ marginTop: 16 }}
+				scroll={{ x: 900 }}
 			/>
 
-			{/* IMAGE PREVIEW MODAL */}
 			<Modal
 				open={!!modalImage}
 				onCancel={() => setModalImage(null)}
@@ -438,48 +458,15 @@ const OrdersHistory = ({ showModal }) => {
 export default OrdersHistory;
 
 /* ===================== STYLES ===================== */
-const ScoreCardsWrapper = styled.div`
-	display: flex;
-	justify-content: space-around;
-	margin: 20px 0;
-`;
-
-const Card = styled.div`
-	background-color: ${(props) => props.bgColor};
-	color: white;
-	padding: 10px;
-	margin: 10px;
-	border-radius: 10px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	text-align: center;
-	width: 25%;
-	transition: transform 0.3s ease;
-
-	&:hover {
-		transform: scale(1.05);
-	}
-`;
-
-const Title = styled.div`
+const CardTitle = styled.div`
 	font-size: 1.2em;
 	font-weight: bold;
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 `;
 
-const Count = styled.div`
+const CardCount = styled.div`
 	font-size: 1.7rem;
 	font-weight: bold;
-`;
-
-const ControlsWrapper = styled.div`
-	align-items: center;
-	margin-bottom: 16px;
-`;
-
-const DetailsLink = styled.div`
-	color: #1890ff;
-	cursor: pointer;
-	text-decoration: underline;
 `;
 
 const ExpandedContainer = styled.div`
@@ -496,4 +483,10 @@ const ProductRow = styled.div`
 	&:last-child {
 		border-bottom: none;
 	}
+`;
+
+const DetailsLink = styled.span`
+	color: #1890ff;
+	cursor: pointer;
+	text-decoration: underline;
 `;

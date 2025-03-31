@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
-import AdminNavbar from "../AdminNavbar/AdminNavbar";
 import styled from "styled-components";
+import { Tabs } from "antd";
+import { PlusSquareOutlined, EditOutlined } from "@ant-design/icons";
+import { useHistory } from "react-router-dom";
+import AdminNavbar from "../AdminNavbar/AdminNavbar";
 import AddCategory from "./AddCategory";
-import { Link, useHistory } from "react-router-dom";
 import UpdateCategory from "./UpdateCategory";
+
+const { TabPane } = Tabs;
 
 const CategoriesMain = () => {
 	const [AdminMenuStatus, setAdminMenuStatus] = useState(false);
 	const [collapsed, setCollapsed] = useState(false);
-	const [activeTab, setActiveTab] = useState("AddCategories");
-	const history = useHistory(); // Initialize the history object
+	const [activeTab, setActiveTab] = useState("UpdateCategories");
+	const history = useHistory();
 
 	useEffect(() => {
 		if (window.innerWidth <= 1000) {
@@ -24,13 +28,22 @@ const CategoriesMain = () => {
 		} else if (window.location.search.includes("updatecategories")) {
 			setActiveTab("UpdateCategories");
 		} else {
-			setActiveTab("AddCategories");
+			setActiveTab("UpdateCategories");
 		}
 		// eslint-disable-next-line
 	}, [activeTab]);
 
+	const handleTabChange = (key) => {
+		setActiveTab(key);
+		if (key === "AddCategories") {
+			history.push("/admin/categories?addcategories");
+		} else {
+			history.push("/admin/categories?updatecategories");
+		}
+	};
+
 	return (
-		<CategoriesMainWrapper show={collapsed}>
+		<CategoriesMainWrapper collapsed={collapsed}>
 			<div className='grid-container-main'>
 				<div className='navcontent'>
 					<AdminNavbar
@@ -44,38 +57,33 @@ const CategoriesMain = () => {
 
 				<div className='otherContentWrapper'>
 					<div className='container-wrapper'>
-						<div
-							className='mx-auto col-md-10 mx-auto'
-							style={{ background: "#8a8a8a", padding: "1px" }}
+						<CustomTabs
+							activeKey={activeTab}
+							onChange={handleTabChange}
+							type='card'
+							tabBarGutter={0}
 						>
-							<div className='my-2 tab-grid col-md-6 mx-auto'>
-								<Tab
-									isActive={activeTab === "AddCategories"}
-									onClick={() => {
-										setActiveTab("AddCategories");
-										history.push("/admin/categories?addcategories"); // Programmatically navigate
-									}}
-								>
-									<Link to='/admin/categories?addcategories'>Add Category</Link>
-								</Tab>
-								<Tab
-									isActive={activeTab === "UpdateCategories"}
-									onClick={() => {
-										setActiveTab("UpdateCategories");
-										history.push("/admin/categories?updatecategories");
-									}}
-								>
-									<Link to='/admin/categories?updatecategories'>
-										Update Category
-									</Link>
-								</Tab>
-							</div>
-						</div>
-						{activeTab === "AddCategories" ? (
-							<AddCategory />
-						) : (
-							<UpdateCategory />
-						)}
+							<TabPane
+								tab={
+									<span>
+										<PlusSquareOutlined /> Add New Category
+									</span>
+								}
+								key='AddCategories'
+							>
+								<AddCategory />
+							</TabPane>
+							<TabPane
+								tab={
+									<span>
+										<EditOutlined /> Update Category
+									</span>
+								}
+								key='UpdateCategories'
+							>
+								<UpdateCategory />
+							</TabPane>
+						</CustomTabs>
 					</div>
 				</div>
 			</div>
@@ -85,16 +93,17 @@ const CategoriesMain = () => {
 
 export default CategoriesMain;
 
+/* ========= STYLES ========= */
 const CategoriesMainWrapper = styled.div`
 	overflow-x: hidden;
-	/* background: #ededed; */
 	margin-top: 80px;
 	min-height: 800px;
 	padding-bottom: 100px;
 
 	.grid-container-main {
 		display: grid;
-		grid-template-columns: ${(props) => (props.show ? "5% 75%" : "17% 75%")};
+		grid-template-columns: ${(props) =>
+			props.collapsed ? "5% 75%" : "17% 75%"};
 	}
 
 	.container-wrapper {
@@ -104,39 +113,48 @@ const CategoriesMainWrapper = styled.div`
 		background: white;
 		margin: 0px 10px;
 	}
-
-	.tab-grid {
-		display: flex;
-		justify-content: center; /* Aligns children (tabs) in the center */
-		align-items: center; /* Centers children vertically */
-		text-align: center;
-	}
-
-	@media (max-width: 1400px) {
-		background: white;
-	}
 `;
 
-const Tab = styled.div`
-	cursor: pointer;
-	margin: 0 3px; /* 3px margin between tabs */
-	padding: 15px 5px; /* Adjust padding as needed */
-	font-weight: ${(props) => (props.isActive ? "bold" : "bold")};
-	background-color: ${(props) =>
-		props.isActive
-			? "transparent"
-			: "#bbbbbb"}; /* Light grey for unselected tabs */
-	box-shadow: ${(props) =>
-		props.isActive ? "inset 5px 5px 5px rgba(0, 0, 0, 0.3)" : "none"};
-	transition: all 0.3s ease; /* Smooth transition for changes */
-	min-width: 25px; /* Minimum width of the tab */
-	width: 100%; /* Full width within the container */
-	text-align: center; /* Center the text inside the tab */
-	/* Additional styling for tabs */
-	z-index: 100;
-	font-size: 1.2rem;
+const CustomTabs = styled(Tabs)`
+	.ant-tabs-nav {
+		margin-left: 10px; /* left margin for alignment */
+	}
 
-	a {
-		color: ${(props) => (props.isActive ? "white" : "black")};
+	/* Ensures the tab "cards" touch each other (no spacing) */
+	.ant-tabs-tab {
+		margin: 0 !important; /* remove default margin */
+		padding: 12px 16px;
+		font-size: 1rem;
+		font-weight: bold;
+		border-color: #dec8c8 !important;
+		transition: var(--main-transition);
+	}
+
+	/* The 'card' style uses borders; remove tab radius so they meet flush */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab {
+		border-radius: 0;
+		border: 1px solid var(--border-color-dark);
+		border-right-width: 0; /* ensures a continuous border chain */
+	}
+
+	/* The last tab needs a right border */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab:last-of-type,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab:last-of-type {
+		border-right-width: 1px;
+	}
+
+	/* Active tab styling */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab-active {
+		background-color: var(--primary-color-light);
+		border-color: var(--primary-color-dark) !important;
+		color: var(--text-color-dark) !important;
+	}
+
+	/* Hover effect on tabs */
+	.ant-tabs-tab:hover {
+		background-color: var(--primary-color-lighter);
+		color: var(--text-color-primary);
 	}
 `;

@@ -9,8 +9,6 @@ import "react-toastify/dist/ReactToastify.min.css";
 import axios from "axios";
 import { createGender, cloudinaryUpload1, getGenders } from "../apiAdmin";
 import { isAuthenticated } from "../../auth";
-import Aos from "aos";
-import "aos/dist/aos.css";
 import ImageCard from "./ImageCard";
 
 const AddGender = () => {
@@ -255,14 +253,10 @@ const AddGender = () => {
 		}
 	};
 
-	useEffect(() => {
-		Aos.init({ duration: 1500 });
-	}, []);
-
 	return (
 		<AddGenderWrapper>
 			<div className=''>
-				<div className='container' data-aos='fade-down'>
+				<div className='container'>
 					<h3
 						style={{ color: "#009ef7", fontWeight: "bold" }}
 						className='mt-1 mb-3 text-center'

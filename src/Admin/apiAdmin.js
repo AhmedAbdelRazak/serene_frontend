@@ -2001,3 +2001,43 @@ export const gettingPrintifyProducts = () => {
 		})
 		.catch((err) => console.log(err));
 };
+
+export const getWebsiteSetup = (userId, token) => {
+	return fetch(`${process.env.REACT_APP_API_URL}/website-basic-setup`, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((res) => {
+			if (!res.ok) {
+				// If 404, doc not found
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json();
+		})
+		.catch((err) => console.error("Error getting single setup:", err));
+};
+
+export const updateWebsiteSetup = (userId, token, updateData) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/website-basic-setup/${userId}`,
+		{
+			method: "PUT",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(updateData),
+		}
+	)
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json();
+		})
+		.catch((err) => console.error("Error updating single setup:", err));
+};

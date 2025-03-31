@@ -1,29 +1,12 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { Helmet } from "react-helmet";
-import { getJanatWebsiteRecord } from "../Admin/apiAdmin";
+import { useCartContext } from "../cart_context";
 
 const ReturnRefundPolicy = () => {
-	const [returnsAndExchange, setReturnsAndExchange] = useState("");
-
-	const gettingJanatWebsiteRecord = () => {
-		getJanatWebsiteRecord().then((data) => {
-			if (data && data.error) {
-				console.log(data.error, "data.error");
-			} else {
-				if (data && data[0]) {
-					setReturnsAndExchange(data[0].returnsAndExchange || "");
-				}
-			}
-		});
-	};
-
-	useEffect(() => {
-		gettingJanatWebsiteRecord();
-		// eslint-disable-next-line
-	}, []);
+	const { websiteSetup } = useCartContext();
 
 	const title = "Return and Refund Policy | Serene Jannat";
 	const description =
@@ -48,13 +31,15 @@ const ReturnRefundPolicy = () => {
 				<meta property='og:type' content='website' />
 			</Helmet>
 			<ContentWrapper>
-				<DescriptionWrapper>
-					<div
-						dangerouslySetInnerHTML={{
-							__html: returnsAndExchange,
-						}}
-					/>
-				</DescriptionWrapper>
+				{websiteSetup && websiteSetup.returnsAndRefund && (
+					<DescriptionWrapper>
+						<div
+							dangerouslySetInnerHTML={{
+								__html: websiteSetup.returnsAndRefund,
+							}}
+						/>
+					</DescriptionWrapper>
+				)}
 			</ContentWrapper>
 		</Wrapper>
 	);

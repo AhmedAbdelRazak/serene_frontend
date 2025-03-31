@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
-import AdminNavbar from "../AdminNavbar/AdminNavbar";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
+import { Tabs } from "antd";
+import {
+	HistoryOutlined,
+	UnorderedListOutlined,
+	PieChartOutlined,
+} from "@ant-design/icons";
+import AdminNavbar from "../AdminNavbar/AdminNavbar";
 import OrdersOverview from "./OrdersOverview";
 import OrdersHistory from "./OrdersHistory";
 import OrdersInProgress from "./OrdersInProgress";
 import OrderDetailsModal from "./OrderDetailsModal";
-import { useHistory } from "react-router-dom";
+
+const { TabPane } = Tabs;
 
 const AdminDashboard = () => {
 	const [AdminMenuStatus, setAdminMenuStatus] = useState(false);
@@ -13,7 +21,7 @@ const AdminDashboard = () => {
 	const [activeTab, setActiveTab] = useState("OrdersInProgress");
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [selectedOrder, setSelectedOrder] = useState(null);
-	const history = useHistory(); // Initialize the history object
+	const history = useHistory();
 
 	useEffect(() => {
 		if (window.innerWidth <= 1000) {
@@ -41,13 +49,13 @@ const AdminDashboard = () => {
 		setSelectedOrder(null);
 	};
 
-	const handleTabChange = (tab) => {
-		setActiveTab(tab);
-		history.push(`/admin/dashboard?tab=${tab}`); // Update URL query parameter
+	const handleTabChange = (tabKey) => {
+		setActiveTab(tabKey);
+		history.push(`/admin/dashboard?tab=${tabKey}`);
 	};
 
 	return (
-		<AdminDashboardWrapper show={collapsed}>
+		<AdminDashboardWrapper collapsed={collapsed}>
 			<div className='grid-container-main'>
 				<div className='navcontent'>
 					<AdminNavbar
@@ -61,36 +69,47 @@ const AdminDashboard = () => {
 
 				<div className='otherContentWrapper'>
 					<div className='container-wrapper'>
-						<TabGrid>
-							<Tab
-								isActive={activeTab === "OrdersInProgress"}
-								onClick={() => handleTabChange("OrdersInProgress")}
+						{/* 
+              Removed "centered" so it aligns left.
+              Overriding default ant-tabs-card borders/tabs via CSS below.
+            */}
+						<CustomTabs
+							activeKey={activeTab}
+							onChange={handleTabChange}
+							type='card'
+							tabBarGutter={0} // remove default spacing between tabs
+						>
+							<TabPane
+								tab={
+									<span>
+										<UnorderedListOutlined /> Orders In Progress
+									</span>
+								}
+								key='OrdersInProgress'
 							>
-								Orders In Progress
-							</Tab>
-							<Tab
-								isActive={activeTab === "OrdersHistory"}
-								onClick={() => handleTabChange("OrdersHistory")}
+								<OrdersInProgress showModal={showModal} />
+							</TabPane>
+							<TabPane
+								tab={
+									<span>
+										<HistoryOutlined /> Orders History
+									</span>
+								}
+								key='OrdersHistory'
 							>
-								Orders History
-							</Tab>
-							<Tab
-								isActive={activeTab === "OrdersOverview"}
-								onClick={() => handleTabChange("OrdersOverview")}
+								<OrdersHistory showModal={showModal} />
+							</TabPane>
+							<TabPane
+								tab={
+									<span>
+										<PieChartOutlined /> Orders Overview
+									</span>
+								}
+								key='OrdersOverview'
 							>
-								Orders Overview
-							</Tab>
-						</TabGrid>
-
-						{activeTab === "OrdersOverview" && (
-							<OrdersOverview showModal={showModal} />
-						)}
-						{activeTab === "OrdersHistory" && (
-							<OrdersHistory showModal={showModal} />
-						)}
-						{activeTab === "OrdersInProgress" && (
-							<OrdersInProgress showModal={showModal} />
-						)}
+								<OrdersOverview showModal={showModal} />
+							</TabPane>
+						</CustomTabs>
 					</div>
 				</div>
 			</div>
@@ -107,6 +126,7 @@ const AdminDashboard = () => {
 
 export default AdminDashboard;
 
+/* ====================== STYLES ====================== */
 const AdminDashboardWrapper = styled.div`
 	overflow-x: hidden;
 	margin-top: 80px;
@@ -114,45 +134,73 @@ const AdminDashboardWrapper = styled.div`
 
 	.grid-container-main {
 		display: grid;
-		grid-template-columns: ${(props) => (props.show ? "5% 95%" : "17% 83%")};
+		grid-template-columns: ${(props) =>
+			props.collapsed ? "5% 95%" : "17% 83%"};
 	}
 
 	.container-wrapper {
-		border: 2px solid lightgrey;
+		border: 2px solid var(--border-color-light);
 		padding: 20px;
 		border-radius: 20px;
 		background: white;
-		margin: 0px 10px;
+		margin: 0 10px;
+		transition: var(--main-transition);
 	}
 
-	@media (max-width: 1400px) {
-		background: white;
+	@media (max-width: 1000px) {
+		.grid-container-main {
+			grid-template-columns: 100%;
+		}
 	}
 `;
 
-const TabGrid = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	text-align: center;
-	margin-bottom: 16px;
-`;
+/**
+ * CustomTabs overrides some Ant Tabs styles (for type="card").
+ * - Aligns them left with margin-left
+ * - Removes gaps between tabs
+ * - Uses your root colors for active, hover, etc.
+ * - Increases font size and uses bold text
+ */
+const CustomTabs = styled(Tabs)`
+	.ant-tabs-nav {
+		margin-left: 10px; /* left margin for alignment */
+	}
 
-const Tab = styled.div`
-	cursor: pointer;
-	margin: 0 3px;
-	padding: 15px 5px;
-	font-weight: ${(props) => (props.isActive ? "bold" : "bold")};
-	background-color: ${(props) => (props.isActive ? "transparent" : "#bbbbbb")};
-	box-shadow: ${(props) =>
-		props.isActive ? "inset 5px 5px 5px rgba(0, 0, 0, 0.3)" : "none"};
-	transition: all 0.3s ease;
-	min-width: 100px;
-	width: 100%;
-	text-align: center;
-	font-size: 1.2rem;
+	/* Ensures the tab "cards" touch each other (no spacing) */
+	.ant-tabs-tab {
+		margin: 0 !important; /* remove default margin */
+		padding: 12px 16px;
+		font-size: 1rem;
+		font-weight: bold;
+		border-color: #dec8c8 !important;
+		transition: var(--main-transition);
+	}
 
-	a {
-		color: ${(props) => (props.isActive ? "white" : "black")};
+	/* The 'card' style uses borders; remove tab radius so they meet flush */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab {
+		border-radius: 0;
+		border: 1px solid var(--border-color-dark);
+		border-right-width: 0; /* ensures a continuous border chain */
+	}
+
+	/* The last tab needs a right border */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab:last-of-type,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab:last-of-type {
+		border-right-width: 1px;
+	}
+
+	/* Active tab styling */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab-active {
+		background-color: var(--primary-color-light);
+		border-color: var(--primary-color-dark) !important;
+		color: var(--text-color-dark) !important;
+	}
+
+	/* Hover effect on tabs */
+	.ant-tabs-tab:hover {
+		background-color: var(--primary-color-lighter);
+		color: var(--text-color-primary);
 	}
 `;

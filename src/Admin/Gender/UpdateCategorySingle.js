@@ -6,8 +6,6 @@ import { getGenders, updateGender2, cloudinaryUpload1 } from "../apiAdmin";
 import { toast } from "react-toastify";
 import { isAuthenticated } from "../../auth";
 import axios from "axios";
-import Aos from "aos";
-import "aos/dist/aos.css";
 
 const UpdateGenderSingle = ({ clickedGender, setClickedGender }) => {
 	// eslint-disable-next-line
@@ -269,10 +267,6 @@ const UpdateGenderSingle = ({ clickedGender, setClickedGender }) => {
 				}, 1000);
 			});
 	};
-
-	useEffect(() => {
-		Aos.init({ duration: 1500 });
-	}, []);
 
 	return (
 		<UpdateGenderSingleWrapper>

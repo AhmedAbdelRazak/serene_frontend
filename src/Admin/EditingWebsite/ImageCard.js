@@ -1,98 +1,62 @@
-/** @format */
-
+// components/ImageCard.js
 import React from "react";
 import styled from "styled-components";
 import imageImage from "../../GeneralImages/UploadImageImage.jpg";
 
+// A universal single-image upload
 const ImageCard = ({
-	setAddThumbnail,
+	singleImage, // { url, public_id } or null
+	setSingleImage, // function to update
+	fileUploadAndResize,
 	handleImageRemove,
-	addThumbnail,
-	fileUploadAndResizeThumbNail,
+	labelWidth = 75, // optional label image width
+	instructions = "Only *.png, *.jpg, *.jpeg accepted",
 }) => {
 	return (
 		<ImageCardWrapper>
 			<div className='card card-flush py-4'>
-				<div className=''>
-					<div className=' p-3'>
-						<h5
-							style={{
-								fontWeight: "bold",
-								fontSize: "1.05rem",
-								textAlign: "center",
-							}}
-						>
-							Home Page Main Thumbnail
-						</h5>
-					</div>
-				</div>
 				<div className='card-body text-center pt-0'>
-					<div
-						className='image-input image-input-empty image-input-outline image-input-placeholder mb-3'
-						data-kt-image-input='true'
-					>
-						<div className='image-input-wrapper w-180px h-180px'></div>
-						<div className='col-12'>
-							{addThumbnail &&
-								addThumbnail.images &&
-								addThumbnail.images.map((image) => (
-									<div className='m-3 col-6 position-relative'>
-										<button
-											type='button'
-											className='close position-absolute'
-											onClick={() => {
-												handleImageRemove(image.public_id);
-												setAddThumbnail([]);
-											}}
-											style={{
-												color: "white",
-												background: "black",
-												fontSize: "15px",
-												border: "none",
-												padding: "0.2rem",
-												top: "0",
-												right: "0",
-												transform: "translate(-120%, -50%)",
-											}}
-											aria-label='Close'
-										>
-											<span aria-hidden='true'>&times;</span>
-										</button>
-										<img
-											src={image.url}
-											alt='Img Not Found'
-											style={{
-												width: "130px",
-												height: "130px",
-												boxShadow: "1px 1px 1px 1px rgba(0,0,0,0.2)",
-											}}
-											key={image.public_id}
-										/>
-									</div>
-								))}
-						</div>
-						{!addThumbnail.images ? (
+					<div className='image-input mb-3' data-kt-image-input='true'>
+						{/* If we have an image, show it */}
+						{singleImage && singleImage.url ? (
+							<div className='image-container m-3'>
+								<button
+									type='button'
+									className='close'
+									onClick={() => {
+										handleImageRemove(singleImage.public_id);
+									}}
+									aria-label='Close'
+								>
+									<span aria-hidden='true'>&times;</span>
+								</button>
+								<img
+									src={singleImage.url}
+									alt='Img Not Found'
+									className='thumbnail-image'
+								/>
+							</div>
+						) : (
+							// Else show placeholder to upload
 							<label
-								className=''
 								style={{ cursor: "pointer", fontSize: "0.95rem" }}
+								className='upload-label'
 							>
-								<img src={imageImage} alt='imageUpload' />
+								<img
+									src={imageImage}
+									alt='imageUpload'
+									style={{ width: `${labelWidth}%` }}
+								/>
 								<input
 									type='file'
 									hidden
-									accept='images/*'
-									onChange={fileUploadAndResizeThumbNail}
-									required
+									accept='image/*'
+									onChange={fileUploadAndResize}
 								/>
 							</label>
-						) : null}
+						)}
 					</div>
-					<div className='text-muted fs-7'>
-						Set the Home Page thumbnail image. Only *.png, *.jpg and *.jpeg
-						image files are accepted
-						<br />
-						Dimensions (W×H) (1920×602)
-					</div>
+					<div className='text-muted fs-7'>{instructions}</div>
 				</div>
 			</div>
 		</ImageCardWrapper>
@@ -104,5 +68,29 @@ export default ImageCard;
 const ImageCardWrapper = styled.div`
 	.card {
 		border: 1px #f6f6f6 solid !important;
+	}
+	.image-container {
+		position: relative;
+	}
+	.thumbnail-image {
+		width: 40%;
+		height: auto;
+		box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
+		object-fit: cover;
+	}
+	.close {
+		position: absolute;
+		color: white;
+		top: -20px;
+		right: 370px;
+		background: black;
+		font-size: 20px;
+		border: none;
+		cursor: pointer;
+		padding: 0 6px;
+		border-radius: 50%;
+	}
+	.upload-label {
+		display: inline-block;
 	}
 `;

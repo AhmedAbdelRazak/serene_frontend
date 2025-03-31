@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Input, Button, Select } from "antd";
+import { Modal, Input, Button, Select, Divider } from "antd";
 import { getProducts, getColors, updatingAnOrder } from "../apiAdmin";
 import { isAuthenticated } from "../../auth";
 import { toast } from "react-toastify";
+import { FiTrash2, FiPlusSquare, FiRefreshCw } from "react-icons/fi";
 
 const { Option } = Select;
 
@@ -43,7 +44,6 @@ const ProductEditModal = ({
 				setAllColors(data);
 			}
 		});
-		// eslint-disable-next-line
 	}, []);
 
 	useEffect(() => {
@@ -60,8 +60,7 @@ const ProductEditModal = ({
 				setProductSizes(uniqueSizes);
 			}
 		}
-		// eslint-disable-next-line
-	}, [newProductId]);
+	}, [newProductId, allProducts]);
 
 	useEffect(() => {
 		if (newProductId) {
@@ -82,8 +81,7 @@ const ProductEditModal = ({
 				}
 			}
 		}
-		// eslint-disable-next-line
-	}, [newProductId, chosenAttributes]);
+	}, [newProductId, chosenAttributes, allProducts]);
 
 	const handleSubmit = async () => {
 		try {
@@ -116,6 +114,7 @@ const ProductEditModal = ({
 				});
 			} else if (action === "addProduct") {
 				const newProduct = allProducts.find((p) => p._id === newProductId);
+				let newProdData = {};
 				if (newProduct.addVariables) {
 					const chosenAttribute = newProduct.productAttributes.find(
 						(attr) =>
@@ -130,7 +129,7 @@ const ProductEditModal = ({
 							)[0]?.productImages[0]?.url ||
 						newProduct.thumbnailImage[0].images[0].url;
 
-					productData = {
+					newProdData = {
 						productId: newProduct._id,
 						name: newProduct.productName,
 						ordered_quantity: quantity,
@@ -139,7 +138,7 @@ const ProductEditModal = ({
 						chosenAttributes: chosenAttribute,
 					};
 				} else {
-					productData = {
+					newProdData = {
 						productId: newProduct._id,
 						name: newProduct.productName,
 						ordered_quantity: quantity,
@@ -150,7 +149,7 @@ const ProductEditModal = ({
 				await updatingAnOrder(order._id, user._id, token, {
 					order,
 					updateType: "addProduct",
-					product: productData,
+					product: newProdData,
 				});
 			} else if (action === "exchange") {
 				const newProduct = allProducts.find((p) => p._id === newProductId);
@@ -238,30 +237,59 @@ const ProductEditModal = ({
 				</Button>,
 			]}
 		>
+			<Divider orientation='left' style={{ fontSize: "14px" }}>
+				Choose an Action
+			</Divider>
+
 			<Select
 				placeholder='Select Action'
 				value={action}
 				onChange={setAction}
 				style={{ width: "100%", marginBottom: "10px" }}
 			>
-				<Option value='remove'>Remove Product</Option>
-				<Option value='addUnits'>Add Units</Option>
-				<Option value='addProduct'>Add New Product</Option>
-				<Option value='exchange'>Exchange Product</Option>
+				<Option value='remove'>
+					<FiTrash2 style={{ marginRight: 5 }} />
+					Remove Product
+				</Option>
+				<Option value='addUnits'>
+					<FiPlusSquare style={{ marginRight: 5 }} />
+					Add Units
+				</Option>
+				<Option value='addProduct'>
+					<FiPlusSquare style={{ marginRight: 5 }} />
+					Add New Product
+				</Option>
+				<Option value='exchange'>
+					<FiRefreshCw style={{ marginRight: 5 }} />
+					Exchange Product
+				</Option>
 			</Select>
 
-			{action === "addUnits" && (
-				<Input
-					placeholder='Enter Quantity'
-					type='number'
-					value={quantity}
-					onChange={(e) => setQuantity(Number(e.target.value))}
-					style={{ marginBottom: "10px" }}
-				/>
+			{(action === "addUnits" || action === "remove") && (
+				<>
+					{action === "addUnits" && (
+						<Input
+							placeholder='Enter Quantity'
+							type='number'
+							value={quantity}
+							onChange={(e) => setQuantity(Number(e.target.value))}
+							style={{ marginBottom: "10px" }}
+						/>
+					)}
+					{/* 
+            If "remove", user might not need to set quantity because "remove" 
+            just means remove that entire product from the order. 
+            But you can handle it if you want partial removal logic. 
+          */}
+				</>
 			)}
 
 			{(action === "addProduct" || action === "exchange") && (
 				<>
+					<Divider orientation='left' style={{ fontSize: "14px" }}>
+						{action === "addProduct" ? "Add a New Product" : "Exchange Product"}
+					</Divider>
+
 					<Select
 						showSearch
 						placeholder='Select Product'
@@ -272,15 +300,17 @@ const ProductEditModal = ({
 							option.children.toLowerCase().includes(input.toLowerCase())
 						}
 					>
-						{allProducts.map((product) => (
-							<Option key={product._id} value={product._id}>
-								{product.productName}
+						{allProducts.map((p) => (
+							<Option key={p._id} value={p._id}>
+								{p.productName}
 							</Option>
 						))}
 					</Select>
+
 					{newProductId && (
 						<>
-							{allProducts.find((p) => p._id === newProductId).addVariables && (
+							{allProducts.find((p) => p._id === newProductId)
+								?.addVariables && (
 								<>
 									<Select
 										showSearch
@@ -296,7 +326,7 @@ const ProductEditModal = ({
 									>
 										{productColors.map((cc, ii) => {
 											const colorName = allColors.find(
-												(color) => color.hexa === cc
+												(clr) => clr.hexa === cc
 											)?.color;
 											return (
 												<Option key={ii} value={cc}>
@@ -325,6 +355,7 @@ const ProductEditModal = ({
 									</Select>
 								</>
 							)}
+
 							<Input
 								placeholder='Enter Quantity'
 								type='number'

@@ -10,6 +10,7 @@ const NavbarBottom = () => {
 	const [isSticky, setIsSticky] = useState(false); // State for sticky navbar
 	const { openSidebar2, total_items } = useCartContext();
 
+	// Sticky navbar logic
 	useEffect(() => {
 		const handleScroll = () => {
 			if (window.scrollY > 70) {
@@ -25,9 +26,9 @@ const NavbarBottom = () => {
 		};
 	}, []);
 
+	// Track the current pathname to highlight active link
 	useEffect(() => {
 		const handleLocationChange = () => {
-			// Matches the current pathname with the link state
 			const path = window.location.pathname;
 			if (path === "/") {
 				setClickedLink("home");
@@ -40,19 +41,18 @@ const NavbarBottom = () => {
 			} else if (path === "/contact") {
 				setClickedLink("contact");
 			} else {
-				setClickedLink(""); // No active state if the path doesn't match
+				setClickedLink("");
 			}
 		};
 
-		// Call once and also add an event listener for future updates
+		// Call once + listen for "popstate" (back/forward navigation)
 		handleLocationChange();
 		window.addEventListener("popstate", handleLocationChange);
 
-		// Cleanup function to remove event listener
 		return () => {
 			window.removeEventListener("popstate", handleLocationChange);
 		};
-	}, []); // Empty dependency array ensures this effect runs only once after the component mounts.
+	}, []);
 
 	const handleNavLinkClick = (link) => {
 		setClickedLink(link);
@@ -64,52 +64,54 @@ const NavbarBottom = () => {
 				<NavLinks
 					onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 				>
-					<NavLink
-						isSticky={isSticky}
+					<StyledNavLink
+						$isSticky={isSticky}
 						to='/'
 						onClick={() => handleNavLinkClick("home")}
 						className={clickedLink === "home" ? "active" : ""}
 					>
 						Home
-					</NavLink>
-					<NavLink
-						isSticky={isSticky}
+					</StyledNavLink>
+					<StyledNavLink
+						$isSticky={isSticky}
 						to='/our-products'
 						onClick={() => handleNavLinkClick("products")}
 						className={clickedLink === "products" ? "active" : ""}
 					>
 						Products
-					</NavLink>
-					<NavLink
-						isSticky={isSticky}
+					</StyledNavLink>
+					<StyledNavLink
+						$isSticky={isSticky}
 						to='/custom-gifts'
 						onClick={() => handleNavLinkClick("customgifts")}
 						className={clickedLink === "customgifts" ? "active" : ""}
 					>
 						Custom Gifts
-					</NavLink>
-					<NavLink
-						isSticky={isSticky}
+					</StyledNavLink>
+					<StyledNavLink
+						$isSticky={isSticky}
 						to='/about'
 						onClick={() => handleNavLinkClick("about")}
 						className={clickedLink === "about" ? "active" : ""}
 					>
 						About
-					</NavLink>
-					<NavLink
-						isSticky={isSticky}
+					</StyledNavLink>
+					<StyledNavLink
+						$isSticky={isSticky}
 						to='/contact'
 						onClick={() => handleNavLinkClick("contact")}
 						className={clickedLink === "contact" ? "active" : ""}
 					>
 						Contact Us
-					</NavLink>
+					</StyledNavLink>
 				</NavLinks>
+
 				<CartIconWrapper>
-					<CartIcon isSticky={isSticky} onClick={() => openSidebar2()} />
+					<CartIcon $isSticky={isSticky} onClick={() => openSidebar2()} />
 					{total_items > 0 && <Badge>{total_items}</Badge>}
 				</CartIconWrapper>
 			</NavbarBottomWrapper>
+
 			<SidebarCart from='NavbarBottom' />
 		</>
 	);
@@ -117,12 +119,14 @@ const NavbarBottom = () => {
 
 export default NavbarBottom;
 
+/* ========== Styled Components ========== */
+
 const NavbarBottomWrapper = styled.nav`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0.5rem 5rem; // Consistent with your top navbar styling
-	background-color: var(--accent-color-2-dark); // Example background color
+	padding: 0.5rem 5rem;
+	background-color: var(--accent-color-2-dark);
 	color: var(--text-color-secondary);
 	transition: all 0.3s ease;
 
@@ -137,35 +141,33 @@ const NavbarBottomWrapper = styled.nav`
 	}
 
 	@media (max-width: 768px) {
-		display: none; // This hides the navbar on smaller screens
+		display: none; // Hides the navbar on smaller screens
 	}
 `;
 
 const NavLinks = styled.div`
 	display: flex;
-	flex: 1; // Takes up all available space
-	justify-content: center; // Centers the links within the nav links div
+	flex: 1; /* Takes up available space */
+	justify-content: center; /* Center links */
 	align-items: center;
 `;
 
-const NavLink = styled(Link)`
+const StyledNavLink = styled(Link)`
 	color: ${(props) =>
-		props.isSticky ? "var(--neutral-light)" : "var(--text-color-light)"};
+		props.$isSticky ? "var(--neutral-light)" : "var(--text-color-light)"};
 	text-decoration: none;
-	margin: 0 20px; // Spacing between links
+	margin: 0 20px;
 	font-size: 1.1rem;
 	font-weight: bolder;
 	padding: 10px;
 	border-radius: 5px;
 	transition:
 		background-color 0.3s ease,
-		color 0.3s ease; // Smooth transition for hover and active states
+		color 0.3s ease;
 
 	&:hover,
 	&.active {
-		background-color: var(
-			--background-accent
-		); // Background color for hover and active states
+		background-color: var(--background-accent);
 		color: var(--text-color-dark);
 	}
 `;
@@ -175,12 +177,12 @@ const CartIconWrapper = styled.div`
 	display: flex;
 	align-items: center;
 	margin-left: auto;
-	padding-right: 5rem; // Adjust this value as needed for spacing
+	padding-right: 5rem; /* Adjust as needed for spacing */
 `;
 
 const CartIcon = styled(AiOutlineShoppingCart)`
 	color: ${(props) =>
-		props.isSticky ? "var(--text-color-light)" : "var(--text-color-light)"};
+		props.$isSticky ? "var(--text-color-light)" : "var(--text-color-light)"};
 	width: 30px;
 	height: 30px;
 	cursor: pointer;

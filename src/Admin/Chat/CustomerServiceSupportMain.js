@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Link, useHistory } from "react-router-dom";
+import { Tabs } from "antd";
+import { MessageOutlined, HistoryOutlined } from "@ant-design/icons";
+import { useHistory } from "react-router-dom";
+import AdminNavbar from "../AdminNavbar/AdminNavbar";
 import InstantChat from "./InstantChat";
 import HistoryChats from "./HistoryChats";
-import AdminNavbar from "../AdminNavbar/AdminNavbar";
+
+const { TabPane } = Tabs;
 
 const CustomerServiceSupportMain = () => {
 	const [AdminMenuStatus, setAdminMenuStatus] = useState(false);
@@ -27,8 +31,17 @@ const CustomerServiceSupportMain = () => {
 		}
 	}, [activeTab]);
 
+	const handleTabChange = (key) => {
+		setActiveTab(key);
+		if (key === "InstantSupport") {
+			history.push("/admin/customer-service?instantsupport");
+		} else {
+			history.push("/admin/customer-service?history");
+		}
+	};
+
 	return (
-		<CustomerServiceSupportMainWrapper show={collapsed}>
+		<CustomerServiceSupportMainWrapper collapsed={collapsed}>
 			<div className='grid-container-main'>
 				<div className='navcontent'>
 					<AdminNavbar
@@ -42,38 +55,33 @@ const CustomerServiceSupportMain = () => {
 
 				<div className='otherContentWrapper'>
 					<div className='container-wrapper'>
-						<div
-							className='mx-auto col-md-10 mx-auto'
-							style={{ background: "#8a8a8a", padding: "1px" }}
+						<CustomTabs
+							activeKey={activeTab}
+							onChange={handleTabChange}
+							type='card'
+							tabBarGutter={0}
 						>
-							<div className='my-2 tab-grid col-md-6 mx-auto'>
-								<Tab
-									isActive={activeTab === "InstantSupport"}
-									onClick={() => {
-										setActiveTab("InstantSupport");
-										history.push("/admin/customer-service?instantsupport");
-									}}
-								>
-									<Link to='/admin/customer-service?instantsupport'>
-										Instant Support
-									</Link>
-								</Tab>
-								<Tab
-									isActive={activeTab === "History"}
-									onClick={() => {
-										setActiveTab("History");
-										history.push("/admin/customer-service?history");
-									}}
-								>
-									<Link to='/admin/customer-service?history'>History</Link>
-								</Tab>
-							</div>
-						</div>
-						{activeTab === "InstantSupport" ? (
-							<InstantChat />
-						) : (
-							<HistoryChats />
-						)}
+							<TabPane
+								tab={
+									<span>
+										<MessageOutlined /> Instant Support
+									</span>
+								}
+								key='InstantSupport'
+							>
+								<InstantChat />
+							</TabPane>
+							<TabPane
+								tab={
+									<span>
+										<HistoryOutlined /> History
+									</span>
+								}
+								key='History'
+							>
+								<HistoryChats />
+							</TabPane>
+						</CustomTabs>
 					</div>
 				</div>
 			</div>
@@ -83,6 +91,7 @@ const CustomerServiceSupportMain = () => {
 
 export default CustomerServiceSupportMain;
 
+/* ============ STYLES ============ */
 const CustomerServiceSupportMainWrapper = styled.div`
 	overflow-x: hidden;
 	margin-top: 70px;
@@ -91,7 +100,8 @@ const CustomerServiceSupportMainWrapper = styled.div`
 
 	.grid-container-main {
 		display: grid;
-		grid-template-columns: ${(props) => (props.show ? "5% 75%" : "17% 75%")};
+		grid-template-columns: ${(props) =>
+			props.collapsed ? "5% 75%" : "17% 75%"};
 	}
 
 	.container-wrapper {
@@ -101,35 +111,48 @@ const CustomerServiceSupportMainWrapper = styled.div`
 		background: white;
 		margin: 0px 10px;
 	}
-
-	.tab-grid {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		text-align: center;
-	}
-
-	@media (max-width: 1400px) {
-		background: white;
-	}
 `;
 
-const Tab = styled.div`
-	cursor: pointer;
-	margin: 0 3px;
-	padding: 15px 5px;
-	font-weight: ${(props) => (props.isActive ? "bold" : "bold")};
-	background-color: ${(props) => (props.isActive ? "transparent" : "#bbbbbb")};
-	box-shadow: ${(props) =>
-		props.isActive ? "inset 5px 5px 5px rgba(0, 0, 0, 0.3)" : "none"};
-	transition: all 0.3s ease;
-	min-width: 25px;
-	width: 100%;
-	text-align: center;
-	z-index: 100;
-	font-size: 1.2rem;
+const CustomTabs = styled(Tabs)`
+	.ant-tabs-nav {
+		margin-left: 10px; /* left margin for alignment */
+	}
 
-	a {
-		color: ${(props) => (props.isActive ? "white" : "black")};
+	/* Ensures the tab "cards" touch each other (no spacing) */
+	.ant-tabs-tab {
+		margin: 0 !important; /* remove default margin */
+		padding: 12px 16px;
+		font-size: 1rem;
+		font-weight: bold;
+		border-color: #dec8c8 !important;
+		transition: var(--main-transition);
+	}
+
+	/* The 'card' style uses borders; remove tab radius so they meet flush */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab {
+		border-radius: 0;
+		border: 1px solid var(--border-color-dark);
+		border-right-width: 0; /* ensures a continuous border chain */
+	}
+
+	/* The last tab needs a right border */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab:last-of-type,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab:last-of-type {
+		border-right-width: 1px;
+	}
+
+	/* Active tab styling */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab-active {
+		background-color: var(--primary-color-light);
+		border-color: var(--primary-color-dark) !important;
+		color: var(--text-color-dark) !important;
+	}
+
+	/* Hover effect on tabs */
+	.ant-tabs-tab:hover {
+		background-color: var(--primary-color-lighter);
+		color: var(--text-color-primary);
 	}
 `;

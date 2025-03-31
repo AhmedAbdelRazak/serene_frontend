@@ -9,8 +9,6 @@ import "react-toastify/dist/ReactToastify.min.css";
 import axios from "axios";
 import { createCategory, cloudinaryUpload1, getCategories } from "../apiAdmin";
 import { isAuthenticated } from "../../auth";
-import Aos from "aos";
-import "aos/dist/aos.css";
 import ImageCard from "./ImageCard";
 
 const AddCategory = () => {
@@ -24,6 +22,7 @@ const AddCategory = () => {
 	const [allCategories, setAllCategories] = useState([]);
 	// eslint-disable-next-line
 	const [error, setError] = useState(false);
+	// eslint-disable-next-line
 	const [success, setSuccess] = useState(false);
 	const [addThumbnail, setAddThumbnail] = useState([]);
 
@@ -270,21 +269,10 @@ const AddCategory = () => {
 		</form>
 	);
 
-	// eslint-disable-next-line
-	const showSuccess = () => {
-		if (success) {
-			return <h3 className='text-success'>{categoryName} is created</h3>;
-		}
-	};
-
-	useEffect(() => {
-		Aos.init({ duration: 1500 });
-	}, []);
-
 	return (
 		<AddCategoryWrapper>
 			<div className=''>
-				<div className='container' data-aos='fade-down'>
+				<div className='container'>
 					<h3
 						style={{ color: "#009ef7", fontWeight: "bold" }}
 						className='mt-1 mb-3 text-center'

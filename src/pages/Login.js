@@ -127,7 +127,6 @@ const Login = ({ history }) => {
 	}, []);
 
 	useEffect(() => {
-		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
 		ReactGA.send(window.location.pathname + window.location.search);
 
 		// eslint-disable-next-line

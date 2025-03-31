@@ -17,8 +17,22 @@ import {
 	SIDEBAR_CLOSE2,
 	SIDEFILTERS_CLOSE,
 	SIDEFILTERS_OPEN,
+	// Removed FEATURED_PROPERTIES since it's not used
+	SET_WEBSITE_SETUP,
+	SET_CATEGORIES_SUBCATEGORIES,
+	SET_FEATURED_PRODUCTS,
+	SET_NEW_ARRIVAL_PRODUCTS,
+	SET_CUSTOM_DESIGN_PRODUCTS,
+	SET_LOADING,
 } from "./actions";
 
+import {
+	getWebsiteSetup,
+	gettingCategoriesAndSubcategories,
+	gettingSpecificProducts,
+} from "./apiCore";
+
+// Utility to load cart from localStorage
 const getLocalStorage = () => {
 	let cart = localStorage.getItem("cart");
 	if (cart) {
@@ -28,6 +42,8 @@ const getLocalStorage = () => {
 	}
 };
 
+// Initial state, leaving your existing fields intact.
+// Added new fields for the data we fetch once on mount.
 const initialState = {
 	isSidebarOpen: false,
 	isSidebarOpen2: false,
@@ -37,6 +53,15 @@ const initialState = {
 	total_amount: 0,
 	shipping_fee: 0,
 	shipmentChosen: {},
+
+	// New fields for single-fetch data
+	loading: false,
+	websiteSetup: null,
+	categories: [],
+	subcategories: [],
+	featuredProducts: [],
+	newArrivalProducts: [],
+	customDesignProducts: [],
 };
 
 const CartContext = React.createContext();
@@ -44,6 +69,9 @@ const CartContext = React.createContext();
 export const CartProvider = ({ children }) => {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
+	// ------------------------------------
+	// 1) Existing Cart Logic (unchanged)
+	// ------------------------------------
 	const openSidebar = () => {
 		dispatch({ type: SIDEBAR_OPEN });
 	};
@@ -137,16 +165,98 @@ export const CartProvider = ({ children }) => {
 		dispatch({ type: SHIPPING_DETAILS, payload: { chosenShipmentDetails } });
 	};
 
-	// keep totals in sync with localStorage
+	// Keep totals in sync with localStorage
 	useEffect(() => {
 		dispatch({ type: COUNT_CART_TOTALS });
 		localStorage.setItem("cart", JSON.stringify(state.cart));
 	}, [state.cart]);
 
+	// ------------------------------------
+	// 2) Fetch Once on Mount
+	// ------------------------------------
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				// Turn on loading
+				dispatch({ type: SET_LOADING, payload: true });
+
+				// (A) Website setup
+				const websiteData = await getWebsiteSetup();
+				dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
+
+				// (B) Categories & Subcategories
+				const categoriesData = await gettingCategoriesAndSubcategories();
+				if (categoriesData?.error) {
+					console.log(categoriesData.error);
+				} else {
+					dispatch({
+						type: SET_CATEGORIES_SUBCATEGORIES,
+						payload: {
+							categories: categoriesData.categories || [],
+							subcategories: categoriesData.subcategories || [],
+						},
+					});
+				}
+
+				// (C) Featured Products
+				const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 20);
+				if (featuredData?.error) {
+					console.log(featuredData.error);
+				} else {
+					// Sort by date descending
+					const sortedFeatured = featuredData.sort(
+						(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+					);
+					dispatch({ type: SET_FEATURED_PRODUCTS, payload: sortedFeatured });
+				}
+
+				// (D) New Arrival Products
+				const newArrivalData = await gettingSpecificProducts(0, 1, 0, 0, 0, 20);
+				if (newArrivalData?.error) {
+					console.log(newArrivalData.error);
+				} else {
+					dispatch({
+						type: SET_NEW_ARRIVAL_PRODUCTS,
+						payload: newArrivalData,
+					});
+				}
+
+				// (E) Custom Design Products
+				const customDesignData = await gettingSpecificProducts(
+					0,
+					0,
+					1,
+					0,
+					0,
+					20
+				);
+				if (customDesignData?.error) {
+					console.log(customDesignData.error);
+				} else {
+					dispatch({
+						type: SET_CUSTOM_DESIGN_PRODUCTS,
+						payload: customDesignData,
+					});
+				}
+			} catch (error) {
+				console.error("Error fetching data in CartContext: ", error);
+			} finally {
+				// Turn off loading
+				dispatch({ type: SET_LOADING, payload: false });
+			}
+		};
+
+		fetchData();
+	}, []);
+
+	// ------------------------------------
+	// 3) Provide the Context
+	// ------------------------------------
 	return (
 		<CartContext.Provider
 			value={{
 				...state,
+				// existing cart actions:
 				addToCart,
 				removeItem,
 				toggleAmount,

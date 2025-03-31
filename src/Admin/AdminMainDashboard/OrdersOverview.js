@@ -1,30 +1,25 @@
 import React, { useEffect, useState } from "react";
-// eslint-disable-next-line
-import { DatePicker, Table, Modal } from "antd";
+import { Table, Modal, Card, Row, Col } from "antd";
 import styled from "styled-components";
 import CountUp from "react-countup";
+import dayjs from "dayjs";
 import { getListOfOrdersAggregated } from "../apiAdmin";
 import { isAuthenticated } from "../../auth";
-import moment from "moment";
+import { EyeOutlined } from "@ant-design/icons";
 
 const OrdersOverview = ({ showModal }) => {
 	const [data, setData] = useState([]);
 	const [totalOrders, setTotalOrders] = useState(0);
 	const [totalQuantity, setTotalQuantity] = useState(0);
 	const [totalAmount, setTotalAmount] = useState(0);
-	// eslint-disable-next-line
-	const [date, setDate] = useState(moment()); // single-day approach, defaults to today
+	// Single day approach, default to today
+	const [date] = useState(dayjs());
 	const [loading, setLoading] = useState(false);
 	const [expandedRowKeys, setExpandedRowKeys] = useState([]);
-
-	// For image preview
 	const [modalImage, setModalImage] = useState(null);
 
 	const { user, token } = isAuthenticated();
 
-	// ─────────────────────────────────────────────────────────
-	// FETCH
-	// ─────────────────────────────────────────────────────────
 	const fetchOrders = async (selectedDate) => {
 		setLoading(true);
 
@@ -33,10 +28,7 @@ const OrdersOverview = ({ showModal }) => {
 		const status = "all";
 		const userId = user._id;
 
-		const startDate = selectedDate
-			? selectedDate.format("YYYY-MM-DD")
-			: moment().format("YYYY-MM-DD");
-		// For single-day approach, endDate = startDate
+		const startDate = selectedDate.format("YYYY-MM-DD");
 		const endDate = startDate;
 
 		try {
@@ -75,9 +67,6 @@ const OrdersOverview = ({ showModal }) => {
 		// eslint-disable-next-line
 	}, [date, showModal]);
 
-	// ─────────────────────────────────────────────────────────
-	// HELPER: get fallback image
-	// ─────────────────────────────────────────────────────────
 	const getDisplayImage = (product) => {
 		if (product.image && product.image.length > 0) {
 			return product.image;
@@ -92,9 +81,6 @@ const OrdersOverview = ({ showModal }) => {
 		return "https://via.placeholder.com/50";
 	};
 
-	// ─────────────────────────────────────────────────────────
-	// EXPANDED ROW
-	// ─────────────────────────────────────────────────────────
 	const expandedRowRender = (record) => {
 		const products = [
 			...record.productsNoVariable,
@@ -103,8 +89,8 @@ const OrdersOverview = ({ showModal }) => {
 
 		return (
 			<ExpandedContainer>
-				{products.map((product, index) => {
-					const displayImg = getDisplayImage(product);
+				{products.map((prod, index) => {
+					const displayImg = getDisplayImage(prod);
 					return (
 						<ProductRow key={index}>
 							<img
@@ -119,70 +105,65 @@ const OrdersOverview = ({ showModal }) => {
 								onClick={() => setModalImage(displayImg)}
 							/>
 							<div>
-								<div style={{ fontWeight: "bold" }}>{product.name}</div>
-								{/* If chosenAttributes => color / size */}
-								{product.chosenAttributes && (
+								<div style={{ fontWeight: "bold" }}>{prod.name}</div>
+								{prod.chosenAttributes && (
 									<div style={{ margin: "2px 0" }}>
-										<strong>Color:</strong> {product.chosenAttributes.color} |{" "}
-										<strong>Size:</strong> {product.chosenAttributes.size}
+										<strong>Color:</strong> {prod.chosenAttributes.color} |{" "}
+										<strong>Size:</strong> {prod.chosenAttributes.size}
 									</div>
 								)}
-								<div>Quantity: {product.ordered_quantity}</div>
-								<div>Price: ${product.price}</div>
+								<div>Quantity: {prod.ordered_quantity}</div>
+								<div>Price: ${prod.price}</div>
 
-								{/* POD => design details */}
-								{product.isPrintifyProduct &&
-									product.printifyProductDetails?.POD && (
-										<>
+								{prod.isPrintifyProduct && prod.printifyProductDetails?.POD && (
+									<>
+										<div style={{ marginTop: "5px" }}>
+											<small>
+												<strong>Source:</strong> Print On Demand
+											</small>
+										</div>
+										{prod.customDesign && (
 											<div style={{ marginTop: "5px" }}>
-												<small>
-													<strong>Source:</strong> Print On Demand
-												</small>
-											</div>
-											{product.customDesign && (
-												<div style={{ marginTop: "5px" }}>
-													{/* Final design */}
-													{product.customDesign.finalScreenshotUrl && (
-														<>
-															<strong>Final Design Preview:</strong>
-															<br />
-															<img
-																src={product.customDesign.finalScreenshotUrl}
-																alt='Final Design'
-																style={{
-																	width: "80px",
-																	marginTop: "3px",
-																	border: "1px solid #ccc",
-																	borderRadius: "5px",
-																	cursor: "pointer",
-																}}
-																onClick={() =>
-																	setModalImage(
-																		product.customDesign.finalScreenshotUrl
-																	)
-																}
-															/>
-														</>
+												{prod.customDesign.finalScreenshotUrl && (
+													<>
+														<strong>Final Design Preview:</strong>
+														<br />
+														<img
+															src={prod.customDesign.finalScreenshotUrl}
+															alt='Final Design'
+															style={{
+																width: "80px",
+																marginTop: "3px",
+																border: "1px solid #ccc",
+																borderRadius: "5px",
+																cursor: "pointer",
+															}}
+															onClick={() =>
+																setModalImage(
+																	prod.customDesign.finalScreenshotUrl
+																)
+															}
+														/>
+													</>
+												)}
+												{prod.customDesign.texts &&
+													prod.customDesign.texts.length > 0 && (
+														<div style={{ marginTop: "5px" }}>
+															<strong>Custom Text(s):</strong>
+															<ul>
+																{prod.customDesign.texts.map((txt, i) => (
+																	<li key={i}>
+																		<strong>Text:</strong> {txt.text}, Color:{" "}
+																		{txt.color}
+																	</li>
+																))}
+															</ul>
+														</div>
 													)}
-													{/* Custom texts */}
-													{product.customDesign.texts &&
-														product.customDesign.texts.length > 0 && (
-															<div style={{ marginTop: "5px" }}>
-																<strong>Custom Text(s):</strong>
-																<ul>
-																	{product.customDesign.texts.map((txt, i) => (
-																		<li key={i}>
-																			<strong>Text:</strong> {txt.text}, Color:{" "}
-																			{txt.color}
-																		</li>
-																	))}
-																</ul>
-															</div>
-														)}
-												</div>
-											)}
-										</>
-									)}
+											</div>
+										)}
+									</>
+								)}
 							</div>
 						</ProductRow>
 					);
@@ -195,51 +176,56 @@ const OrdersOverview = ({ showModal }) => {
 		setExpandedRowKeys(expanded ? [record._id] : []);
 	};
 
-	// ─────────────────────────────────────────────────────────
-	// TABLE COLUMNS
-	// ─────────────────────────────────────────────────────────
 	const columns = [
 		{
 			title: "#",
 			dataIndex: "index",
 			key: "index",
 			render: (_, __, index) => index + 1,
+			width: 50,
 		},
 		{
 			title: "Customer Name",
 			dataIndex: ["customerDetails", "name"],
 			key: "customerName",
+			width: 250,
 		},
 		{
 			title: "Customer Phone",
 			dataIndex: ["customerDetails", "phone"],
 			key: "customerPhone",
+			width: 150,
 		},
 		{
 			title: "Customer State",
 			dataIndex: ["customerDetails", "state"],
 			key: "customerState",
+			width: 150,
 		},
 		{
 			title: "Customer Address",
 			dataIndex: ["customerDetails", "address"],
 			key: "customerAddress",
+			width: 250,
 		},
 		{
 			title: "Status",
 			dataIndex: "status",
 			key: "status",
+			width: 100,
 			render: (text) => text.charAt(0).toUpperCase() + text.slice(1),
 		},
 		{
-			title: "Invoice Number",
+			title: "Invoice #",
 			dataIndex: "invoiceNumber",
 			key: "invoiceNumber",
+			width: 100,
 		},
 		{
-			title: "Tracking Number",
+			title: "Tracking #",
 			dataIndex: "trackingNumber",
 			key: "trackingNumber",
+			width: 120,
 			render: (_, record) => {
 				if (record.printifyOrderDetails && record.printifyOrderDetails.id) {
 					return record.trackingNumber ? (
@@ -260,85 +246,97 @@ const OrdersOverview = ({ showModal }) => {
 		{
 			title: "Order Details",
 			key: "details",
+			width: 120,
 			render: (_, record) => (
 				<DetailsLink onClick={() => showModal(record)}>
-					Show Details
+					<EyeOutlined />
+					&nbsp; Details
 				</DetailsLink>
 			),
 		},
 	];
 
-	// ─────────────────────────────────────────────────────────
-	// RENDER
-	// ─────────────────────────────────────────────────────────
 	return (
 		<>
-			<ScoreCardsWrapper>
-				<Card bgColor='#2f556b'>
-					<Title>Total Orders</Title>
-					<Count>
-						<CountUp
-							start={0}
-							end={totalOrders}
-							duration={1.5}
-							separator=','
-							decimals={0}
-						/>
-					</Count>
-				</Card>
-				<Card bgColor='#6b452f'>
-					<Title>Total Quantity</Title>
-					<Count>
-						<CountUp
-							start={0}
-							end={totalQuantity}
-							duration={2}
-							separator=','
-							decimals={0}
-						/>
-					</Count>
-				</Card>
-				<Card bgColor='#376b2f'>
-					<Title>Total Amount $</Title>
-					<Count>
-						<CountUp
-							start={0}
-							end={totalAmount}
-							duration={2.5}
-							separator=','
-							decimals={2}
-							prefix='$'
-						/>
-					</Count>
-				</Card>
-			</ScoreCardsWrapper>
+			<Row gutter={16} style={{ marginTop: 20, marginBottom: 20 }}>
+				<Col xs={24} md={8}>
+					<Card
+						style={{
+							backgroundColor: "var(--primary-color-dark)",
+							color: "#fff",
+						}}
+						hoverable
+					>
+						<CardTitle>Total Orders</CardTitle>
+						<CardCount>
+							<CountUp
+								start={0}
+								end={totalOrders}
+								duration={1.5}
+								separator=','
+							/>
+						</CardCount>
+					</Card>
+				</Col>
+				<Col xs={24} md={8}>
+					<Card
+						style={{
+							backgroundColor: "var(--secondary-color-dark)",
+							color: "#fff",
+						}}
+						hoverable
+					>
+						<CardTitle>Total Quantity</CardTitle>
+						<CardCount>
+							<CountUp
+								start={0}
+								end={totalQuantity}
+								duration={2}
+								separator=','
+							/>
+						</CardCount>
+					</Card>
+				</Col>
+				<Col xs={24} md={8}>
+					<Card
+						style={{
+							backgroundColor: "var(--accent-color-1-dark)",
+							color: "#fff",
+						}}
+						hoverable
+					>
+						<CardTitle>Total Amount</CardTitle>
+						<CardCount>
+							<CountUp
+								start={0}
+								end={totalAmount}
+								duration={2.5}
+								separator=','
+								decimals={2}
+								prefix='$'
+							/>
+						</CardCount>
+					</Card>
+				</Col>
+			</Row>
 
-			{/* If you want to enable date picking for single-day, uncomment: 
-      <StyledDatePickerContainer>
-        <span style={{ fontWeight: "bold" }}>
-          Selected Date: {date.format("YYYY-MM-DD")}
-        </span>
-        <DatePicker
-          style={{ marginTop: 16, width: "100%" }}
-          onChange={(selected) => setDate(selected || moment())}
-          value={date}
-          disabledDate={(current) => current && current > moment().endOf("day")}
-        />
-      </StyledDatePickerContainer>
-      */}
+			{/* If you want a date picker for single day, you can re-enable it.
+          Right now, we automatically load the data for `dayjs()` (today). */}
 
 			<Table
 				columns={columns}
 				dataSource={data}
 				loading={loading}
-				expandedRowRender={expandedRowRender}
-				expandedRowKeys={expandedRowKeys}
-				onExpand={handleExpand}
+				expandable={{
+					expandedRowRender: expandedRowRender,
+					expandedRowKeys: expandedRowKeys,
+					onExpand: handleExpand,
+				}}
 				rowKey={(record) => record._id}
 				style={{ marginTop: 16 }}
+				scroll={{ x: 900 }}
 			/>
 
-			{/* IMAGE MODAL */}
 			<Modal
 				open={!!modalImage}
 				onCancel={() => setModalImage(null)}
@@ -367,61 +365,21 @@ const OrdersOverview = ({ showModal }) => {
 export default OrdersOverview;
 
 /* ============ STYLES ============ */
-const ScoreCardsWrapper = styled.div`
-	display: flex;
-	justify-content: space-around;
-	margin: 20px 0;
-`;
-
-const Card = styled.div`
-	background-color: ${(props) => props.bgColor};
-	color: white;
-	padding: 10px;
-	margin: 10px;
-	border-radius: 10px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	text-align: center;
-	width: 25%;
-	transition: transform 0.3s ease;
-
-	&:hover {
-		transform: scale(1.05);
-	}
-`;
-
-const Title = styled.div`
+const CardTitle = styled.div`
 	font-size: 1.2em;
 	font-weight: bold;
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 `;
 
-const Count = styled.div`
+const CardCount = styled.div`
 	font-size: 1.7rem;
 	font-weight: bold;
 `;
 
-const DetailsLink = styled.div`
+const DetailsLink = styled.span`
 	color: #1890ff;
 	cursor: pointer;
 	text-decoration: underline;
-`;
-
-// eslint-disable-next-line
-const StyledDatePickerContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 16px;
-	width: 50%;
-	margin: auto;
-
-	span {
-		font-size: 1.2em;
-		margin-bottom: 8px;
-	}
-	.ant-picker {
-		width: 100%;
-	}
 `;
 
 const ExpandedContainer = styled.div`

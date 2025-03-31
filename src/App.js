@@ -1,5 +1,10 @@
 import React, { useEffect, useState, Suspense, lazy } from "react";
-import { Route, BrowserRouter, Switch } from "react-router-dom";
+import {
+	BrowserRouter as Router,
+	Switch,
+	Route,
+	useLocation,
+} from "react-router-dom";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "slick-carousel/slick/slick.css";
@@ -14,6 +19,7 @@ import Footer from "./Footer";
 import PrintifyAvailableProducts from "./pages/PrintOnDemand/PrintifyAvailableProducts";
 import CustomizeSelectedProduct from "./pages/PrintOnDemand/CustomizeSelectedProduct";
 import PrintifyMain from "./Admin/PrintifyProductManagement/PrintifyMain";
+import WebsiteMain from "./Admin/EditingWebsite/WebsiteMain";
 
 // Lazy load components
 const Login = lazy(() => import("./pages/Login"));
@@ -37,9 +43,6 @@ const ProductMain = lazy(() => import("./Admin/Product/ProductMain"));
 const StoreSettingsMain = lazy(
 	() => import("./Admin/StoreSettings/StoreSettingsMain")
 );
-const EditWebsiteMain = lazy(
-	() => import("./Admin/EditingWebsite/EditWebsiteMain")
-);
 const CustomerServiceSupportMain = lazy(
 	() => import("./Admin/Chat/CustomerServiceSupportMain")
 );
@@ -58,42 +61,49 @@ const CouponManagement = lazy(
 const AdminRoute = lazy(() => import("./auth/AdminRoute"));
 const PrivateRoute = lazy(() => import("./auth/PrivateRoute"));
 
+/**
+ * Main <App /> component wraps the Router,
+ * then we delegate the main logic to <AppContent />
+ * so we can use useLocation() inside.
+ */
 const App = () => {
-	const [language, setLanguage] = useState("English");
+	return (
+		<Router>
+			<AppContent />
+		</Router>
+	);
+};
 
-	// === Modal state ===
+const AppContent = () => {
+	const location = useLocation(); // get current route info
 	const [isModalVisible, setIsModalVisible] = useState(false);
 
+	// Determine if path includes 'admin' or 'seller'
+	const shouldHideLayout =
+		location.pathname.includes("admin") || location.pathname.includes("seller");
+
+	// Initialize GA ONCE at app start
 	useEffect(() => {
 		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
-		ReactGA.send(window.location.pathname + window.location.search);
+	}, []);
 
-		setLanguage("English");
-		// eslint-disable-next-line
-	}, [window.location.pathname]);
-
-	const languageToggle = () => {
-		localStorage.setItem("lang", JSON.stringify(language));
-	};
-
+	// Send pageview to GA every time route changes
 	useEffect(() => {
-		languageToggle();
-		// eslint-disable-next-line
-	}, [language]);
+		ReactGA.send({ hitType: "pageview", page: location.pathname });
+	}, [location]);
 
+	// Clear certain local storage keys unless we are on /checkout
 	useEffect(() => {
-		// Clear certain local storage keys unless on /checkout
-		if (window.location.pathname.includes("/checkout")) {
-			return;
-		} else {
+		if (!location.pathname.includes("/checkout")) {
 			localStorage.removeItem("PaidNow");
 			localStorage.removeItem("storedData");
 			localStorage.removeItem("chosenShippingOption");
 			localStorage.removeItem("orderDataStored");
 		}
-		// eslint-disable-next-line
-	}, []);
+		// no eslint-disable-next-line needed, location is in deps
+	}, [location]);
 
+	// Facebook Pixel Setup
 	const options = {
 		autoConfig: true,
 		debug: false,
@@ -107,41 +117,39 @@ const App = () => {
 
 	// ==================== 7-second one-time Modal logic ====================
 	useEffect(() => {
-		// 1. Skip if current route is admin.
-		if (window.location.pathname.includes("admin")) return;
+		// 1. Skip if current route includes admin or seller
+		if (shouldHideLayout) return;
 
-		// 2. Skip if current route contains "custom".
-		if (window.location.pathname.includes("custom")) return;
+		// 2. Skip if route contains "custom"
+		if (location.pathname.includes("custom")) return;
 
 		// 3. If user already dismissed => do nothing.
 		const hasSeenModal = localStorage.getItem("customGiftModalDismissed");
 		if (hasSeenModal) return;
 
-		// 4. If user is on checkout => skip.
-		if (window.location.pathname.includes("/checkout")) return;
+		// 4. If user is on checkout => skip
+		if (location.pathname.includes("/checkout")) return;
 
-		// 5. Set a 7-second timer:
+		// 5. Set a timer
 		const timer = setTimeout(() => {
 			setIsModalVisible(true);
 		}, 4000);
 
-		return () => clearTimeout(timer); // cleanup if user leaves earlier
-	}, []);
+		return () => clearTimeout(timer); // cleanup
+	}, [location, shouldHideLayout]);
 
 	const handleYes = () => {
-		// Mark as dismissed in localStorage
 		localStorage.setItem("customGiftModalDismissed", "true");
 		// GA event
 		ReactGA.event({
 			category: "Custom Gift Modal",
 			action: "User clicked YES - show me /custom-gifts",
 		});
-		// redirect
+		// Redirect
 		window.location.href = "/custom-gifts";
 	};
 
 	const handleNo = () => {
-		// Mark as dismissed in localStorage
 		localStorage.setItem("customGiftModalDismissed", "true");
 		// GA event
 		ReactGA.event({
@@ -151,15 +159,15 @@ const App = () => {
 		setIsModalVisible(false);
 	};
 
-	// A slightly friendlier psychological line:
 	const modalText =
 		"Your loved ones deserve just 3 minutes of your time to create their perfect gift. Click below to be unique! ❤️😉";
 
 	return (
-		<BrowserRouter>
+		<>
 			<ToastContainer className='toast-top-center' position='top-center' />
 			<Suspense fallback={<div>Loading...</div>}>
-				{window.location.pathname.includes("admin") ? null : (
+				{/* Only show Navbars if NOT admin/seller */}
+				{!shouldHideLayout && (
 					<>
 						<NavbarTop />
 						<NavbarBottom />
@@ -167,23 +175,13 @@ const App = () => {
 				)}
 
 				<Switch>
-					<Route
-						path='/'
-						exact
-						component={() => <Home chosenLanguage={language} />}
-					/>
-					<Route
-						path='/about'
-						exact
-						component={() => <About chosenLanguage={language} />}
-					/>
-
+					<Route path='/' exact component={() => <Home />} />
+					<Route path='/about' exact component={() => <About />} />
 					<Route
 						path='/single-product/:productSlug/:categorySlug/:productId'
 						exact
-						component={() => <SingleProductMain chosenLanguage={language} />}
+						component={() => <SingleProductMain />}
 					/>
-
 					<Route path='/our-products' exact component={ShopPageMain} />
 					<Route
 						path='/custom-gifts'
@@ -196,7 +194,6 @@ const App = () => {
 						component={CustomizeSelectedProduct}
 					/>
 					<Route path='/contact' exact component={ContactUs} />
-
 					<Route
 						path='/privacy-policy-terms-conditions'
 						exact
@@ -217,6 +214,7 @@ const App = () => {
 						component={LinkGenerated}
 					/>
 
+					{/* Admin Routes */}
 					<AdminRoute
 						path='/admin/dashboard'
 						exact
@@ -252,7 +250,7 @@ const App = () => {
 					<AdminRoute
 						path='/admin/website-management'
 						exact
-						component={EditWebsiteMain}
+						component={WebsiteMain}
 					/>
 					<AdminRoute path='/admin/store-pos' exact component={StorePOSMain} />
 					<AdminRoute
@@ -266,11 +264,13 @@ const App = () => {
 						component={CouponManagement}
 					/>
 
+					{/* User (Private) Routes */}
 					<PrivateRoute path='/dashboard' exact component={UserDashboard} />
 				</Switch>
 
-				{window.location.pathname.includes("admin") ? null : <ChatIcon />}
-				{window.location.pathname.includes("admin") ? null : <Footer />}
+				{/* Chat & Footer only if NOT admin/seller */}
+				{!shouldHideLayout && <ChatIcon />}
+				{!shouldHideLayout && <Footer />}
 			</Suspense>
 
 			{/* 7-second popup modal */}
@@ -282,7 +282,11 @@ const App = () => {
 				centered
 			>
 				<p
-					style={{ fontSize: "1.1rem", textAlign: "center", margin: "20px 0" }}
+					style={{
+						fontSize: "1.1rem",
+						textAlign: "center",
+						margin: "20px 0",
+					}}
 				>
 					{modalText}
 				</p>
@@ -297,7 +301,7 @@ const App = () => {
 					<Button onClick={handleNo}>No, Thank You</Button>
 				</div>
 			</Modal>
-		</BrowserRouter>
+		</>
 	);
 };
 

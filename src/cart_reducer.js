@@ -15,6 +15,13 @@ import {
 	CHANGE_SIZE,
 	SIDEFILTERS_OPEN,
 	SIDEFILTERS_CLOSE,
+	// New action types
+	SET_WEBSITE_SETUP,
+	SET_CATEGORIES_SUBCATEGORIES,
+	SET_FEATURED_PRODUCTS,
+	SET_NEW_ARRIVAL_PRODUCTS,
+	SET_CUSTOM_DESIGN_PRODUCTS,
+	SET_LOADING,
 } from "./actions";
 
 // OPTIONAL HELPER to find the correct Printify variant image by color/size
@@ -39,7 +46,6 @@ function getVariantImageForColorSize(product, chosenAttributes) {
 	if (!colorOption || !sizeOption) return null;
 
 	// 2) Attempt to match chosenAttributes color/size to the printify "title"
-	//    If your local color is hex like "#084f97", you need a map or store the actual color name.
 	const colorVal = colorOption.values.find(
 		(val) => val.title.toLowerCase() === chosenAttributes.color?.toLowerCase()
 	);
@@ -399,6 +405,37 @@ const cart_reducer = (state, action) => {
 			return item;
 		});
 		return { ...state, cart: tempCart };
+	}
+
+	// ==============================
+	// New actions for single-fetch data
+	// ==============================
+	if (action.type === SET_LOADING) {
+		return { ...state, loading: action.payload };
+	}
+
+	if (action.type === SET_WEBSITE_SETUP) {
+		return { ...state, websiteSetup: action.payload };
+	}
+
+	if (action.type === SET_CATEGORIES_SUBCATEGORIES) {
+		return {
+			...state,
+			categories: action.payload.categories,
+			subcategories: action.payload.subcategories,
+		};
+	}
+
+	if (action.type === SET_FEATURED_PRODUCTS) {
+		return { ...state, featuredProducts: action.payload };
+	}
+
+	if (action.type === SET_NEW_ARRIVAL_PRODUCTS) {
+		return { ...state, newArrivalProducts: action.payload };
+	}
+
+	if (action.type === SET_CUSTOM_DESIGN_PRODUCTS) {
+		return { ...state, customDesignProducts: action.payload };
 	}
 
 	throw new Error(`No Matching "${action.type}" - action type`);

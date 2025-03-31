@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { FaBars, FaUserPlus } from "react-icons/fa";
 import { AiOutlineShoppingCart } from "react-icons/ai";
+import { Link, useHistory } from "react-router-dom";
 import { isAuthenticated, signout } from "../auth";
-import { getOnlineStoreData } from "../Global";
 import { useCartContext } from "../cart_context";
 
 const Sidebar = React.lazy(() => import("./Sidebar"));
@@ -13,11 +13,10 @@ const NavbarTop = React.memo(() => {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [isCartOpen, setIsCartOpen] = useState(false);
 	const [activeLink, setActiveLink] = useState("");
-	const [storeLogo, setStoreLogo] = useState("");
-	const [isSticky, setIsSticky] = useState(false); // Sticky navbar state
 
 	const { user } = isAuthenticated();
-	const { openSidebar2, total_items } = useCartContext();
+	const { openSidebar2, total_items, websiteSetup } = useCartContext();
+	const navigate = useHistory();
 
 	// Memoize the first name to avoid recalculations
 	const firstName = useMemo(() => {
@@ -33,52 +32,49 @@ const NavbarTop = React.memo(() => {
 	// Memoize signout handler
 	const handleSignout = useCallback(() => {
 		signout(() => {
-			window.location.href = "/";
+			navigate("/");
 		});
-	}, []);
-
-	// Fetch the store logo on mount.
-	useEffect(() => {
-		const fetchData = async () => {
-			const url = await getOnlineStoreData();
-			setStoreLogo(url);
-		};
-		fetchData();
-	}, []);
-
-	// Add scroll event listener for sticky navbar.
-	useEffect(() => {
-		const handleScroll = () => {
-			if (window.scrollY > 40) {
-				setIsSticky(true);
-			} else {
-				setIsSticky(false);
-			}
-		};
-
-		window.addEventListener("scroll", handleScroll);
-		return () => window.removeEventListener("scroll", handleScroll);
-	}, []);
+	}, [navigate]);
 
 	return (
 		<>
 			{isSidebarOpen && <Overlay onClick={() => setIsSidebarOpen(false)} />}
-			<NavbarTopWrapper className={isSticky ? "sticky" : ""}>
+
+			{/* No scroll logic; just a normal Navbar wrapper */}
+			<NavbarTopWrapper>
 				<MenuIcon onClick={() => setIsSidebarOpen(true)} />
-				<Logo
-					src={storeLogo}
-					alt='Serene Jannat Shop'
-					onClick={() => (window.location.href = "/")}
-				/>
+
+				{websiteSetup?.sereneJannatLogo?.url && (
+					<Link to='/' style={{ textDecoration: "none", display: "flex" }}>
+						<Logo
+							src={websiteSetup.sereneJannatLogo.url}
+							alt='Serene Jannat Shop'
+						/>
+					</Link>
+				)}
+
 				<NavLinks
 					onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 				>
 					{user && user.name && user.role === 1 && (
 						<>
-							<NavLink href='/admin/dashboard'>
+							<NavLink
+								as={Link}
+								to='/admin/dashboard'
+								onClick={() => handleNavLinkClick("/admin/dashboard")}
+								className={activeLink === "/admin/dashboard" ? "active" : ""}
+							>
 								<FaUserPlus /> Hello {firstName}
 							</NavLink>
-							<NavLink href='#' onClick={handleSignout}>
+
+							<NavLink
+								as={Link}
+								to='#signout'
+								onClick={(e) => {
+									e.preventDefault();
+									handleSignout();
+								}}
+							>
 								Signout
 							</NavLink>
 						</>
@@ -86,22 +82,52 @@ const NavbarTop = React.memo(() => {
 					{user && user.name && user.role === 0 && (
 						<>
 							<FaUserPlus />
-							<NavLink href='/dashboard'>Hello {firstName}</NavLink>
-							<NavLink href='#' onClick={handleSignout}>
+							<NavLink
+								as={Link}
+								to='/dashboard'
+								onClick={() => handleNavLinkClick("/dashboard")}
+								className={activeLink === "/dashboard" ? "active" : ""}
+							>
+								Hello {firstName}
+							</NavLink>
+							<NavLink
+								as={Link}
+								to='#signout'
+								onClick={(e) => {
+									e.preventDefault();
+									handleSignout();
+								}}
+							>
 								Signout
 							</NavLink>
 						</>
 					)}
 					{(!user || !user.name) && (
 						<>
-							<NavLink href='/signin'>Login</NavLink>
-							<NavLink href='/signup'>Register</NavLink>
+							<NavLink
+								as={Link}
+								to='/signin'
+								onClick={() => handleNavLinkClick("/signin")}
+								className={activeLink === "/signin" ? "active" : ""}
+							>
+								Login
+							</NavLink>
+							<NavLink
+								as={Link}
+								to='/signup'
+								onClick={() => handleNavLinkClick("/signup")}
+								className={activeLink === "/signup" ? "active" : ""}
+							>
+								Register
+							</NavLink>
 						</>
 					)}
 				</NavLinks>
-				<CartIcon onClick={() => openSidebar2()} /> {/* Opens SidebarCart */}
+
+				<CartIcon onClick={() => openSidebar2()} />
 				{total_items > 0 && <Badge>{total_items}</Badge>}
 			</NavbarTopWrapper>
+
 			<Sidebar
 				isSidebarOpen={isSidebarOpen}
 				setIsSidebarOpen={setIsSidebarOpen}
@@ -123,23 +149,31 @@ export default NavbarTop;
 /* ========== Styled Components ========== */
 
 const NavbarTopWrapper = styled.nav`
+	/* Normal appearance on wider screens */
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	padding: 0.5rem 5rem;
 	background-color: var(--neutral-light);
 	box-shadow: var(--box-shadow-light);
-	transition: all 0.3s ease;
-	overflow: hidden !important;
 
-	&.sticky {
-		position: fixed;
+	/* Below 600px, we keep the navbar “sticky” at the top */
+	@media (max-width: 600px) {
+		/* position: sticky; */
 		top: 0;
-		left: 0;
-		right: 0;
-		z-index: 1000;
-		/* background-color: var(--primary-color-darker); */
-		box-shadow: var(--box-shadow-dark);
+		z-index: 200;
+		/* If you prefer fixed instead of sticky, just replace the above with position: fixed */
+	}
+
+	@media (max-width: 768px) {
+		padding: 0.5rem 0.5rem;
+
+		.nav-links {
+			display: none;
+		}
+		.logo {
+			flex-grow: 1;
+		}
 	}
 
 	@media (min-width: 769px) {
@@ -149,16 +183,6 @@ const NavbarTopWrapper = styled.nav`
 		}
 		.logo {
 			flex-grow: 0;
-		}
-	}
-
-	@media (max-width: 768px) {
-		padding: 0.5rem 0.5rem;
-		.nav-links {
-			display: none;
-		}
-		.logo {
-			flex-grow: 1;
 		}
 	}
 `;
@@ -197,7 +221,7 @@ const NavLinks = styled.div`
 	align-items: center;
 	font-weight: bold;
 
-	@media (max-width: 769px) {
+	@media (max-width: 768px) {
 		display: none;
 	}
 `;
@@ -207,7 +231,6 @@ const NavLink = styled.a`
 	text-decoration: none;
 	font-size: 16px;
 	font-weight: bolder;
-
 	&:hover {
 		color: var(--secondary-color-dark);
 	}

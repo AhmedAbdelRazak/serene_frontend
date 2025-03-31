@@ -14,8 +14,6 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import axios from "axios";
-import Aos from "aos";
-import "aos/dist/aos.css";
 import ImageCard from "./ImageCard";
 
 const AddSubcategory = () => {
@@ -304,16 +302,12 @@ const AddSubcategory = () => {
 		}
 	};
 
-	useEffect(() => {
-		Aos.init({ duration: 1500 });
-	}, []);
-
 	return (
 		<AddSubcategoryWrapper>
 			<ToastContainer className='toast-top-center' position='top-center' />
 
 			<div className=''>
-				<div className='container' data-aos='fade-down'>
+				<div className='container'>
 					<h3
 						style={{ color: "#009ef7", fontWeight: "bold" }}
 						className='mt-1 mb-3 text-center'

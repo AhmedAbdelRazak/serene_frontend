@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
-import AdminNavbar from "../AdminNavbar/AdminNavbar";
 import styled from "styled-components";
+import { Tabs } from "antd";
+import { BgColorsOutlined, FontSizeOutlined } from "@ant-design/icons";
+import { useHistory } from "react-router-dom";
+import AdminNavbar from "../AdminNavbar/AdminNavbar";
 import Colors from "./Colors";
-import { Link, useHistory } from "react-router-dom";
 import Sizes from "./Sizes";
+
+/* Ant Design Tabs deconstruction */
+const { TabPane } = Tabs;
 
 const AttributesMain = () => {
 	const [AdminMenuStatus, setAdminMenuStatus] = useState(false);
@@ -18,6 +23,7 @@ const AttributesMain = () => {
 		// eslint-disable-next-line
 	}, []);
 
+	// On mount or when activeTab changes, check the URL for the correct tab
 	useEffect(() => {
 		if (window.location.search.includes("colors")) {
 			setActiveTab("colors");
@@ -29,8 +35,17 @@ const AttributesMain = () => {
 		// eslint-disable-next-line
 	}, [activeTab]);
 
+	const handleTabChange = (key) => {
+		setActiveTab(key);
+		if (key === "colors") {
+			history.push("/admin/attributes?colors");
+		} else {
+			history.push("/admin/attributes?sizes");
+		}
+	};
+
 	return (
-		<AttributesMainWrapper show={collapsed}>
+		<AttributesMainWrapper collapsed={collapsed}>
 			<div className='grid-container-main'>
 				<div className='navcontent'>
 					<AdminNavbar
@@ -44,32 +59,33 @@ const AttributesMain = () => {
 
 				<div className='otherContentWrapper'>
 					<div className='container-wrapper'>
-						<div
-							className='mx-auto col-md-10 mx-auto'
-							style={{ background: "#8a8a8a", padding: "1px" }}
+						<CustomTabs
+							activeKey={activeTab}
+							onChange={handleTabChange}
+							type='card'
+							tabBarGutter={0}
 						>
-							<div className='my-2 tab-grid col-md-6 mx-auto'>
-								<Tab
-									isActive={activeTab === "colors"}
-									onClick={() => {
-										setActiveTab("colors");
-										history.push("/admin/attributes?colors");
-									}}
-								>
-									<Link to='/admin/attributes?colors'>Add Colors</Link>
-								</Tab>
-								<Tab
-									isActive={activeTab === "sizes"}
-									onClick={() => {
-										setActiveTab("sizes");
-										history.push("/admin/attributes?sizes");
-									}}
-								>
-									<Link to='/admin/attributes?sizes'>Add Sizes</Link>
-								</Tab>
-							</div>
-						</div>
-						<div>{activeTab === "colors" ? <Colors /> : <Sizes />}</div>
+							<TabPane
+								tab={
+									<span>
+										<BgColorsOutlined /> Colors
+									</span>
+								}
+								key='colors'
+							>
+								<Colors />
+							</TabPane>
+							<TabPane
+								tab={
+									<span>
+										<FontSizeOutlined /> Sizes
+									</span>
+								}
+								key='sizes'
+							>
+								<Sizes />
+							</TabPane>
+						</CustomTabs>
 					</div>
 				</div>
 			</div>
@@ -79,15 +95,16 @@ const AttributesMain = () => {
 
 export default AttributesMain;
 
+/* ========= STYLES ========= */
 const AttributesMainWrapper = styled.div`
 	overflow-x: hidden;
-	/* background: #ededed; */
 	margin-top: 80px;
 	min-height: 715px;
 
 	.grid-container-main {
 		display: grid;
-		grid-template-columns: ${(props) => (props.show ? "5% 75%" : "17% 75%")};
+		grid-template-columns: ${(props) =>
+			props.collapsed ? "5% 75%" : "17% 75%"};
 	}
 
 	.container-wrapper {
@@ -97,39 +114,51 @@ const AttributesMainWrapper = styled.div`
 		background: white;
 		margin: 0px 10px;
 	}
-
-	.tab-grid {
-		display: flex;
-		justify-content: center; /* Aligns children (tabs) in the center */
-		align-items: center; /* Centers children vertically */
-		text-align: center;
-	}
-
-	@media (max-width: 1400px) {
-		background: white;
-	}
 `;
 
-const Tab = styled.div`
-	cursor: pointer;
-	margin: 0 3px; /* 3px margin between tabs */
-	padding: 15px 5px; /* Adjust padding as needed */
-	font-weight: ${(props) => (props.isActive ? "bold" : "bold")};
-	background-color: ${(props) =>
-		props.isActive
-			? "transparent"
-			: "#bbbbbb"}; /* Light grey for unselected tabs */
-	box-shadow: ${(props) =>
-		props.isActive ? "inset 5px 5px 5px rgba(0, 0, 0, 0.3)" : "none"};
-	transition: all 0.3s ease; /* Smooth transition for changes */
-	min-width: 25px; /* Minimum width of the tab */
-	width: 100%; /* Full width within the container */
-	text-align: center; /* Center the text inside the tab */
-	/* Additional styling for tabs */
-	z-index: 100;
-	font-size: 1.2rem;
+/**
+ * Custom Tabs styling (like in AdminDashboard)
+ */
+const CustomTabs = styled(Tabs)`
+	.ant-tabs-nav {
+		margin-left: 10px; /* left margin for alignment */
+	}
 
-	a {
-		color: ${(props) => (props.isActive ? "white" : "black")};
+	/* Ensures the tab "cards" touch each other (no spacing) */
+	.ant-tabs-tab {
+		margin: 0 !important; /* remove default margin */
+		padding: 12px 16px;
+		font-size: 1rem;
+		font-weight: bold;
+		border-color: #dec8c8 !important;
+		transition: var(--main-transition);
+	}
+
+	/* The 'card' style uses borders; remove tab radius so they meet flush */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab {
+		border-radius: 0;
+		border: 1px solid var(--border-color-dark);
+		border-right-width: 0; /* ensures a continuous border chain */
+	}
+
+	/* The last tab needs a right border */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab:last-of-type,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab:last-of-type {
+		border-right-width: 1px;
+	}
+
+	/* Active tab styling */
+	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active,
+	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab-active {
+		background-color: var(--primary-color-light);
+		border-color: var(--primary-color-dark) !important;
+		color: var(--text-color-dark) !important;
+	}
+
+	/* Hover effect on tabs */
+	.ant-tabs-tab:hover {
+		background-color: var(--primary-color-lighter);
+		color: var(--text-color-primary);
 	}
 `;

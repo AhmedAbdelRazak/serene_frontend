@@ -7,7 +7,30 @@ import { getColors } from "../apiCore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReactGA from "react-ga4";
-import { Modal } from "antd"; // If you prefer to keep your image/design modal logic
+import { Modal } from "antd";
+
+/* Keyframe animations */
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+`;
 
 const SidebarCart = ({ from }) => {
 	const {
@@ -23,8 +46,9 @@ const SidebarCart = ({ from }) => {
 	} = useCartContext();
 
 	const [allColors, setAllColors] = useState([]);
-	const [modalItem, setModalItem] = useState(null); // For future image/design modal if desired
+	const [modalItem, setModalItem] = useState(null); // For optional product-image popup
 
+	// Fetch color data once
 	useEffect(() => {
 		getColors().then((data) => {
 			if (data.error) {
@@ -35,17 +59,16 @@ const SidebarCart = ({ from }) => {
 		});
 	}, []);
 
-	// Check stock availability for each cart item
+	// Check stock availability
 	const checkingAvailability = cart.map((item) => {
 		const product = item.allProductDetailsIncluded || {};
 		const productAttrs = product.productAttributes || [];
 
-		// if local variant, find the chosen attribute
+		// If local variations exist
 		const chosenAttr = productAttrs.find(
 			(attr) => attr.color === item.color && attr.size === item.size
 		);
 
-		// if we have local attributes, compare item.amount to chosenAttr.quantity
 		if (productAttrs.length > 0 && chosenAttr) {
 			return (
 				product.activeProduct &&
@@ -53,7 +76,7 @@ const SidebarCart = ({ from }) => {
 				item.amount > 0
 			);
 		} else {
-			// fallback => just compare to product.quantity
+			// No local variant => compare to product.quantity
 			return (
 				product.activeProduct &&
 				product.quantity >= item.amount &&
@@ -65,17 +88,20 @@ const SidebarCart = ({ from }) => {
 	const isStockAvailable = checkingAvailability.every(Boolean);
 
 	const handleClickImage = (item) => {
-		// If you want a modal for product image/design, store item in state
+		// show modal
 		setModalItem(item);
 	};
 
 	return (
 		<>
 			<ToastContainer className='toast-top-center' position='top-center' />
+
+			{/* Overlay behind cart sidebar */}
 			{isSidebarOpen2 && <Overlay onClick={() => closeSidebar2()} />}
 
-			<CartWrapper isOpen={isSidebarOpen2} fromPage={from === "NavbarBottom"}>
+			<CartWrapper $isOpen={isSidebarOpen2} $fromPage={from === "NavbarBottom"}>
 				<CloseIcon onClick={() => closeSidebar2()} />
+
 				<CartContent>
 					{cart.length === 0 ? (
 						<p
@@ -101,13 +127,13 @@ const SidebarCart = ({ from }) => {
 								...new Set(productAttrs.map((attr) => attr.size)),
 							];
 
-							// find chosen attribute if local variants exist
+							// find the chosen attribute
 							const chosenAttr = productAttrs.find(
 								(attr) => attr.color === item.color && attr.size === item.size
 							);
 							const maxQuantity = chosenAttr
 								? chosenAttr.quantity
-								: product.quantity || item.max; // fallback
+								: product.quantity || item.max;
 
 							// out-of-stock check
 							const isItemOutOfStock =
@@ -116,7 +142,7 @@ const SidebarCart = ({ from }) => {
 									chosenAttr.quantity < item.amount) ||
 								product.quantity <= 0;
 
-							// if it's a POD item => disable color/size changes
+							// if it's a Printify POD item, we often disable color/size changes
 							const isPodProduct =
 								item.isPrintifyProduct &&
 								product.printifyProductDetails?.POD === true;
@@ -128,13 +154,15 @@ const SidebarCart = ({ from }) => {
 										alt={item.name}
 										onClick={() => handleClickImage(item)}
 									/>
+
 									<ItemDetails>
 										<ItemName>{item.name}</ItemName>
+
 										{isItemOutOfStock && (
 											<OutOfStockMessage>Out Of Stock</OutOfStockMessage>
 										)}
 
-										{/* Quantity +/- => pass the "maxQuantity" to toggleAmount */}
+										{/* Quantity +/- */}
 										<QuantityWrapper>
 											<QuantityButton
 												onClick={() =>
@@ -165,17 +193,18 @@ const SidebarCart = ({ from }) => {
 
 										<ItemPrice>Price: ${item.priceAfterDiscount}</ItemPrice>
 										<ItemTotal>
-											Item Total: ${item.priceAfterDiscount * item.amount}
+											Item Total: $
+											{(item.priceAfterDiscount * item.amount).toFixed(2)}
 										</ItemTotal>
 
+										{/* If the product has variations => color/size */}
 										{item.chosenProductAttributes &&
 											productAttrs.length > 0 && (
 												<AttributeWrapper>
-													{/* ======= COLOR SELECT ======= */}
+													{/* ========== COLOR SELECT ========== */}
 													{uniqueProductColors.length > 0 &&
 														(isPodProduct && item.customDesign ? (
-															// --- If it's a POD item with a custom design,
-															//     display only ONE <option> in a disabled dropdown ---
+															/* If it's a POD item with a custom design => single disabled option */
 															<AttributeSelect
 																disabled
 																style={{ color: "grey" }}
@@ -198,9 +227,9 @@ const SidebarCart = ({ from }) => {
 																</option>
 															</AttributeSelect>
 														) : (
-															// --- Otherwise, the normal non-POD color select logic ---
+															/* Normal color select logic */
 															<AttributeSelect
-																disabled={isPodProduct} // if you still want to disable for non-designed POD
+																disabled={isPodProduct}
 																style={{
 																	color: isPodProduct ? "grey" : "inherit",
 																}}
@@ -231,21 +260,28 @@ const SidebarCart = ({ from }) => {
 																	}
 																}}
 															>
-																{uniqueProductColors.map((colorVal, ii) => (
-																	<option key={ii} value={colorVal}>
-																		{allColors.find(
-																			(clr) => clr.hexa === colorVal
-																		)?.color || colorVal}
-																	</option>
-																))}
+																{uniqueProductColors.map((colorVal, ii) => {
+																	// Attempt to match color name from allColors
+																	const foundColorObj = allColors.find(
+																		(clr) => clr.hexa === colorVal
+																	);
+																	const colorName = foundColorObj
+																		? foundColorObj.color
+																		: colorVal;
+																	return (
+																		<option key={ii} value={colorVal}>
+																			{colorName}
+																		</option>
+																	);
+																})}
 															</AttributeSelect>
 														))}
 
-													{/* ======= SIZE SELECT ======= */}
+													{/* ========== SIZE SELECT ========== */}
 													{uniqueProductSizes[0] !== "nosizes" &&
 														uniqueProductSizes.length > 0 &&
 														(isPodProduct && item.customDesign ? (
-															// --- Same idea for size: single option with customDesign size ---
+															/* POD w/ custom design => single disabled option */
 															<AttributeSelect
 																disabled
 																style={{ color: "grey" }}
@@ -268,7 +304,7 @@ const SidebarCart = ({ from }) => {
 																</option>
 															</AttributeSelect>
 														) : (
-															// --- Otherwise normal non-POD size logic ---
+															/* Normal size select */
 															<AttributeSelect
 																disabled={isPodProduct}
 																style={{
@@ -317,12 +353,14 @@ const SidebarCart = ({ from }) => {
 							);
 						})
 					)}
+
 					{cart.length > 0 && (
 						<TotalAmount>
 							Total Amount: ${Number(total_amount).toFixed(2)}
 							<hr className='col-md-6' />
 						</TotalAmount>
 					)}
+
 					{cart.length > 0 && (
 						<ButtonsWrapper>
 							<CheckoutButton
@@ -331,13 +369,12 @@ const SidebarCart = ({ from }) => {
 									if (isStockAvailable) {
 										window.scrollTo({ top: 0, behavior: "smooth" });
 										closeSidebar2();
-										// track GA
 										ReactGA.event({
 											category: "Continue To Checkout",
 											action: "User Clicked Continue To Checkout From Cart",
 										});
 									} else {
-										// find out-of-stock items & show message
+										// find out-of-stock items
 										const outOfStockItems = cart.filter(
 											(item, index) => !checkingAvailability[index]
 										);
@@ -353,13 +390,14 @@ const SidebarCart = ({ from }) => {
 									? "Continue To Check Out"
 									: "No Stock Available"}
 							</CheckoutButton>
+
 							<ClearCartButton onClick={clearCart}>Clear Cart</ClearCartButton>
 						</ButtonsWrapper>
 					)}
 				</CartContent>
 			</CartWrapper>
 
-			{/* Example image/design modal if you want it */}
+			{/* Optional product-image modal */}
 			<Modal
 				open={!!modalItem}
 				onCancel={() => setModalItem(null)}
@@ -367,7 +405,13 @@ const SidebarCart = ({ from }) => {
 				title={null}
 				closable={true}
 				centered
-				bodyStyle={{ padding: "10px", textAlign: "center" }}
+				// Instead of bodyStyle, use the new 'styles' prop
+				styles={{
+					body: {
+						padding: "10px",
+						textAlign: "center",
+					},
+				}}
 				maskClosable
 				width='auto'
 				zIndex={9999}
@@ -390,30 +434,9 @@ const SidebarCart = ({ from }) => {
 
 export default SidebarCart;
 
-/* =============== STYLED COMPONENTS ================ */
+/* -------------- STYLED COMPONENTS -------------- */
 
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-`;
-
-const fadeOut = keyframes`
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-`;
-
+/* Overlay behind the cart sidebar */
 const Overlay = styled.div`
 	position: fixed;
 	top: 0;
@@ -425,22 +448,23 @@ const Overlay = styled.div`
 	animation: ${fadeIn} 0.3s ease-in-out;
 `;
 
+/* CartWrapper with $ prop to avoid warnings */
 const CartWrapper = styled.div`
 	position: fixed;
 	top: 0;
 	right: 0;
-	width: ${(props) => (props.fromPage ? "400px" : "300px")};
+	width: ${(props) => (props.$fromPage ? "400px" : "300px")};
 	height: 100vh;
 	background: var(--background-light);
 	padding: 20px;
-	transform: translateX(${(props) => (props.isOpen ? "0" : "100%")});
+	transform: translateX(${(props) => (props.$isOpen ? "0" : "100%")});
 	transition: transform 0.3s ease;
 	z-index: 1500;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	animation: ${(props) =>
-		props.isOpen
+		props.$isOpen
 			? css`
 					${fadeIn} 0.3s ease forwards
 				`
@@ -500,6 +524,13 @@ const ItemName = styled.p`
 	margin-bottom: 5px;
 	text-transform: capitalize;
 	font-size: 0.9rem;
+`;
+
+const OutOfStockMessage = styled.p`
+	color: red;
+	font-weight: bold;
+	margin-top: 5px;
+	font-size: 12px;
 `;
 
 const QuantityWrapper = styled.div`
@@ -591,22 +622,6 @@ const RemoveButton = styled.button`
 	}
 `;
 
-const ClearCartButton = styled.button`
-	margin-top: 30px;
-	padding: 10px 20px;
-	background: var(--secondary-color-dark);
-	color: var(--neutral-light);
-	border: none;
-	font-size: 14px;
-	transition: var(--main-transition);
-	border-radius: 5px;
-	cursor: pointer;
-
-	&:hover {
-		background: var(--secondary-color-darker);
-	}
-`;
-
 const TotalAmount = styled.div`
 	margin-top: 20px;
 	font-size: 1.2rem;
@@ -633,15 +648,25 @@ const CheckoutButton = styled(Link)`
 	transition: var(--main-transition);
 	border-radius: 5px;
 	cursor: pointer;
+	text-align: center;
 
 	&:hover {
 		background: var(--primary-color-darker);
 	}
 `;
 
-const OutOfStockMessage = styled.p`
-	color: red;
-	font-weight: bold;
-	margin-top: 5px;
-	font-size: 12px;
+const ClearCartButton = styled.button`
+	margin-top: 30px;
+	padding: 10px 20px;
+	background: var(--secondary-color-dark);
+	color: var(--neutral-light);
+	border: none;
+	font-size: 14px;
+	transition: var(--main-transition);
+	border-radius: 5px;
+	cursor: pointer;
+
+	&:hover {
+		background: var(--secondary-color-darker);
+	}
 `;
