@@ -7,11 +7,11 @@ import ReactGA from "react-ga4";
 
 const { Meta } = Card;
 
-// =============
-// (1) Cloudinary Transform Helper
-// If the URL isn't Cloudinary, returns original.
-// Otherwise, inserts f_auto,q_auto,w_{width} + optional f_webp.
-// =============
+/**
+ * (1) Cloudinary Transform Helper
+ * If the URL isn't Cloudinary, returns original.
+ * Otherwise, inserts f_auto,q_auto,w_{width} + optional f_webp.
+ */
 const getCloudinaryOptimizedUrl = (
 	url,
 	{ width = 600, forceWebP = false } = {}
@@ -20,31 +20,37 @@ const getCloudinaryOptimizedUrl = (
 		return url; // Not a Cloudinary URL
 	}
 
-	// If we've already inserted something like f_auto,q_auto, skip
-	if (url.includes("f_auto") || url.includes("q_auto")) {
-		return url;
+	let newUrl = url;
+	// If the URL already has f_auto or q_auto, we may still need to enforce w_{width}.
+	const hasTransform = newUrl.includes("f_auto") || newUrl.includes("q_auto");
+
+	if (!hasTransform) {
+		// Insert transformations after '/upload/'
+		const parts = newUrl.split("/upload/");
+		if (parts.length === 2) {
+			const baseTransform = `f_auto,q_auto,w_${width}`;
+			const finalTransform = forceWebP
+				? `${baseTransform},f_webp`
+				: baseTransform;
+			newUrl = `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
+		}
+	} else {
+		// If transformations exist, ensure 'w_{width}' is present
+		if (!newUrl.match(/w_\d+/)) {
+			newUrl = newUrl.replace("f_auto,q_auto", `f_auto,q_auto,w_${width}`);
+			if (forceWebP && !newUrl.includes("f_webp")) {
+				newUrl = newUrl.replace("f_auto,q_auto", "f_auto,q_auto,f_webp");
+			}
+		}
 	}
 
-	// Split at '/upload/' to insert transformations
-	const parts = url.split("/upload/");
-	if (parts.length !== 2) {
-		return url; // Can't parse, return original
-	}
-
-	// Build transformation string
-	// Example: f_auto,q_auto,w_600 or f_auto,q_auto,w_600,f_webp
-	const baseTransform = `f_auto,q_auto,w_${width}`;
-	const finalTransform = forceWebP ? `${baseTransform},f_webp` : baseTransform;
-
-	// Reconstruct URL
-	// e.g. https://res.cloudinary.com/.../upload/f_auto,q_auto,w_600/...
-	return `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
+	return newUrl;
 };
 
 const ZCustomDesigns = ({ customDesignProducts }) => {
 	const history = useHistory();
 
-	// Memoize main slider settings so they're computed only once.
+	// Memoize main slider settings
 	const settings = useMemo(
 		() => ({
 			dots: true,
@@ -87,24 +93,9 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 		[]
 	);
 
-	// Memoize the inner image slider settings.
-	const imageSettings = useMemo(
-		() => ({
-			dots: true,
-			infinite: true,
-			speed: 1500,
-			slidesToShow: 1,
-			slidesToScroll: 1,
-			autoplay: true,
-			autoplaySpeed: 4000,
-		}),
-		[]
-	);
+	// We no longer use imageSettings because we won't do a sub-slider.
 
-	// Memoize the add-to-cart handler.
-	// (Intentionally empty, preserving comment)
-
-	// Memoize the navigation handler.
+	// Memoize navigation handler
 	const navigateToProduct = useCallback(
 		(product) => {
 			// If it's a POD product, redirect accordingly.
@@ -133,6 +124,7 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 					Create a keepsake they’ll treasure. Personalize any item with your
 					special words or favorite picture.
 				</h2>
+
 				<Slider {...settings}>
 					{customDesignProducts &&
 						customDesignProducts.map((product, i) => {
@@ -141,6 +133,8 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 								chosenProductAttributes?.productImages ||
 								product.thumbnailImage[0].images;
 
+							// Always just take the first image
+							const firstImage = images && images[0];
 							const originalPrice = product.price || 0;
 							const discountedPrice =
 								product.priceAfterDiscount > 0
@@ -150,10 +144,25 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 							const originalPriceFixed = originalPrice.toFixed(2);
 							const discountedPriceFixed = discountedPrice.toFixed(2);
 
-							// Check if the product is POD.
+							// Is it a Printify On-Demand product
 							const isPOD =
 								product.isPrintifyProduct &&
 								product.printifyProductDetails?.POD;
+
+							// Create optimized URLs for the single first image
+							let baseJpg = "";
+							let baseWebp = "";
+
+							if (firstImage?.url) {
+								baseJpg = getCloudinaryOptimizedUrl(firstImage.url, {
+									width: 600,
+									forceWebP: false,
+								});
+								baseWebp = getCloudinaryOptimizedUrl(firstImage.url, {
+									width: 600,
+									forceWebP: true,
+								});
+							}
 
 							return (
 								<div key={i} className='slide'>
@@ -165,67 +174,20 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 												{/* If it's a POD product, show the custom design badge */}
 												{isPOD && <PodBadge>Custom Design 💖</PodBadge>}
 
-												{images.length > 1 ? (
-													<Slider {...imageSettings}>
-														{images.map((img, index) => {
-															// (2) Image optimization logic
-															const webpUrl = getCloudinaryOptimizedUrl(
-																img.url,
-																{
-																	width: 600,
-																	forceWebP: true,
-																}
-															);
-															const fallbackUrl = getCloudinaryOptimizedUrl(
-																img.url,
-																{
-																	width: 600,
-																	forceWebP: false,
-																}
-															);
-
-															return (
-																<ImageWrapper key={index}>
-																	<picture>
-																		<source
-																			srcSet={webpUrl}
-																			type='image/webp'
-																		/>
-																		<ProductImage
-																			src={fallbackUrl}
-																			alt={`${product.productName} - view ${index + 1}`}
-																			loading='lazy'
-																		/>
-																	</picture>
-																</ImageWrapper>
-															);
-														})}
-													</Slider>
-												) : (
-													<ImageWrapper>
-														{/* (2) Image optimization logic for single image */}
+												<ImageWrapper>
+													{baseJpg ? (
 														<picture>
-															<source
-																srcSet={getCloudinaryOptimizedUrl(
-																	images[0].url,
-																	{
-																		width: 600,
-																		forceWebP: true,
-																	}
-																)}
-																type='image/webp'
-															/>
+															<source srcSet={baseWebp} type='image/webp' />
 															<ProductImage
-																src={getCloudinaryOptimizedUrl(images[0].url, {
-																	width: 600,
-																	forceWebP: false,
-																})}
+																src={baseJpg}
 																alt={`${product.productName} - single view`}
 																loading='lazy'
 															/>
 														</picture>
-													</ImageWrapper>
-												)}
+													) : (
+														<NoImagePlaceholder>No Image</NoImagePlaceholder>
+													)}
+												</ImageWrapper>
 											</ImageContainer>
 										}
 									>
@@ -259,7 +221,11 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 
 export default ZCustomDesigns;
 
-/* ==== STYLES ==== */
+/* 
+=== STYLES ===
+(All styling remains the same, with minimal adjustments)
+*/
+
 const Container = styled.div`
 	background: var(--background-light);
 	padding: 10px;
@@ -281,6 +247,15 @@ const ZCustomDesignsWrapper = styled.div`
 		text-align: center;
 		margin-bottom: 40px;
 		color: var(--text-color-dark);
+		font-family: "Brush Script MT", cursive, sans-serif;
+		color: var(--secondary-color-darker);
+		font-size: 2.3rem;
+		margin-top: 5px;
+		margin-bottom: 5px;
+		font-style: italic;
+		font-weight: bolder;
+		line-height: 1;
+		text-align: left;
 	}
 
 	.slick-slide {
@@ -305,18 +280,6 @@ const ZCustomDesignsWrapper = styled.div`
 		display: none !important;
 	}
 
-	h2 {
-		font-family: "Brush Script MT", cursive, sans-serif;
-		color: var(--secondary-color-darker);
-		font-size: 2.3rem;
-		margin-top: 5px;
-		margin-bottom: 5px;
-		font-style: italic;
-		font-weight: bolder;
-		line-height: 1;
-		text-align: left;
-	}
-
 	@media (max-width: 900px) {
 		.slick-arrow,
 		.slick-prev {
@@ -324,15 +287,9 @@ const ZCustomDesignsWrapper = styled.div`
 		}
 
 		h2 {
-			font-family: "Brush Script MT", cursive, sans-serif;
-			color: var(--secondary-color-darker);
 			font-size: 1.5rem;
 			margin-top: 5px;
 			margin-bottom: 5px;
-			font-style: italic;
-			font-weight: bolder;
-			line-height: 1;
-			text-align: left;
 		}
 	}
 `;
@@ -389,6 +346,16 @@ const ProductImage = styled.img`
 	height: 100%;
 	object-fit: cover;
 	object-position: center;
+`;
+
+const NoImagePlaceholder = styled.div`
+	width: 100%;
+	height: 100%;
+	background: #ccc;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
 `;
 
 const PodBadge = styled.div`

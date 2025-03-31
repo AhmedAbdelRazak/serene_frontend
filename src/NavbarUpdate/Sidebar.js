@@ -36,6 +36,43 @@ const fadeOut = keyframes`
   }
 `;
 
+/**
+ * Helper to insert Cloudinary transformations (f_auto,q_auto,w_{width}).
+ * If it's not a Cloudinary URL, return as is.
+ * Optionally, force webp by appending ",f_webp" if `forceWebP=true`.
+ */
+const getCloudinaryOptimizedUrl = (
+	url,
+	{ width = 300, forceWebP = false } = {}
+) => {
+	if (!url || !url.includes("res.cloudinary.com")) {
+		return url; // Not a Cloudinary URL
+	}
+
+	let newUrl = url;
+	const hasTransform = newUrl.includes("f_auto") || newUrl.includes("q_auto");
+
+	// If no transformations exist, insert them after "/upload/"
+	if (!hasTransform) {
+		const parts = newUrl.split("/upload/");
+		if (parts.length === 2) {
+			const base = `f_auto,q_auto,w_${width}`;
+			const finalTx = forceWebP ? `${base},f_webp` : base;
+			newUrl = `${parts[0]}/upload/${finalTx}/${parts[1]}`;
+		}
+	} else {
+		// There's already "f_auto,q_auto" in the URL, but we might still need w_{width} or f_webp
+		if (!newUrl.match(/w_\d+/)) {
+			newUrl = newUrl.replace("f_auto,q_auto", `f_auto,q_auto,w_${width}`);
+		}
+		if (forceWebP && !newUrl.includes("f_webp")) {
+			newUrl = newUrl.replace("f_auto,q_auto", "f_auto,q_auto,f_webp");
+		}
+	}
+
+	return newUrl;
+};
+
 const Sidebar = ({
 	isSidebarOpen,
 	setIsSidebarOpen,
@@ -79,19 +116,40 @@ const Sidebar = ({
 		});
 	};
 
+	// If we have a Cloudinary logo URL, create both a fallback JPEG and WebP
+	let fallbackLogoUrl = "";
+	let webpLogoUrl = "";
+
+	if (websiteSetup?.sereneJannatLogo?.url) {
+		const originalLogo = websiteSetup.sereneJannatLogo.url;
+		// JPEG/PNG fallback
+		fallbackLogoUrl = getCloudinaryOptimizedUrl(originalLogo, {
+			width: 300,
+			forceWebP: false,
+		});
+		// WebP
+		webpLogoUrl = getCloudinaryOptimizedUrl(originalLogo, {
+			width: 300,
+			forceWebP: true,
+		});
+	}
+
 	return (
 		<>
 			{isSidebarOpen && <Overlay onClick={() => setIsSidebarOpen(false)} />}
 			<SidebarWrapper $isOpen={isSidebarOpen}>
 				<CloseIcon onClick={() => setIsSidebarOpen(false)} />
 
-				{websiteSetup?.sereneJannatLogo?.url && (
+				{fallbackLogoUrl && (
 					<Logo $isOpen={isSidebarOpen}>
-						<img
-							src={websiteSetup.sereneJannatLogo.url}
-							alt='Serene Janat Shop Logo'
-							loading='lazy'
-						/>
+						<picture>
+							<source srcSet={webpLogoUrl} type='image/webp' />
+							<img
+								src={fallbackLogoUrl}
+								alt='Serene Janat Shop Logo'
+								loading='lazy'
+							/>
+						</picture>
 					</Logo>
 				)}
 
@@ -202,7 +260,7 @@ const Overlay = styled.div`
 	animation: ${fadeIn} 0.3s ease-in-out;
 `;
 
-/* The sidebar container (no more withConfig) */
+/* The sidebar container */
 const SidebarWrapper = styled.div`
 	position: fixed;
 	top: 0;
@@ -237,7 +295,7 @@ const CloseIcon = styled(FaTimes)`
 	font-size: 20px;
 `;
 
-/* The logo container, also using $isOpen */
+/* The logo container */
 const Logo = styled.div`
 	width: 95%;
 	margin-bottom: 20px;

@@ -3,9 +3,9 @@ import Slider from "react-slick";
 import styled from "styled-components";
 
 /**
- * Helper to add Cloudinary transformations (f_auto,q_auto).
- * If the URL is not Cloudinary, or it already has transformations,
- * it returns the original URL unchanged.
+ * Ensures we always insert "f_auto,q_auto,w_1600" into the Cloudinary URL.
+ * If it's not a Cloudinary URL, or if it already has transformations,
+ * we handle it accordingly.
  */
 const getCloudinaryOptimizedUrl = (url) => {
 	if (!url?.includes("res.cloudinary.com")) {
@@ -13,15 +13,21 @@ const getCloudinaryOptimizedUrl = (url) => {
 		return url;
 	}
 
-	// If we've already added f_auto or q_auto, skip
+	// If it already has f_auto or q_auto, we still ensure w_1600 is inserted
 	if (url.includes("f_auto") || url.includes("q_auto")) {
+		// If the URL doesn't contain w_\d+, insert w_1600
+		if (!/w_\d+/.test(url)) {
+			return url
+				.replace("/upload/", "/upload/") // optional, ensures path is consistent
+				.replace("f_auto,q_auto", "f_auto,q_auto,w_1600");
+		}
 		return url;
 	}
 
-	// Insert transformations right after '/upload/'
+	// Otherwise, insert the transformations right after '/upload/'
 	const parts = url.split("/upload/");
 	if (parts.length === 2) {
-		return `${parts[0]}/upload/f_auto,q_auto/${parts[1]}`;
+		return `${parts[0]}/upload/f_auto,q_auto,w_1600/${parts[1]}`;
 	}
 
 	// Fallback
@@ -29,10 +35,8 @@ const getCloudinaryOptimizedUrl = (url) => {
 };
 
 const Hero = ({ websiteSetup }) => {
-	// Banners array from your global setup
 	const banners = websiteSetup?.homeMainBanners || [];
 
-	// React Slick settings
 	const settings = {
 		dots: true,
 		infinite: true,
@@ -58,28 +62,42 @@ const Hero = ({ websiteSetup }) => {
 							pageRedirectURL,
 						} = banner;
 
-						// Insert Cloudinary transformations if possible
-						const optimizedUrl = getCloudinaryOptimizedUrl(url);
+						// Cloudinary transforms
+						const base1600 = getCloudinaryOptimizedUrl(url);
+						const base480 = base1600.replace("w_1600", "w_480");
+						const base768 = base1600.replace("w_1600", "w_768");
+						const base1200 = base1600.replace("w_1600", "w_1200");
 
-						// We'll set fetchpriority="high" only for the *very first* banner
 						const isFirstSlide = idx === 0;
 
 						return (
 							<Slide key={idx}>
-								{optimizedUrl ? (
-									<BannerImage
-										src={optimizedUrl}
-										alt={`Banner ${idx + 1}`}
-										// The *first* slide has high priority, subsequent slides are lazy
-										loading={isFirstSlide ? "eager" : "lazy"}
-										fetchpriority={isFirstSlide ? "high" : undefined}
-										decoding='async'
-									/>
+								{base1600 ? (
+									<BannerImageWrapper>
+										<img
+											src={base480}
+											srcSet={`
+                        ${base480} 480w,
+                        ${base768} 768w,
+                        ${base1200} 1200w,
+                        ${base1600} 1600w
+                      `}
+											sizes='(max-width: 600px) 480px,
+                             (max-width: 1024px) 768px,
+                             1600px'
+											alt={`Banner ${idx + 1}`}
+											loading={isFirstSlide ? "eager" : "lazy"}
+											// We can safely pass fetchpriority to a *raw* <img>.
+											// styled-components never sees this prop:
+											fetchpriority={isFirstSlide ? "high" : undefined}
+											decoding='async'
+										/>
+									</BannerImageWrapper>
 								) : (
 									<Placeholder>Banner {idx + 1}</Placeholder>
 								)}
 
-								{/* Content over the banner */}
+								{/* Overlaid text/content */}
 								<BannerContent>
 									{title && <h2>{title}</h2>}
 									{subTitle && <p>{subTitle}</p>}
@@ -190,21 +208,23 @@ const Slide = styled.div`
 	max-height: 700px !important;
 `;
 
-const BannerImage = styled.img`
+/**
+ * Instead of styled.img, we wrap a normal <img> inside:
+ * This ensures "fetchpriority" won't trigger styled-components warnings.
+ */
+const BannerImageWrapper = styled.div`
 	width: 100%;
-	height: auto;
-	object-fit: cover;
 	max-height: 600px;
+	overflow: hidden;
 
-	/* 
-    Optional: Give the browser a clue about the aspect ratio.
-    E.g., 16:9 for wide banners.
-    aspect-ratio: 16 / 9; 
-  */
+	img {
+		width: 100%;
+		height: auto;
+		object-fit: cover;
 
-	@media (max-width: 600px) {
-		/* you can tweak as needed */
-		min-height: 450px !important;
+		@media (max-width: 600px) {
+			min-height: 450px !important;
+		}
 	}
 `;
 

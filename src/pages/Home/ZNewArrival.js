@@ -10,9 +10,10 @@ import ReactGA from "react-ga4";
 
 const { Meta } = Card;
 
-// 1) Cloudinary Transform Helper
-//    If the URL isn't Cloudinary, returns original.
-//    Otherwise, inserts f_auto,q_auto,w_{width} + optional f_webp.
+/**
+ * Ensures Cloudinary transformations: f_auto,q_auto,w_{width}
+ * plus optional f_webp if forceWebP=true.
+ */
 const getCloudinaryOptimizedUrl = (
 	url,
 	{ width = 600, forceWebP = false } = {}
@@ -21,25 +22,31 @@ const getCloudinaryOptimizedUrl = (
 		return url; // Not a Cloudinary URL
 	}
 
-	// If we've already inserted something like f_auto,q_auto, skip
-	if (url.includes("f_auto") || url.includes("q_auto")) {
-		return url;
+	// If the URL already has f_auto or q_auto, we may still need to enforce w_{width}
+	let newUrl = url;
+	const hasTransform = newUrl.includes("f_auto") || newUrl.includes("q_auto");
+
+	if (!hasTransform) {
+		// Insert transformations after '/upload/'
+		const parts = newUrl.split("/upload/");
+		if (parts.length === 2) {
+			const baseTransform = `f_auto,q_auto,w_${width}`;
+			const finalTransform = forceWebP
+				? `${baseTransform},f_webp`
+				: baseTransform;
+			newUrl = `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
+		}
+	} else {
+		// If transformations exist, ensure 'w_{width}' is present
+		if (!newUrl.match(/w_\d+/)) {
+			newUrl = newUrl.replace("f_auto,q_auto", `f_auto,q_auto,w_${width}`);
+			if (forceWebP && !newUrl.includes("f_webp")) {
+				newUrl = newUrl.replace("f_auto,q_auto", "f_auto,q_auto,f_webp");
+			}
+		}
 	}
 
-	// Split at '/upload/' to insert transformations
-	const parts = url.split("/upload/");
-	if (parts.length !== 2) {
-		return url; // Can't parse, return original
-	}
-
-	// Build transformation string
-	// Example: f_auto,q_auto,w_600 or f_auto,q_auto,w_600,f_webp
-	const baseTransform = `f_auto,q_auto,w_${width}`;
-	const finalTransform = forceWebP ? `${baseTransform},f_webp` : baseTransform;
-
-	// Reconstruct URL
-	// e.g. https://res.cloudinary.com/.../upload/f_auto,q_auto,w_600/...
-	return `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
+	return newUrl;
 };
 
 const ZNewArrival = ({ newArrivalProducts }) => {
@@ -93,16 +100,19 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 	const handleCartIconClick = useCallback(
 		async (product, e) => {
 			e.stopPropagation();
-			// If it's a POD product, redirect to the custom gifts page.
+
+			// If it's a Print-On-Demand product, push to custom gifts page
 			if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
 				history.push(`/custom-gifts/${product._id}`);
 				return;
 			}
+
 			ReactGA.event({
 				category: "Add To The Cart New Arrivals",
 				action: "User Added New Arrival Product To The Cart",
 				label: `User added ${product.productName} to the cart from New Arrivals`,
 			});
+
 			try {
 				const data3 = await readProduct(product._id);
 				if (data3 && !data3.error) {
@@ -124,11 +134,13 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 				history.push(`/custom-gifts/${product._id}`);
 				return;
 			}
+
 			ReactGA.event({
 				category: "New Arrival Product Clicked",
 				action: "New Arrival Product Clicked",
 				label: `User Navigated to ${product.productName} single page`,
 			});
+
 			window.scrollTo({ top: 0, behavior: "smooth" });
 			history.push(
 				`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`
@@ -149,22 +161,51 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 								chosenProductAttributes?.productImages ||
 								product.thumbnailImage[0].images;
 
-							// Always just take the first image
+							// Always just take the first image in the array
 							const firstImage = images[0];
 
-							// Get optimized URLs (similar to ZCategories)
-							let imageUrl = "";
-							let webpUrl = "";
+							// Build multiple Cloudinary URLs for responsive images
+							let fallbackJpg = "";
+							let srcsetJpg = "";
+							let srcsetWebp = "";
+
 							if (firstImage?.url) {
-								const originalUrl = firstImage.url;
-								imageUrl = getCloudinaryOptimizedUrl(originalUrl, {
+								// Base (JPEG)
+								const baseJpg = getCloudinaryOptimizedUrl(firstImage.url, {
 									width: 600,
 									forceWebP: false,
 								});
-								webpUrl = getCloudinaryOptimizedUrl(originalUrl, {
+								// WebP
+								const baseWebp = getCloudinaryOptimizedUrl(firstImage.url, {
 									width: 600,
 									forceWebP: true,
 								});
+
+								// Derive smaller/bigger widths
+								const jpg480 = baseJpg.replace("w_600", "w_480");
+								const jpg768 = baseJpg.replace("w_600", "w_768");
+								const jpg1200 = baseJpg.replace("w_600", "w_1200");
+
+								const webp480 = baseWebp.replace("w_600", "w_480");
+								const webp768 = baseWebp.replace("w_600", "w_768");
+								const webp1200 = baseWebp.replace("w_600", "w_1200");
+
+								// Fallback is the smallest
+								fallbackJpg = jpg480;
+
+								// Construct the srcset strings
+								srcsetJpg = `
+                  ${jpg480} 480w,
+                  ${jpg768} 768w,
+                  ${jpg1200} 1200w,
+                  ${baseJpg} 1600w
+                `;
+								srcsetWebp = `
+                  ${webp480} 480w,
+                  ${webp768} 768w,
+                  ${webp1200} 1200w,
+                  ${baseWebp} 1600w
+                `;
 							}
 
 							const originalPrice = product.price || 0;
@@ -182,7 +223,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 									0
 								) || product.quantity;
 
-							// Check if the product is POD.
+							// Check if the product is POD
 							const isPOD =
 								product.isPrintifyProduct &&
 								product.printifyProductDetails?.POD;
@@ -207,11 +248,28 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 
 												<ImageWrapper>
 													<picture>
-														<source srcSet={webpUrl} type='image/webp' />
+														{/* WebP first */}
+														<source
+															srcSet={srcsetWebp}
+															sizes='(max-width: 480px) 480px,
+                                     (max-width: 768px) 768px,
+                                     (max-width: 1200px) 1200px,
+                                     1600px'
+															type='image/webp'
+														/>
+														{/* Fallback JPG */}
+														<source
+															srcSet={srcsetJpg}
+															sizes='(max-width: 480px) 480px,
+                                     (max-width: 768px) 768px,
+                                     (max-width: 1200px) 1200px,
+                                     1600px'
+															type='image/jpeg'
+														/>
 														<ProductImage
-															src={imageUrl}
-															alt={`${product.productName} - single view`}
 															loading='lazy'
+															src={fallbackJpg}
+															alt={`${product.productName} - single view`}
 														/>
 													</picture>
 												</ImageWrapper>
@@ -248,7 +306,8 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 
 export default ZNewArrival;
 
-/* ==== STYLES ==== */
+/* ==== STYLES (unchanged except for references to new image elements) ==== */
+
 const Container = styled.div`
 	background: var(--background-light);
 	padding: 10px;

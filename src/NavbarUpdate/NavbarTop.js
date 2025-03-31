@@ -1,34 +1,32 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, lazy, memo } from "react";
 import styled from "styled-components";
+
 import { FaBars, FaUserPlus } from "react-icons/fa";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { Link, useHistory } from "react-router-dom";
 import { isAuthenticated, signout } from "../auth";
 import { useCartContext } from "../cart_context";
 
-// Lazy-loaded components
-const Sidebar = React.lazy(() => import("./Sidebar"));
-const SidebarCart = React.lazy(() => import("./SidebarCart"));
+const Sidebar = lazy(() => import("./Sidebar"));
+const SidebarCart = lazy(() => import("./SidebarCart"));
 
 /**
- * Helper to transform Cloudinary URLs by inserting f_auto,q_auto
- * (and optionally a width param, e.g., w_300).
+ * Helper to transform Cloudinary URLs by inserting f_auto,q_auto,
+ * and an optional w_{width}.
  * If it's not a Cloudinary URL or already has transformations, return as is.
  */
 const getCloudinaryOptimizedUrl = (url, { width = 300 } = {}) => {
 	if (!url?.includes("res.cloudinary.com")) return url;
 	if (url.includes("f_auto") || url.includes("q_auto")) return url;
 
-	// Insert transformations right after '/upload/'
 	const parts = url.split("/upload/");
 	if (parts.length === 2) {
-		// e.g. https://res.cloudinary.com/.../upload/f_auto,q_auto,w_300/...
 		return `${parts[0]}/upload/f_auto,q_auto,w_${width}/${parts[1]}`;
 	}
 	return url;
 };
 
-const NavbarTop = React.memo(() => {
+const NavbarTop = memo(() => {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [isCartOpen, setIsCartOpen] = useState(false);
 	const [activeLink, setActiveLink] = useState("");
@@ -55,14 +53,19 @@ const NavbarTop = React.memo(() => {
 		});
 	}, [navigate]);
 
-	// If we have a Cloudinary logo URL, generate an optimized version
+	// If we have a Cloudinary logo URL, generate an optimized version + WebP version
 	let optimizedLogoUrl = "";
+	let webpLogoUrl = "";
+
 	if (websiteSetup?.sereneJannatLogo?.url) {
-		optimizedLogoUrl = getCloudinaryOptimizedUrl(
-			websiteSetup.sereneJannatLogo.url,
-			{
-				width: 300, // or any width you prefer for your logo
-			}
+		const originalLogoUrl = websiteSetup.sereneJannatLogo.url;
+		optimizedLogoUrl = getCloudinaryOptimizedUrl(originalLogoUrl, {
+			width: 300,
+		});
+		// Force WebP
+		webpLogoUrl = optimizedLogoUrl.replace(
+			"/f_auto,q_auto",
+			"/f_auto,q_auto,f_webp"
 		);
 	}
 
@@ -77,7 +80,10 @@ const NavbarTop = React.memo(() => {
 				{/* Logo (only if we have a URL) */}
 				{optimizedLogoUrl && (
 					<Link to='/' style={{ textDecoration: "none", display: "flex" }}>
-						<Logo src={optimizedLogoUrl} alt='Serene Jannat Shop' />
+						<picture>
+							<source srcSet={webpLogoUrl} type='image/webp' />
+							<Logo src={optimizedLogoUrl} alt='Serene Jannat Shop' />
+						</picture>
 					</Link>
 				)}
 
@@ -173,7 +179,7 @@ const NavbarTop = React.memo(() => {
 			<SidebarCart
 				isCartOpen={isCartOpen}
 				setIsCartOpen={setIsCartOpen}
-				from={"NavbarTop"}
+				from='NavbarTop'
 			/>
 		</>
 	);

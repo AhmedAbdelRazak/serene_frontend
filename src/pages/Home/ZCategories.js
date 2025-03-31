@@ -4,9 +4,14 @@ import { Link } from "react-router-dom";
 import { Card } from "antd";
 import ReactGA from "react-ga4";
 
-// 1) Cloudinary Transform Helper
-//    If the URL isn't Cloudinary, returns original.
-//    Otherwise, inserts f_auto,q_auto,w_{width} + optional f_webp.
+/**
+ * Helper to insert Cloudinary transformations:
+ *   - f_auto,q_auto,w_{width}
+ *   - optionally f_webp for forceWebP
+ *
+ * e.g.:
+ *   https://res.cloudinary.com/.../upload/f_auto,q_auto,w_600/...
+ */
 const getCloudinaryOptimizedUrl = (
 	url,
 	{ width = 600, forceWebP = false } = {}
@@ -15,25 +20,34 @@ const getCloudinaryOptimizedUrl = (
 		return url; // Not a Cloudinary URL
 	}
 
-	// If we've already inserted something like f_auto,q_auto, skip
-	if (url.includes("f_auto") || url.includes("q_auto")) {
-		return url;
+	// If the URL already has 'f_auto' or 'q_auto'
+	// we still ensure "w_..." is added if not present
+	let newUrl = url;
+	// Check if transformations already exist:
+	const hasTransform = newUrl.includes("f_auto") || newUrl.includes("q_auto");
+
+	if (!hasTransform) {
+		// Insert transformations after '/upload/'
+		const parts = newUrl.split("/upload/");
+		if (parts.length === 2) {
+			// e.g. ".../upload/f_auto,q_auto,w_600/..."
+			const transform = `f_auto,q_auto,w_${width}`;
+			const finalTransform = forceWebP ? `${transform},f_webp` : transform;
+			newUrl = `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
+		}
+	} else {
+		// If transformations exist, ensure 'w_{width}' is present
+		if (!newUrl.match(/w_\d+/)) {
+			// Insert 'w_{width}' after 'f_auto,q_auto'
+			// or append if there's no w_
+			newUrl = newUrl.replace("f_auto,q_auto", `f_auto,q_auto,w_${width}`);
+			if (forceWebP && !newUrl.includes("f_webp")) {
+				newUrl = newUrl.replace("f_auto,q_auto", "f_auto,q_auto,f_webp");
+			}
+		}
 	}
 
-	// Split at '/upload/' to insert transformations
-	const parts = url.split("/upload/");
-	if (parts.length !== 2) {
-		return url; // Can't parse, return original
-	}
-
-	// Build transformation string
-	// Example: f_auto,q_auto,w_600 or f_auto,q_auto,w_600,f_webp
-	const baseTransform = `f_auto,q_auto,w_${width}`;
-	const finalTransform = forceWebP ? `${baseTransform},f_webp` : baseTransform;
-
-	// Reconstruct URL
-	// e.g. https://res.cloudinary.com/.../upload/f_auto,q_auto,w_600/...
-	return `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
+	return newUrl;
 };
 
 const ZCategories = ({ allCategories }) => {
@@ -57,21 +71,49 @@ const ZCategories = ({ allCategories }) => {
 							? "/custom-gifts"
 							: `/our-products?category=${category.categorySlug}`;
 
-					// If there's a thumbnail, generate optimized URLs
+					// If there's a thumbnail, generate multiple Cloudinary URLs
 					let imageUrl = "";
 					let webpUrl = "";
 					if (category.thumbnail && category.thumbnail.length > 0) {
 						const originalUrl = category.thumbnail[0].url;
-						// Normal (any next-gen auto) version
-						imageUrl = getCloudinaryOptimizedUrl(originalUrl, {
+
+						// Base (JPEG/PNG/etc.) - forcing width=600 by default
+						const baseJpg = getCloudinaryOptimizedUrl(originalUrl, {
 							width: 600,
 							forceWebP: false,
 						});
-						// Explicit WebP version
-						webpUrl = getCloudinaryOptimizedUrl(originalUrl, {
+						// WebP version
+						const baseWebp = getCloudinaryOptimizedUrl(originalUrl, {
 							width: 600,
 							forceWebP: true,
 						});
+
+						// Now let's do *responsive* widths via string replace:
+						// e.g. w_600 => w_480 or w_768 or w_1200
+						const jpg480 = baseJpg.replace("w_600", "w_480");
+						const jpg768 = baseJpg.replace("w_600", "w_768");
+						const jpg1200 = baseJpg.replace("w_600", "w_1200");
+
+						const webp480 = baseWebp.replace("w_600", "w_480");
+						const webp768 = baseWebp.replace("w_600", "w_768");
+						const webp1200 = baseWebp.replace("w_600", "w_1200");
+
+						// We'll pass these to <source> and <img> so the browser picks the best size
+						imageUrl = {
+							fallback: jpg480, // smallest fallback if older browser doesn't handle srcset
+							srcset: `${jpg480} 480w,
+                       ${jpg768} 768w,
+                       ${jpg1200} 1200w,
+                       ${baseJpg} 1600w`,
+						};
+
+						webpUrl = {
+							fallback: webp480, // smallest
+							srcset: `${webp480} 480w,
+                       ${webp768} 768w,
+                       ${webp1200} 1200w,
+                       ${baseWebp} 1600w`,
+						};
 					}
 
 					return (
@@ -83,14 +125,30 @@ const ZCategories = ({ allCategories }) => {
 								{imageUrl && (
 									<CategoryImageWrapper>
 										{/* 
-                      Use <picture> to serve WebP if supported,
-                      then fallback to the normal image
+                      Use <picture> with multiple <source> tags to serve WebP if supported,
+                      with responsive widths. The fallback <img> is for older browsers.
                     */}
 										<picture>
-											<source srcSet={webpUrl} type='image/webp' />
+											<source
+												type='image/webp'
+												srcSet={webpUrl.srcset}
+												sizes='(max-width: 480px) 480px,
+                               (max-width: 768px) 768px,
+                               (max-width: 1200px) 1200px,
+                               1600px'
+											/>
+											<source
+												type='image/jpeg'
+												srcSet={imageUrl.srcset}
+												sizes='(max-width: 480px) 480px,
+                               (max-width: 768px) 768px,
+                               (max-width: 1200px) 1200px,
+                               1600px'
+											/>
+
 											<CategoryImage
 												loading='lazy'
-												src={imageUrl}
+												src={imageUrl.fallback}
 												alt={category.categoryName}
 											/>
 										</picture>
@@ -109,10 +167,10 @@ const ZCategories = ({ allCategories }) => {
 export default React.memo(ZCategories);
 
 /* 
-  ================ 
-  STYLED COMPONENTS 
-  ================ 
-  (Unchanged from your example)
+================ 
+STYLED COMPONENTS 
+================ 
+(Styling remains exactly the same as before)
 */
 
 const Container = styled.div`
