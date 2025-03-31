@@ -177,71 +177,101 @@ export const CartProvider = ({ children }) => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				// Turn on loading
 				dispatch({ type: SET_LOADING, payload: true });
 
-				// (A) Website setup
-				const websiteData = await getWebsiteSetup();
-				dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
+				// 1) Check if we have preloaded data
+				const pre = window.__PRELOADED_DATA__ || {};
 
-				// (B) Categories & Subcategories
-				const categoriesData = await gettingCategoriesAndSubcategories();
-				if (categoriesData?.error) {
-					console.log(categoriesData.error);
-				} else {
+				// If we have websiteSetup, categoriesData, newArrival, customDesign => use them
+				if (
+					pre.websiteSetup &&
+					pre.categoriesData &&
+					pre.newArrivalProducts &&
+					pre.customDesignProducts
+				) {
+					console.log("Using preloaded data from index.html script...");
+
+					// A) Website setup
+					dispatch({ type: SET_WEBSITE_SETUP, payload: pre.websiteSetup });
+
+					// B) categories & subcategories
 					dispatch({
 						type: SET_CATEGORIES_SUBCATEGORIES,
 						payload: {
-							categories: categoriesData.categories || [],
-							subcategories: categoriesData.subcategories || [],
+							categories: pre.categoriesData.categories || [],
+							subcategories: pre.categoriesData.subcategories || [],
 						},
 					});
-				}
 
-				// (C) Featured Products
-				// const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 20);
-				// if (featuredData?.error) {
-				// 	console.log(featuredData.error);
-				// } else {
-				// 	// Sort by date descending
-				// 	const sortedFeatured = featuredData.sort(
-				// 		(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-				// 	);
-				// 	dispatch({ type: SET_FEATURED_PRODUCTS, payload: sortedFeatured });
-				// }
-
-				// (D) New Arrival Products
-				const newArrivalData = await gettingSpecificProducts(0, 1, 0, 0, 0, 20);
-				if (newArrivalData?.error) {
-					console.log(newArrivalData.error);
-				} else {
+					// D) new arrival
 					dispatch({
 						type: SET_NEW_ARRIVAL_PRODUCTS,
-						payload: newArrivalData,
+						payload: pre.newArrivalProducts,
 					});
-				}
 
-				// (E) Custom Design Products
-				const customDesignData = await gettingSpecificProducts(
-					0,
-					0,
-					1,
-					0,
-					0,
-					10
-				);
-				if (customDesignData?.error) {
-					console.log(customDesignData.error);
-				} else {
+					// E) custom design
 					dispatch({
 						type: SET_CUSTOM_DESIGN_PRODUCTS,
-						payload: customDesignData,
+						payload: pre.customDesignProducts,
 					});
+				} else {
+					console.log(
+						"No preloaded data, falling back to normal fetch calls..."
+					);
+					// fallback fetch calls if your script in index.html didn't run or didn't succeed
+					const websiteData = await getWebsiteSetup();
+					dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
+
+					const categoriesData = await gettingCategoriesAndSubcategories();
+					if (categoriesData?.error) {
+						console.log(categoriesData.error);
+					} else {
+						dispatch({
+							type: SET_CATEGORIES_SUBCATEGORIES,
+							payload: {
+								categories: categoriesData.categories || [],
+								subcategories: categoriesData.subcategories || [],
+							},
+						});
+					}
+
+					const newArrivalData = await gettingSpecificProducts(
+						0,
+						1,
+						0,
+						0,
+						0,
+						20
+					);
+					if (newArrivalData?.error) {
+						console.log(newArrivalData.error);
+					} else {
+						dispatch({
+							type: SET_NEW_ARRIVAL_PRODUCTS,
+							payload: newArrivalData,
+						});
+					}
+
+					const customDesignData = await gettingSpecificProducts(
+						0,
+						0,
+						1,
+						0,
+						0,
+						10
+					);
+					if (customDesignData?.error) {
+						console.log(customDesignData.error);
+					} else {
+						dispatch({
+							type: SET_CUSTOM_DESIGN_PRODUCTS,
+							payload: customDesignData,
+						});
+					}
 				}
 			} catch (error) {
 				console.error("Error fetching data in CartContext: ", error);
 			} finally {
-				// Turn off loading
 				dispatch({ type: SET_LOADING, payload: false });
 			}
 		};

@@ -68,20 +68,6 @@
 			href="https://fonts.googleapis.com/css2?family=Rastantly+Cortez&family=Montserrat:wght@400;700&family=Open+Sans&family=Great+Vibes&family=Allison&family=Allura&family=Dancing+Script&family=Lobster&display=swap"
 			onload="this.onload=null;this.rel='stylesheet'"
 		/>
-		<!-- <noscript>
-			<link
-				rel="stylesheet"
-				href="https://fonts.googleapis.com/css2?family=Rastantly+Cortez&family=Montserrat:wght@400;700&family=Open+Sans&family=Great+Vibes&family=Allison&family=Allura&family=Dancing+Script&family=Lobster&display=swap"
-			/>
-		</noscript> -->
-
-		<!-- Latest Bootstrap 5 (choose the version you prefer) -->
-		<!-- <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      integrity="sha384-X6aSsQhpDphpERWRv7fMK6ogE0i2H2s/r1B23sfzBz55MKqMK+NDaxM8RQk6xg9l"
-      crossorigin="anonymous"
-    /> -->
 
 		<link
 			rel="stylesheet"
@@ -105,6 +91,75 @@
 			}
 			gtag("js", new Date());
 			gtag("config", "G-XJPBMN7HH5");
+		</script>
+
+		<script>
+			window.__PRELOADED_DATA__ = {};
+
+			// We'll define an async function to do the fetch calls in parallel or sequence
+			async function preloadData() {
+				try {
+					// 1) Get website setup
+					const setupRes = await fetch(
+						"https://serenejannat.com/api/website-basic-setup",
+						{
+							method: "GET",
+							headers: { Accept: "application/json" },
+							// If your API requires an Authorization header, add it here or remove it if not needed
+						}
+					);
+					if (!setupRes.ok)
+						throw new Error("Website setup fetch failed " + setupRes.status);
+					window.__PRELOADED_DATA__.websiteSetup = await setupRes.json();
+
+					// 2) Categories & subcategories
+					const catsRes = await fetch(
+						"https://serenejannat.com/api/product/categories/subcategories",
+						{
+							method: "GET",
+							headers: { Accept: "application/json" },
+						}
+					);
+					if (!catsRes.ok)
+						throw new Error("Categories fetch failed " + catsRes.status);
+					window.__PRELOADED_DATA__.categoriesData = await catsRes.json();
+
+					// 3) New Arrival Products
+					const newArrivalsRes = await fetch(
+						"https://serenejannat.com/api/specific/products/0/1/0/0/0/20",
+						{
+							method: "GET",
+							headers: { Accept: "application/json" },
+						}
+					);
+					if (!newArrivalsRes.ok)
+						throw new Error(
+							"New arrival fetch failed " + newArrivalsRes.status
+						);
+					window.__PRELOADED_DATA__.newArrivalProducts =
+						await newArrivalsRes.json();
+
+					// 4) Custom design products
+					const customDesignRes = await fetch(
+						"https://serenejannat.com/api/specific/products/0/0/1/0/0/10",
+						{
+							method: "GET",
+							headers: { Accept: "application/json" },
+						}
+					);
+					if (!customDesignRes.ok)
+						throw new Error(
+							"Custom design fetch failed " + customDesignRes.status
+						);
+					window.__PRELOADED_DATA__.customDesignProducts =
+						await customDesignRes.json();
+				} catch (err) {
+					console.error("Preload data error:", err);
+				}
+			}
+
+			// Fire off the preload
+			preloadData();
 		</script>
 	</head>
 
