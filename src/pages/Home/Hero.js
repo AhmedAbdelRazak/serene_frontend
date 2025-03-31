@@ -3,9 +3,9 @@ import Slider from "react-slick";
 import styled from "styled-components";
 
 /**
- * Ensures we always insert "f_auto,q_auto,w_1600" into the Cloudinary URL.
- * If it's not a Cloudinary URL, or if it already has transformations,
- * we handle it accordingly.
+ * Helper to add Cloudinary transformations (f_auto,q_auto).
+ * If the URL is not Cloudinary, or it already has transformations,
+ * it returns the original URL unchanged.
  */
 const getCloudinaryOptimizedUrl = (url) => {
 	if (!url?.includes("res.cloudinary.com")) {
@@ -13,21 +13,18 @@ const getCloudinaryOptimizedUrl = (url) => {
 		return url;
 	}
 
-	// If it already has f_auto or q_auto, we still ensure w_1600 is inserted
+	// If we've already added f_auto or q_auto, skip
 	if (url.includes("f_auto") || url.includes("q_auto")) {
-		// If the URL doesn't contain w_\d+, insert w_1600
-		if (!/w_\d+/.test(url)) {
-			return url
-				.replace("/upload/", "/upload/") // optional, ensures path is consistent
-				.replace("f_auto,q_auto", "f_auto,q_auto,w_1600");
-		}
 		return url;
 	}
 
-	// Otherwise, insert the transformations right after '/upload/'
+	// Insert transformations right after '/upload/'
 	const parts = url.split("/upload/");
 	if (parts.length === 2) {
-		return `${parts[0]}/upload/f_auto,q_auto,w_1600/${parts[1]}`;
+		// Example:
+		// original:  https://res.cloudinary.com/.../upload/v123456/serene_janat/...
+		// transformed: https://res.cloudinary.com/.../upload/f_auto,q_auto/v123456/serene_janat/...
+		return `${parts[0]}/upload/f_auto,q_auto/${parts[1]}`;
 	}
 
 	// Fallback
@@ -35,17 +32,19 @@ const getCloudinaryOptimizedUrl = (url) => {
 };
 
 const Hero = ({ websiteSetup }) => {
+	// Banners array from your global setup
 	const banners = websiteSetup?.homeMainBanners || [];
 
+	// React Slick settings
 	const settings = {
-		dots: true,
-		infinite: true,
-		speed: 1000,
+		dots: true, // show pagination dots
+		infinite: true, // loop
+		speed: 1000, // slide transition speed (ms)
 		slidesToShow: 1,
 		slidesToScroll: 1,
-		autoplay: true,
+		autoplay: true, // auto-play slides
 		autoplaySpeed: 4000,
-		arrows: true,
+		arrows: true, // show next/prev arrows
 	};
 
 	return (
@@ -62,42 +61,22 @@ const Hero = ({ websiteSetup }) => {
 							pageRedirectURL,
 						} = banner;
 
-						// Cloudinary transforms
-						const base1600 = getCloudinaryOptimizedUrl(url);
-						const base480 = base1600.replace("w_1600", "w_480");
-						const base768 = base1600.replace("w_1600", "w_768");
-						const base1200 = base1600.replace("w_1600", "w_1200");
-
-						const isFirstSlide = idx === 0;
+						// Insert Cloudinary transformations if possible
+						const optimizedUrl = getCloudinaryOptimizedUrl(url);
 
 						return (
 							<Slide key={idx}>
-								{base1600 ? (
-									<BannerImageWrapper>
-										<img
-											src={base480}
-											srcSet={`
-                        ${base480} 480w,
-                        ${base768} 768w,
-                        ${base1200} 1200w,
-                        ${base1600} 1600w
-                      `}
-											sizes='(max-width: 600px) 480px,
-                             (max-width: 1024px) 768px,
-                             1600px'
-											alt={`Banner ${idx + 1}`}
-											loading={isFirstSlide ? "eager" : "lazy"}
-											// We can safely pass fetchpriority to a *raw* <img>.
-											// styled-components never sees this prop:
-											fetchpriority={isFirstSlide ? "high" : undefined}
-											decoding='async'
-										/>
-									</BannerImageWrapper>
+								{optimizedUrl ? (
+									<BannerImage
+										src={optimizedUrl}
+										alt={`Banner ${idx + 1}`}
+										loading={idx === 0 ? "eager" : "lazy"}
+									/>
 								) : (
 									<Placeholder>Banner {idx + 1}</Placeholder>
 								)}
 
-								{/* Overlaid text/content */}
+								{/* Content over the banner */}
 								<BannerContent>
 									{title && <h2>{title}</h2>}
 									{subTitle && <p>{subTitle}</p>}
@@ -122,7 +101,7 @@ const Hero = ({ websiteSetup }) => {
 
 export default Hero;
 
-/* ============== Styled Components ============== */
+/* ============== Same Styling as Before ============== */
 
 const HeroSection = styled.section`
 	width: 100%;
@@ -137,7 +116,7 @@ const HeroSection = styled.section`
 const SliderContainer = styled.div`
 	width: 100%;
 	height: 100%;
-	position: relative; /* for absolutely positioned arrows */
+	position: relative; /* crucial for absolutely positioned arrows */
 
 	.slick-slider {
 		width: 100%;
@@ -154,7 +133,7 @@ const SliderContainer = styled.div`
 		transform: translateY(-50%);
 		width: 40px;
 		height: 40px;
-		z-index: 10; /* ensures arrows are over slides */
+		z-index: 10; /* Ensure arrows are over slides */
 		background: var(--primaryBlueDarker);
 		color: #fff;
 		border-radius: 4px;
@@ -206,25 +185,20 @@ const Slide = styled.div`
 	width: 100%;
 	height: 100%;
 	max-height: 700px !important;
+
+	@media (max-width: 768px) {
+		/* you can further adjust or remove the height constraints as needed */
+	}
 `;
 
-/**
- * Instead of styled.img, we wrap a normal <img> inside:
- * This ensures "fetchpriority" won't trigger styled-components warnings.
- */
-const BannerImageWrapper = styled.div`
+const BannerImage = styled.img`
 	width: 100%;
+	object-fit: cover;
 	max-height: 600px;
-	overflow: hidden;
+	/* aspect-ratio: 16 / 9; or choose the ratio that fits your banner */
 
-	img {
-		width: 100%;
-		height: auto;
-		object-fit: cover;
-
-		@media (max-width: 600px) {
-			min-height: 450px !important;
-		}
+	@media (max-width: 600px) {
+		min-height: 450px !important;
 	}
 `;
 
@@ -232,7 +206,6 @@ const Placeholder = styled.div`
 	background-color: #ccc;
 	width: 100%;
 	height: 100%;
-	min-height: 400px;
 `;
 
 const BannerContent = styled.div`
@@ -275,6 +248,7 @@ const BannerContent = styled.div`
 
 	@media (max-width: 992px) {
 		max-width: 60%;
+
 		h2 {
 			font-size: 4rem;
 		}
