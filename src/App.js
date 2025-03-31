@@ -1,4 +1,10 @@
-import React, { useEffect, useState, Suspense, lazy } from "react";
+import React, {
+	useEffect,
+	useState,
+	Suspense,
+	lazy,
+	startTransition,
+} from "react";
 import {
 	BrowserRouter as Router,
 	Switch,
@@ -11,11 +17,12 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "react-quill/dist/quill.snow.css";
 import ReactGA from "react-ga4";
-import ReactPixel from "react-facebook-pixel";
+// import ReactPixel from "react-facebook-pixel";
 import { Modal, Button } from "antd"; // for the modal
 import NavbarTop from "./NavbarUpdate/NavbarTop";
 import NavbarBottom from "./NavbarUpdate/NavbarBottom";
 import Footer from "./Footer";
+
 const PrintifyAvailableProducts = lazy(
 	() => import("./pages/PrintOnDemand/PrintifyAvailableProducts")
 );
@@ -30,7 +37,7 @@ const WebsiteMain = lazy(() => import("./Admin/EditingWebsite/WebsiteMain"));
 // Lazy load components
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
-const Home = lazy(() => import("./pages/Home/Home"));
+const Home = lazy(() => import("./pages/Home/Home")); // We'll possibly pre-import below
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const ReturnRefundPolicy = lazy(() => import("./pages/ReturnRefundPolicy"));
@@ -68,11 +75,19 @@ const AdminRoute = lazy(() => import("./auth/AdminRoute"));
 const PrivateRoute = lazy(() => import("./auth/PrivateRoute"));
 
 /**
- * Main <App /> component wraps the Router,
- * then we delegate the main logic to <AppContent />
- * so we can use useLocation() inside.
+ * Main <App /> wraps the Router,
+ * then delegates main logic to <AppContent />
+ * so we can use useLocation() inside <AppContent />.
  */
 const App = () => {
+	// (Optional) "pre-import" the Home page chunk if you suspect most users start at "/"
+	// This doesn't block initial render, but requests the chunk in parallel
+	// so if the user hits "/", there's less to load on route change.
+	// Check network logs to ensure it doesn't hamper performance if user seldom visits "/".
+	startTransition(() => {
+		Home.preload?.();
+	});
+
 	return (
 		<Router>
 			<AppContent />
@@ -110,16 +125,16 @@ const AppContent = () => {
 	}, [location]);
 
 	// Facebook Pixel Setup
-	const options = {
-		autoConfig: true,
-		debug: false,
-	};
+	// const options = {
+	//   autoConfig: true,
+	//   debug: false,
+	// };
 
-	useEffect(() => {
-		ReactPixel.init(process.env.REACT_APP_FACEBOOK_PIXEL_ID, options);
-		ReactPixel.pageView();
-		// eslint-disable-next-line
-	}, []);
+	// useEffect(() => {
+	//   ReactPixel.init(process.env.REACT_APP_FACEBOOK_PIXEL_ID, options);
+	//   ReactPixel.pageView();
+	//   // eslint-disable-next-line
+	// }, []);
 
 	// ==================== 7-second one-time Modal logic ====================
 	useEffect(() => {
