@@ -174,20 +174,103 @@ export const CartProvider = ({ children }) => {
 	// ------------------------------------
 	// 2) Fetch Once on Mount
 	// ------------------------------------
+	// useEffect(() => {
+	// 	const fetchData = async () => {
+	// 		try {
+	// 			// Turn on loading
+	// 			dispatch({ type: SET_LOADING, payload: true });
+
+	// 			// (A) Website setup
+	// 			const websiteData = await getWebsiteSetup();
+	// 			dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
+
+	// 			// (B) Categories & Subcategories
+	// 			const categoriesData = await gettingCategoriesAndSubcategories();
+	// 			if (categoriesData?.error) {
+	// 				console.log(categoriesData.error);
+	// 			} else {
+	// 				dispatch({
+	// 					type: SET_CATEGORIES_SUBCATEGORIES,
+	// 					payload: {
+	// 						categories: categoriesData.categories || [],
+	// 						subcategories: categoriesData.subcategories || [],
+	// 					},
+	// 				});
+	// 			}
+
+	// 			// (C) Featured Products
+	// 			// const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 20);
+	// 			// if (featuredData?.error) {
+	// 			// 	console.log(featuredData.error);
+	// 			// } else {
+	// 			// 	// Sort by date descending
+	// 			// 	const sortedFeatured = featuredData.sort(
+	// 			// 		(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+	// 			// 	);
+	// 			// 	dispatch({ type: SET_FEATURED_PRODUCTS, payload: sortedFeatured });
+	// 			// }
+
+	// 			// (D) New Arrival Products
+	// 			const newArrivalData = await gettingSpecificProducts(0, 1, 0, 0, 0, 20);
+	// 			if (newArrivalData?.error) {
+	// 				console.log(newArrivalData.error);
+	// 			} else {
+	// 				dispatch({
+	// 					type: SET_NEW_ARRIVAL_PRODUCTS,
+	// 					payload: newArrivalData,
+	// 				});
+	// 			}
+
+	// 			// (E) Custom Design Products
+	// 			const customDesignData = await gettingSpecificProducts(
+	// 				0,
+	// 				0,
+	// 				1,
+	// 				0,
+	// 				0,
+	// 				10
+	// 			);
+	// 			if (customDesignData?.error) {
+	// 				console.log(customDesignData.error);
+	// 			} else {
+	// 				dispatch({
+	// 					type: SET_CUSTOM_DESIGN_PRODUCTS,
+	// 					payload: customDesignData,
+	// 				});
+	// 			}
+	// 		} catch (error) {
+	// 			console.error("Error fetching data in CartContext: ", error);
+	// 		} finally {
+	// 			// Turn off loading
+	// 			dispatch({ type: SET_LOADING, payload: false });
+	// 		}
+	// 	};
+
+	// 	fetchData();
+	// }, []);
+
+	//Get Data from index.html
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				dispatch({ type: SET_LOADING, payload: true });
 
-				// 1) Check if we have preloaded data
+				// Our global preloaded object (if it exists)
 				const pre = window.__PRELOADED_DATA__ || {};
 
-				// If we have websiteSetup, categoriesData, newArrival, customDesign => use them
+				// Check if all data is present
+				// (Adjust keys if different for your structure)
+				const hasWebsiteSetup = pre.websiteSetup;
+				const hasCategoriesData = pre.categoriesData;
+				const hasNewArrivals = pre.newArrivalProducts;
+				const hasCustomDesigns = pre.customDesignProducts;
+
+				// If everything is present, skip the fetch calls
 				if (
-					pre.websiteSetup &&
-					pre.categoriesData &&
-					pre.newArrivalProducts &&
-					pre.customDesignProducts
+					hasWebsiteSetup &&
+					hasCategoriesData &&
+					hasNewArrivals &&
+					hasCustomDesigns
 				) {
 					console.log("Using preloaded data from index.html script...");
 
@@ -203,7 +286,7 @@ export const CartProvider = ({ children }) => {
 						},
 					});
 
-					// D) new arrival
+					// D) new arrival products
 					dispatch({
 						type: SET_NEW_ARRIVAL_PRODUCTS,
 						payload: pre.newArrivalProducts,
@@ -215,13 +298,13 @@ export const CartProvider = ({ children }) => {
 						payload: pre.customDesignProducts,
 					});
 				} else {
-					console.log(
-						"No preloaded data, falling back to normal fetch calls..."
-					);
-					// fallback fetch calls if your script in index.html didn't run or didn't succeed
+					console.log("No preloaded data found; fetching normally...");
+
+					// (A) Website setup
 					const websiteData = await getWebsiteSetup();
 					dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
 
+					// (B) Categories & Subcategories
 					const categoriesData = await gettingCategoriesAndSubcategories();
 					if (categoriesData?.error) {
 						console.log(categoriesData.error);
@@ -235,6 +318,7 @@ export const CartProvider = ({ children }) => {
 						});
 					}
 
+					// (D) New Arrival Products
 					const newArrivalData = await gettingSpecificProducts(
 						0,
 						1,
@@ -252,6 +336,7 @@ export const CartProvider = ({ children }) => {
 						});
 					}
 
+					// (E) Custom Design Products
 					const customDesignData = await gettingSpecificProducts(
 						0,
 						0,
@@ -277,7 +362,7 @@ export const CartProvider = ({ children }) => {
 		};
 
 		fetchData();
-	}, []);
+	}, [dispatch]);
 
 	// ------------------------------------
 	// 3) Provide the Context
