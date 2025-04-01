@@ -428,6 +428,12 @@ const OrdersHistory = ({ showModal }) => {
 				rowKey={(record) => record._id}
 				style={{ marginTop: 16 }}
 				scroll={{ x: 900 }}
+				pagination={{
+					pageSize: 30,
+					// Optional: allow changing page size
+					showSizeChanger: true,
+					pageSizeOptions: ["10", "20", "30", "50", "100"],
+				}}
 			/>
 
 			<Modal

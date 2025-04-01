@@ -5,20 +5,20 @@ import { Tabs } from "antd";
 import {
 	HistoryOutlined,
 	UnorderedListOutlined,
-	PieChartOutlined,
+	BarChartOutlined,
 } from "@ant-design/icons";
 import AdminNavbar from "../AdminNavbar/AdminNavbar";
-import OrdersOverview from "./OrdersOverview";
 import OrdersHistory from "./OrdersHistory";
 import OrdersInProgress from "./OrdersInProgress";
 import OrderDetailsModal from "./OrderDetailsModal";
+import AdminReports from "./AdminReports";
 
 const { TabPane } = Tabs;
 
 const AdminDashboard = () => {
 	const [AdminMenuStatus, setAdminMenuStatus] = useState(false);
 	const [collapsed, setCollapsed] = useState(false);
-	const [activeTab, setActiveTab] = useState("OrdersInProgress");
+	const [activeTab, setActiveTab] = useState("OrdersReport");
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [selectedOrder, setSelectedOrder] = useState(null);
 	const history = useHistory();
@@ -82,13 +82,14 @@ const AdminDashboard = () => {
 							<TabPane
 								tab={
 									<span>
-										<UnorderedListOutlined /> Orders In Progress
+										<BarChartOutlined /> Order Report
 									</span>
 								}
-								key='OrdersInProgress'
+								key='OrdersReport'
 							>
-								<OrdersInProgress showModal={showModal} />
+								<AdminReports showModal={showModal} />
 							</TabPane>
+
 							<TabPane
 								tab={
 									<span>
@@ -102,12 +103,12 @@ const AdminDashboard = () => {
 							<TabPane
 								tab={
 									<span>
-										<PieChartOutlined /> Orders Overview
+										<UnorderedListOutlined /> Orders In Progress
 									</span>
 								}
-								key='OrdersOverview'
+								key='OrdersInProgress'
 							>
-								<OrdersOverview showModal={showModal} />
+								<OrdersInProgress showModal={showModal} />
 							</TabPane>
 						</CustomTabs>
 					</div>
