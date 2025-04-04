@@ -23,6 +23,26 @@ import NavbarTop from "./NavbarUpdate/NavbarTop";
 import NavbarBottom from "./NavbarUpdate/NavbarBottom";
 import Footer from "./Footer";
 
+const SellerDashboardMain = lazy(
+	() => import("./Seller/SellerDashboard/SellerDashboardMain")
+);
+
+const SellerStoreManagementMain = lazy(
+	() => import("./Seller/StoreManagement/SellerStoreManagementMain")
+);
+
+const SellerProductManagementMain = lazy(
+	() => import("./Seller/ProductManagement/SellerProductManagementMain")
+);
+
+const CustomerServiceSellerMain = lazy(
+	() => import("./Seller/CustomerService/CustomerServiceSellerMain")
+);
+
+const CouponManagementMain = lazy(
+	() => import("./Seller/CouponManagement/CouponManagementMain")
+);
+
 const PrintifyAvailableProducts = lazy(
 	() => import("./pages/PrintOnDemand/PrintifyAvailableProducts")
 );
@@ -37,6 +57,7 @@ const WebsiteMain = lazy(() => import("./Admin/EditingWebsite/WebsiteMain"));
 // Lazy load components
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
+const RegisterSeller = lazy(() => import("./pages/RegisterSeller"));
 const Home = lazy(() => import("./pages/Home/Home")); // We'll possibly pre-import below
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
@@ -53,11 +74,12 @@ const SubcategoryMain = lazy(
 const ParentMain = lazy(() => import("./Admin/Gender/GenderMain"));
 const AttributesMain = lazy(() => import("./Admin/Attributes/AttributesMain"));
 const ProductMain = lazy(() => import("./Admin/Product/ProductMain"));
-const StoreSettingsMain = lazy(
-	() => import("./Admin/StoreSettings/StoreSettingsMain")
+const AdminStoreManagementMain = lazy(
+	() => import("./Admin/StoreManagement/AdminStoreManagementMain")
 );
-const CustomerServiceSupportMain = lazy(
-	() => import("./Admin/Chat/CustomerServiceSupportMain")
+
+const CustomerServiceMainAdmin = lazy(
+	() => import("./Admin/CustomerService/CustomerServiceMainAdmin")
 );
 const StorePOSMain = lazy(() => import("./Admin/StorePOS/StorePOSMain"));
 const UserDashboard = lazy(() => import("./User/UserDashboard"));
@@ -72,6 +94,7 @@ const CouponManagement = lazy(
 	() => import("./Admin/CouponManagement/CouponManagement")
 );
 const AdminRoute = lazy(() => import("./auth/AdminRoute"));
+const SellerRoute = lazy(() => import("./auth/SellerRoute"));
 const PrivateRoute = lazy(() => import("./auth/PrivateRoute"));
 
 /**
@@ -183,11 +206,9 @@ const AppContent = () => {
 	const modalText =
 		"Your loved ones deserve just 3 minutes of your time to create their perfect gift. Click below to be unique! ❤️😉";
 
-	//Add Expenses to each order line
-	//Chat icon adjustment
-	//Signin With google
-	//Adding Seller Signup page
-	//Adding Seller Dashboard (CRUD Product, CRUD Order)
+	//Ensure that in add and update products for admin, the admin can change the storeId
+	//Ensure Admin can activate store management
+	//Create a new order with a product not serene jannat
 
 	return (
 		<>
@@ -233,12 +254,42 @@ const AppContent = () => {
 						component={ReturnRefundPolicy}
 					/>
 					<Route path='/signup' exact component={Register} />
+					<Route path='/sellingagent/signup' exact component={RegisterSeller} />
 					<Route path='/signin' exact component={Login} />
 					<Route path='/cart' exact component={Cart} />
 					<Route
 						path='/payment-link/:orderId'
 						exact
 						component={LinkGenerated}
+					/>
+					{/* Seller Routes */}
+					<SellerRoute
+						path='/seller/dashboard'
+						exact
+						component={SellerDashboardMain}
+					/>
+					<SellerRoute
+						path='/seller/store-management'
+						exact
+						component={SellerStoreManagementMain}
+					/>
+
+					<SellerRoute
+						path='/seller/products-management'
+						exact
+						component={SellerProductManagementMain}
+					/>
+
+					<SellerRoute
+						path='/seller/customer-service'
+						exact
+						component={CustomerServiceSellerMain}
+					/>
+
+					<SellerRoute
+						path='/seller/coupon-management'
+						exact
+						component={CouponManagementMain}
 					/>
 
 					{/* Admin Routes */}
@@ -262,12 +313,12 @@ const AppContent = () => {
 					<AdminRoute
 						path='/admin/customer-service'
 						exact
-						component={CustomerServiceSupportMain}
+						component={CustomerServiceMainAdmin}
 					/>
 					<AdminRoute
 						path='/admin/store-management'
 						exact
-						component={() => <StoreSettingsMain />}
+						component={() => <AdminStoreManagementMain />}
 					/>
 					<AdminRoute
 						path='/admin/subcategories'

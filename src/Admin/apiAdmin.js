@@ -871,24 +871,6 @@ export const getShippingOptions = (token) => {
 		.catch((err) => console.log(err));
 };
 
-export const removeShippingOption = (shippingId, userId, token) => {
-	return fetch(
-		`${process.env.REACT_APP_API_URL}/shipping-carrier/${shippingId}/${userId}`,
-		{
-			method: "DELETE",
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-			},
-		}
-	)
-		.then((response) => {
-			return response.json();
-		})
-		.catch((err) => console.log(err));
-};
-
 export const getAllUsers = (userId, token) => {
 	return fetch(`${process.env.REACT_APP_API_URL}/allusers/${userId}`, {
 		method: "GET",
@@ -1843,72 +1825,71 @@ export const getUnassignedSupportCasesCount = (token) => {
 		{
 			method: "GET",
 			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
 				Authorization: `Bearer ${token}`,
 			},
 		}
 	)
-		.then((response) => {
-			return response.json();
-		})
-		.catch((err) => console.log(err));
+		.then((res) => res.json())
+		.catch((err) => {
+			console.error("Error fetching unassigned support cases count:", err);
+		});
 };
 
 export const updateSeenByAdmin = (caseId, token) => {
+	const admin = JSON.parse(localStorage.getItem("jwt"))?.user;
+	const userId = admin?._id || "";
+
 	return fetch(
-		`${process.env.REACT_APP_API_URL}/support-cases-admin/${caseId}/seen`,
+		`${process.env.REACT_APP_API_URL}/support-cases/${caseId}/seen-by-admin`,
 		{
 			method: "PUT",
 			headers: {
-				Accept: "application/json",
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({ userId }),
+		}
+	)
+		.then((res) => res.json())
+		.catch((err) => {
+			console.error("Error updating messages as seen by admin:", err);
+		});
+};
+
+export const getUnseenMessagesCountByAdmin = (token) => {
+	// We need the admin's userId. If you pass it from the frontend:
+	const admin = JSON.parse(localStorage.getItem("jwt"))?.user;
+	const userId = admin?._id || "";
+
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/support-cases/unseen/count?userId=${userId}`,
+		{
+			method: "GET",
+			headers: {
 				Authorization: `Bearer ${token}`,
 			},
 		}
 	)
-		.then((response) => response.json())
-		.then((data) => {
-			console.log(`Response from updateSeenByAdmin:`, data);
-			return data;
-		})
-		.catch((err) => console.log(err));
+		.then((res) => res.json())
+		.catch((err) => {
+			console.error("Error fetching unseen messages count by admin:", err);
+		});
 };
 
-export const getUnseenMessagesCountByAdmin = async (token) => {
-	try {
-		const response = await fetch(
-			`${process.env.REACT_APP_API_URL}/support-cases/unseen/count`,
-			{
-				method: "GET",
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}
-		);
-		return await response.json();
-	} catch (error) {
-		console.error("Error fetching unseen messages count", error);
-		throw error;
-	}
-};
-
-export const getUnseenMessagesDetails = async (token) => {
-	try {
-		const response = await fetch(
-			`${process.env.REACT_APP_API_URL}/support-cases/unseen/details`,
-			{
-				method: "GET",
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}
-		);
-		return await response.json();
-	} catch (error) {
-		console.error("Error fetching unseen messages count", error);
-		throw error;
-	}
+export const getUnseenMessagesDetails = (token) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/support-cases/admin/unseen/list`,
+		{
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((res) => res.json())
+		.catch((err) => {
+			console.error("Error fetching unseen messages detail for admin:", err);
+		});
 };
 
 export const getUnseenMessagesDetailsByCustomer = async (token) => {
@@ -2040,4 +2021,417 @@ export const updateWebsiteSetup = (userId, token, updateData) => {
 			return res.json();
 		})
 		.catch((err) => console.error("Error updating single setup:", err));
+};
+
+//Support Cases
+export const adminGetActiveB2CChats = (userId, token) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/admin/support-cases/b2c/open/${userId}`,
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json();
+		})
+		.catch((err) => {
+			console.error("Error fetching admin active B2C chats:", err);
+		});
+};
+
+/**
+ * 2) Get closed B2C (client ↔ admin) cases
+ *    GET /admin/support-cases/b2c/closed/:userId
+ */
+export const adminGetClosedB2CChats = (userId, token) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/admin/support-cases/b2c/closed/${userId}`,
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json();
+		})
+		.catch((err) => {
+			console.error("Error fetching admin closed B2C chats:", err);
+		});
+};
+
+/**
+ * 3) Get active B2B (agent ↔ admin) cases
+ *    GET /admin/support-cases/b2b/open/:userId
+ */
+export const adminGetActiveB2BChats = (userId, token) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/admin/support-cases/b2b/open/${userId}`,
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json();
+		})
+		.catch((err) => {
+			console.error("Error fetching admin active B2B chats:", err);
+		});
+};
+
+/**
+ * 4) Get closed B2B (agent ↔ admin) cases
+ *    GET /admin/support-cases/b2b/closed/:userId
+ */
+export const adminGetClosedB2BChats = (userId, token) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/admin/support-cases/b2b/closed/${userId}`,
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json();
+		})
+		.catch((err) => {
+			console.error("Error fetching admin closed B2B chats:", err);
+		});
+};
+
+/**
+ * 5) Create a new support case (B2C or B2B) as Admin
+ *    POST /support-cases/new
+ *
+ *    - If you want to create a new B2B (admin↔agent), you'd set role=1000 in the body
+ *    - If you want to create a new B2C (admin↔client), also possible but typically a client starts it.
+ */
+export const adminCreateSupportCase = (token, supportData) => {
+	return fetch(`${process.env.REACT_APP_API_URL}/support-cases/new`, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify(supportData),
+	})
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json();
+		})
+		.catch((err) => {
+			console.error("Error creating new admin support case:", err);
+		});
+};
+
+/**
+ * 6) Get a specific support case by ID (admin can see everything)
+ *    GET /support-cases/:id
+ */
+export const adminGetSupportCaseById = (caseId, token) => {
+	return fetch(`${process.env.REACT_APP_API_URL}/support-cases/${caseId}`, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json();
+		})
+		.catch((err) => {
+			console.error("Error fetching support case by ID (admin):", err);
+		});
+};
+
+/**
+ * 7) Update an existing support case (e.g., add a message, close it, etc.)
+ *    PUT /support-cases/:id
+ *
+ *    "updateData" example: { conversation: {...} } or { caseStatus: "closed" }
+ */
+export const adminUpdateSupportCase = (caseId, token, updateData) => {
+	return fetch(`${process.env.REACT_APP_API_URL}/support-cases/${caseId}`, {
+		method: "PUT",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify(updateData),
+	})
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json();
+		})
+		.catch((err) => {
+			console.error("Error updating support case (admin):", err);
+		});
+};
+
+/**
+ * 8) Mark all messages as seen by Admin in a specific case
+ *    PUT /support-cases/:id/seen-by-admin
+ *
+ *    Pass userId in the body if your controller requires it (some do).
+ */
+export const adminMarkAllMessagesAsSeen = (caseId, token, userId) => {
+	return fetch(`${process.env.REACT_APP_API_URL}/mark-all-cases-as-seen`, {
+		method: "PUT",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({ userId }),
+	})
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json();
+		})
+		.catch((err) => {
+			console.error("Error marking messages as seen by admin:", err);
+		});
+};
+
+/**
+ * 9) Delete a specific message from a conversation in a support case
+ *    DELETE /support-cases/:caseId/messages/:messageId
+ */
+export const adminDeleteMessageFromConversation = (
+	caseId,
+	messageId,
+	token
+) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/support-cases/${caseId}/messages/${messageId}`,
+		{
+			method: "DELETE",
+			headers: {
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json();
+		})
+		.catch((err) => {
+			console.error("Error deleting message (admin):", err);
+		});
+};
+
+/**
+ * 10) (Optional) Get unseen messages count by Admin
+ *     GET /support-cases/unseen/count?userId=xxx
+ *     If you want an integer count of how many new messages are waiting for the admin.
+ */
+export const adminGetUnseenMessagesCount = (token, userId) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/support-cases/unseen/count?userId=${userId}`,
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
+			return res.json(); // returns { count: number }
+		})
+		.catch((err) => {
+			console.error("Error fetching unseen messages count (admin):", err);
+		});
+};
+
+//Store Management
+export const getStoreManagement = (userId, token) => {
+	return axios
+		.get(`${process.env.REACT_APP_API_URL}/store-management/${userId}`, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		})
+		.then((res) => res.data)
+		.catch((err) => {
+			return { error: err.response?.data?.error || "Something went wrong." };
+		});
+};
+
+export const updateStoreManagement = (userId, token, storeData) => {
+	return axios
+		.put(
+			`${process.env.REACT_APP_API_URL}/store-management/${userId}`,
+			storeData,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		)
+		.then((res) => res.data)
+		.catch((err) => {
+			return { error: err.response?.data?.error || "Update failed." };
+		});
+};
+
+export const createStoreManagement = (userId, token, storeData) => {
+	return axios
+		.post(
+			`${process.env.REACT_APP_API_URL}/store-management/${userId}`,
+			storeData,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		)
+		.then((res) => res.data)
+		.catch((err) => {
+			return { error: err.response?.data?.error || "Creation failed." };
+		});
+};
+
+export const deleteStoreManagement = (userId, token) => {
+	return axios
+		.delete(`${process.env.REACT_APP_API_URL}/store-management/${userId}`, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		})
+		.then((res) => res.data)
+		.catch((err) => {
+			return { error: err.response?.data?.error || "Delete failed." };
+		});
+};
+
+/**
+ * 1) GET all shipping options
+ *    (then filter on the front-end by storeId if you wish)
+ */
+export const listShippingOptions = () => {
+	return axios
+		.get(`${process.env.REACT_APP_API_URL}/shipping-options`)
+		.then((res) => res.data)
+		.catch((err) => {
+			return { error: err.response?.data?.error || "Something went wrong." };
+		});
+};
+
+/**
+ * 2) CREATE a shipping option
+ *    /shipping/create/:userId  (POST)
+ */
+export const createShippingOption = (userId, token, shippingData) => {
+	return axios
+		.post(
+			`${process.env.REACT_APP_API_URL}/shipping/create/${userId}`,
+			shippingData,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		)
+		.then((res) => res.data)
+		.catch((err) => {
+			return { error: err.response?.data?.error || "Create failed." };
+		});
+};
+
+/**
+ * 3) UPDATE a shipping option
+ *    /shipping/:shippingId/:userId  (PUT)
+ */
+export const updateShippingOption = (
+	shippingId,
+	userId,
+	token,
+	shippingData
+) => {
+	return axios
+		.put(
+			`${process.env.REACT_APP_API_URL}/shipping/${shippingId}/${userId}`,
+			shippingData,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		)
+		.then((res) => res.data)
+		.catch((err) => {
+			return { error: err.response?.data?.error || "Update failed." };
+		});
+};
+
+/**
+ * 4) DELETE a shipping option
+ *    /shipping/:shippingId/:userId  (DELETE) -- if you add it in your backend
+ */
+export const removeShippingOption = (shippingId, userId, token) => {
+	return axios
+		.delete(
+			`${process.env.REACT_APP_API_URL}/shipping/${shippingId}/${userId}`,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		)
+		.then((res) => res.data)
+		.catch((err) => {
+			return { error: err.response?.data?.error || "Delete failed." };
+		});
+};
+
+export const listCoupons = () => {
+	return axios
+		.get(`${process.env.REACT_APP_API_URL}/coupons`)
+		.then((res) => res.data)
+		.catch((err) => {
+			return { error: err.response?.data?.error || "Something went wrong." };
+		});
 };

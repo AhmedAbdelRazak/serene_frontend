@@ -28,15 +28,15 @@ const Z3StepTwo = ({
 }) => {
 	const { cart, addShipmentDetails } = useCartContext();
 
-	// 1) We detect whether there's at least one Printify product in the cart:
+	// 1) Does the cart have at least one Printify item?
 	const hasPrintifyItem = cart.some((item) => item.isPrintifyProduct);
 
-	// 2) We also check specifically for a Printify POD product with a custom design:
+	// 2) Specifically, does the cart have a Printify item with a custom design?
 	const hasCustomDesignPOD = cart.some(
 		(item) => item.isPrintifyProduct && item.customDesign
 	);
 
-	// 3) Helper to compute shipping cost
+	// 3) Helper to compute shipping cost (original logic)
 	const getFinalShippingCost = (option) => {
 		const personalStockCount = cart.filter(
 			(item) => !item.isPrintifyProduct
@@ -58,7 +58,7 @@ const Z3StepTwo = ({
 		return finalPrice;
 	};
 
-	// 4) Called when user picks a shipping option radio
+	// 4) When user picks a shipping option, compute final shipping & save to cart context
 	const handleLocalShippingOptionChange = (optionId) => {
 		const chosenOption = allShippingOptions.find((opt) => opt._id === optionId);
 		if (!chosenOption) return;
@@ -71,7 +71,7 @@ const Z3StepTwo = ({
 		addShipmentDetails(finalChosenOption);
 	};
 
-	// 5) Local shipping checks
+	// 5) Cities eligible for local shipping (Pickup/Local Delivery)
 	const closeCities = [
 		"San Bernardino",
 		"Riverside",
@@ -92,42 +92,48 @@ const Z3StepTwo = ({
 		"Anaheim",
 		"Orange County",
 		"Banning",
-		"Redlands",
+		"Redlands", // Even if duplicated
 		"Upland",
 		"Chino",
 		"Montclair",
 	];
 
-	const isLocalShipping = shipmentChosen._id === "66c2a28f9a509e5920162709";
-	const isStateCalifornia = state.toLowerCase() === "california";
-	const isCityNotInCloseCities = !closeCities.some((closeCity) =>
-		city.toLowerCase().includes(closeCity.toLowerCase())
-	);
+	// Both "Pickup" and "Local Delivery" IDs
+	const localShippingIDs = [
+		"67ef156040130b857c44baa1",
+		"67ef157340130b857c44baa5",
+	];
 
-	// 6) Filter out undesired shipping options
-	//    - If user is NOT in California, exclude local shipping IDs
-	//    - If there is at least one Printify item, exclude these same local shipping IDs
+	// 6) Filter shipping options (original style):
+	//    - Exclude local shipping if:
+	//         1) not in California, OR
+	//         2) city/address not in closeCities, OR
+	//         3) there's at least 1 printify item in the cart
+	//    - Otherwise (UPS/USPS) show it for everyone
 	const filteredShippingOptions = allShippingOptions.filter((option) => {
-		// If not CA
-		if (!isStateCalifornia) {
-			if (
-				option._id === "66c2a28f9a509e5920162709" || // local pickup
-				option._id === "66c2a2379a509e59201626da" // local delivery
-			) {
+		if (localShippingIDs.includes(option._id)) {
+			// If there's a Printify item, exclude local shipping
+			if (hasPrintifyItem) {
 				return false;
 			}
-		}
-
-		// If there's a Printify item in the cart, also exclude pickup & local
-		if (hasPrintifyItem) {
-			if (
-				option._id === "66c2a28f9a509e5920162709" ||
-				option._id === "66c2a2379a509e59201626da"
-			) {
+			// If not California, exclude
+			if (state.toLowerCase() !== "california") {
 				return false;
 			}
+			// Must match city or address to at least one "closeCity"
+			const cityMatch = closeCities.some((c) =>
+				city.toLowerCase().includes(c.toLowerCase())
+			);
+			const addressMatch = closeCities.some((c) =>
+				address.toLowerCase().includes(c.toLowerCase())
+			);
+			if (!cityMatch && !addressMatch) {
+				return false;
+			}
+			// Passed all checks => local shipping is allowed
+			return true;
 		}
-
+		// If it's not a local shipping option, show it across the board (UPS, USPS, etc.)
 		return true;
 	});
 
@@ -136,6 +142,7 @@ const Z3StepTwo = ({
 			{step === 2 && (
 				<Step>
 					<StepTitle>Shipping Options</StepTitle>
+
 					<ShippingOption>
 						<label className='mb-0 mt-3'>Ship To Name</label>
 						<Input
@@ -146,6 +153,7 @@ const Z3StepTwo = ({
 							onChange={handleCustomerDetailChange}
 						/>
 					</ShippingOption>
+
 					<ShippingOption>
 						<label className='mb-0 mt-3'>Ship To State</label>
 						<Select
@@ -161,6 +169,7 @@ const Z3StepTwo = ({
 							))}
 						</Select>
 					</ShippingOption>
+
 					<ShippingOptionRow>
 						<ShippingOptionWrapper>
 							<label className='mb-0 mt-3'>Ship To Address</label>
@@ -172,6 +181,7 @@ const Z3StepTwo = ({
 								onChange={handleAddressChange}
 							/>
 						</ShippingOptionWrapper>
+
 						<ShippingOptionWrapper>
 							<label className='mb-0 mt-3'>Ship To City</label>
 							<Input
@@ -182,6 +192,7 @@ const Z3StepTwo = ({
 								onChange={handleCityChange}
 							/>
 						</ShippingOptionWrapper>
+
 						<ShippingOptionWrapper>
 							<label className='mb-0 mt-3'>Zip Code</label>
 							<Input
@@ -193,6 +204,7 @@ const Z3StepTwo = ({
 							/>
 						</ShippingOptionWrapper>
 					</ShippingOptionRow>
+
 					<ShippingOption>
 						<label
 							className='mb-0 mt-3'
@@ -218,7 +230,7 @@ const Z3StepTwo = ({
 						/>
 					</ShippingOption>
 
-					{/* 7) Show the Printify POD note if there is a product with custom design */}
+					{/* 7) Show the Printify POD note if there's a product with custom design */}
 					{hasCustomDesignPOD && (
 						<PODNote>
 							Your custom-designed item requires extra production time. Please
@@ -228,14 +240,14 @@ const Z3StepTwo = ({
 						</PODNote>
 					)}
 
-					<>
-						<label
-							className='mt-3'
-							style={{ fontWeight: "bold", fontSize: "1.2rem" }}
-						>
-							Choose a carrier
-						</label>
-					</>
+					<label
+						className='mt-3'
+						style={{ fontWeight: "bold", fontSize: "1.2rem" }}
+					>
+						Choose a carrier
+					</label>
+
+					{/* Display only the filtered shipping options */}
 					{filteredShippingOptions.map((option) => {
 						const finalShippingCost = getFinalShippingCost(option);
 						return (
@@ -253,12 +265,7 @@ const Z3StepTwo = ({
 							</ShippingOption>
 						);
 					})}
-					{isLocalShipping && isStateCalifornia && isCityNotInCloseCities && (
-						<WarningMessage>
-							Please ensure that you choose the correct shipping option, we are
-							only shipping to the cities {closeCities.join(", ")}.
-						</WarningMessage>
-					)}
+
 					<ButtonWrapper>
 						<BackButton onClick={handlePreviousStep}>Back</BackButton>
 						<ContinueButton
@@ -453,11 +460,4 @@ const BackButton = styled.button`
 		width: 100%;
 		margin-bottom: 10px;
 	}
-`;
-
-const WarningMessage = styled.div`
-	color: red;
-	font-weight: bold;
-	margin-top: 10px;
-	font-size: 14px;
 `;

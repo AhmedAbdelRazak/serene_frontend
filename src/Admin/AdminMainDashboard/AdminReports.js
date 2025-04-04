@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { DatePicker, Select, Spin, Card, Row, Col, Empty, Table } from "antd";
+import {
+	DatePicker,
+	Select,
+	Spin,
+	Card,
+	Row,
+	Col,
+	Empty,
+	Table,
+	Button,
+} from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import Chart from "react-apexcharts";
 import CountUp from "react-countup";
 import { isAuthenticated } from "../../auth";
+import ReportDetailsModal from "./ReportDetailsModal"; // Ensure correct path
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -28,11 +39,11 @@ const measureLabelMap = {
 	grossMargin: "Gross Margin",
 };
 
-// Utility to determine if the measure should be in currency format
+// Utility to determine if the measure should be displayed as currency
 const isCurrencyMeasure = (measureType) =>
 	["grossTotal", "netTotal", "grossMargin"].includes(measureType);
 
-// Format the y-value for tooltips or table cells
+// Format the y-value for tooltips or other chart cells
 const formatValue = (measureType, val) => {
 	if (isCurrencyMeasure(measureType)) {
 		// Display as currency with two decimals
@@ -47,19 +58,29 @@ const AdminReports = () => {
 	const [loading, setLoading] = useState(false);
 	const { user, token } = isAuthenticated();
 
-	// 1) Date range with dayjs: default to current month
+	/**
+	 * 1) Date range: default to the LAST 30 DAYS
+	 */
 	const [dateRange, setDateRange] = useState([
-		dayjs().startOf("month"),
-		dayjs().endOf("month"),
+		dayjs().subtract(30, "day").startOf("day"),
+		dayjs().endOf("day"),
 	]);
 
-	// 2) Measure type
+	// Track which quick‐range button is active:
+	const [quickRange, setQuickRange] = useState("last30days");
+
+	// 2) Measure type (used for dayOverDay, state, status, scoreboard)
 	const [measureType, setMeasureType] = useState("grossTotal");
 
 	// 3) Data from backend
 	const [reportData, setReportData] = useState(null);
 
-	// Extract sub-arrays once we have data
+	// Modal for “detailed orders”
+	const [detailsModalVisible, setDetailsModalVisible] = useState(false);
+	const [detailsFilterType, setDetailsFilterType] = useState(null); // "product" or "state"
+	const [detailsFilterValue, setDetailsFilterValue] = useState(null); // e.g. "T-Shirt" or "NY"
+
+	// Extract sub-arrays after data arrives
 	const {
 		dayOverDay = [],
 		productSummary = [],
@@ -80,19 +101,13 @@ const AdminReports = () => {
 					netTotal: 0,
 				};
 
-	// 4) Fetch data from server on dateRange or measureType change
+	// 4) Fetch data from server whenever dateRange or measureType changes
 	const fetchReport = async () => {
 		try {
 			setLoading(true);
-
-			// Build query
 			const startDate = dateRange[0].format("YYYY-MM-DD");
 			const endDate = dateRange[1].format("YYYY-MM-DD");
 
-			/**
-			 * Example route: /order-report/report/:userId
-			 * Query params: ?startDate=...&endDate=...&measureType=...
-			 */
 			const res = await axios.get(
 				`${process.env.REACT_APP_API_URL}/order-report/report/${user._id}`,
 				{
@@ -114,17 +129,50 @@ const AdminReports = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dateRange, measureType]);
 
-	// ==================== Shared Chart Settings ====================
+	// ==================== Quick Range Handler ====================
+	const handleQuickRange = (key) => {
+		setQuickRange(key);
+		let start = null;
+		let end = dayjs().endOf("day");
+
+		switch (key) {
+			case "today":
+				start = dayjs().startOf("day");
+				break;
+			case "yesterday":
+				start = dayjs().subtract(1, "day").startOf("day");
+				end = dayjs().subtract(1, "day").endOf("day");
+				break;
+			case "last7days":
+				start = dayjs().subtract(6, "day").startOf("day"); // i.e. 7 days total
+				break;
+			case "last14days":
+				start = dayjs().subtract(13, "day").startOf("day");
+				break;
+			case "last30days":
+				start = dayjs().subtract(29, "day").startOf("day");
+				break;
+			case "all":
+				start = dayjs("2000-01-01").startOf("day");
+				break;
+			default:
+				// fallback
+				start = dayjs().subtract(13, "day").startOf("day");
+				break;
+		}
+		setDateRange([start, end]);
+	};
+
+	// ==================== Chart & Table Settings ====================
+	const measureLabel = measureLabelMap[measureType] || measureType;
+
 	const chartTooltip = {
 		y: {
 			formatter: (val) => formatValue(measureType, val),
 		},
 	};
 
-	// We'll display the measure label in chart titles, etc.
-	const measureLabel = measureLabelMap[measureType] || measureType;
-
-	// ==================== Day Over Day (Line Chart) ====================
+	// ---------- Day Over Day (Line) ----------
 	const dayOverDayChartOptions = {
 		chart: {
 			id: "dayOverDay",
@@ -132,7 +180,7 @@ const AdminReports = () => {
 			zoom: { enabled: false },
 		},
 		xaxis: {
-			categories: dayOverDay.map((d) => d._id), // each date as string "YYYY-MM-DD"
+			categories: dayOverDay.map((d) => d._id),
 		},
 		yaxis: {
 			labels: {
@@ -140,19 +188,15 @@ const AdminReports = () => {
 			},
 		},
 		stroke: { curve: "smooth" },
-		// A goldish color for the line:
 		colors: ["#d4af37"],
 		dataLabels: { enabled: false },
 		title: {
 			text: `Day Over Day (${measureLabel})`,
 			align: "center",
-			style: {
-				fontSize: "16px",
-			},
+			style: { fontSize: "16px" },
 		},
 		tooltip: chartTooltip,
 	};
-
 	const dayOverDayChartSeries = [
 		{
 			name: measureLabel,
@@ -160,7 +204,7 @@ const AdminReports = () => {
 		},
 	];
 
-	// ==================== State Summary (Bar) ====================
+	// ---------- State Summary (Bar) ----------
 	const stateLabels = stateSummary.map((s) => s._id || "Unknown");
 	const stateValues = stateSummary.map((s) => s.measure);
 
@@ -169,34 +213,42 @@ const AdminReports = () => {
 			id: "stateSummary",
 			type: "bar",
 			toolbar: { show: false },
-		},
-		xaxis: {
-			categories: stateLabels,
-			labels: {
-				rotate: -45,
-			},
-		},
-		yaxis: {
-			labels: {
-				formatter: (val) => formatValue(measureType, val),
+			// Enable bar clicks:
+			events: {
+				dataPointSelection: (event, chartContext, config) => {
+					const { dataPointIndex } = config;
+					if (dataPointIndex >= 0) {
+						const clickedState = stateLabels[dataPointIndex];
+						// Show modal for that state
+						setDetailsFilterType("state");
+						setDetailsFilterValue(clickedState);
+						setDetailsModalVisible(true);
+					}
+				},
 			},
 		},
 		plotOptions: {
-			bar: { borderRadius: 4, horizontal: false },
+			bar: {
+				borderRadius: 4,
+				horizontal: false,
+			},
 		},
-		// A silverish color for the bars:
-		colors: ["#b8b8b8"],
+		xaxis: {
+			categories: stateLabels,
+			labels: { rotate: -45 },
+		},
+		yaxis: {
+			labels: { formatter: (val) => formatValue(measureType, val) },
+		},
 		dataLabels: { enabled: false },
+		colors: ["#b8b8b8"],
 		title: {
 			text: `State Summary (${measureLabel})`,
 			align: "center",
-			style: {
-				fontSize: "16px",
-			},
+			style: { fontSize: "16px" },
 		},
 		tooltip: chartTooltip,
 	};
-
 	const stateChartSeries = [
 		{
 			name: measureLabel,
@@ -204,7 +256,7 @@ const AdminReports = () => {
 		},
 	];
 
-	// ==================== Status Summary (Pie Chart) ====================
+	// ---------- Status Summary (Pie Chart) ----------
 	const statusLabels = statusSummary.map((s) => s._id || "Unknown");
 	const statusValues = statusSummary.map((s) => s.measure);
 
@@ -216,10 +268,7 @@ const AdminReports = () => {
 			align: "center",
 			style: { fontSize: "16px" },
 		},
-		legend: {
-			position: "bottom",
-		},
-		// A mix of gold & silver shades:
+		legend: { position: "bottom" },
 		colors: [
 			"#d4af37", // gold
 			"#c0c0c0", // classic silver
@@ -231,52 +280,108 @@ const AdminReports = () => {
 		tooltip: chartTooltip,
 	};
 
-	// ==================== Product Summary (Table) ====================
-	// Sort productSummary from greatest to smallest by the chosen measure
-	const getProductValue = (p, type) => {
-		switch (type) {
-			case "grossTotal":
-			case "netTotal":
-			case "grossMargin":
-				return p[type] || 0;
-			case "totalQuantity":
-				return p.totalQuantity || 0;
-			case "orderCount":
-			default:
-				return p.orderCount || 0;
-		}
-	};
-
+	// ---------- Product Summary (Table) ----------
+	/**
+	 * This array is ALWAYS the same shape from the backend:
+	 *   { _id, orderCount, totalQuantity, grossTotal, netTotal }
+	 * We'll sort by 'totalQuantity' descending to show top-sold first.
+	 */
 	const sortedProductSummary = [...productSummary].sort(
-		(a, b) => getProductValue(b, measureType) - getProductValue(a, measureType)
+		(a, b) => (b.totalQuantity || 0) - (a.totalQuantity || 0)
 	);
 
+	/** Table columns that ALWAYS show #, Product, Order Count, Quantity, Gross, Net. */
 	const productTableColumns = [
+		{
+			title: "#",
+			dataIndex: "index",
+			key: "index",
+			width: 50,
+			render: (_, __, index) => index + 1,
+		},
 		{
 			title: "Product",
 			dataIndex: "_id",
 			key: "productName",
 		},
+
 		{
-			title: measureLabel, // e.g. "Gross Total", "Net Total", etc.
-			dataIndex: "measureValue",
-			key: "measureValue",
-			render: (value) => formatValue(measureType, value),
+			title: "Ordered Quantity",
+			dataIndex: "totalQuantity",
+			key: "totalQuantity",
+			render: (value) => Number(value || 0).toLocaleString(),
+		},
+		{
+			title: "Product Total Price",
+			dataIndex: "grossTotal",
+			key: "grossTotal",
+			render: (value) => `$${(value || 0).toFixed(2)}`,
 		},
 	];
 
 	const productTableData = sortedProductSummary.map((item) => ({
-		key: item._id,
+		key: item._id || Math.random(), // fallback if _id is missing
 		_id: item._id, // product name
-		measureValue: getProductValue(item, measureType),
+		orderCount: item.orderCount || 0,
+		totalQuantity: item.totalQuantity || 0,
+		grossTotal: item.grossTotal || 0,
+		netTotal: item.netTotal || 0,
 	}));
+
+	// Make each row clickable to open the modal for that product
+	const onProductTableRow = (record) => ({
+		onClick: () => {
+			setDetailsFilterType("product");
+			setDetailsFilterValue(record._id);
+			setDetailsModalVisible(true);
+		},
+	});
 
 	return (
 		<AdminReportsWrapper>
 			<h1 className='page-title'>Orders Report</h1>
 
-			{/* Controls: Date Range & Measure Type */}
+			{/* Controls: Quick Range Buttons & RangePicker & Measure Type */}
 			<ControlsBar>
+				<QuickButtonsBar>
+					<Button
+						type={quickRange === "today" ? "primary" : "default"}
+						onClick={() => handleQuickRange("today")}
+					>
+						Today
+					</Button>
+					<Button
+						type={quickRange === "yesterday" ? "primary" : "default"}
+						onClick={() => handleQuickRange("yesterday")}
+					>
+						Yesterday
+					</Button>
+					<Button
+						type={quickRange === "last7days" ? "primary" : "default"}
+						onClick={() => handleQuickRange("last7days")}
+					>
+						Last 7 Days
+					</Button>
+					<Button
+						type={quickRange === "last14days" ? "primary" : "default"}
+						onClick={() => handleQuickRange("last14days")}
+					>
+						Last 14 Days
+					</Button>
+					<Button
+						type={quickRange === "last30days" ? "primary" : "default"}
+						onClick={() => handleQuickRange("last30days")}
+					>
+						Last 30 Days
+					</Button>
+					<Button
+						type={quickRange === "all" ? "primary" : "default"}
+						onClick={() => handleQuickRange("all")}
+					>
+						All Orders
+					</Button>
+				</QuickButtonsBar>
+
 				<div className='control-item'>
 					<label>Date Range:</label>
 					<RangePicker
@@ -285,6 +390,7 @@ const AdminReports = () => {
 						allowClear={false}
 					/>
 				</div>
+
 				<div className='control-item'>
 					<label>Measure Type:</label>
 					<Select
@@ -379,7 +485,7 @@ const AdminReports = () => {
 						</Row>
 					</ScoreboardWrapper>
 
-					{/* Charts & Table Grid */}
+					{/* Charts & Tables Grid */}
 					<ChartGrid>
 						{/* Day Over Day (Line) */}
 						<div className='chart-box'>
@@ -388,8 +494,8 @@ const AdminReports = () => {
 									options={dayOverDayChartOptions}
 									series={dayOverDayChartSeries}
 									type='line'
-									width='700'
-									height='400'
+									width='600'
+									height='500'
 								/>
 							) : (
 								<Empty description='No Day Over Day Data' />
@@ -404,7 +510,8 @@ const AdminReports = () => {
 									dataSource={productTableData}
 									pagination={false}
 									size='small'
-									title={() => `Product Summary (${measureLabel})`}
+									onRow={onProductTableRow}
+									title={() => "Product Summary (All Stats)"}
 									style={{
 										maxHeight: "500px",
 										minHeight: "500px",
@@ -448,6 +555,16 @@ const AdminReports = () => {
 					</ChartGrid>
 				</>
 			)}
+
+			{/* Modal for viewing detailed orders */}
+			<ReportDetailsModal
+				visible={detailsModalVisible}
+				onClose={() => setDetailsModalVisible(false)}
+				filterType={detailsFilterType}
+				filterValue={detailsFilterValue}
+				startDate={dateRange[0]}
+				endDate={dateRange[1]}
+			/>
 		</AdminReportsWrapper>
 	);
 };
@@ -456,7 +573,6 @@ export default AdminReports;
 
 /* ====================== STYLES ====================== */
 const AdminReportsWrapper = styled.div`
-	/* A soft silverish background */
 	background-color: #f2f2f2;
 	padding: 20px;
 	border-radius: 20px;
@@ -470,8 +586,10 @@ const AdminReportsWrapper = styled.div`
 		text-align: center;
 	}
 
-	td {
+	td,
+	th {
 		text-transform: capitalize;
+		font-size: 12px;
 	}
 `;
 
@@ -493,13 +611,19 @@ const ControlsBar = styled.div`
 	}
 `;
 
+/** A row for the quick range buttons */
+const QuickButtonsBar = styled.div`
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+`;
+
 const ScoreboardWrapper = styled.div`
 	margin-bottom: 20px;
 `;
 
 const StyledCard = styled(Card)`
 	text-align: center;
-	/* Subtle silver-gold gradient */
 	background: linear-gradient(135deg, #d4af37 30%, #ffffff 120%);
 	border-radius: 10px;
 	border: 1px solid #ccc;
@@ -511,7 +635,7 @@ const StyledCard = styled(Card)`
 		color: #333;
 	}
 	p {
-		font-size: 1.8rem; /* Big, appealing numbers */
+		font-size: 1.8rem;
 		font-weight: bold;
 		color: #444;
 		margin: 0;
@@ -529,7 +653,6 @@ const ChartGrid = styled.div`
 		padding: 10px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		background: #ffffff;
-
 		display: flex;
 		flex-direction: column;
 		align-items: center;

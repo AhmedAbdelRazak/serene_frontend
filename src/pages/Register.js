@@ -8,6 +8,11 @@ import {
 	MailOutlined,
 	PhoneOutlined,
 } from "@ant-design/icons";
+
+// 1) IMPORT GOOGLE LOGIN & AXIOS
+import { GoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+
 import { signup, authenticate, isAuthenticated, signin } from "../auth";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
@@ -31,6 +36,44 @@ const Register = () => {
 
 	const { name, email, phone, password, password2, loading } = values;
 
+	// ---------------------------
+	//  Google Login Success
+	// ---------------------------
+	const handleGoogleSuccess = async (credentialResponse) => {
+		try {
+			const { credential } = credentialResponse;
+			if (!credential) {
+				return toast.error("No credential returned from Google");
+			}
+			setValues({ ...values, loading: true });
+
+			// POST to your backend /google-login endpoint
+			const { data } = await axios.post(
+				`${process.env.REACT_APP_API_URL}/google-login`,
+				{ idToken: credential }
+			);
+
+			setValues({ ...values, loading: false });
+
+			// If there's an error coming from the server:
+			if (data.error) {
+				return toast.error(data.error);
+			}
+
+			// If successful, store token & user, then refresh or redirect
+			authenticate(data, () => {
+				window.location.reload(false);
+			});
+		} catch (error) {
+			console.error("Google signup error:", error);
+			toast.error("Google signup failed. Please try again.");
+			setValues({ ...values, loading: false });
+		}
+	};
+
+	// ---------------------------
+	//  Normal signup flow
+	// ---------------------------
 	const handleChange = (name) => (event) => {
 		setValues({
 			...values,
@@ -68,10 +111,26 @@ const Register = () => {
 		return re.test(String(email).toLowerCase());
 	};
 
-	const validatePhone = (phone) => {
-		const phoneNumber = phone.replace(/[^\d]/g, "");
-		const re = /^[2-9]{1}[0-9]{2}[2-9]{1}[0-9]{2}[0-9]{4}$/;
-		return re.test(phoneNumber);
+	const validatePhone = (inputPhone) => {
+		// 1) Remove all non-digits
+		const phoneNumber = inputPhone.replace(/[^\d]/g, "");
+
+		// 2) Check length is between 8 and 12
+		if (phoneNumber.length < 8 || phoneNumber.length > 12) {
+			return false;
+		}
+
+		// 3) Check not all digits are the same
+		//    (e.g. "11111111" or "999999999" should fail)
+		const allSame = phoneNumber
+			.split("")
+			.every((digit) => digit === phoneNumber[0]);
+		if (allSame) {
+			return false;
+		}
+
+		// If all checks pass, return true
+		return true;
 	};
 
 	const validateName = (name) => {
@@ -80,7 +139,7 @@ const Register = () => {
 	};
 
 	const clickSubmit = async () => {
-		const plainPhone = phone.replace(/[^\d]/g, ""); // Removing formatting for validation and submission
+		const plainPhone = phone.replace(/[^\d]/g, "");
 		if (!validateName(name)) {
 			toast.error("Please add your full name");
 			return;
@@ -152,7 +211,6 @@ const Register = () => {
 
 	useEffect(() => {
 		ReactGA.send(window.location.pathname + window.location.search);
-
 		// eslint-disable-next-line
 	}, [window.location.pathname]);
 
@@ -238,6 +296,21 @@ const Register = () => {
 							</Button>
 						</Form.Item>
 					</Form>
+
+					{/* 
+            ------------------------------------------------------
+            ADD THE GOOGLE LOGIN BUTTON 
+            ------------------------------------------------------
+          */}
+					<Form.Item style={{ textAlign: "center", marginBottom: "0" }}>
+						<GoogleLogin
+							onSuccess={handleGoogleSuccess}
+							onError={() => {
+								toast.error("Google signup error. Try again.");
+							}}
+						/>
+					</Form.Item>
+
 					<hr />
 					<p style={{ textAlign: "center" }}>
 						If you already have an account, please{" "}
@@ -263,20 +336,14 @@ const Register = () => {
 				<title>Serene Jannat Online Shop | Account Register</title>
 				<meta
 					name='description'
-					content='Register for an account at Serene Jannat to access exclusive offers and manage your orders. Enjoy a seamless shopping experience with our wide range of gifts, candles, and glass items. Join our community and show your loved ones how much you care with Serene Jannat.'
+					content='Register for an account at Serene Jannat to access exclusive offers and manage your orders...'
 				/>
-				<meta
-					name='keywords'
-					content='Serene Jannat, register, account, gift shop, candles, glass items, online shopping, exclusive offers, order management'
-				/>
+				<meta name='keywords' content='Serene Jannat, register, account...' />
 				<meta
 					property='og:title'
 					content='Serene Jannat Online Shop | Account Register'
 				/>
-				<meta
-					property='og:description'
-					content='Register for an account at Serene Jannat to access exclusive offers and manage your orders. Enjoy a seamless shopping experience with our wide range of gifts, candles, and glass items. Join our community and show your loved ones how much you care with Serene Jannat.'
-				/>
+				<meta property='og:description' content='Register for an account...' />
 				<meta property='og:image' content='%PUBLIC_URL%/logo192.png' />
 				<meta property='og:url' content='https://serenejannat.com/signup' />
 				<meta property='og:type' content='website' />

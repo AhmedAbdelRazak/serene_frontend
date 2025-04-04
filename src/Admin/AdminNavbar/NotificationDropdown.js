@@ -1,3 +1,5 @@
+// src/components/AdminNavigation/NotificationDropdown.js
+
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { getUnseenMessagesDetails, updateSeenByAdmin } from "../apiAdmin";
@@ -6,28 +8,32 @@ import { isAuthenticated } from "../../auth";
 const NotificationDropdown = ({ onClose }) => {
 	const [unseenMessages, setUnseenMessages] = useState([]);
 	const [loading, setLoading] = useState(true);
-	const { token } = isAuthenticated();
+	const { token } = isAuthenticated() || {};
 
 	useEffect(() => {
 		const fetchUnseenMessages = async () => {
 			try {
-				const response = await getUnseenMessagesDetails(token);
-				setUnseenMessages(response);
-				setLoading(false);
-			} catch (error) {
-				console.error("Error fetching unseen messages details", error);
+				const data = await getUnseenMessagesDetails(token);
+				if (Array.isArray(data)) {
+					setUnseenMessages(data);
+				}
+			} catch (err) {
+				console.error("Error fetching unseen messages details:", err);
+			} finally {
 				setLoading(false);
 			}
 		};
-
 		fetchUnseenMessages();
 	}, [token]);
 
-	const handleClick = async (chatId) => {
-		console.log(`Updating seen status for chat ID: ${chatId}`);
-		await updateSeenByAdmin(chatId, token);
-		onClose();
-		window.location.href = `/admin/customer-service`;
+	const handleClick = async (caseId) => {
+		try {
+			await updateSeenByAdmin(caseId, token);
+			onClose(); // close dropdown
+			window.location.href = `/admin/customer-service?caseId=${caseId}`;
+		} catch (err) {
+			console.error("Error updating seen by admin:", err);
+		}
 	};
 
 	return (
@@ -37,12 +43,20 @@ const NotificationDropdown = ({ onClose }) => {
 			) : unseenMessages.length === 0 ? (
 				<NoMessages>No new notifications</NoMessages>
 			) : (
-				unseenMessages.map((message, index) => (
-					<MessageItem key={index} onClick={() => handleClick(message._id)}>
+				unseenMessages.map((oneCase) => (
+					<MessageItem
+						key={oneCase._id}
+						onClick={() => handleClick(oneCase._id)}
+					>
 						<MessageHeader>
-							{message.conversation[0].messageBy.customerName}
+							{/* Show the from name or any relevant info */}
+							{oneCase.conversation[0]?.messageBy?.customerName ||
+								"Unknown Sender"}
 						</MessageHeader>
-						<MessageBody>{message.conversation[0].message}</MessageBody>
+						<MessageBody>
+							{oneCase.conversation[0]?.message?.slice(0, 60) || "No content"}
+							...
+						</MessageBody>
 					</MessageItem>
 				))
 			)}
@@ -52,6 +66,7 @@ const NotificationDropdown = ({ onClose }) => {
 
 export default NotificationDropdown;
 
+/* ========== STYLES ========== */
 const DropdownContainer = styled.div`
 	position: absolute;
 	top: 60px;

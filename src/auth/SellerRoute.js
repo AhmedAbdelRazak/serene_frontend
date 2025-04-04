@@ -4,11 +4,14 @@ import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { isAuthenticated } from "./index";
 
-const OrderTakerRoute = ({ component: Component, ...rest }) => (
+const SellerRoute = ({ component: Component, ...rest }) => (
 	<Route
 		{...rest}
 		render={(props) =>
-			isAuthenticated() && isAuthenticated().user.role === 3 ? (
+			(isAuthenticated() && isAuthenticated().user.role === 2000) ||
+			(isAuthenticated() &&
+				isAuthenticated().user.role === 1 &&
+				isAuthenticated().user._id === "663539b4eb1a090ebd349d65") ? (
 				<Component {...props} />
 			) : (
 				<Redirect
@@ -22,4 +25,4 @@ const OrderTakerRoute = ({ component: Component, ...rest }) => (
 	/>
 );
 
-export default OrderTakerRoute;
+export default SellerRoute;

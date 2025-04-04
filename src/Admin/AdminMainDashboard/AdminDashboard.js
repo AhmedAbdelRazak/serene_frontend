@@ -12,6 +12,7 @@ import OrdersHistory from "./OrdersHistory";
 import OrdersInProgress from "./OrdersInProgress";
 import OrderDetailsModal from "./OrderDetailsModal";
 import AdminReports from "./AdminReports";
+import AllStoresForAdmin from "./AllStoresForAdmin";
 
 const { TabPane } = Tabs;
 
@@ -109,6 +110,17 @@ const AdminDashboard = () => {
 								key='OrdersInProgress'
 							>
 								<OrdersInProgress showModal={showModal} />
+							</TabPane>
+
+							<TabPane
+								tab={
+									<span>
+										<UnorderedListOutlined /> All Stores/ Brands
+									</span>
+								}
+								key='allStores'
+							>
+								<AllStoresForAdmin showModal={showModal} />
 							</TabPane>
 						</CustomTabs>
 					</div>

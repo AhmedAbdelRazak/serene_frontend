@@ -74,13 +74,25 @@ const Cart = () => {
 			}
 		});
 
-		if (user && user.name) {
+		if (user && user.name && user.phone) {
+			// skip step 1
 			setStep(2);
 			setCustomerDetails({
 				...customerDetails,
 				name: user.name,
 				email: user.email,
 				phone: user.phone,
+			});
+		}
+		// If user is logged in but phone might be missing:
+		else if (user && user.name) {
+			// Keep user on step 1 so they can fill in phone
+			setStep(1);
+			setCustomerDetails({
+				...customerDetails,
+				name: user.name,
+				email: user.email,
+				phone: "",
 			});
 		}
 
@@ -262,7 +274,6 @@ const Cart = () => {
 	};
 
 	useEffect(() => {
-		ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS_MEASUREMENTID);
 		ReactGA.send(window.location.pathname + window.location.search);
 
 		// eslint-disable-next-line

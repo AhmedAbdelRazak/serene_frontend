@@ -8,7 +8,9 @@ const AdminRoute = ({ component: Component, ...rest }) => (
 	<Route
 		{...rest}
 		render={(props) =>
-			isAuthenticated() && isAuthenticated().user.role === 1 ? (
+			isAuthenticated() &&
+			isAuthenticated().user.role === 1 &&
+			isAuthenticated().user._id === "663539b4eb1a090ebd349d65" ? (
 				<Component {...props} />
 			) : (
 				<Redirect

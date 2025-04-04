@@ -49,7 +49,10 @@ const NavbarTop = memo(() => {
 	// Memoize signout handler
 	const handleSignout = useCallback(() => {
 		signout(() => {
-			navigate("/");
+			navigate.push("/");
+			setTimeout(() => {
+				window.location.reload(false);
+			}, 500);
 		});
 	}, [navigate]);
 
@@ -115,6 +118,31 @@ const NavbarTop = memo(() => {
 						</>
 					)}
 
+					{/* Seller user */}
+
+					{user && user.name && user.role === 2000 && (
+						<>
+							<NavLink
+								as={Link}
+								to='/seller/dashboard'
+								onClick={() => handleNavLinkClick("/seller/dashboard")}
+								className={activeLink === "/seller/dashboard" ? "active" : ""}
+							>
+								<FaUserPlus /> Hello {firstName}
+							</NavLink>
+							<NavLink
+								as={Link}
+								to='#signout'
+								onClick={(e) => {
+									e.preventDefault();
+									handleSignout();
+								}}
+							>
+								Signout
+							</NavLink>
+						</>
+					)}
+
 					{/* Regular user */}
 					{user && user.name && user.role === 0 && (
 						<>
@@ -158,6 +186,16 @@ const NavbarTop = memo(() => {
 								className={activeLink === "/signup" ? "active" : ""}
 							>
 								Register
+							</NavLink>
+							<NavLink
+								as={Link}
+								to='/sellingagent/signup'
+								onClick={() => handleNavLinkClick("/sellingagent/signup")}
+								className={
+									activeLink === "/sellingagent/signup" ? "active" : ""
+								}
+							>
+								Register as a Seller
 							</NavLink>
 						</>
 					)}

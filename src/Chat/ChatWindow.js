@@ -1,247 +1,396 @@
-import React, { useState, useEffect, useRef } from "react";
+/** @format */
+// ChatWindow.js (Marketplace) with Real Estate styling & functionality + storeId
+// Fix: Removed local duplication in handleSendMessage
+
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button, Input, Select, Form, Upload, message } from "antd";
-import { UploadOutlined, CloseOutlined } from "@ant-design/icons";
-import styled from "styled-components";
-import { isAuthenticated } from "../auth";
 import {
 	createNewSupportCase,
 	getSupportCaseById,
 	updateSupportCase,
 	updateSeenByCustomer,
-} from "../Admin/apiAdmin";
-import socket from "./socket";
+	autoCompleteProducts,
+	checkInvoiceNumber,
+} from "../apiCore"; // Adjust path as needed
+import styled, { keyframes } from "styled-components";
+import socket from "./socket"; // Adjust path to your socket instance
 import EmojiPicker from "emoji-picker-react";
+import { UploadOutlined, CloseOutlined } from "@ant-design/icons";
 import StarRatings from "react-star-ratings";
-import ReactGA from "react-ga4";
+import { isAuthenticated } from "../auth";
 
 const { Option } = Select;
 
-const ChatWindow = ({ closeChatWindow }) => {
+// Inquiry types for your marketplace
+const INQUIRY_TYPES = [
+	{ value: "order", label: "Inquiry about an Order" },
+	{ value: "product", label: "Inquiry about a Product" },
+	{ value: "other", label: "Other Inquiry" },
+];
+
+const ChatWindow = ({ closeChatWindow, chosenLanguage }) => {
+	// Basic user info
 	const [customerName, setCustomerName] = useState("");
 	const [customerEmail, setCustomerEmail] = useState("");
+
+	// Inquiry states
 	const [inquiryAbout, setInquiryAbout] = useState("");
 	const [orderNumber, setOrderNumber] = useState("");
 	const [productName, setProductName] = useState("");
 	const [otherInquiry, setOtherInquiry] = useState("");
+	const [storeId, setStoreId] = useState(null); // <--- track storeId
+
+	// Chat/case states
+	const [caseId, setCaseId] = useState("");
 	const [submitted, setSubmitted] = useState(false);
 	const [messages, setMessages] = useState([]);
 	const [newMessage, setNewMessage] = useState("");
-	const [caseId, setCaseId] = useState("");
+
+	// UI extras
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 	const [fileList, setFileList] = useState([]);
+	const [typingStatus, setTypingStatus] = useState("");
+
+	// Rating
 	const [isRatingVisible, setIsRatingVisible] = useState(false);
 	const [rating, setRating] = useState(0);
-	const [typingStatus, setTypingStatus] = useState("");
-	// eslint-disable-next-line
-	const [isMinimized, setIsMinimized] = useState(false);
+
+	// For auto-scrolling
 	const messagesEndRef = useRef(null);
 
+	// Product autocomplete suggestions
+	const [productSuggestions, setProductSuggestions] = useState([]);
+	const [showSuggestions, setShowSuggestions] = useState(false);
+
+	// -----------------------------
+	// 1) On mount, load user & chat
+	// -----------------------------
 	useEffect(() => {
+		// If user is authenticated, fill name/email
 		if (isAuthenticated()) {
 			const { user } = isAuthenticated();
-			setCustomerName(user.name);
-			setCustomerEmail(user.email || user.phone);
+			setCustomerName(user.name || "");
+			setCustomerEmail(user.email || user.phone || "");
 		}
 
-		const savedChat = JSON.parse(localStorage.getItem("currentChat"));
-		if (savedChat) {
+		// Check localStorage for an existing chat
+		const savedChat = JSON.parse(localStorage.getItem("currentChat")) || null;
+		if (savedChat && savedChat.caseId) {
+			setCaseId(savedChat.caseId);
 			setCustomerName(savedChat.customerName || "");
 			setCustomerEmail(savedChat.customerEmail || "");
 			setInquiryAbout(savedChat.inquiryAbout || "");
 			setOrderNumber(savedChat.orderNumber || "");
 			setProductName(savedChat.productName || "");
 			setOtherInquiry(savedChat.otherInquiry || "");
-			setCaseId(savedChat.caseId || "");
+			setStoreId(savedChat.storeId || null);
 			setSubmitted(savedChat.submitted || false);
 			setMessages(savedChat.messages || []);
+			// Fetch from DB
 			fetchSupportCase(savedChat.caseId);
 		}
+	}, []);
 
-		socket.on("receiveMessage", (message) => {
-			if (message.caseId === caseId) {
-				setMessages((prevMessages) => [...prevMessages, message]);
+	// -----------------------------
+	// 2) Join/leave socket room
+	// -----------------------------
+	useEffect(() => {
+		if (caseId) {
+			socket.emit("joinRoom", { caseId });
+		}
+		return () => {
+			if (caseId) {
+				socket.emit("leaveRoom", { caseId });
+			}
+		};
+	}, [caseId]);
+
+	// -----------------------------
+	// 3) Socket events
+	// -----------------------------
+	useEffect(() => {
+		const handleReceiveMessage = (msgData) => {
+			// Only add once
+			if (msgData.caseId === caseId) {
+				setMessages((prev) => [...prev, msgData]);
 				markMessagesAsSeen(caseId);
 			}
-		});
+		};
 
-		socket.on("closeCase", (data) => {
-			if (data.case._id === caseId) {
+		const handleCloseCase = (data) => {
+			if (data?.case?._id === caseId) {
 				setIsRatingVisible(true);
 			}
-		});
+		};
 
-		socket.on("typing", (data) => {
-			if (data.caseId === caseId && data.name !== customerName) {
-				setTypingStatus(`${data.name} is typing...`);
+		const handleTyping = (info) => {
+			if (info.caseId === caseId && info.user !== customerName) {
+				setTypingStatus(`${info.user} is typing`);
 			}
-		});
+		};
 
-		socket.on("stopTyping", (data) => {
-			if (data.caseId === caseId && data.name !== customerName) {
+		const handleStopTyping = (info) => {
+			if (info.caseId === caseId && info.user !== customerName) {
 				setTypingStatus("");
 			}
-		});
+		};
+
+		socket.on("receiveMessage", handleReceiveMessage);
+		socket.on("closeCase", handleCloseCase);
+		socket.on("typing", handleTyping);
+		socket.on("stopTyping", handleStopTyping);
 
 		return () => {
-			socket.off("receiveMessage");
-			socket.off("closeCase");
-			socket.off("typing");
-			socket.off("stopTyping");
+			socket.off("receiveMessage", handleReceiveMessage);
+			socket.off("closeCase", handleCloseCase);
+			socket.off("typing", handleTyping);
+			socket.off("stopTyping", handleStopTyping);
 		};
-		// eslint-disable-next-line
-	}, [caseId, customerEmail]);
+	}, [caseId, customerName]);
 
+	// -----------------------------
+	// 4) Keep localStorage updated
+	// -----------------------------
 	useEffect(() => {
 		if (caseId) {
 			const saveChat = {
+				caseId,
 				customerName,
 				customerEmail,
 				inquiryAbout,
 				orderNumber,
 				productName,
 				otherInquiry,
-				caseId,
-				messages,
+				storeId,
 				submitted,
+				messages,
 			};
 			localStorage.setItem("currentChat", JSON.stringify(saveChat));
 			markMessagesAsSeen(caseId);
 		}
 	}, [
+		caseId,
 		customerName,
 		customerEmail,
 		inquiryAbout,
 		orderNumber,
 		productName,
 		otherInquiry,
-		messages,
+		storeId,
 		submitted,
-		caseId,
+		messages,
 	]);
 
+	// -----------------------------
+	// 5) Fetch existing case
+	// -----------------------------
 	const fetchSupportCase = async (id) => {
 		try {
-			const supportCase = await getSupportCaseById(id);
-			setMessages(supportCase.conversation);
-		} catch (err) {
-			console.error("Error fetching support case", err);
-		}
-	};
-
-	const markMessagesAsSeen = async (caseId) => {
-		try {
-			await updateSeenByCustomer(caseId);
-		} catch (err) {
-			console.error("Error marking messages as seen", err);
-		}
-	};
-
-	useEffect(() => {
-		scrollToBottom();
-	}, [messages]);
-
-	const handleInputChange = (e) => {
-		setNewMessage(e.target.value);
-		socket.emit("typing", { name: customerName, caseId });
-	};
-
-	const handleInputBlur = () => {
-		socket.emit("stopTyping", { name: customerName, caseId });
-	};
-
-	const handleInputKeyPress = (e) => {
-		if (e.key === "Enter") {
-			e.preventDefault();
-			if (newMessage.trim() === "") {
-				message.error("Please add text to your message.");
-			} else {
-				handleSendMessage();
+			if (!id) return;
+			const supCase = await getSupportCaseById(id);
+			if (supCase?.conversation) {
+				setMessages(supCase.conversation);
 			}
+		} catch (err) {
+			console.error("Error fetching support case:", err);
 		}
 	};
 
+	// -----------------------------
+	// 6) Mark messages as seen
+	// -----------------------------
+	const markMessagesAsSeen = async (id) => {
+		try {
+			await updateSeenByCustomer(id);
+		} catch (err) {
+			console.error("Error marking messages as seen:", err);
+		}
+	};
+
+	// -----------------------------
+	// 7) Scroll to bottom
+	// -----------------------------
+	useEffect(() => {
+		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	}, [messages, typingStatus]);
+
+	// -----------------------------
+	// 8) Autocomplete for product
+	// -----------------------------
+	useEffect(() => {
+		const doFetch = async () => {
+			if (inquiryAbout === "product" && productName.trim().length >= 4) {
+				try {
+					const suggestions = await autoCompleteProducts(productName.trim());
+					setProductSuggestions(suggestions);
+					setShowSuggestions(true);
+				} catch (err) {
+					console.error("Error auto-completing products:", err);
+				}
+			} else {
+				setProductSuggestions([]);
+				setShowSuggestions(false);
+			}
+		};
+		doFetch();
+	}, [inquiryAbout, productName]);
+
+	const handleSelectProduct = (prod) => {
+		setProductName(prod.productName);
+		setStoreId(prod.store || null);
+		setShowSuggestions(false);
+		setProductSuggestions([]);
+	};
+
+	// -----------------------------
+	// 9) Check invoice for "order"
+	// -----------------------------
+	const checkOrderInvoice = async () => {
+		if (!orderNumber.trim()) return;
+		try {
+			const result = await checkInvoiceNumber(orderNumber.trim());
+			if (result.found) {
+				setStoreId(result.storeId || null);
+			} else {
+				setStoreId(null);
+			}
+		} catch (err) {
+			console.error("Error checking invoice:", err);
+		}
+	};
+
+	// -----------------------------
+	// 10) Create new support case
+	// -----------------------------
 	const handleSubmit = async () => {
-		if (!customerName || !/\s/.test(customerName)) {
-			message.error("Please enter your full name.");
+		// 1) Validate name & email
+		if (!customerName.trim() || !customerEmail.trim()) {
+			message.error("Please enter your name and email/phone.");
 			return;
 		}
 
+		// Force full name if not authenticated
+		if (!isAuthenticated()) {
+			const parts = customerName.trim().split(" ");
+			if (parts.length < 2) {
+				message.error("Please enter your full name (first and last).");
+				return;
+			}
+		}
+
+		// Check email/phone format
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (customerEmail && !emailRegex.test(customerEmail)) {
-			message.error("Please enter a valid email address.");
+		const phoneRegex = /^[0-9]{10,15}$/;
+		if (!emailRegex.test(customerEmail) && !phoneRegex.test(customerEmail)) {
+			message.error("Enter a valid email or phone.");
 			return;
 		}
 
 		if (!inquiryAbout) {
-			message.error("Please select an inquiry type.");
+			message.error("Select what your inquiry is about.");
 			return;
 		}
 
-		const inquiryDetails =
-			inquiryAbout === "order"
-				? orderNumber
-				: inquiryAbout === "product"
-					? productName
-					: otherInquiry;
+		// 2) Build inquiry details
+		let detail = "";
+		if (inquiryAbout === "order") {
+			detail = orderNumber.trim();
+			if (detail) await checkOrderInvoice();
+		} else if (inquiryAbout === "product") {
+			detail = productName.trim();
+		} else {
+			detail = otherInquiry.trim();
+		}
 
-		if (!inquiryDetails) {
+		if (!detail) {
 			message.error("Please provide details for your inquiry.");
 			return;
 		}
 
-		const data = {
+		// 3) Build final payload with storeId
+		const payload = {
 			customerName,
 			customerEmail,
+			displayName1: customerName,
+			displayName2: "Platform Support",
+			role: 0, // client role
+			storeId: storeId || null,
 			inquiryAbout,
-			inquiryDetails,
+			inquiryDetails: detail || "General Inquiry",
+			supporterId: "606060606060606060606060",
+			ownerId: "606060606060606060606060",
 		};
 
 		try {
-			const response = await createNewSupportCase(data);
-			console.log("Support case created with ID:", response._id); // Log the case ID
-			setCaseId(response._id);
+			const newCase = await createNewSupportCase(payload);
+			setCaseId(newCase._id);
 			setSubmitted(true);
-			fetchSupportCase(response._id); // Fetch the created support case
+
+			if (newCase.conversation) {
+				setMessages(newCase.conversation);
+			} else {
+				// Add a "System" message
+				setMessages([
+					{
+						messageBy: { customerName: "System" },
+						message: "A representative will be with you in 3-5 minutes.",
+						date: new Date(),
+					},
+				]);
+			}
 		} catch (err) {
-			console.error("Error creating support case", err);
+			console.error("Error creating support case:", err);
 		}
 	};
 
+	// -----------------------------
+	// 11) Send a message
+	// -----------------------------
 	const handleSendMessage = async () => {
-		const messageData = {
+		if (!newMessage.trim()) return;
+
+		const msg = {
+			caseId,
 			messageBy: { customerName, customerEmail },
 			message: newMessage,
 			date: new Date(),
-			caseId,
 		};
 
+		// *** Removed local append to avoid duplicates ***
+		// setMessages((prev) => [...prev, msg]);
+
 		try {
-			await updateSupportCase(caseId, { conversation: messageData });
-			socket.emit("sendMessage", messageData);
+			// Update the DB (will trigger the server's "receiveMessage" broadcast)
+			await updateSupportCase(caseId, { conversation: msg });
+			// Then the "receiveMessage" event will add it to `messages`.
+			socket.emit("sendMessage", msg);
 			setNewMessage("");
-			socket.emit("stopTyping", { name: customerName, caseId });
+			socket.emit("stopTyping", { caseId, user: customerName });
 		} catch (err) {
-			console.error("Error sending message", err);
+			console.error("Error sending message:", err);
 		}
 	};
 
+	// -----------------------------
+	// 12) Close chat => rating
+	// -----------------------------
 	const handleCloseChat = () => {
 		setIsRatingVisible(true);
 	};
 
-	const handleRateService = async (ratingValue) => {
+	const handleRateService = async (val) => {
 		try {
 			await updateSupportCase(caseId, {
-				rating: ratingValue,
+				rating: val,
 				caseStatus: "closed",
-				closedBy: customerEmail,
+				closedBy: "client",
 			});
 			localStorage.removeItem("currentChat");
 			setIsRatingVisible(false);
 			closeChatWindow();
-			message.success("Thank you for your feedback!");
+			message.success("Thanks for your feedback!");
 		} catch (err) {
-			console.error("Error rating support case", err);
+			console.error("Error rating support case:", err);
 		}
 	};
 
@@ -249,101 +398,154 @@ const ChatWindow = ({ closeChatWindow }) => {
 		try {
 			await updateSupportCase(caseId, {
 				caseStatus: "closed",
-				closedBy: customerEmail,
+				closedBy: "client",
 			});
 			localStorage.removeItem("currentChat");
 			setIsRatingVisible(false);
 			closeChatWindow();
 		} catch (err) {
-			console.error("Error closing support case", err);
+			console.error("Error skipping rating:", err);
 		}
 	};
 
-	const handleEmojiClick = (emojiObject) => {
-		setNewMessage((prevMessage) => prevMessage + emojiObject.emoji);
+	// -----------------------------
+	// 13) Typing events
+	// -----------------------------
+	const handleInputChange = (e) => {
+		setNewMessage(e.target.value);
+		if (caseId) {
+			socket.emit("typing", { caseId, user: customerName });
+		}
+	};
+
+	const handleStopTyping = () => {
+		if (caseId) {
+			socket.emit("stopTyping", { caseId, user: customerName });
+		}
+	};
+
+	// SHIFT+ENTER for multiline
+	const handlePressEnter = (e) => {
+		if (!e.shiftKey) {
+			e.preventDefault();
+			handleSendMessage();
+		}
+	};
+
+	// -----------------------------
+	// 14) Emoji & file uploads
+	// -----------------------------
+	const handleEmojiClick = (emojiObj) => {
+		setNewMessage((prev) => prev + emojiObj.emoji);
 		setShowEmojiPicker(false);
 	};
 
-	const handleFileChange = ({ fileList }) => {
-		setFileList(fileList);
+	const handleFileChange = ({ fileList: newList }) => {
+		setFileList(newList);
 	};
 
-	const scrollToBottom = () => {
-		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-	};
+	// -----------------------------
+	// 15) Utility: linkify
+	// -----------------------------
+	const renderLinks = useCallback((txt) => {
+		const urlRegex = /(https?:\/\/[^\s]+)/g;
+		return txt.split(urlRegex).map((part, i) => {
+			if (part.match(urlRegex)) {
+				return (
+					<a href={part} key={i} target='_blank' rel='noreferrer'>
+						{part}
+					</a>
+				);
+			}
+			return part;
+		});
+	}, []);
 
+	const isMine = (msg) => msg.messageBy?.customerEmail === customerEmail;
+
+	// ==============================
+	// Render
+	// ==============================
 	return (
-		<ChatWindowWrapper isMinimized={isMinimized}>
-			<ChatWindowHeader>
-				<h3>Customer Support</h3>
+		<ChatWindowWrapper>
+			<Header>
+				<h3>
+					{chosenLanguage === "Arabic" ? "دعم العملاء" : "Customer Support"}
+				</h3>
 				<Button
 					type='text'
 					icon={<CloseOutlined />}
 					onClick={closeChatWindow}
 				/>
-			</ChatWindowHeader>
+			</Header>
+
 			{isRatingVisible ? (
-				<RatingSection>
-					<h4>Rate Our Service</h4>
+				<RatingContainer>
+					<h4>
+						{chosenLanguage === "Arabic" ? "قيم خدمتنا" : "Rate Our Service"}
+					</h4>
 					<StarRatings
 						rating={rating}
-						starRatedColor='var(--secondary-color)' // Using a color from :root
-						changeRating={setRating}
+						starRatedColor='#faad14'
+						changeRating={(val) => setRating(val)}
 						numberOfStars={5}
 						name='rating'
-						starDimension='20px' // Making the stars smaller
-						starSpacing='2px'
+						starDimension='24px'
 					/>
-					<RatingButtons>
-						<Button
-							type='primary'
-							onClick={() => {
-								ReactGA.event({
-									category: "User Rated Chat",
-									action: "User Rated Chat",
-								});
-								handleRateService(rating);
-							}}
-						>
-							Submit Rating
+					<div className='rating-buttons'>
+						<Button type='primary' onClick={() => handleRateService(rating)}>
+							{chosenLanguage === "Arabic" ? "إرسال التقييم" : "Submit Rating"}
 						</Button>
-						<Button onClick={handleSkipRating}>Skip</Button>
-					</RatingButtons>
-				</RatingSection>
-			) : submitted && !isMinimized ? (
-				<div>
-					<p>A representative will be with you shortly.</p>
-					<MessagesContainer>
-						{messages &&
-							messages.map((msg, index) => (
-								<Message key={index}>
-									<strong>{msg.messageBy.customerName}:</strong> {msg.message}
-								</Message>
-							))}
+						<Button onClick={handleSkipRating}>
+							{chosenLanguage === "Arabic" ? "تخطي" : "Skip"}
+						</Button>
+					</div>
+				</RatingContainer>
+			) : submitted ? (
+				<>
+					{/* Chat in progress */}
+					<MessagesSection>
+						{messages.map((msg, idx) => {
+							const mine = isMine(msg);
+							return (
+								<MessageBubble key={idx} isMine={mine}>
+									<strong>{msg.messageBy.customerName}:</strong>{" "}
+									{renderLinks(msg.message)}
+									<small>{new Date(msg.date).toLocaleString()}</small>
+								</MessageBubble>
+							);
+						})}
+						{typingStatus && (
+							<TypingIndicator>
+								<span className='typing-text'>{typingStatus}</span>
+								<span className='dot'></span>
+								<span className='dot'></span>
+								<span className='dot'></span>
+							</TypingIndicator>
+						)}
 						<div ref={messagesEndRef} />
-					</MessagesContainer>
-					{typingStatus && <TypingStatus>{typingStatus}</TypingStatus>}
+					</MessagesSection>
+
 					<Form.Item>
 						<ChatInputContainer>
-							<Input
-								placeholder='Type your message...'
+							<Input.TextArea
+								placeholder={
+									chosenLanguage === "Arabic"
+										? "اكتب رسالتك..."
+										: "Type your message..."
+								}
 								value={newMessage}
 								onChange={handleInputChange}
-								onBlur={handleInputBlur}
-								onKeyPress={handleInputKeyPress}
-								style={{ flexGrow: 1 }}
+								onBlur={handleStopTyping}
+								autoSize={{ minRows: 1, maxRows: 6 }}
+								onPressEnter={handlePressEnter}
 							/>
-							<Button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+							<Button onClick={() => setShowEmojiPicker((prev) => !prev)}>
 								😀
 							</Button>
 							{showEmojiPicker && (
 								<EmojiPickerWrapper>
-									<EmojiPicker
-										onEmojiClick={handleEmojiClick}
-										disableAutoFocus={true}
-										// Adjusting the picker position and size
-										pickerStyle={{ width: "100%" }}
-									/>
+									<EmojiPicker onEmojiClick={handleEmojiClick} />
 								</EmojiPickerWrapper>
 							)}
 							<Upload
@@ -354,146 +556,235 @@ const ChatWindow = ({ closeChatWindow }) => {
 								<Button icon={<UploadOutlined />} />
 							</Upload>
 						</ChatInputContainer>
-						<SendButton type='primary' onClick={handleSendMessage}>
-							Send
-						</SendButton>
-						<CloseButton type='danger' onClick={handleCloseChat}>
-							<CloseOutlined /> Close Chat
-						</CloseButton>
+
+						<Button
+							type='primary'
+							block
+							onClick={handleSendMessage}
+							style={{ marginTop: 8 }}
+						>
+							{chosenLanguage === "Arabic" ? "إرسال" : "Send"}
+						</Button>
+						<Button
+							type='default'
+							block
+							onClick={handleCloseChat}
+							style={{ marginTop: 8, background: "#ff4d4f", color: "#fff" }}
+						>
+							<CloseOutlined />{" "}
+							{chosenLanguage === "Arabic" ? "إغلاق المحادثة" : "Close Chat"}
+						</Button>
 					</Form.Item>
-				</div>
-			) : !isMinimized ? (
+				</>
+			) : (
+				// Initial Form
 				<Form layout='vertical' onFinish={handleSubmit}>
-					<Form.Item label='Name' required>
+					<Form.Item label='Full Name' required>
 						<Input
 							value={customerName}
 							onChange={(e) => setCustomerName(e.target.value)}
-							disabled={isAuthenticated()}
+							placeholder='FirstName LastName'
+							disabled={isAuthenticated() && !!customerName}
+							style={
+								isAuthenticated() && customerName
+									? { background: "#f5f5f5", color: "#666" }
+									: undefined
+							}
 						/>
 					</Form.Item>
-					<Form.Item label='Email'>
+
+					<Form.Item label='Email or Phone' required>
 						<Input
 							value={customerEmail}
 							onChange={(e) => setCustomerEmail(e.target.value)}
-							disabled={isAuthenticated()}
+							placeholder='client@example.com or 1234567890'
+							disabled={isAuthenticated() && !!customerEmail}
+							style={
+								isAuthenticated() && customerEmail
+									? { background: "#f5f5f5", color: "#666" }
+									: undefined
+							}
 						/>
 					</Form.Item>
+
 					<Form.Item label='Inquiry About' required>
 						<Select
-							value={inquiryAbout}
-							onChange={(value) => setInquiryAbout(value)}
+							placeholder='Select an option'
+							value={inquiryAbout || undefined}
+							onChange={setInquiryAbout}
 						>
-							<Option value='order'>Inquiry about an order</Option>
-							<Option value='product'>Inquiry about a product</Option>
-							<Option value='other'>Others</Option>
+							{INQUIRY_TYPES.map((opt) => (
+								<Option key={opt.value} value={opt.value}>
+									{opt.label}
+								</Option>
+							))}
 						</Select>
 					</Form.Item>
+
 					{inquiryAbout === "order" && (
 						<Form.Item label='Order/Invoice Number' required>
 							<Input
 								value={orderNumber}
 								onChange={(e) => setOrderNumber(e.target.value)}
+								placeholder='E.g. INV12345'
 							/>
 						</Form.Item>
 					)}
+
 					{inquiryAbout === "product" && (
 						<Form.Item label='Product Name' required>
-							<Input
-								value={productName}
-								onChange={(e) => setProductName(e.target.value)}
-							/>
+							<ProductInputWrapper>
+								<Input
+									value={productName}
+									onChange={(e) => setProductName(e.target.value)}
+									placeholder='Type at least 4 letters...'
+								/>
+								{showSuggestions && productSuggestions.length > 0 && (
+									<SuggestionsList>
+										{productSuggestions.map((prod) => (
+											<SuggestionItem
+												key={prod._id}
+												onClick={() => handleSelectProduct(prod)}
+											>
+												<strong>{prod.productName}</strong>
+												{prod.productSKU ? ` (SKU: ${prod.productSKU})` : ""}
+											</SuggestionItem>
+										))}
+									</SuggestionsList>
+								)}
+							</ProductInputWrapper>
 						</Form.Item>
 					)}
+
 					{inquiryAbout === "other" && (
 						<Form.Item label='Brief Description' required>
 							<Input
 								value={otherInquiry}
 								onChange={(e) => setOtherInquiry(e.target.value)}
+								placeholder='Describe your inquiry'
 							/>
 						</Form.Item>
 					)}
-					<Form.Item
-						onClick={() => {
-							ReactGA.event({
-								category: "User Started Chat",
-								action: "User Started Chat",
-							});
-						}}
-					>
-						<Button type='primary' htmlType='submit'>
-							Start Chat
-						</Button>
-					</Form.Item>
+
+					<Button type='primary' htmlType='submit' block>
+						{chosenLanguage === "Arabic" ? "بدء المحادثة" : "Start Chat"}
+					</Button>
 				</Form>
-			) : null}
+			)}
 		</ChatWindowWrapper>
 	);
 };
 
 export default ChatWindow;
 
+/* ----------------- STYLED COMPONENTS ----------------- */
+
 const ChatWindowWrapper = styled.div`
 	position: fixed;
-	bottom: ${({ isMinimized }) => (isMinimized ? "10px" : "70px")};
+	bottom: 70px;
 	right: 20px;
-	width: ${({ isMinimized }) => (isMinimized ? "200px" : "350px")};
-	max-width: ${({ isMinimized }) => (isMinimized ? "200px" : "350px")};
-	height: ${({ isMinimized }) => (isMinimized ? "40px" : "70vh")};
-	max-height: ${({ isMinimized }) => (isMinimized ? "40px" : "70vh")};
-	background-color: var(--background-light);
-	border: 1px solid var(--border-color-dark);
+	width: 350px;
+	max-width: 90%;
+	height: 70vh;
+	max-height: 80vh;
+	background: #fff;
+	border: 1px solid #ccc;
 	border-radius: 8px;
-	box-shadow: var(--box-shadow-dark);
-	padding: ${({ isMinimized }) => (isMinimized ? "5px" : "20px")};
 	z-index: 1001;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+	padding: 20px;
 	overflow: hidden;
 
 	@media (max-width: 768px) {
-		width: ${({ isMinimized }) => (isMinimized ? "200px" : "90%")};
+		bottom: 85px;
 		right: 5%;
-		bottom: 10px;
-		max-height: ${({ isMinimized }) => (isMinimized ? "40px" : "80vh")};
+		width: 90%;
+		height: 80vh;
 	}
 `;
 
-const ChatWindowHeader = styled.div`
+const Header = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	border-bottom: 1px solid var(--border-color-light);
-	padding-bottom: 10px;
 	margin-bottom: 10px;
-	background-color: var(--background-light);
+`;
 
-	h3 {
-		font-size: 1.2rem;
-		font-weight: bold;
-		color: var(--text-color-dark); /* Using one of the specified text colors */
+const MessagesSection = styled.div`
+	max-height: 55vh;
+	margin-bottom: 10px;
+	overflow-y: auto;
+	scroll-behavior: smooth;
+`;
+
+const typingBounce = keyframes`
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1.0); }
+`;
+
+const TypingIndicator = styled.div`
+	display: flex;
+	align-items: center;
+	margin-top: 5px;
+
+	.typing-text {
+		margin-right: 8px;
+		font-style: italic;
+		color: #666;
+	}
+	.dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background-color: #666;
+		margin: 0 2px;
+		animation: ${typingBounce} 1s infinite ease-in-out;
+	}
+	.dot:nth-child(2) {
+		animation-delay: 0.2s;
+	}
+	.dot:nth-child(3) {
+		animation-delay: 0.4s;
 	}
 `;
 
-const MessagesContainer = styled.div`
-	max-height: 55vh;
-	margin-bottom: 10px;
-	overflow-x: hidden;
+const MessageBubble = styled.div`
+	margin-bottom: 8px;
+	padding: 8px;
+	border-radius: 6px;
+	line-height: 1.4;
+	background: ${(props) => (props.isMine ? "#d2f8d2" : "#f5f5f5")};
+
+	strong {
+		display: block;
+		margin-bottom: 4px;
+	}
+	small {
+		display: block;
+		margin-top: 4px;
+		font-size: 0.75rem;
+		color: #888;
+	}
 `;
 
-const Message = styled.p`
-	word-wrap: break-word;
-	white-space: pre-wrap;
+const RatingContainer = styled.div`
+	text-align: center;
+
+	.rating-buttons {
+		margin-top: 16px;
+		display: flex;
+		justify-content: center;
+		gap: 10px;
+	}
 `;
 
 const ChatInputContainer = styled.div`
 	display: flex;
-	align-items: center;
-	gap: 5px;
+	gap: 4px;
 
-	input {
-		flex-grow: 1;
-	}
-
-	button {
-		width: auto;
+	textarea {
+		flex: 1;
+		resize: none;
 	}
 `;
 
@@ -501,43 +792,34 @@ const EmojiPickerWrapper = styled.div`
 	position: absolute;
 	bottom: 60px;
 	right: 20px;
-	z-index: 1002;
-	width: 300px; /* Adjusting the width */
-	height: 300px; /* Adjusting the height */
-	overflow: hidden;
+	z-index: 9999;
+	background: #fff;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 `;
 
-const SendButton = styled(Button)`
-	background-color: var(--button-bg-primary);
-	color: var(--button-font-color);
-	width: 100%;
-	margin-top: 10px;
+const ProductInputWrapper = styled.div`
+	position: relative;
 `;
 
-const CloseButton = styled(Button)`
-	background-color: var(--secondary-color-dark);
-	color: var(--button-font-color);
-	width: 100%;
-	margin-top: 10px;
+const SuggestionsList = styled.ul`
+	position: absolute;
+	top: 38px;
+	left: 0;
+	right: 0;
+	max-height: 180px;
+	overflow-y: auto;
+	background: #fff;
+	border: 1px solid #ccc;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	z-index: 9999;
 `;
 
-const RatingSection = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 20px;
-`;
-
-const RatingButtons = styled.div`
-	display: flex;
-	gap: 10px;
-	margin-top: 20px;
-`;
-
-const TypingStatus = styled.div`
-	margin-top: -20px;
-	margin-bottom: 10px;
-	color: var(--text-color-dark);
-	font-style: italic;
-	font-size: 0.85rem;
+const SuggestionItem = styled.li`
+	padding: 8px 12px;
+	cursor: pointer;
+	&:hover {
+		background-color: #eee;
+	}
 `;

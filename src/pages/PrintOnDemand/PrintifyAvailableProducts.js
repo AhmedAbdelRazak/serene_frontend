@@ -57,7 +57,7 @@ const PrintifyAvailableProducts = () => {
 		const fetchProducts = async () => {
 			try {
 				const response = await axios.get(
-					`${process.env.REACT_APP_API_URL}/products/pod`
+					`${process.env.REACT_APP_API_URL}/products/pod/print-on-demand-products`
 				);
 				if (Array.isArray(response.data)) {
 					// Sort them right after fetching:

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
+/* eslint-disable */
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 import { Dropdown } from "antd";
 import {
@@ -13,72 +14,88 @@ import { IoChatbubblesOutline } from "react-icons/io5";
 import { useCartContext } from "../../cart_context";
 import LastAddedLogoImage from "./LastAddedLogoImage";
 import iconLogo from "../iconLogo.png";
+
+// Admin APIs
 import {
 	getUnassignedSupportCasesCount,
 	getUnseenMessagesCountByAdmin,
 } from "../apiAdmin";
+
+// Socket + Auth + Notification Sound
 import socket from "../../Chat/socket";
 import { isAuthenticated } from "../../auth";
 import ChatSound from "../../Chat/Notification.wav";
+
+// The admin notification dropdown
 import NotificationDropdown from "./NotificationDropdown";
 
 const TopNavbar = ({ onProfileClick, collapsed }) => {
-	const [dropdownOpen, setDropdownOpen] = useState(false);
 	const { chosenLanguage } = useCartContext();
 	const [unassignedCount, setUnassignedCount] = useState(0);
 	const [unseenMessagesCount, setUnseenMessagesCount] = useState(0);
+
 	const [notificationVisible, setNotificationVisible] = useState(false);
 	const [showNotificationDropdown, setShowNotificationDropdown] =
 		useState(false);
-	const { token } = isAuthenticated();
+
+	const [dropdownOpen, setDropdownOpen] = useState(false); // For the profile menu
+
+	const { token } = isAuthenticated() || {};
 	const [isUserInteracted, setIsUserInteracted] = useState(false);
 	const newMessageAudio = useMemo(() => new Audio(ChatSound), []);
 
+	// A ref to detect clicks outside the dropdown
+	const dropdownRef = useRef(null);
+
 	useEffect(() => {
+		if (!token) return;
+
 		const fetchUnassignedCount = async () => {
 			try {
-				const response = await getUnassignedSupportCasesCount(token);
-				setUnassignedCount(response.count);
-				setNotificationVisible(response.count > 0);
-			} catch (error) {
-				console.error("Error fetching unassigned support cases count", error);
+				const data = await getUnassignedSupportCasesCount(token);
+				if (data?.count !== undefined) {
+					setUnassignedCount(data.count);
+					setNotificationVisible(data.count > 0);
+				}
+			} catch (err) {
+				console.error("Error fetching unassigned support cases count:", err);
 			}
 		};
 
-		const fetchUnseenMessagesCount = async () => {
+		const fetchUnseenCount = async () => {
 			try {
-				const response = await getUnseenMessagesCountByAdmin(token);
-				setUnseenMessagesCount(response.count);
-			} catch (error) {
-				console.error("Error fetching unseen messages count", error);
+				const data = await getUnseenMessagesCountByAdmin(token);
+				if (data?.count !== undefined) {
+					setUnseenMessagesCount(data.count);
+				}
+			} catch (err) {
+				console.error("Error fetching unseen messages count by admin:", err);
 			}
 		};
 
 		fetchUnassignedCount();
-		fetchUnseenMessagesCount();
+		fetchUnseenCount();
 
-		const handleUserInteraction = () => {
-			setIsUserInteracted(true);
-		};
-
+		const handleUserInteraction = () => setIsUserInteracted(true);
 		window.addEventListener("click", handleUserInteraction, { once: true });
 		window.addEventListener("keydown", handleUserInteraction, { once: true });
 
+		// Socket events
 		socket.on("newChat", () => {
 			fetchUnassignedCount();
-			fetchUnseenMessagesCount();
+			fetchUnseenCount();
 		});
-
-		socket.on("receiveMessage", (message) => {
+		socket.on("receiveMessage", () => {
+			// If admin is not in the /admin/customer-service page, beep
 			if (
 				window.location.pathname !== "/admin/customer-service" &&
 				isUserInteracted
 			) {
-				newMessageAudio.play().catch((error) => {
-					console.error("Error playing audio:", error);
-				});
+				newMessageAudio
+					.play()
+					.catch((err) => console.error("Error playing audio:", err));
 			}
-			fetchUnseenMessagesCount();
+			fetchUnseenCount();
 		});
 
 		return () => {
@@ -89,6 +106,24 @@ const TopNavbar = ({ onProfileClick, collapsed }) => {
 		};
 	}, [token, newMessageAudio, isUserInteracted]);
 
+	// Close dropdown if click outside
+	useEffect(() => {
+		function handleClickOutside(e) {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(e.target) &&
+				showNotificationDropdown
+			) {
+				setShowNotificationDropdown(false);
+			}
+		}
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, [showNotificationDropdown]);
+
+	// Admin profile menu items
 	const menuItems = [
 		{
 			key: "profile",
@@ -107,7 +142,9 @@ const TopNavbar = ({ onProfileClick, collapsed }) => {
 		},
 	];
 
-	const toggleNotificationDropdown = () => {
+	// Toggle the NotificationDropdown
+	const toggleNotificationDropdown = (e) => {
+		e.stopPropagation(); // so we don't close it immediately
 		setShowNotificationDropdown(!showNotificationDropdown);
 	};
 
@@ -118,14 +155,18 @@ const TopNavbar = ({ onProfileClick, collapsed }) => {
 					<LastAddedLogoImage />
 				</Logo>
 			</LeftSection>
+
 			<RightSection>
 				<Icons>
+					{/* Language Switch */}
 					<IconWrapper style={{ width: "25%" }}>
 						<GlobalOutlined className='mx-2' />
 						<LanguageText>
 							{chosenLanguage === "English" ? "عربي" : "En"}
 						</LanguageText>
 					</IconWrapper>
+
+					{/* Admin Settings */}
 					<IconWrapper
 						onClick={() =>
 							(window.location.href = "/admin/store-management?storesettings")
@@ -133,15 +174,21 @@ const TopNavbar = ({ onProfileClick, collapsed }) => {
 					>
 						<SettingOutlined />
 					</IconWrapper>
-					<IconWrapper onClick={toggleNotificationDropdown}>
+
+					{/* BELL => Unseen Admin Messages */}
+					<IconWrapper ref={dropdownRef} onClick={toggleNotificationDropdown}>
 						<BellOutlined />
 						{unseenMessagesCount > 0 && (
 							<NotificationBadge>{unseenMessagesCount}</NotificationBadge>
 						)}
 						{showNotificationDropdown && (
-							<NotificationDropdown onClose={toggleNotificationDropdown} />
+							<NotificationDropdown
+								onClose={() => setShowNotificationDropdown(false)}
+							/>
 						)}
 					</IconWrapper>
+
+					{/* Chat Bubble => Unassigned cases */}
 					<IconWrapper
 						onClick={() => (window.location.href = "/admin/customer-service")}
 					>
@@ -151,6 +198,7 @@ const TopNavbar = ({ onProfileClick, collapsed }) => {
 						)}
 					</IconWrapper>
 				</Icons>
+
 				<ProfileMenu>
 					<Dropdown
 						menu={{ items: menuItems }}
@@ -175,6 +223,7 @@ const TopNavbar = ({ onProfileClick, collapsed }) => {
 
 export default TopNavbar;
 
+/* ============ STYLES ============ */
 const NavbarWrapper = styled.div`
 	position: fixed;
 	top: 0;
@@ -187,7 +236,6 @@ const NavbarWrapper = styled.div`
 	align-items: center;
 	padding: 0 20px;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-	direction: ${(props) => (props.isArabic ? "rtl" : "")} !important;
 	z-index: 1000;
 `;
 
@@ -213,8 +261,8 @@ const RightSection = styled.div`
 const Icons = styled.div`
 	display: flex;
 	align-items: center;
-	margin-left: ${(props) => (props.isArabic ? "40px" : "40px")} !important;
-	margin-right: ${(props) => (props.isArabic ? "" : "40px")} !important;
+	margin-left: 40px !important;
+	margin-right: 40px !important;
 
 	svg {
 		font-size: 25px;
@@ -232,8 +280,7 @@ const IconWrapper = styled.div`
 	height: 40px;
 	background-color: #161621;
 	border-radius: 5px;
-	margin-left: ${(props) => (props.isArabic ? "20px" : "")} !important;
-	margin-right: ${(props) => (props.isArabic ? "" : "20px")} !important;
+	margin-right: 20px !important;
 	cursor: pointer;
 `;
 
@@ -252,19 +299,15 @@ const Profile = styled.div`
 	display: flex;
 	align-items: center;
 	cursor: pointer;
+
 	img {
 		border-radius: 25%;
 	}
+
 	span {
 		font-weight: bold;
 		color: #fff;
-		margin-left: ${(props) => (props.isArabic ? "20px" : "15px")} !important;
-		margin-right: ${(props) => (props.isArabic ? "" : "10px")} !important;
-	}
-	small {
-		display: block;
-		color: #bbb;
-		font-size: 12px;
+		margin-left: 15px !important;
 	}
 `;
 
@@ -277,8 +320,8 @@ const NotificationBadge = styled.div`
 	background-color: red;
 	color: white;
 	border-radius: 50%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	font-size: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 `;
