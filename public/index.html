@@ -79,10 +79,9 @@
 		<script>
 			window.__PRELOADED_DATA__ = {};
 
+			// Wrap in an immediately-invoked async function
 			(async function preloadData() {
 				try {
-					console.log("Starting preload fetch calls...");
-
 					// 1) Website setup
 					const setupRes = await fetch(
 						"https://serenejannat.com/api/website-basic-setup",
@@ -95,7 +94,6 @@
 						throw new Error("Website setup fetch failed " + setupRes.status);
 					}
 					window.__PRELOADED_DATA__.websiteSetup = await setupRes.json();
-					console.log("Fetched websiteSetup");
 
 					// 2) Categories & subcategories
 					const catsRes = await fetch(
@@ -109,7 +107,6 @@
 						throw new Error("Categories fetch failed " + catsRes.status);
 					}
 					window.__PRELOADED_DATA__.categoriesData = await catsRes.json();
-					console.log("Fetched categoriesData");
 
 					// 3) New Arrival Products
 					const newArrivalsRes = await fetch(
@@ -126,7 +123,6 @@
 					}
 					window.__PRELOADED_DATA__.newArrivalProducts =
 						await newArrivalsRes.json();
-					console.log("Fetched newArrivalProducts");
 
 					// 4) Custom Design Products
 					const customDesignRes = await fetch(
@@ -143,24 +139,8 @@
 					}
 					window.__PRELOADED_DATA__.customDesignProducts =
 						await customDesignRes.json();
-					console.log("Fetched customDesignProducts");
-
-					console.log("All preload fetch calls completed!");
 				} catch (err) {
 					console.error("Preload data error:", err);
-				} finally {
-					// Now that preloading is done (success or fail),
-					// we dynamically inject the React bundle script.
-					console.log("Injecting React app bundle...");
-
-					const reactBundle = document.createElement("script");
-					// Make sure this path matches your actual production bundle
-					reactBundle.src = "/static/js/main.8a8736a1.js";
-					// We do NOT set async or defer—so it executes in-order
-					reactBundle.onload = () => {
-						console.log("React bundle loaded and executing!");
-					};
-					document.body.appendChild(reactBundle);
 				}
 			})();
 		</script>
