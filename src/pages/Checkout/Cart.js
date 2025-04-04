@@ -8,8 +8,7 @@ import Z3StepTwo from "./Z3StepTwo";
 import Z4StepThree from "./Z4StepThree";
 import { useHistory } from "react-router-dom";
 import { isAuthenticated } from "../../auth";
-import { Modal } from "antd";
-import { toast } from "react-toastify";
+import { Modal, message } from "antd";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 
@@ -46,13 +45,13 @@ const Cart = () => {
 		readSingleCoupon(coupon)
 			.then((data) => {
 				if (data.error) {
-					toast.error("Coupon is not available, please try another one");
+					message.error("Coupon is not available, please try another one");
 					setGoodCoupon(false);
 				} else if (new Date(data.expiry) < new Date()) {
-					toast.error("Coupon Expired. Please Try Another One");
+					message.error("Coupon Expired. Please Try Another One");
 					setGoodCoupon(false);
 				} else if (data && data.length === 0) {
-					toast.error("Coupon is not available, please try another one");
+					message.error("Coupon is not available, please try another one");
 					setGoodCoupon(false);
 				} else {
 					setGoodCoupon(true);
@@ -61,7 +60,7 @@ const Cart = () => {
 			})
 			.catch((err) => {
 				console.log(err);
-				toast.error("An error occurred while applying the coupon");
+				message.error("An error occurred while applying the coupon");
 			});
 	};
 
@@ -110,22 +109,22 @@ const Cart = () => {
 				!phone ||
 				(!isAuthenticated() && (!password || !confirmPassword))
 			) {
-				toast.error("Please fill in all required fields.");
+				message.error("Please fill in all required fields.");
 				return;
 			}
 
 			if (name.split(" ").length < 2) {
-				toast.error("Please enter both first and last names.");
+				message.error("Please enter both first and last names.");
 				return;
 			}
 
 			if (!/\S+@\S+\.\S+/.test(email)) {
-				toast.error("Please enter a valid email address.");
+				message.error("Please enter a valid email address.");
 				return;
 			}
 
 			if (!/^\d{10}$/.test(phone)) {
-				toast.error("Please enter a valid 10-digit phone number.");
+				message.error("Please enter a valid 10-digit phone number.");
 				return;
 			}
 
@@ -154,17 +153,17 @@ const Cart = () => {
 				!shipmentChosen.carrierName
 			) {
 				if (!customerDetails.shipToName) {
-					toast.error("Please enter the recipient's name.");
+					message.error("Please enter the recipient's name.");
 				} else if (!address) {
-					toast.error("Please provide a valid address.");
+					message.error("Please provide a valid address.");
 				} else if (!city) {
-					toast.error("Please provide a valid city.");
+					message.error("Please provide a valid city.");
 				} else if (!state) {
-					toast.error("Please select your state.");
+					message.error("Please select your state.");
 				} else if (!/^\d{5}$/.test(zipcode)) {
-					toast.error("Please enter a valid 5-digit zipcode.");
+					message.error("Please enter a valid 5-digit zipcode.");
 				} else if (!shipmentChosen || !shipmentChosen.carrierName) {
-					toast.error("Please choose a shipping option.");
+					message.error("Please choose a shipping option.");
 				}
 				return;
 			}
@@ -225,15 +224,15 @@ const Cart = () => {
 			!shipmentChosen.carrierName
 		) {
 			if (!address) {
-				toast.error("Please provide a valid address.");
+				message.error("Please provide a valid address.");
 			} else if (!city) {
-				toast.error("Please provide a valid city.");
+				message.error("Please provide a valid city.");
 			} else if (!state) {
-				toast.error("Please select your state.");
+				message.error("Please select your state.");
 			} else if (!/^\d{5}$/.test(zipcode)) {
-				toast.error("Please enter a valid 5-digit zipcode.");
+				message.error("Please enter a valid 5-digit zipcode.");
 			} else if (!shipmentChosen || !shipmentChosen.carrierName) {
-				toast.error("Please choose a shipping option.");
+				message.error("Please choose a shipping option.");
 			}
 			setStep(2);
 			return;
@@ -242,29 +241,29 @@ const Cart = () => {
 		if (!user) {
 			const { name, email, phone, password, confirmPassword } = customerDetails;
 			if (!name) {
-				toast.error("Please enter your name.");
+				message.error("Please enter your name.");
 			} else if (!email) {
-				toast.error("Please enter your email.");
+				message.error("Please enter your email.");
 			} else if (!phone) {
-				toast.error("Please enter your phone number.");
+				message.error("Please enter your phone number.");
 			} else if (!password) {
-				toast.error("Please enter your password.");
+				message.error("Please enter your password.");
 			} else if (!confirmPassword) {
-				toast.error("Please confirm your password.");
+				message.error("Please confirm your password.");
 			} else if (!/^\S+\s+\S+$/.test(name)) {
-				toast.error("Please enter both first and last names.");
+				message.error("Please enter both first and last names.");
 			} else if (!/\S+@\S+\.\S+/.test(email)) {
-				toast.error("Please enter a valid email address.");
+				message.error("Please enter a valid email address.");
 			} else if (!/^\d{10}$/.test(phone)) {
-				toast.error("Please enter a valid 10-digit phone number.");
+				message.error("Please enter a valid 10-digit phone number.");
 			} else if (password.length < 6) {
-				toast.error("Password should be at least 6 characters long.");
+				message.error("Password should be at least 6 characters long.");
 			} else if (password !== confirmPassword) {
-				toast.error("Passwords do not match.");
+				message.error("Passwords do not match.");
 			} else if (!/\s/.test(address)) {
-				toast.error("Please ensure that the address is correct.");
+				message.error("Please ensure that the address is correct.");
 			} else {
-				toast.error("Please complete all required fields.");
+				message.error("Please complete all required fields.");
 			}
 			setStep(1);
 			return;

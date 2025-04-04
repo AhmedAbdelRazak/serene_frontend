@@ -31,7 +31,7 @@ const Z2StepOne = ({
 					<Input
 						type='text'
 						name='name'
-						placeholder='Name'
+						placeholder='Full Name (First & Last Names'
 						value={customerDetails.name}
 						onChange={handleCustomerDetailChange}
 						className={errors.name ? "error" : ""}
