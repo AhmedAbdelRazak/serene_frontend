@@ -296,46 +296,44 @@ export const CartProvider = ({ children }) => {
 						type: SET_CUSTOM_DESIGN_PRODUCTS,
 						payload: pre.customDesignProducts,
 					});
+				} else {
+					// If there's no preloaded data, fetch from API as a fallback
+					console.log("No preloaded data found. Fetching normally...");
+
+					try {
+						// Fetch these in parallel
+						const [
+							websiteData,
+							categoriesData,
+							newArrivalsData,
+							customDesignData,
+						] = await Promise.all([
+							getWebsiteSetup(),
+							gettingCategoriesAndSubcategories(),
+							gettingSpecificProducts(0, 1, 0, 0, 0, 12), // new arrivals
+							gettingSpecificProducts(0, 0, 1, 0, 0, 12), // custom design
+						]);
+
+						dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
+						dispatch({
+							type: SET_CATEGORIES_SUBCATEGORIES,
+							payload: {
+								categories: categoriesData.categories || [],
+								subcategories: categoriesData.subcategories || [],
+							},
+						});
+						dispatch({
+							type: SET_NEW_ARRIVAL_PRODUCTS,
+							payload: newArrivalsData,
+						});
+						dispatch({
+							type: SET_CUSTOM_DESIGN_PRODUCTS,
+							payload: customDesignData,
+						});
+					} catch (err) {
+						console.error("Fallback fetch error:", err);
+					}
 				}
-
-				// else {
-				// 	// If there's no preloaded data, fetch from API as a fallback
-				// 	console.log("No preloaded data found. Fetching normally...");
-
-				// 	try {
-				// 		// Fetch these in parallel
-				// 		const [
-				// 			websiteData,
-				// 			categoriesData,
-				// 			newArrivalsData,
-				// 			customDesignData,
-				// 		] = await Promise.all([
-				// 			getWebsiteSetup(),
-				// 			gettingCategoriesAndSubcategories(),
-				// 			gettingSpecificProducts(0, 1, 0, 0, 0, 12), // new arrivals
-				// 			gettingSpecificProducts(0, 0, 1, 0, 0, 12), // custom design
-				// 		]);
-
-				// 		dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
-				// 		dispatch({
-				// 			type: SET_CATEGORIES_SUBCATEGORIES,
-				// 			payload: {
-				// 				categories: categoriesData.categories || [],
-				// 				subcategories: categoriesData.subcategories || [],
-				// 			},
-				// 		});
-				// 		dispatch({
-				// 			type: SET_NEW_ARRIVAL_PRODUCTS,
-				// 			payload: newArrivalsData,
-				// 		});
-				// 		dispatch({
-				// 			type: SET_CUSTOM_DESIGN_PRODUCTS,
-				// 			payload: customDesignData,
-				// 		});
-				// 	} catch (err) {
-				// 		console.error("Fallback fetch error:", err);
-				// 	}
-				// }
 			} catch (error) {
 				console.error("Error fetching data in CartContext:", error);
 			} finally {
