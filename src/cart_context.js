@@ -306,34 +306,34 @@ export const CartProvider = ({ children }) => {
 					// Uncomment the code below if you want fallback fetch calls in dev:
 
 					//comment start
-					// const [
-					// 	websiteData,
-					// 	categoriesData,
-					// 	newArrivalsData,
-					// 	customDesignData,
-					// ] = await Promise.all([
-					// 	getWebsiteSetup(), // fetch website setup
-					// 	gettingCategoriesAndSubcategories(), // fetch categories/subcategories
-					// 	gettingSpecificProducts(0, 1, 0, 0, 0, 20), // new arrivals
-					// 	gettingSpecificProducts(0, 0, 1, 0, 0, 10), // custom design
-					// ]);
+					const [
+						websiteData,
+						categoriesData,
+						newArrivalsData,
+						customDesignData,
+					] = await Promise.all([
+						getWebsiteSetup(), // fetch website setup
+						gettingCategoriesAndSubcategories(), // fetch categories/subcategories
+						gettingSpecificProducts(0, 1, 0, 0, 0, 12), // new arrivals
+						gettingSpecificProducts(0, 0, 1, 0, 0, 12), // custom design
+					]);
 
-					// dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
-					// dispatch({
-					// 	type: SET_CATEGORIES_SUBCATEGORIES,
-					// 	payload: {
-					// 		categories: categoriesData.categories || [],
-					// 		subcategories: categoriesData.subcategories || [],
-					// 	},
-					// });
-					// dispatch({
-					// 	type: SET_NEW_ARRIVAL_PRODUCTS,
-					// 	payload: newArrivalsData,
-					// });
-					// dispatch({
-					// 	type: SET_CUSTOM_DESIGN_PRODUCTS,
-					// 	payload: customDesignData,
-					// });
+					dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
+					dispatch({
+						type: SET_CATEGORIES_SUBCATEGORIES,
+						payload: {
+							categories: categoriesData.categories || [],
+							subcategories: categoriesData.subcategories || [],
+						},
+					});
+					dispatch({
+						type: SET_NEW_ARRIVAL_PRODUCTS,
+						payload: newArrivalsData,
+					});
+					dispatch({
+						type: SET_CUSTOM_DESIGN_PRODUCTS,
+						payload: customDesignData,
+					});
 					//comment end
 				}
 			} catch (error) {

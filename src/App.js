@@ -206,8 +206,6 @@ const AppContent = () => {
 	const modalText =
 		"Your loved ones deserve just 3 minutes of your time to create their perfect gift. Click below to be unique! ❤️😉";
 
-	//Ensure that in add and update products for admin, the admin can change the storeId
-	//Ensure Admin can activate store management
 	//Create a new order with a product not serene jannat
 
 	return (
