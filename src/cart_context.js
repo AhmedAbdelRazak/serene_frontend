@@ -254,24 +254,23 @@ export const CartProvider = ({ children }) => {
 
 	//Get Data from index.html
 	useEffect(() => {
-		// We'll define and immediately invoke an async function
 		const fetchData = async () => {
 			try {
 				dispatch({ type: SET_LOADING, payload: true });
 
-				// Check if we have preloaded data from index.html (production)
+				// 1) Grab any preloaded data
 				const pre = window.__PRELOADED_DATA__ || {};
+				// console.log(pre, "pre");
 
-				// If we have all the keys we need (and not on localhost),
-				// we assume it's the production scenario with preloaded data.
-				const notLocalhost = window.location.hostname !== "localhost";
+				// 2) Check if we actually have all the needed data
 				const hasAllData =
 					pre.websiteSetup &&
 					pre.categoriesData &&
 					pre.newArrivalProducts &&
 					pre.customDesignProducts;
 
-				if (notLocalhost && hasAllData) {
+				if (hasAllData) {
+					// Use the preloaded data from <script> in index.html
 					console.log("Using preloaded data from index.html <script>...");
 
 					// A) Website setup
@@ -297,45 +296,46 @@ export const CartProvider = ({ children }) => {
 						type: SET_CUSTOM_DESIGN_PRODUCTS,
 						payload: pre.customDesignProducts,
 					});
-				} else {
-					// Otherwise, we're likely in localhost dev or we have no data in __PRELOADED_DATA__.
-					console.log(
-						"No preloaded data found (or dev mode). Fetching normally..."
-					);
-
-					// Uncomment the code below if you want fallback fetch calls in dev:
-
-					//comment start
-					const [
-						websiteData,
-						categoriesData,
-						newArrivalsData,
-						customDesignData,
-					] = await Promise.all([
-						getWebsiteSetup(), // fetch website setup
-						gettingCategoriesAndSubcategories(), // fetch categories/subcategories
-						gettingSpecificProducts(0, 1, 0, 0, 0, 12), // new arrivals
-						gettingSpecificProducts(0, 0, 1, 0, 0, 12), // custom design
-					]);
-
-					dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
-					dispatch({
-						type: SET_CATEGORIES_SUBCATEGORIES,
-						payload: {
-							categories: categoriesData.categories || [],
-							subcategories: categoriesData.subcategories || [],
-						},
-					});
-					dispatch({
-						type: SET_NEW_ARRIVAL_PRODUCTS,
-						payload: newArrivalsData,
-					});
-					dispatch({
-						type: SET_CUSTOM_DESIGN_PRODUCTS,
-						payload: customDesignData,
-					});
-					//comment end
 				}
+
+				// else {
+				// 	// If there's no preloaded data, fetch from API as a fallback
+				// 	console.log("No preloaded data found. Fetching normally...");
+
+				// 	try {
+				// 		// Fetch these in parallel
+				// 		const [
+				// 			websiteData,
+				// 			categoriesData,
+				// 			newArrivalsData,
+				// 			customDesignData,
+				// 		] = await Promise.all([
+				// 			getWebsiteSetup(),
+				// 			gettingCategoriesAndSubcategories(),
+				// 			gettingSpecificProducts(0, 1, 0, 0, 0, 12), // new arrivals
+				// 			gettingSpecificProducts(0, 0, 1, 0, 0, 12), // custom design
+				// 		]);
+
+				// 		dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
+				// 		dispatch({
+				// 			type: SET_CATEGORIES_SUBCATEGORIES,
+				// 			payload: {
+				// 				categories: categoriesData.categories || [],
+				// 				subcategories: categoriesData.subcategories || [],
+				// 			},
+				// 		});
+				// 		dispatch({
+				// 			type: SET_NEW_ARRIVAL_PRODUCTS,
+				// 			payload: newArrivalsData,
+				// 		});
+				// 		dispatch({
+				// 			type: SET_CUSTOM_DESIGN_PRODUCTS,
+				// 			payload: customDesignData,
+				// 		});
+				// 	} catch (err) {
+				// 		console.error("Fallback fetch error:", err);
+				// 	}
+				// }
 			} catch (error) {
 				console.error("Error fetching data in CartContext:", error);
 			} finally {

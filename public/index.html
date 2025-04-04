@@ -76,41 +76,26 @@
 			crossorigin="anonymous"
 		/>
 
-		<!-- (Optional) Custom or Global Styles -->
-		<!-- <link rel="stylesheet" href="%PUBLIC_URL%/your-custom.css" /> -->
-
-		<!-- GA4 Analytics - comment out on localhost -->
-		<!-- <script
-			async
-			src="https://www.googletagmanager.com/gtag/js?id=G-XJPBMN7HH5"
-		></script>
 		<script>
-			window.dataLayer = window.dataLayer || [];
-			function gtag() {
-				dataLayer.push(arguments);
-			}
-			gtag("js", new Date());
-			gtag("config", "G-XJPBMN7HH5");
-		</script> -->
-
-		<!-- <script>
 			window.__PRELOADED_DATA__ = {};
 
-			// We'll define an async function to do the fetch calls in parallel or sequence
-			async function preloadData() {
+			(async function preloadData() {
 				try {
-					// 1) Get website setup
+					console.log("Starting preload fetch calls...");
+
+					// 1) Website setup
 					const setupRes = await fetch(
 						"https://serenejannat.com/api/website-basic-setup",
 						{
 							method: "GET",
 							headers: { Accept: "application/json" },
-							// If your API requires an Authorization header, add it here or remove it if not needed
 						}
 					);
-					if (!setupRes.ok)
+					if (!setupRes.ok) {
 						throw new Error("Website setup fetch failed " + setupRes.status);
+					}
 					window.__PRELOADED_DATA__.websiteSetup = await setupRes.json();
+					console.log("Fetched websiteSetup");
 
 					// 2) Categories & subcategories
 					const catsRes = await fetch(
@@ -120,9 +105,11 @@
 							headers: { Accept: "application/json" },
 						}
 					);
-					if (!catsRes.ok)
+					if (!catsRes.ok) {
 						throw new Error("Categories fetch failed " + catsRes.status);
+					}
 					window.__PRELOADED_DATA__.categoriesData = await catsRes.json();
+					console.log("Fetched categoriesData");
 
 					// 3) New Arrival Products
 					const newArrivalsRes = await fetch(
@@ -132,14 +119,16 @@
 							headers: { Accept: "application/json" },
 						}
 					);
-					if (!newArrivalsRes.ok)
+					if (!newArrivalsRes.ok) {
 						throw new Error(
 							"New arrival fetch failed " + newArrivalsRes.status
 						);
+					}
 					window.__PRELOADED_DATA__.newArrivalProducts =
 						await newArrivalsRes.json();
+					console.log("Fetched newArrivalProducts");
 
-					// 4) Custom design products
+					// 4) Custom Design Products
 					const customDesignRes = await fetch(
 						"https://serenejannat.com/api/specific/products/0/0/1/0/0/10",
 						{
@@ -147,92 +136,38 @@
 							headers: { Accept: "application/json" },
 						}
 					);
-					if (!customDesignRes.ok)
+					if (!customDesignRes.ok) {
 						throw new Error(
 							"Custom design fetch failed " + customDesignRes.status
 						);
+					}
 					window.__PRELOADED_DATA__.customDesignProducts =
 						await customDesignRes.json();
+					console.log("Fetched customDesignProducts");
+
+					console.log("All preload fetch calls completed!");
 				} catch (err) {
 					console.error("Preload data error:", err);
-				}
-			}
+				} finally {
+					// Now that preloading is done (success or fail),
+					// we dynamically inject the React bundle script.
+					console.log("Injecting React app bundle...");
 
-			// Fire off the preload
-			preloadData();
-		</script> -->
+					const reactBundle = document.createElement("script");
+					// Make sure this path matches your actual production bundle
+					reactBundle.src = "/static/js/bundle.js";
+					// We do NOT set async or defer—so it executes in-order
+					reactBundle.onload = () => {
+						console.log("React bundle loaded and executing!");
+					};
+					document.body.appendChild(reactBundle);
+				}
+			})();
+		</script>
 	</head>
 
 	<body>
 		<noscript>You need to enable JavaScript to run this app.</noscript>
 		<div id="root"></div>
-
-		<script>
-			// We'll only do the "preload + dynamic script" if NOT localhost:
-			if (window.location.hostname === "localhost") {
-				// Development mode:
-				console.log(
-					"Dev mode: no dynamic script injection. CRA dev server will handle it."
-				);
-				// The Create-React-App dev server injects the bundle automatically at http://localhost:3000/static/js/bundle.js
-				// So we just do nothing special here.
-			} else {
-				// Production mode: do the preloads, then inject the compiled bundle (main.<hash>.js).
-				(async function preloadDataAndLoadReact() {
-					try {
-						window.__PRELOADED_DATA__ = {};
-
-						// 1) Website setup
-						const setupRes = await fetch(
-							"https://serenejannat.com/api/website-basic-setup"
-						);
-						if (!setupRes.ok)
-							throw new Error("Website setup fetch failed " + setupRes.status);
-						window.__PRELOADED_DATA__.websiteSetup = await setupRes.json();
-
-						// 2) Categories & subcategories
-						const catsRes = await fetch(
-							"https://serenejannat.com/api/product/categories/subcategories"
-						);
-						if (!catsRes.ok)
-							throw new Error("Categories fetch failed " + catsRes.status);
-						window.__PRELOADED_DATA__.categoriesData = await catsRes.json();
-
-						// 3) New Arrival Products
-						const newArrivalsRes = await fetch(
-							"https://serenejannat.com/api/specific/products/0/1/0/0/0/20"
-						);
-						if (!newArrivalsRes.ok)
-							throw new Error(
-								"New arrival fetch failed " + newArrivalsRes.status
-							);
-						window.__PRELOADED_DATA__.newArrivalProducts =
-							await newArrivalsRes.json();
-
-						// 4) Custom design products
-						const customDesignRes = await fetch(
-							"https://serenejannat.com/api/specific/products/0/0/1/0/0/10"
-						);
-						if (!customDesignRes.ok)
-							throw new Error(
-								"Custom design fetch failed " + customDesignRes.status
-							);
-						window.__PRELOADED_DATA__.customDesignProducts =
-							await customDesignRes.json();
-					} catch (error) {
-						console.error("Preload data error:", error);
-					} finally {
-						// Now load the production bundle from the build output
-						const script = document.createElement("script");
-						// If you're using Create React App, after `npm run build` you'll get something like:
-						//   /static/js/main.7b9df234.js
-						// The %PUBLIC_URL% is replaced by your build environment.
-						// For a minimal example, you could do:
-						script.src = "%PUBLIC_URL%/static/js/main.js";
-						document.body.appendChild(script);
-					}
-				})();
-			}
-		</script>
 	</body>
 </html>
