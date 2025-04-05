@@ -1,10 +1,10 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import styled from "styled-components";
 import Slider from "react-slick";
 import { Card } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useCartContext } from "../../cart_context";
-import { readProduct } from "../../apiCore";
+import { readProduct, gettingSpecificProducts } from "../../apiCore";
 import { useHistory } from "react-router-dom";
 import ReactGA from "react-ga4";
 
@@ -22,12 +22,10 @@ const getCloudinaryOptimizedUrl = (
 		return url; // Not a Cloudinary URL
 	}
 
-	// If the URL already has f_auto or q_auto, we may still need to enforce w_{width}
 	let newUrl = url;
 	const hasTransform = newUrl.includes("f_auto") || newUrl.includes("q_auto");
 
 	if (!hasTransform) {
-		// Insert transformations after '/upload/'
 		const parts = newUrl.split("/upload/");
 		if (parts.length === 2) {
 			const baseTransform = `f_auto,q_auto,w_${width}`;
@@ -45,7 +43,6 @@ const getCloudinaryOptimizedUrl = (
 			}
 		}
 	}
-
 	return newUrl;
 };
 
@@ -53,12 +50,53 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 	const { openSidebar2, addToCart } = useCartContext();
 	const history = useHistory();
 
-	// Main slider settings for the outer "New Arrivals" carousel
+	// -----------------------------
+	// 1) Local state for lazy-load
+	// -----------------------------
+	// Start with the initial 5 from context
+	const [arrivalList, setArrivalList] = useState(newArrivalProducts || []);
+	// Keep track of how many we have already loaded
+	const [skip, setSkip] = useState(arrivalList.length);
+	// Simple loading flag to prevent multiple fetches at once
+	const [loadingOne, setLoadingOne] = useState(false);
+
+	// We want at most 30 total
+	const MAX_PRODUCTS = 30;
+	const hasMore = arrivalList.length < MAX_PRODUCTS;
+
+	// Function to fetch exactly ONE more product (if available).
+	const fetchOneMoreProduct = useCallback(async () => {
+		if (!hasMore) return; // Already have 30 or more
+		setLoadingOne(true);
+		try {
+			// newArrivals=1 => (featured=0, newArrivals=1, customDesigns=0, etc.)
+			// skip = how many we have so far, records=1 means fetch just one
+			const data = await gettingSpecificProducts(0, 1, 0, 0, 0, 1, skip);
+			if (data && !data.error) {
+				// If we got something back, append it
+				if (data.length > 0) {
+					setArrivalList((prev) => [...prev, ...data]);
+					setSkip(skip + data.length);
+				} else {
+					// No more data from server
+				}
+			}
+		} catch (err) {
+			console.error(err);
+		} finally {
+			setLoadingOne(false);
+		}
+	}, [skip, hasMore]);
+
+	// -----------------------------
+	// 2) Slider Settings
+	// -----------------------------
+	// We'll override `afterChange` to detect when the user is near the end
 	const settings = useMemo(
 		() => ({
 			dots: true,
 			infinite: true,
-			speed: 2000,
+			speed: 300,
 			slidesToShow: 5,
 			slidesToScroll: 1,
 			autoplay: true,
@@ -92,21 +130,33 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 					},
 				},
 			],
+			afterChange: (currentSlide) => {
+				// If we're loading or no more to fetch, stop
+				if (loadingOne || !hasMore) return;
+
+				// If we are near the end of the currently loaded items,
+				// let's fetch one more product
+				// "slidesToShow=5" means last index would be arrivalList.length - 5
+				// but we can just check if currentSlide > arrivalList.length - 6
+				if (currentSlide > arrivalList.length - 6) {
+					fetchOneMoreProduct();
+				}
+			},
 		}),
-		[]
+		[hasMore, loadingOne, arrivalList.length, fetchOneMoreProduct]
 	);
 
-	// Add-to-cart handler (memoized)
+	// -----------------------------
+	// 3) Handlers
+	// -----------------------------
 	const handleCartIconClick = useCallback(
 		async (product, e) => {
 			e.stopPropagation();
 
-			// If it's a Print-On-Demand product, push to custom gifts page
 			if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
 				history.push(`/custom-gifts/${product._id}`);
 				return;
 			}
-
 			ReactGA.event({
 				category: "Add To The Cart New Arrivals",
 				action: "User Added New Arrival Product To The Cart",
@@ -126,21 +176,17 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 		[history, openSidebar2, addToCart]
 	);
 
-	// Navigation handler (memoized)
 	const navigateToProduct = useCallback(
 		(product) => {
-			// If it's a POD product, redirect accordingly.
 			if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
 				history.push(`/custom-gifts/${product._id}`);
 				return;
 			}
-
 			ReactGA.event({
 				category: "New Arrival Product Clicked",
 				action: "New Arrival Product Clicked",
 				label: `User Navigated to ${product.productName} single page`,
 			});
-
 			window.scrollTo({ top: 0, behavior: "smooth" });
 			history.push(
 				`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`
@@ -149,155 +195,144 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 		[history]
 	);
 
+	// -----------------------------
+	// 4) Render
+	// -----------------------------
 	return (
 		<Container>
 			<ZNewArrivalWrapper>
 				<h2>New Arrivals</h2>
 				<Slider {...settings}>
-					{newArrivalProducts &&
-						newArrivalProducts.map((product, i) => {
-							const chosenProductAttributes = product.productAttributes[0];
-							const images =
-								chosenProductAttributes?.productImages ||
-								product.thumbnailImage[0].images;
+					{arrivalList.map((product, i) => {
+						const chosenProductAttributes = product.productAttributes?.[0];
+						const images =
+							chosenProductAttributes?.productImages ||
+							product.thumbnailImage?.[0]?.images;
+						const firstImage = images?.[0];
 
-							// Always just take the first image in the array
-							const firstImage = images[0];
+						// Build multiple Cloudinary URLs
+						let fallbackJpg = "";
+						let srcsetJpg = "";
+						let srcsetWebp = "";
 
-							// Build multiple Cloudinary URLs for responsive images
-							let fallbackJpg = "";
-							let srcsetJpg = "";
-							let srcsetWebp = "";
+						if (firstImage?.url) {
+							const baseJpg = getCloudinaryOptimizedUrl(firstImage.url, {
+								width: 600,
+								forceWebP: false,
+							});
+							const baseWebp = getCloudinaryOptimizedUrl(firstImage.url, {
+								width: 600,
+								forceWebP: true,
+							});
 
-							if (firstImage?.url) {
-								// Base (JPEG)
-								const baseJpg = getCloudinaryOptimizedUrl(firstImage.url, {
-									width: 600,
-									forceWebP: false,
-								});
-								// WebP
-								const baseWebp = getCloudinaryOptimizedUrl(firstImage.url, {
-									width: 600,
-									forceWebP: true,
-								});
+							const jpg480 = baseJpg.replace("w_600", "w_480");
+							const jpg768 = baseJpg.replace("w_600", "w_768");
+							const jpg1200 = baseJpg.replace("w_600", "w_1200");
 
-								// Derive smaller/bigger widths
-								const jpg480 = baseJpg.replace("w_600", "w_480");
-								const jpg768 = baseJpg.replace("w_600", "w_768");
-								const jpg1200 = baseJpg.replace("w_600", "w_1200");
+							const webp480 = baseWebp.replace("w_600", "w_480");
+							const webp768 = baseWebp.replace("w_600", "w_768");
+							const webp1200 = baseWebp.replace("w_600", "w_1200");
 
-								const webp480 = baseWebp.replace("w_600", "w_480");
-								const webp768 = baseWebp.replace("w_600", "w_768");
-								const webp1200 = baseWebp.replace("w_600", "w_1200");
+							fallbackJpg = jpg480;
+							srcsetJpg = `
+				  ${jpg480} 480w,
+				  ${jpg768} 768w,
+				  ${jpg1200} 1200w,
+				  ${baseJpg} 1600w
+				`;
+							srcsetWebp = `
+				  ${webp480} 480w,
+				  ${webp768} 768w,
+				  ${webp1200} 1200w,
+				  ${baseWebp} 1600w
+				`;
+						}
 
-								// Fallback is the smallest
-								fallbackJpg = jpg480;
+						const originalPrice = product.price || 0;
+						const discountedPrice =
+							product.priceAfterDiscount > 0
+								? product.priceAfterDiscount
+								: chosenProductAttributes?.priceAfterDiscount || 0;
 
-								// Construct the srcset strings
-								srcsetJpg = `
-                  ${jpg480} 480w,
-                  ${jpg768} 768w,
-                  ${jpg1200} 1200w,
-                  ${baseJpg} 1600w
-                `;
-								srcsetWebp = `
-                  ${webp480} 480w,
-                  ${webp768} 768w,
-                  ${webp1200} 1200w,
-                  ${baseWebp} 1600w
-                `;
-							}
+						const originalPriceFixed = originalPrice.toFixed(2);
+						const discountedPriceFixed = discountedPrice.toFixed(2);
 
-							const originalPrice = product.price || 0;
-							const discountedPrice =
-								product.priceAfterDiscount > 0
-									? product.priceAfterDiscount
-									: chosenProductAttributes?.priceAfterDiscount || 0;
+						const totalQuantity =
+							product.productAttributes?.reduce(
+								(acc, attr) => acc + attr.quantity,
+								0
+							) || product.quantity;
 
-							const originalPriceFixed = originalPrice.toFixed(2);
-							const discountedPriceFixed = discountedPrice.toFixed(2);
+						const isPOD =
+							product.isPrintifyProduct && product.printifyProductDetails?.POD;
 
-							const totalQuantity =
-								product.productAttributes.reduce(
-									(acc, attr) => acc + attr.quantity,
-									0
-								) || product.quantity;
+						return (
+							<div key={i} className='slide'>
+								<ProductCard
+									hoverable
+									onClick={() => navigateToProduct(product)}
+									cover={
+										<ImageContainer>
+											{isPOD && <PodBadge>Custom Design 💖</PodBadge>}
 
-							// Check if the product is POD
-							const isPOD =
-								product.isPrintifyProduct &&
-								product.printifyProductDetails?.POD;
+											{totalQuantity > 0 ? (
+												<CartIcon
+													onClick={(e) => handleCartIconClick(product, e)}
+												/>
+											) : (
+												<OutOfStockBadge>Out of Stock</OutOfStockBadge>
+											)}
 
-							return (
-								<div key={i} className='slide'>
-									<ProductCard
-										hoverable
-										onClick={() => navigateToProduct(product)}
-										cover={
-											<ImageContainer>
-												{/* If it's a POD product, show the custom design badge */}
-												{isPOD && <PodBadge>Custom Design 💖</PodBadge>}
-
-												{totalQuantity > 0 ? (
-													<CartIcon
-														onClick={(e) => handleCartIconClick(product, e)}
+											<ImageWrapper>
+												<picture>
+													<source
+														srcSet={srcsetWebp}
+														sizes='(max-width: 480px) 480px,
+									 (max-width: 768px) 768px,
+									 (max-width: 1200px) 1200px,
+									 1600px'
+														type='image/webp'
 													/>
-												) : (
-													<OutOfStockBadge>Out of Stock</OutOfStockBadge>
-												)}
-
-												<ImageWrapper>
-													<picture>
-														{/* WebP first */}
-														<source
-															srcSet={srcsetWebp}
-															sizes='(max-width: 480px) 480px,
-                                     (max-width: 768px) 768px,
-                                     (max-width: 1200px) 1200px,
-                                     1600px'
-															type='image/webp'
-														/>
-														{/* Fallback JPG */}
-														<source
-															srcSet={srcsetJpg}
-															sizes='(max-width: 480px) 480px,
-                                     (max-width: 768px) 768px,
-                                     (max-width: 1200px) 1200px,
-                                     1600px'
-															type='image/jpeg'
-														/>
-														<ProductImage
-															loading='lazy'
-															src={fallbackJpg}
-															alt={`${product.productName} - single view`}
-														/>
-													</picture>
-												</ImageWrapper>
-											</ImageContainer>
-										}
-									>
-										<Meta
-											title={product.productName}
-											description={
-												originalPrice > discountedPrice ? (
-													<span>
-														Price:{" "}
-														<OriginalPrice>${originalPriceFixed}</OriginalPrice>{" "}
-														<DiscountedPrice>
-															${discountedPriceFixed}
-														</DiscountedPrice>
-													</span>
-												) : (
+													<source
+														srcSet={srcsetJpg}
+														sizes='(max-width: 480px) 480px,
+									 (max-width: 768px) 768px,
+									 (max-width: 1200px) 1200px,
+									 1600px'
+														type='image/jpeg'
+													/>
+													<ProductImage
+														loading='lazy'
+														src={fallbackJpg}
+														alt={`${product.productName} - single view`}
+													/>
+												</picture>
+											</ImageWrapper>
+										</ImageContainer>
+									}
+								>
+									<Meta
+										title={product.productName}
+										description={
+											originalPrice > discountedPrice ? (
+												<span>
+													Price:{" "}
+													<OriginalPrice>${originalPriceFixed}</OriginalPrice>{" "}
 													<DiscountedPrice>
-														Price: ${discountedPriceFixed}
+														${discountedPriceFixed}
 													</DiscountedPrice>
-												)
-											}
-										/>
-									</ProductCard>
-								</div>
-							);
-						})}
+												</span>
+											) : (
+												<DiscountedPrice>
+													Price: ${discountedPriceFixed}
+												</DiscountedPrice>
+											)
+										}
+									/>
+								</ProductCard>
+							</div>
+						);
+					})}
 				</Slider>
 			</ZNewArrivalWrapper>
 		</Container>
@@ -306,7 +341,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 
 export default ZNewArrival;
 
-/* ==== STYLES (unchanged except for references to new image elements) ==== */
+/* ==== STYLES (unchanged) ==== */
 
 const Container = styled.div`
 	background: var(--background-light);

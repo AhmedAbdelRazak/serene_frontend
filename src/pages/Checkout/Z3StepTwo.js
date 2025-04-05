@@ -36,7 +36,11 @@ const Z3StepTwo = ({
 		(item) => item.isPrintifyProduct && item.customDesign
 	);
 
-	// 3) Helper to compute shipping cost (original logic)
+	// 3) Check if multiple store IDs
+	const distinctStoreIds = [...new Set(cart.map((item) => item.storeId))];
+	const hasMultipleStores = distinctStoreIds.length > 1;
+
+	// 4) Helper to compute shipping cost (original logic) + 75% extra if multiple stores
 	const getFinalShippingCost = (option) => {
 		const personalStockCount = cart.filter(
 			(item) => !item.isPrintifyProduct
@@ -55,10 +59,15 @@ const Z3StepTwo = ({
 		// For Printify items, add $4 for each
 		finalPrice += printifyCount * 4;
 
+		// If there are multiple store IDs, add a 75% surcharge
+		if (hasMultipleStores) {
+			finalPrice *= 1.75;
+		}
+
 		return finalPrice;
 	};
 
-	// 4) When user picks a shipping option, compute final shipping & save to cart context
+	// 5) When user picks a shipping option, compute final shipping & save to cart context
 	const handleLocalShippingOptionChange = (optionId) => {
 		const chosenOption = allShippingOptions.find((opt) => opt._id === optionId);
 		if (!chosenOption) return;
@@ -71,7 +80,7 @@ const Z3StepTwo = ({
 		addShipmentDetails(finalChosenOption);
 	};
 
-	// 5) Cities eligible for local shipping (Pickup/Local Delivery)
+	// 6) Cities eligible for local shipping (Pickup/Local Delivery)
 	const closeCities = [
 		"San Bernardino",
 		"Riverside",
@@ -104,11 +113,11 @@ const Z3StepTwo = ({
 		"67ef157340130b857c44baa5",
 	];
 
-	// 6) Filter shipping options (original style):
+	// 7) Filter shipping options (original style):
 	//    - Exclude local shipping if:
 	//         1) not in California, OR
 	//         2) city/address not in closeCities, OR
-	//         3) there's at least 1 printify item in the cart
+	//         3) there's at least 1 Printify item in the cart
 	//    - Otherwise (UPS/USPS) show it for everyone
 	const filteredShippingOptions = allShippingOptions.filter((option) => {
 		if (localShippingIDs.includes(option._id)) {
@@ -143,6 +152,7 @@ const Z3StepTwo = ({
 				<Step>
 					<StepTitle>Shipping Options</StepTitle>
 
+					{/* Name */}
 					<ShippingOption>
 						<label className='mb-0 mt-3'>Ship To Name</label>
 						<Input
@@ -154,6 +164,7 @@ const Z3StepTwo = ({
 						/>
 					</ShippingOption>
 
+					{/* State */}
 					<ShippingOption>
 						<label className='mb-0 mt-3'>Ship To State</label>
 						<Select
@@ -170,6 +181,7 @@ const Z3StepTwo = ({
 						</Select>
 					</ShippingOption>
 
+					{/* Address, City, Zip */}
 					<ShippingOptionRow>
 						<ShippingOptionWrapper>
 							<label className='mb-0 mt-3'>Ship To Address</label>
@@ -205,6 +217,7 @@ const Z3StepTwo = ({
 						</ShippingOptionWrapper>
 					</ShippingOptionRow>
 
+					{/* Comments */}
 					<ShippingOption>
 						<label
 							className='mb-0 mt-3'
@@ -217,10 +230,10 @@ const Z3StepTwo = ({
 							card for a special occasion or any other details we would need to
 							know to best fulfill your order
 							<br />
-							<span className='noteMessage'>
+							{/* <span className='noteMessage'>
 								Please note: We currently do not offer cards for candle and
 								t-shirt shipments.
-							</span>
+							</span> */}
 						</div>
 						<TextArea
 							rows={4}
@@ -230,7 +243,7 @@ const Z3StepTwo = ({
 						/>
 					</ShippingOption>
 
-					{/* 7) Show the Printify POD note if there's a product with custom design */}
+					{/* 8) Show the Printify POD note if there's a product with custom design */}
 					{hasCustomDesignPOD && (
 						<PODNote>
 							Your custom-designed item requires extra production time. Please
@@ -240,6 +253,16 @@ const Z3StepTwo = ({
 						</PODNote>
 					)}
 
+					{/* 9) If multiple stores, show a special note */}
+					{hasMultipleStores && (
+						<MultipleStoresNote>
+							<strong>Note:</strong> Your order contains products from multiple
+							stores. Shipping fees include a extra surcharge to handle separate
+							shipments.
+						</MultipleStoresNote>
+					)}
+
+					{/* Choose a carrier */}
 					<label
 						className='mt-3'
 						style={{ fontWeight: "bold", fontSize: "1.2rem" }}
@@ -260,7 +283,7 @@ const Z3StepTwo = ({
 										checked={shipmentChosen._id === option._id}
 										onChange={() => handleLocalShippingOptionChange(option._id)}
 									/>
-									{option.carrierName} - ${finalShippingCost}
+									{option.carrierName} - ${finalShippingCost.toFixed(2)}
 								</ShippingLabel>
 							</ShippingOption>
 						);
@@ -381,6 +404,18 @@ const PODNote = styled.div`
 	padding: 15px;
 	border: 1px solid #f0c14b;
 	background-color: #fff8e1;
+	border-radius: 5px;
+	color: #333;
+	font-size: 0.9rem;
+	font-weight: bold;
+	line-height: 1.4;
+`;
+
+const MultipleStoresNote = styled.div`
+	margin: 20px 0;
+	padding: 15px;
+	border: 1px solid #e38f9e;
+	background-color: #fff0f3;
 	border-radius: 5px;
 	color: #333;
 	font-size: 0.9rem;

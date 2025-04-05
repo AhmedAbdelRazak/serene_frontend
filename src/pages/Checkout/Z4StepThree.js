@@ -235,6 +235,7 @@ const Z4StepThree = ({
 					isPrintifyProduct: item.isPrintifyProduct,
 					printifyProductDetails: item.printifyProductDetails, // <-- important
 					customDesign: item.customDesign, // <-- might still be null for normal products
+					storeId: item.storeId,
 				})),
 			chosenProductQtyWithVariables: cart
 				.filter((item) => item.chosenProductAttributes)

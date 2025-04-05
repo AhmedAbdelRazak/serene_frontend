@@ -590,3 +590,101 @@ export const getUnseenMessagesListBySeller = (storeId, token) => {
 			console.error("Error fetching unseen messages list for seller:", err);
 		});
 };
+
+export const getSearchOrderSeller = (token, orderquery, userId, storeId) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/seller/search-for-order/${orderquery}/${userId}/${storeId}`,
+		{
+			method: "GET",
+			headers: {
+				// content type?
+				"Content-Type": "application/json",
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};
+
+export const getListOfOrdersAggregatedSeller = (
+	token,
+	page,
+	records,
+	startDate,
+	endDate,
+	status,
+	userId,
+	storeId
+) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/seller/list-of-orders-aggregated/${page}/${records}/${startDate}/${endDate}/${status}/${userId}/${storeId}`,
+		{
+			method: "GET",
+			headers: {
+				// content type?
+				"Content-Type": "application/json",
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};
+
+export const updatingAnOrderSeller = (
+	orderId,
+	userId,
+	token,
+	order,
+	updateType,
+	productData
+) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/single-order/${orderId}/${userId}`,
+		{
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(order, updateType, productData),
+		}
+	)
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};
+
+export const updatingAnOrderSeller2 = (
+	orderId,
+	userId,
+	token,
+	updateType,
+	updateData // This can be { trackingNumber }, { status }, { customerDetails }, etc.
+) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/single-order/${orderId}/${userId}`,
+		{
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({ ...updateData, updateType }),
+		}
+	)
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};

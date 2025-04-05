@@ -24,6 +24,7 @@ import {
 	SET_NEW_ARRIVAL_PRODUCTS,
 	SET_CUSTOM_DESIGN_PRODUCTS,
 	SET_LOADING,
+	SET_FEATURED_PRODUCTS,
 } from "./actions";
 
 import {
@@ -177,172 +178,80 @@ export const CartProvider = ({ children }) => {
 	// ------------------------------------
 	// 2) Fetch Once on Mount
 	// ------------------------------------
-	// useEffect(() => {
-	// 	const fetchData = async () => {
-	// 		try {
-	// 			// Turn on loading
-	// 			dispatch({ type: SET_LOADING, payload: true });
-
-	// 			// (A) Website setup
-	// 			const websiteData = await getWebsiteSetup();
-	// 			dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
-
-	// 			// (B) Categories & Subcategories
-	// 			const categoriesData = await gettingCategoriesAndSubcategories();
-	// 			if (categoriesData?.error) {
-	// 				console.log(categoriesData.error);
-	// 			} else {
-	// 				dispatch({
-	// 					type: SET_CATEGORIES_SUBCATEGORIES,
-	// 					payload: {
-	// 						categories: categoriesData.categories || [],
-	// 						subcategories: categoriesData.subcategories || [],
-	// 					},
-	// 				});
-	// 			}
-
-	// 			// (C) Featured Products
-	// 			// const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 20);
-	// 			// if (featuredData?.error) {
-	// 			// 	console.log(featuredData.error);
-	// 			// } else {
-	// 			// 	// Sort by date descending
-	// 			// 	const sortedFeatured = featuredData.sort(
-	// 			// 		(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-	// 			// 	);
-	// 			// 	dispatch({ type: SET_FEATURED_PRODUCTS, payload: sortedFeatured });
-	// 			// }
-
-	// 			// (D) New Arrival Products
-	// 			const newArrivalData = await gettingSpecificProducts(0, 1, 0, 0, 0, 20);
-	// 			if (newArrivalData?.error) {
-	// 				console.log(newArrivalData.error);
-	// 			} else {
-	// 				dispatch({
-	// 					type: SET_NEW_ARRIVAL_PRODUCTS,
-	// 					payload: newArrivalData,
-	// 				});
-	// 			}
-
-	// 			// (E) Custom Design Products
-	// 			const customDesignData = await gettingSpecificProducts(
-	// 				0,
-	// 				0,
-	// 				1,
-	// 				0,
-	// 				0,
-	// 				10
-	// 			);
-	// 			if (customDesignData?.error) {
-	// 				console.log(customDesignData.error);
-	// 			} else {
-	// 				dispatch({
-	// 					type: SET_CUSTOM_DESIGN_PRODUCTS,
-	// 					payload: customDesignData,
-	// 				});
-	// 			}
-	// 		} catch (error) {
-	// 			console.error("Error fetching data in CartContext: ", error);
-	// 		} finally {
-	// 			// Turn off loading
-	// 			dispatch({ type: SET_LOADING, payload: false });
-	// 		}
-	// 	};
-
-	// 	fetchData();
-	// }, []);
-
-	//Get Data from index.html
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
+				// Turn on loading
 				dispatch({ type: SET_LOADING, payload: true });
 
-				// 1) Grab any preloaded data
-				const pre = window.__PRELOADED_DATA__ || {};
-				// console.log(pre, "pre");
+				// (A) Website setup
+				const websiteData = await getWebsiteSetup();
+				dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
 
-				// 2) Check if we actually have all the needed data
-				const hasAllData =
-					pre.websiteSetup &&
-					pre.categoriesData &&
-					pre.newArrivalProducts &&
-					pre.customDesignProducts;
-
-				if (hasAllData) {
-					// Use the preloaded data from <script> in index.html
-					console.log("Using preloaded data from index.html <script>...");
-
-					// A) Website setup
-					dispatch({ type: SET_WEBSITE_SETUP, payload: pre.websiteSetup });
-
-					// B) Categories & subcategories
+				// (B) Categories & Subcategories
+				const categoriesData = await gettingCategoriesAndSubcategories();
+				if (categoriesData?.error) {
+					console.log(categoriesData.error);
+				} else {
 					dispatch({
 						type: SET_CATEGORIES_SUBCATEGORIES,
 						payload: {
-							categories: pre.categoriesData.categories || [],
-							subcategories: pre.categoriesData.subcategories || [],
+							categories: categoriesData.categories || [],
+							subcategories: categoriesData.subcategories || [],
 						},
 					});
+				}
 
-					// C) New arrival products
+				// (C) Featured Products => { featured:1, newArrivals:0, customDesigns:0, sortByRate:0, offers:0, records:5, skip=0 }
+				const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 6);
+				if (featuredData?.error) {
+					console.log(featuredData.error);
+				} else {
+					// Sort by date descending
+					const sortedFeatured = featuredData.sort(
+						(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+					);
+					dispatch({ type: SET_FEATURED_PRODUCTS, payload: sortedFeatured });
+				}
+
+				// (D) New Arrival Products => { featured=0, newArrivals=1, ... }
+				const newArrivalData = await gettingSpecificProducts(0, 1, 0, 0, 0, 6);
+				if (newArrivalData?.error) {
+					console.log(newArrivalData.error);
+				} else {
 					dispatch({
 						type: SET_NEW_ARRIVAL_PRODUCTS,
-						payload: pre.newArrivalProducts,
+						payload: newArrivalData,
 					});
+				}
 
-					// D) Custom design products
+				// (E) Custom Design Products => { featured=0, newArrivals=0, customDesigns=1, ... }
+				const customDesignData = await gettingSpecificProducts(
+					0,
+					0,
+					1,
+					0,
+					0,
+					6
+				);
+				if (customDesignData?.error) {
+					console.log(customDesignData.error);
+				} else {
 					dispatch({
 						type: SET_CUSTOM_DESIGN_PRODUCTS,
-						payload: pre.customDesignProducts,
+						payload: customDesignData,
 					});
-				} else {
-					// If there's no preloaded data, fetch from API as a fallback
-					console.log("No preloaded data found. Fetching normally...");
-
-					try {
-						// Fetch these in parallel
-						const [
-							websiteData,
-							categoriesData,
-							newArrivalsData,
-							customDesignData,
-						] = await Promise.all([
-							getWebsiteSetup(),
-							gettingCategoriesAndSubcategories(),
-							gettingSpecificProducts(0, 1, 0, 0, 0, 12), // new arrivals
-							gettingSpecificProducts(0, 0, 1, 0, 0, 12), // custom design
-						]);
-
-						dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
-						dispatch({
-							type: SET_CATEGORIES_SUBCATEGORIES,
-							payload: {
-								categories: categoriesData.categories || [],
-								subcategories: categoriesData.subcategories || [],
-							},
-						});
-						dispatch({
-							type: SET_NEW_ARRIVAL_PRODUCTS,
-							payload: newArrivalsData,
-						});
-						dispatch({
-							type: SET_CUSTOM_DESIGN_PRODUCTS,
-							payload: customDesignData,
-						});
-					} catch (err) {
-						console.error("Fallback fetch error:", err);
-					}
 				}
 			} catch (error) {
-				console.error("Error fetching data in CartContext:", error);
+				console.error("Error fetching data in CartContext: ", error);
 			} finally {
+				// Turn off loading
 				dispatch({ type: SET_LOADING, payload: false });
 			}
 		};
 
 		fetchData();
-	}, [dispatch]);
+	}, []);
 
 	// ------------------------------------
 	// 3) Provide the Context

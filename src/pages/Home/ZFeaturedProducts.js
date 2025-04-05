@@ -1,25 +1,64 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import styled from "styled-components";
 import Slider from "react-slick";
 import { Card } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useCartContext } from "../../cart_context";
-import { readProduct } from "../../apiCore";
+import { readProduct, gettingSpecificProducts } from "../../apiCore";
 import { useHistory } from "react-router-dom";
 import ReactGA from "react-ga4";
 
 const { Meta } = Card;
 
+const MAX_PRODUCTS = 30;
+
 const ZFeaturedProducts = ({ featuredProducts }) => {
 	const { openSidebar2, addToCart } = useCartContext();
 	const history = useHistory();
 
-	// Memoize the main slider settings so they're created only once.
+	// -----------------------------------------------
+	// 1) Local State for Lazy Loading
+	// -----------------------------------------------
+	// Start with however many featuredProducts come from context (often 5).
+	const [featuredList, setFeaturedList] = useState(featuredProducts || []);
+	// Keep track of how many we've loaded so far:
+	const [skip, setSkip] = useState(featuredList.length);
+	// Prevent multiple simultaneous fetches
+	const [loadingOne, setLoadingOne] = useState(false);
+
+	const hasMore = featuredList.length < MAX_PRODUCTS;
+
+	// Function to fetch exactly 1 more featured product, if available
+	const fetchOneMoreFeatured = useCallback(async () => {
+		if (!hasMore || loadingOne) return; // no more needed or already loading
+		setLoadingOne(true);
+
+		try {
+			// featured=1 => newArrivals=0 => customDesigns=0 => sortByRate=0 => offers=0 => records=1
+			// skip = how many we've already loaded
+			const data = await gettingSpecificProducts(1, 0, 0, 0, 0, 1, skip);
+			if (data && !data.error) {
+				if (data.length > 0) {
+					// Append the new product(s)
+					setFeaturedList((prev) => [...prev, ...data]);
+					setSkip(skip + data.length);
+				}
+			}
+		} catch (err) {
+			console.error(err);
+		} finally {
+			setLoadingOne(false);
+		}
+	}, [skip, hasMore, loadingOne]);
+
+	// -----------------------------------------------
+	// 2) Main Slider Settings
+	// -----------------------------------------------
 	const settings = useMemo(
 		() => ({
 			dots: true,
 			infinite: true,
-			speed: 2000,
+			speed: 300,
 			slidesToShow: 5,
 			slidesToScroll: 1,
 			autoplay: true,
@@ -53,11 +92,22 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 					},
 				},
 			],
+			afterChange: (currentSlide) => {
+				// If near the end, fetch one more
+				// e.g. if we have 10 items, the last slide index is 9
+				// we can trigger if currentSlide >= featuredList.length - 3, etc.
+				if (!hasMore || loadingOne) return;
+				if (currentSlide > featuredList.length - 6) {
+					fetchOneMoreFeatured();
+				}
+			},
 		}),
-		[]
+		[featuredList.length, hasMore, loadingOne, fetchOneMoreFeatured]
 	);
 
-	// Memoize the inner image slider settings.
+	// -----------------------------------------------
+	// 3) Inner Image Slider Settings
+	// -----------------------------------------------
 	const imageSettings = useMemo(
 		() => ({
 			dots: true,
@@ -71,7 +121,9 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 		[]
 	);
 
-	// Memoize the add-to-cart handler.
+	// -----------------------------------------------
+	// 4) Handlers
+	// -----------------------------------------------
 	const handleCartIconClick = useCallback(
 		async (product, e) => {
 			e.stopPropagation();
@@ -97,7 +149,6 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 		[history, openSidebar2, addToCart]
 	);
 
-	// Memoize the navigation handler.
 	const navigateToProduct = useCallback(
 		(product) => {
 			if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
@@ -117,127 +168,129 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 		[history]
 	);
 
+	// -----------------------------------------------
+	// 5) Render
+	// -----------------------------------------------
 	return (
 		<Container>
 			<ZFeaturedProductsWrapper>
 				<h2>Featured Products</h2>
 				<Slider {...settings}>
-					{featuredProducts &&
-						featuredProducts.map((product, i) => {
-							const chosenProductAttributes = product.productAttributes[0];
-							const images =
-								chosenProductAttributes?.productImages ||
-								product.thumbnailImage[0].images;
+					{featuredList.map((product, i) => {
+						const chosenProductAttributes = product.productAttributes[0];
+						const images =
+							chosenProductAttributes?.productImages ||
+							product.thumbnailImage[0].images;
 
-							// Original & discounted prices (2 decimals)
-							const originalPrice =
-								chosenProductAttributes?.price || product.price || 0;
-							const discountedPrice =
-								product.priceAfterDiscount > 0
-									? product.priceAfterDiscount
-									: chosenProductAttributes?.priceAfterDiscount || 0;
+						// Original & discounted prices
+						const originalPrice =
+							chosenProductAttributes?.price || product.price || 0;
+						const discountedPrice =
+							product.priceAfterDiscount > 0
+								? product.priceAfterDiscount
+								: chosenProductAttributes?.priceAfterDiscount || 0;
 
-							const originalPriceFixed = originalPrice.toFixed(2);
-							const discountedPriceFixed = discountedPrice.toFixed(2);
+						const originalPriceFixed = originalPrice.toFixed(2);
+						const discountedPriceFixed = discountedPrice.toFixed(2);
 
-							const discountPercentage =
-								originalPrice > 0
-									? ((originalPrice - discountedPrice) / originalPrice) * 100
-									: 0;
+						const discountPercentage =
+							originalPrice > 0
+								? ((originalPrice - discountedPrice) / originalPrice) * 100
+								: 0;
 
-							const totalQuantity =
-								product.productAttributes.reduce(
-									(acc, attr) => acc + attr.quantity,
-									0
-								) || product.quantity;
+						const totalQuantity =
+							product.productAttributes.reduce(
+								(acc, attr) => acc + attr.quantity,
+								0
+							) || product.quantity;
 
-							const isPOD =
-								product.isPrintifyProduct &&
-								product.printifyProductDetails?.POD;
+						const isPOD =
+							product.isPrintifyProduct && product.printifyProductDetails?.POD;
 
-							return (
-								<div key={i} className='slide'>
-									<ProductCard
-										hoverable
-										onClick={() => navigateToProduct(product)}
-										cover={
-											<ImageContainer>
-												{/* Display discount badge if applicable */}
-												{discountPercentage > 0 && (
-													<DiscountBadge>
-														{discountPercentage.toFixed(0)}% OFF!
-													</DiscountBadge>
-												)}
+						return (
+							<div key={i} className='slide'>
+								<ProductCard
+									hoverable
+									onClick={() => navigateToProduct(product)}
+									cover={
+										<ImageContainer>
+											{/* Discount badge if applicable */}
+											{discountPercentage > 0 && (
+												<DiscountBadge>
+													{discountPercentage.toFixed(0)}% OFF!
+												</DiscountBadge>
+											)}
 
-												{/* Display POD badge if applicable */}
-												{isPOD && <PodBadge>Custom Design 💖</PodBadge>}
+											{/* POD badge if applicable */}
+											{isPOD && <PodBadge>Custom Design 💖</PodBadge>}
 
-												{totalQuantity > 0 ? (
-													<CartIcon
-														onClick={(e) => handleCartIconClick(product, e)}
-													/>
-												) : (
-													<OutOfStockBadge>Out of Stock</OutOfStockBadge>
-												)}
+											{/* In-stock vs out-of-stock */}
+											{totalQuantity > 0 ? (
+												<CartIcon
+													onClick={(e) => handleCartIconClick(product, e)}
+												/>
+											) : (
+												<OutOfStockBadge>Out of Stock</OutOfStockBadge>
+											)}
 
-												{images.length > 1 ? (
-													<Slider {...imageSettings}>
-														{images.map((img, index) => (
-															<ImageWrapper key={index}>
-																<picture>
-																	<source
-																		srcSet={`${img.url}?auto=format&fit=max&w=600&format=webp`}
-																		type='image/webp'
-																	/>
-																	<ProductImage
-																		src={`${img.url}?auto=format&fit=max&w=600`}
-																		alt={`${product.productName} - view ${index + 1}`}
-																		loading='lazy'
-																	/>
-																</picture>
-															</ImageWrapper>
-														))}
-													</Slider>
-												) : (
-													<ImageWrapper>
-														<picture>
-															<source
-																srcSet={`${images[0].url}?auto=format&fit=max&w=600&format=webp`}
-																type='image/webp'
-															/>
-															<ProductImage
-																src={`${images[0].url}?auto=format&fit=max&w=600`}
-																alt={`${product.productName} - single view`}
-																loading='lazy'
-															/>
-														</picture>
-													</ImageWrapper>
-												)}
-											</ImageContainer>
-										}
-									>
-										<Meta
-											title={product.productName}
-											description={
-												originalPrice > discountedPrice ? (
-													<span>
-														Price:{" "}
-														<OriginalPrice>${originalPriceFixed}</OriginalPrice>{" "}
-														<DiscountedPrice>
-															${discountedPriceFixed}
-														</DiscountedPrice>
-													</span>
-												) : (
+											{images.length > 1 ? (
+												<Slider {...imageSettings}>
+													{images.map((img, index) => (
+														<ImageWrapper key={index}>
+															<picture>
+																<source
+																	srcSet={`${img.url}?auto=format&fit=max&w=600&format=webp`}
+																	type='image/webp'
+																/>
+																<ProductImage
+																	src={`${img.url}?auto=format&fit=max&w=600`}
+																	alt={`${product.productName} - view ${index + 1}`}
+																	loading='lazy'
+																/>
+															</picture>
+														</ImageWrapper>
+													))}
+												</Slider>
+											) : (
+												<ImageWrapper>
+													<picture>
+														<source
+															srcSet={`${images[0].url}?auto=format&fit=max&w=600&format=webp`}
+															type='image/webp'
+														/>
+														<ProductImage
+															src={`${images[0].url}?auto=format&fit=max&w=600`}
+															alt={`${product.productName} - single view`}
+															loading='lazy'
+														/>
+													</picture>
+												</ImageWrapper>
+											)}
+										</ImageContainer>
+									}
+								>
+									<Meta
+										title={product.productName}
+										description={
+											originalPrice > discountedPrice ? (
+												<span>
+													Price:{" "}
+													<OriginalPrice>${originalPriceFixed}</OriginalPrice>{" "}
 													<DiscountedPrice>
-														Price: ${discountedPriceFixed}
+														${discountedPriceFixed}
 													</DiscountedPrice>
-												)
-											}
-										/>
-									</ProductCard>
-								</div>
-							);
-						})}
+												</span>
+											) : (
+												<DiscountedPrice>
+													Price: ${discountedPriceFixed}
+												</DiscountedPrice>
+											)
+										}
+									/>
+								</ProductCard>
+							</div>
+						);
+					})}
 				</Slider>
 			</ZFeaturedProductsWrapper>
 		</Container>

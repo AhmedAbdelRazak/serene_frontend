@@ -8,6 +8,10 @@ import {
 	BarChartOutlined,
 } from "@ant-design/icons";
 import SellerNavbar from "../SellerNavigation/SellerNavbar";
+import SellerReports from "./SellerReports";
+import OrderDetailsModal from "./OrderDetailsModal";
+import SellerOrdersHistory from "./SellerOrdersHistory";
+import SellerOrdersInProgress from "./SellerOrdersInProgress";
 
 const { TabPane } = Tabs;
 
@@ -15,27 +19,58 @@ const SellerDashboardMain = () => {
 	const [SellerMenuStatus, setSellerMenuStatus] = useState(false);
 	const [collapsed, setCollapsed] = useState(false);
 	const [activeTab, setActiveTab] = useState("OrdersReport");
+	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [selectedOrder, setSelectedOrder] = useState(null);
 	const history = useHistory();
 
+	// We'll store the extracted storeId here
+	const [storeId, setStoreId] = useState(null);
+
 	useEffect(() => {
+		// Conditionally collapse nav if screen is small
 		if (window.innerWidth <= 1000) {
 			setCollapsed(true);
 		}
-		// eslint-disable-next-line
 	}, []);
 
+	// On initial mount, read ?tab= from the URL
 	useEffect(() => {
 		const params = new URLSearchParams(window.location.search);
 		const tab = params.get("tab");
 		if (tab) {
 			setActiveTab(tab);
 		}
-		// eslint-disable-next-line
+	}, []);
+
+	// Also on initial mount, read storeData from localStorage
+	useEffect(() => {
+		const localStoreData = localStorage.getItem("storeData");
+		if (localStoreData) {
+			try {
+				const parsed = JSON.parse(localStoreData);
+				// If your store doc has an _id, set it here:
+				if (parsed._id) {
+					setStoreId(parsed._id);
+				}
+			} catch (err) {
+				console.error("Error parsing storeData from localStorage:", err);
+			}
+		}
 	}, []);
 
 	const handleTabChange = (tabKey) => {
 		setActiveTab(tabKey);
 		history.push(`/seller/dashboard?tab=${tabKey}`);
+	};
+
+	const showModal = (order) => {
+		setSelectedOrder(order);
+		setIsModalVisible(true);
+	};
+
+	const handleCancel = () => {
+		setIsModalVisible(false);
+		setSelectedOrder(null);
 	};
 
 	return (
@@ -53,15 +88,11 @@ const SellerDashboardMain = () => {
 
 				<div className='otherContentWrapper'>
 					<div className='container-wrapper'>
-						{/* 
-              Removed "centered" so it aligns left.
-              Overriding default ant-tabs-card borders/tabs via CSS below.
-            */}
 						<CustomTabs
 							activeKey={activeTab}
 							onChange={handleTabChange}
 							type='card'
-							tabBarGutter={0} // remove default spacing between tabs
+							tabBarGutter={0}
 						>
 							<TabPane
 								tab={
@@ -71,7 +102,7 @@ const SellerDashboardMain = () => {
 								}
 								key='OrdersReport'
 							>
-								Hello From Reports
+								<SellerReports storeId={storeId} />
 							</TabPane>
 
 							<TabPane
@@ -82,7 +113,12 @@ const SellerDashboardMain = () => {
 								}
 								key='OrdersHistory'
 							>
-								Hello From History
+								<div>
+									<SellerOrdersHistory
+										showModal={showModal}
+										storeId={storeId}
+									/>
+								</div>
 							</TabPane>
 							<TabPane
 								tab={
@@ -92,12 +128,23 @@ const SellerDashboardMain = () => {
 								}
 								key='OrdersInProgress'
 							>
-								Hello From Orders In Progress
+								<div>
+									<SellerOrdersInProgress
+										showModal={showModal}
+										storeId={storeId}
+									/>
+								</div>
 							</TabPane>
 						</CustomTabs>
 					</div>
 				</div>
 			</div>
+			<OrderDetailsModal
+				isVisible={isModalVisible}
+				order={selectedOrder}
+				onCancel={handleCancel}
+				setIsVisible={setIsModalVisible}
+			/>
 		</SellerDashboardMainWrapper>
 	);
 };
@@ -147,7 +194,6 @@ const CustomTabs = styled(Tabs)`
 		transition: var(--main-transition);
 	}
 
-	/* The 'card' style uses borders; remove tab radius so they meet flush */
 	&.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab,
 	&.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab {
 		border-radius: 0;

@@ -206,7 +206,7 @@ const AppContent = () => {
 	const modalText =
 		"Your loved ones deserve just 3 minutes of your time to create their perfect gift. Click below to be unique! ❤️😉";
 
-	//Create a new order with a product not serene jannat
+	//Ensure that the Seller report is only showing the correct data as in listOfAggregatedForPaginationSeller
 
 	return (
 		<>

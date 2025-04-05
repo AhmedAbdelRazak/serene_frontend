@@ -22,6 +22,8 @@ const Z1CartDetails = ({ appliedCoupon, goodCoupon }) => {
 	const [allColors, setAllColors] = useState([]);
 	const [modalItem, setModalItem] = useState(null);
 
+	console.log(cart, "cart");
+
 	useEffect(() => {
 		// Fetch all available colors
 		getColors().then((data) => {

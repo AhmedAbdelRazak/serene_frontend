@@ -10,6 +10,7 @@ import { isAuthenticated } from "../../auth";
 import StoreBasicInfo from "./StoreBasicInfo";
 import StoreLogoSection from "./StoreLogoSection";
 import StoreAboutUsBanner from "./StoreAboutUsBanner";
+// eslint-disable-next-line
 import ShippingOptionsContent from "./ShippingOptionsContent"; // <-- IMPORT
 
 const { TabPane } = Tabs;
@@ -229,11 +230,11 @@ const SellerStoreManagementMain = () => {
 							</TabPane>
 
 							{/* Only show if storeData._id exists */}
-							{storeData._id && (
+							{/* {storeData._id && (
 								<TabPane tab='Shipping Options' key='shippingOptions'>
 									<ShippingOptionsContent storeId={storeData._id} />
 								</TabPane>
-							)}
+							)} */}
 						</StyledTabs>
 
 						<div style={{ marginTop: 40 }}>

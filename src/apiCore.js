@@ -443,28 +443,43 @@ export const gettingCategoriesAndSubcategories = () => {
 		.catch((err) => console.log(err));
 };
 
+// apiCore.js (or wherever this lives)
 export const gettingSpecificProducts = (
 	featured,
 	newArrivals,
 	customDesigns,
 	sortByRate,
 	offers,
-	records
+	records,
+	skip = 0, // optional, goes in query
+	storeId = "" // optional, goes in query
 ) => {
-	return fetch(
-		`${process.env.REACT_APP_API_URL}/specific/products/${featured}/${newArrivals}/${customDesigns}/${sortByRate}/${offers}/${records}`,
-		{
-			method: "GET",
-			headers: {
-				Accept: "application/json",
-			},
-		}
-	)
+	// Build the query string for skip & storeId
+	const params = new URLSearchParams();
+	// Only append skip if it's > 0
+	if (skip) params.append("skip", skip);
+	// Only append storeId if it's not empty
+	if (storeId) params.append("storeId", storeId);
+
+	// Construct the URL with path params and optional query
+	const url = `${process.env.REACT_APP_API_URL}/specific/products/${featured}/${newArrivals}/${customDesigns}/${sortByRate}/${offers}/${records}?${params.toString()}`;
+
+	return fetch(url, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+		},
+	})
 		.then((response) => {
-			if (!response.ok) throw new Error("Network response was not ok");
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
 			return response.json();
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => {
+			console.log(err);
+			return { error: err.message };
+		});
 };
 
 export const gettingSingleProduct = (slug, categorySlug, productId) => {

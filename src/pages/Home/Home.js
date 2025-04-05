@@ -331,17 +331,17 @@ const Home = () => {
 				</FadeUpDiv>
 			)}
 
-			{/* Custom Designs */}
-			{customDesignProducts.length > 0 && (
-				<FadeUpDiv>
-					<ZCustomDesigns customDesignProducts={customDesignProducts} />
-				</FadeUpDiv>
-			)}
-
 			{/* Featured Products */}
 			{featuredProducts.length > 0 && (
 				<FadeUpDiv>
 					<ZFeaturedProducts featuredProducts={featuredProducts} />
+				</FadeUpDiv>
+			)}
+
+			{/* Custom Designs */}
+			{customDesignProducts.length > 0 && (
+				<FadeUpDiv>
+					<ZCustomDesigns customDesignProducts={customDesignProducts} />
 				</FadeUpDiv>
 			)}
 

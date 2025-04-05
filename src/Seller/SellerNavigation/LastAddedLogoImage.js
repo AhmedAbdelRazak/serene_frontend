@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useCartContext } from "../../cart_context";
+import { isAuthenticated } from "../../auth";
 
 const LastAddedLogoImage = () => {
 	const [logoUrl, setLogoUrl] = useState("");
@@ -19,7 +20,19 @@ const LastAddedLogoImage = () => {
 	}, []);
 
 	return (
-		<LastAddedLogoImageWrapper onClick={() => (window.location.href = "/")}>
+		<LastAddedLogoImageWrapper
+			onClick={() => {
+				if (
+					isAuthenticated() &&
+					isAuthenticated().user &&
+					isAuthenticated().user.role === 1
+				) {
+					window.location.href = "/admin/dashboard?tab=allStores";
+				} else {
+					window.location.href = "/";
+				}
+			}}
+		>
 			{websiteSetup &&
 			websiteSetup.sereneJannatLogo &&
 			websiteSetup.sereneJannatLogo.url ? (

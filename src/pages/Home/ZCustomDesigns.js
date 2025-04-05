@@ -1,9 +1,10 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import styled from "styled-components";
 import Slider from "react-slick";
 import { Card } from "antd";
 import { useHistory } from "react-router-dom";
 import ReactGA from "react-ga4";
+import { gettingSpecificProducts } from "../../apiCore";
 
 const { Meta } = Card;
 
@@ -21,11 +22,9 @@ const getCloudinaryOptimizedUrl = (
 	}
 
 	let newUrl = url;
-	// If the URL already has f_auto or q_auto, we may still need to enforce w_{width}.
 	const hasTransform = newUrl.includes("f_auto") || newUrl.includes("q_auto");
 
 	if (!hasTransform) {
-		// Insert transformations after '/upload/'
 		const parts = newUrl.split("/upload/");
 		if (parts.length === 2) {
 			const baseTransform = `f_auto,q_auto,w_${width}`;
@@ -47,15 +46,49 @@ const getCloudinaryOptimizedUrl = (
 	return newUrl;
 };
 
+const MAX_PRODUCTS = 15;
+
 const ZCustomDesigns = ({ customDesignProducts }) => {
 	const history = useHistory();
 
-	// Memoize main slider settings
+	// -----------------------------
+	// 1) Local state for lazy-load
+	// -----------------------------
+	const [designList, setDesignList] = useState(customDesignProducts || []);
+	const [skip, setSkip] = useState(designList.length);
+	const [loadingOne, setLoadingOne] = useState(false);
+	const hasMore = designList.length < MAX_PRODUCTS;
+
+	// Function to fetch exactly ONE more custom design
+	const fetchOneMoreDesign = useCallback(async () => {
+		if (!hasMore || loadingOne) return;
+		setLoadingOne(true);
+
+		try {
+			// customDesigns=1 => (featured=0, newArrivals=0, customDesigns=1)
+			// records=1 => skip=skip
+			const data = await gettingSpecificProducts(0, 0, 1, 0, 0, 1, skip);
+			if (data && !data.error) {
+				if (data.length > 0) {
+					setDesignList((prev) => [...prev, ...data]);
+					setSkip(skip + data.length);
+				}
+			}
+		} catch (err) {
+			console.error(err);
+		} finally {
+			setLoadingOne(false);
+		}
+	}, [skip, hasMore, loadingOne]);
+
+	// -----------------------------
+	// 2) Main slider settings
+	// -----------------------------
 	const settings = useMemo(
 		() => ({
 			dots: true,
 			infinite: true,
-			speed: 2000,
+			speed: 300,
 			slidesToShow: 5,
 			slidesToScroll: 1,
 			autoplay: true,
@@ -89,16 +122,23 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 					},
 				},
 			],
+			afterChange: (currentSlide) => {
+				// If near the end, fetch one more
+				if (!hasMore || loadingOne) return;
+				if (currentSlide > designList.length - 6) {
+					fetchOneMoreDesign();
+				}
+			},
 		}),
-		[]
+		[hasMore, loadingOne, designList.length, fetchOneMoreDesign]
 	);
 
-	// We no longer use imageSettings because we won't do a sub-slider.
-
-	// Memoize navigation handler
+	// -----------------------------
+	// 3) Handlers
+	// -----------------------------
 	const navigateToProduct = useCallback(
 		(product) => {
-			// If it's a POD product, redirect accordingly.
+			// If it's a POD product, redirect to custom gifts page
 			if (product.isPrintifyProduct && product.printifyProductDetails?.POD) {
 				ReactGA.event({
 					category: "Custom Design Product Clicked",
@@ -117,6 +157,9 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 		[history]
 	);
 
+	// -----------------------------
+	// 4) Render
+	// -----------------------------
 	return (
 		<Container>
 			<ZCustomDesignsWrapper>
@@ -126,93 +169,91 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 				</h2>
 
 				<Slider {...settings}>
-					{customDesignProducts &&
-						customDesignProducts.map((product, i) => {
-							const chosenProductAttributes = product.productAttributes[0];
-							const images =
-								chosenProductAttributes?.productImages ||
-								product.thumbnailImage[0].images;
+					{designList.map((product, i) => {
+						const chosenProductAttributes = product.productAttributes[0];
+						const images =
+							chosenProductAttributes?.productImages ||
+							product.thumbnailImage[0].images;
 
-							// Always just take the first image
-							const firstImage = images && images[0];
-							const originalPrice = product.price || 0;
-							const discountedPrice =
-								product.priceAfterDiscount > 0
-									? product.priceAfterDiscount
-									: chosenProductAttributes?.priceAfterDiscount || 0;
+						// Always just take the first image
+						const firstImage = images && images[0];
+						const originalPrice = product.price || 0;
+						const discountedPrice =
+							product.priceAfterDiscount > 0
+								? product.priceAfterDiscount
+								: chosenProductAttributes?.priceAfterDiscount || 0;
 
-							const originalPriceFixed = originalPrice.toFixed(2);
-							const discountedPriceFixed = discountedPrice.toFixed(2);
+						const originalPriceFixed = originalPrice.toFixed(2);
+						const discountedPriceFixed = discountedPrice.toFixed(2);
 
-							// Is it a Printify On-Demand product
-							const isPOD =
-								product.isPrintifyProduct &&
-								product.printifyProductDetails?.POD;
+						// Is it a Printify On-Demand product
+						const isPOD =
+							product.isPrintifyProduct && product.printifyProductDetails?.POD;
 
-							// Create optimized URLs for the single first image
-							let baseJpg = "";
-							let baseWebp = "";
+						// Create optimized URLs for the single first image
+						let baseJpg = "";
+						let baseWebp = "";
 
-							if (firstImage?.url) {
-								baseJpg = getCloudinaryOptimizedUrl(firstImage.url, {
-									width: 600,
-									forceWebP: false,
-								});
-								baseWebp = getCloudinaryOptimizedUrl(firstImage.url, {
-									width: 600,
-									forceWebP: true,
-								});
-							}
+						if (firstImage?.url) {
+							baseJpg = getCloudinaryOptimizedUrl(firstImage.url, {
+								width: 600,
+								forceWebP: false,
+							});
+							baseWebp = getCloudinaryOptimizedUrl(firstImage.url, {
+								width: 600,
+								forceWebP: true,
+							});
+						}
 
-							return (
-								<div key={i} className='slide'>
-									<ProductCard
-										hoverable
-										onClick={() => navigateToProduct(product)}
-										cover={
-											<ImageContainer>
-												{/* If it's a POD product, show the custom design badge */}
-												{isPOD && <PodBadge>Custom Design 💖</PodBadge>}
+						return (
+							<div key={i} className='slide'>
+								<ProductCard
+									hoverable
+									onClick={() => navigateToProduct(product)}
+									cover={
+										<ImageContainer>
+											{/* If it's a POD product, show the custom design badge */}
+											{isPOD && <PodBadge>Custom Design 💖</PodBadge>}
 
-												<ImageWrapper>
-													{baseJpg ? (
-														<picture>
-															<source srcSet={baseWebp} type='image/webp' />
-															<ProductImage
-																src={baseJpg}
-																alt={`${product.productName} - single view`}
-																loading='lazy'
-															/>
-														</picture>
-													) : (
-														<NoImagePlaceholder>No Image</NoImagePlaceholder>
-													)}
-												</ImageWrapper>
-											</ImageContainer>
-										}
-									>
-										<Meta
-											title={product.productName}
-											description={
-												originalPrice > discountedPrice ? (
-													<span>
-														Price:{" "}
-														<OriginalPrice>${originalPriceFixed}</OriginalPrice>{" "}
-														<DiscountedPrice>
-															${discountedPriceFixed}
-														</DiscountedPrice>
-													</span>
+											<ImageWrapper>
+												{baseJpg ? (
+													<picture>
+														<source srcSet={baseWebp} type='image/webp' />
+														<ProductImage
+															src={baseJpg}
+															alt={`${product.productName} - single view`}
+															loading='lazy'
+														/>
+													</picture>
 												) : (
+													<NoImagePlaceholder>No Image</NoImagePlaceholder>
+												)}
+											</ImageWrapper>
+										</ImageContainer>
+									}
+								>
+									<Meta
+										title={product.productName}
+										description={
+											originalPrice > discountedPrice ? (
+												<span>
+													Price:{" "}
+													<OriginalPrice>${originalPriceFixed}</OriginalPrice>{" "}
 													<DiscountedPrice>
-														Price: ${discountedPriceFixed}
+														${discountedPriceFixed}
 													</DiscountedPrice>
-												)
-											}
-										/>
-									</ProductCard>
-								</div>
-							);
-						})}
+												</span>
+											) : (
+												<DiscountedPrice>
+													Price: ${discountedPriceFixed}
+												</DiscountedPrice>
+											)
+										}
+									/>
+								</ProductCard>
+							</div>
+						);
+					})}
 				</Slider>
 			</ZCustomDesignsWrapper>
 		</Container>
@@ -222,9 +263,9 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 export default ZCustomDesigns;
 
 /* 
-=== STYLES ===
-(All styling remains the same, with minimal adjustments)
-*/
+  === STYLES ===
+  (Keeping your existing styles intact)
+  */
 
 const Container = styled.div`
 	background: var(--background-light);

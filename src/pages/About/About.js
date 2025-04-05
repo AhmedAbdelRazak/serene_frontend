@@ -189,7 +189,7 @@ const ImageWrapper = styled.div`
 	img {
 		width: 100%;
 		max-width: 1028px;
-		height: 40vh;
+		height: 50vh;
 		border-radius: 8px;
 
 		@media (max-width: 800px) {

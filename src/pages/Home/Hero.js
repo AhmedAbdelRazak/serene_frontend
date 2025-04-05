@@ -40,7 +40,7 @@ const Hero = ({ websiteSetup }) => {
 	const settings = {
 		dots: true,
 		infinite: true,
-		speed: 1000,
+		speed: 500,
 		slidesToShow: 1,
 		slidesToScroll: 1,
 		autoplay: true,
@@ -214,7 +214,7 @@ const Slide = styled.div`
  */
 const BannerImageWrapper = styled.div`
 	width: 100%;
-	max-height: 600px;
+	max-height: 700px;
 	overflow: hidden;
 
 	img {
