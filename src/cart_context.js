@@ -17,14 +17,8 @@ import {
 	SIDEBAR_CLOSE2,
 	SIDEFILTERS_CLOSE,
 	SIDEFILTERS_OPEN,
-	// Removed FEATURED_PROPERTIES since it's not used
 	SET_WEBSITE_SETUP,
-	SET_CATEGORIES_SUBCATEGORIES,
-	// SET_FEATURED_PRODUCTS,
-	SET_NEW_ARRIVAL_PRODUCTS,
-	SET_CUSTOM_DESIGN_PRODUCTS,
 	SET_LOADING,
-	SET_FEATURED_PRODUCTS,
 } from "./actions";
 
 import {
@@ -189,59 +183,59 @@ export const CartProvider = ({ children }) => {
 				dispatch({ type: SET_WEBSITE_SETUP, payload: websiteData });
 
 				// (B) Categories & Subcategories
-				const categoriesData = await gettingCategoriesAndSubcategories();
-				if (categoriesData?.error) {
-					console.log(categoriesData.error);
-				} else {
-					dispatch({
-						type: SET_CATEGORIES_SUBCATEGORIES,
-						payload: {
-							categories: categoriesData.categories || [],
-							subcategories: categoriesData.subcategories || [],
-						},
-					});
-				}
+				// const categoriesData = await gettingCategoriesAndSubcategories();
+				// if (categoriesData?.error) {
+				// 	console.log(categoriesData.error);
+				// } else {
+				// 	dispatch({
+				// 		type: SET_CATEGORIES_SUBCATEGORIES,
+				// 		payload: {
+				// 			categories: categoriesData.categories || [],
+				// 			subcategories: categoriesData.subcategories || [],
+				// 		},
+				// 	});
+				// }
 
-				// (C) Featured Products => { featured:1, newArrivals:0, customDesigns:0, sortByRate:0, offers:0, records:5, skip=0 }
-				const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 6);
-				if (featuredData?.error) {
-					console.log(featuredData.error);
-				} else {
-					// Sort by date descending
-					const sortedFeatured = featuredData.sort(
-						(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-					);
-					dispatch({ type: SET_FEATURED_PRODUCTS, payload: sortedFeatured });
-				}
+				// // (C) Featured Products => { featured:1, newArrivals:0, customDesigns:0, sortByRate:0, offers:0, records:5, skip=0 }
+				// const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 6);
+				// if (featuredData?.error) {
+				// 	console.log(featuredData.error);
+				// } else {
+				// 	// Sort by date descending
+				// 	const sortedFeatured = featuredData.sort(
+				// 		(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+				// 	);
+				// 	dispatch({ type: SET_FEATURED_PRODUCTS, payload: sortedFeatured });
+				// }
 
-				// (D) New Arrival Products => { featured=0, newArrivals=1, ... }
-				const newArrivalData = await gettingSpecificProducts(0, 1, 0, 0, 0, 6);
-				if (newArrivalData?.error) {
-					console.log(newArrivalData.error);
-				} else {
-					dispatch({
-						type: SET_NEW_ARRIVAL_PRODUCTS,
-						payload: newArrivalData,
-					});
-				}
+				// // (D) New Arrival Products => { featured=0, newArrivals=1, ... }
+				// const newArrivalData = await gettingSpecificProducts(0, 1, 0, 0, 0, 6);
+				// if (newArrivalData?.error) {
+				// 	console.log(newArrivalData.error);
+				// } else {
+				// 	dispatch({
+				// 		type: SET_NEW_ARRIVAL_PRODUCTS,
+				// 		payload: newArrivalData,
+				// 	});
+				// }
 
-				// (E) Custom Design Products => { featured=0, newArrivals=0, customDesigns=1, ... }
-				const customDesignData = await gettingSpecificProducts(
-					0,
-					0,
-					1,
-					0,
-					0,
-					6
-				);
-				if (customDesignData?.error) {
-					console.log(customDesignData.error);
-				} else {
-					dispatch({
-						type: SET_CUSTOM_DESIGN_PRODUCTS,
-						payload: customDesignData,
-					});
-				}
+				// // (E) Custom Design Products => { featured=0, newArrivals=0, customDesigns=1, ... }
+				// const customDesignData = await gettingSpecificProducts(
+				// 	0,
+				// 	0,
+				// 	1,
+				// 	0,
+				// 	0,
+				// 	6
+				// );
+				// if (customDesignData?.error) {
+				// 	console.log(customDesignData.error);
+				// } else {
+				// 	dispatch({
+				// 		type: SET_CUSTOM_DESIGN_PRODUCTS,
+				// 		payload: customDesignData,
+				// 	});
+				// }
 			} catch (error) {
 				console.error("Error fetching data in CartContext: ", error);
 			} finally {

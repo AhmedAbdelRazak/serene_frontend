@@ -144,6 +144,7 @@ const SellerDashboardMain = () => {
 				order={selectedOrder}
 				onCancel={handleCancel}
 				setIsVisible={setIsModalVisible}
+				storeId={storeId}
 			/>
 		</SellerDashboardMainWrapper>
 	);

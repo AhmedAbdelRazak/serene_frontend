@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
@@ -14,6 +14,10 @@ import ZFeaturedProducts from "./ZFeaturedProducts";
 import ZNewArrival from "./ZNewArrival";
 import ZCustomDesigns from "./ZCustomDesigns";
 import Hero from "./Hero";
+import {
+	gettingCategoriesAndSubcategories,
+	gettingSpecificProducts,
+} from "../../apiCore";
 
 /* Keyframes for the fade-up animation */
 const fadeUp = keyframes`
@@ -273,15 +277,75 @@ const loadingIcon = (
 );
 
 const Home = () => {
-	const {
-		categories,
-		subcategories,
-		featuredProducts,
-		newArrivalProducts,
-		customDesignProducts,
-		loading,
-		websiteSetup,
-	} = useCartContext();
+	const [categories, setCategories] = useState([]);
+	const [subcategories, setSubcategories] = useState([]);
+	const [featuredProducts, setFeaturedProducts] = useState([]);
+	const [newArrivalProducts, setNewArrivalProducts] = useState([]);
+	const [customDesignProducts, setCustomDesignProducts] = useState([]);
+	const [loading, setLoading] = useState([]);
+
+	const { websiteSetup } = useCartContext();
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				// Turn on loading
+				setLoading(true);
+
+				// (B) Categories & Subcategories
+				const categoriesData = await gettingCategoriesAndSubcategories();
+				if (categoriesData?.error) {
+					console.log(categoriesData.error);
+				} else {
+					setCategories(categoriesData.categories || []);
+					setSubcategories(categoriesData.subcategories || []);
+				}
+
+				// // (C) Featured Products => { featured:1, newArrivals:0, customDesigns:0, sortByRate:0, offers:0, records:5, skip=0 }
+				const featuredData = await gettingSpecificProducts(1, 0, 0, 0, 0, 6);
+				if (featuredData?.error) {
+					console.log(featuredData.error);
+				} else {
+					// Sort by date descending
+					const sortedFeatured = featuredData.sort(
+						(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+					);
+
+					setFeaturedProducts(sortedFeatured);
+				}
+
+				// // (D) New Arrival Products => { featured=0, newArrivals=1, ... }
+				const newArrivalData = await gettingSpecificProducts(0, 1, 0, 0, 0, 6);
+				if (newArrivalData?.error) {
+					console.log(newArrivalData.error);
+				} else {
+					setNewArrivalProducts(newArrivalData);
+				}
+
+				// (E) Custom Design Products => { featured=0, newArrivals=0, customDesigns=1, ... }
+				const customDesignData = await gettingSpecificProducts(
+					0,
+					0,
+					1,
+					0,
+					0,
+					6
+				);
+				if (customDesignData?.error) {
+					console.log(customDesignData.error);
+				} else {
+					setCustomDesignProducts(customDesignData);
+				}
+			} catch (error) {
+				console.error("Error fetching data in CartContext: ", error);
+			} finally {
+				// Turn off loading
+				setLoading(false);
+			}
+		};
+
+		fetchData();
+	}, []);
 
 	// GA tracking for page:
 	useEffect(() => {

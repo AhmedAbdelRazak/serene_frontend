@@ -688,3 +688,22 @@ export const updatingAnOrderSeller2 = (
 		})
 		.catch((err) => console.log(err));
 };
+
+export const getStoresBasedOnOrder = (token, orderId, userId) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/get-storeids-connected-to-an-order/${orderId}/${userId}`,
+		{
+			method: "GET",
+			headers: {
+				// content type?
+				"Content-Type": "application/json",
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((response) => {
+			return response.json();
+		})
+		.catch((err) => console.log(err));
+};

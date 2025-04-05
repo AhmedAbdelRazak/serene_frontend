@@ -11,16 +11,73 @@ import {
 	FaUser,
 	FaTrash,
 } from "react-icons/fa";
-import { updatingAnOrderSeller2 } from "../apiSeller";
+import {
+	updatingAnOrderSeller2,
+	getStoresBasedOnOrder, // <-- we import your helper
+} from "../apiSeller";
 import { isAuthenticated } from "../../auth";
 import ProductEditModal from "./ProductEditModal";
 
 const { Option } = Select;
 
-const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
-	// ============================================================
-	// Existing component state
-	// ============================================================
+const OrderDetailsModal = ({
+	isVisible,
+	order,
+	onCancel,
+	setIsVisible,
+	storeId,
+}) => {
+	// -------------------------------------------------------------
+	// AUTH & BASIC STATE
+	// -------------------------------------------------------------
+	const { user, token } = isAuthenticated();
+	// eslint-disable-next-line
+	const [storeIdsForOrder, setStoreIdsForOrder] = useState([]);
+	const [canEditExpenses, setCanEditExpenses] = useState(false);
+
+	// -------------------------------------------------------------
+	// ON MOUNT (WHEN MODAL OPENS): Fetch store IDs for this order
+	// -------------------------------------------------------------
+	useEffect(() => {
+		// only fetch if modal is visible and we have an order._id
+		if (isVisible && order?._id) {
+			getStoresBasedOnOrder(token, order._id, user._id)
+				.then((data) => {
+					if (!data || !data.storeIdsForTheOrder) {
+						setStoreIdsForOrder([]);
+						setCanEditExpenses(false);
+						return;
+					}
+					// e.g. [ { _id: "...", addStoreName: "..." }, ... ]
+					const storeArray = data.storeIdsForTheOrder;
+
+					setStoreIdsForOrder(storeArray || []);
+
+					// Decide if we can edit:
+					// 1) Must be exactly 1 store in the entire order
+					// 2) That store's _id must match this user's store ID
+					// (assuming your user object has .storeId)
+					if (
+						storeArray.length === 1 &&
+						storeArray[0]._id === storeId // or whatever field you store
+					) {
+						setCanEditExpenses(true);
+					} else {
+						setCanEditExpenses(false);
+					}
+				})
+				.catch((err) => {
+					console.log("Error fetching store IDs:", err);
+					setStoreIdsForOrder([]);
+					setCanEditExpenses(false);
+				});
+		}
+		// eslint-disable-next-line
+	}, [isVisible, order, token, user]);
+
+	// -------------------------------------------------------------
+	// EXISTING COMPONENT STATE
+	// -------------------------------------------------------------
 	const [isEditTrackingModalVisible, setIsEditTrackingModalVisible] =
 		useState(false);
 	const [isEditStatusModalVisible, setIsEditStatusModalVisible] =
@@ -40,12 +97,9 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 	// For image preview
 	const [modalImage, setModalImage] = useState("");
 
-	const { user, token } = isAuthenticated();
-
 	// ============================================================
 	// NEW: Expenses state/logic
 	// ============================================================
-	// We store the expenses as an array of { label, price }.
 	const [expenses, setExpenses] = useState([]);
 
 	// On mount or when `order` changes, convert `order.orderExpenses` (object)
@@ -95,6 +149,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 				<Input
 					value={record.label}
 					onChange={(e) => handleExpenseLabelChange(e.target.value, index)}
+					disabled={!canEditExpenses} // disable if can't edit
 				/>
 			),
 		},
@@ -108,6 +163,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 					type='number'
 					value={record.price}
 					onChange={(e) => handleExpensePriceChange(e.target.value, index)}
+					disabled={!canEditExpenses} // disable if can't edit
 				/>
 			),
 		},
@@ -117,11 +173,12 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 			key: "action",
 			width: 60,
 			align: "center",
-			render: (_, record, index) => (
-				<Button danger onClick={() => handleDeleteExpenseRow(index)}>
-					<FaTrash />
-				</Button>
-			),
+			render: (_, record, index) =>
+				canEditExpenses ? (
+					<Button danger onClick={() => handleDeleteExpenseRow(index)}>
+						<FaTrash />
+					</Button>
+				) : null,
 		},
 	];
 
@@ -147,7 +204,6 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 			);
 			// Update local order object
 			order.orderExpenses = newOrderExpenses;
-			// Use antd message instead of alert
 			message.success("Expenses updated successfully!");
 		} catch (error) {
 			console.error("Error updating expenses:", error);
@@ -279,8 +335,6 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 
 	if (!order) return null;
 
-	console.log(order, "novariables");
-
 	// ============================================================
 	// GROSS / EXPENSES / NET total
 	// ============================================================
@@ -289,7 +343,6 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 		(acc, cur) => acc + Number(cur.price || 0),
 		0
 	);
-	const netTotal = grossTotal - totalExpensesValue;
 
 	return (
 		<>
@@ -433,7 +486,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 												</div>
 												<div className='col-md-6' style={{ color: "darkred" }}>
 													<FaDollarSign style={{ marginRight: "5px" }} />
-													<strong>Before Discount Total:</strong> $
+													<strong>Before Discount Total:</strong>{" "}
 													{order.totalAmount && order.totalAmount.toFixed(2)}
 												</div>
 											</>
@@ -501,7 +554,6 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 
 								{/* ================= NO-VARIABLE PRODUCTS ================= */}
 								{order.productsNoVariable.map((product) => {
-									// Fallback for POD image
 									const displayImg =
 										product.image && product.image.length > 0
 											? product.image
@@ -629,7 +681,6 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 
 								{/* ================= PRODUCTS WITH VARIABLES ================= */}
 								{order.chosenProductQtyWithVariables.map((product) => {
-									// Fallback for POD image
 									const displayImg =
 										product.image && product.image.length > 0
 											? product.image
@@ -792,6 +843,13 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 						}}
 					>
 						<h3>Edit Expenses</h3>
+						{/* If we cannot edit, maybe show a warning or disable the table */}
+						{!canEditExpenses && (
+							<p style={{ color: "red" }}>
+								This order includes multiple sellers. You cannot modify
+								expenses.
+							</p>
+						)}
 						<Table
 							columns={expenseColumns}
 							dataSource={expenses}
@@ -800,16 +858,20 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 							size='small'
 							style={{ marginBottom: "1rem" }}
 						/>
-						<Button
-							type='dashed'
-							onClick={handleAddExpenseRow}
-							style={{ marginBottom: "1rem", width: "100%" }}
-						>
-							+ Add Expense
-						</Button>
-						<Button type='primary' onClick={handleSaveExpenses} block>
-							Save Expenses
-						</Button>
+						{canEditExpenses && (
+							<>
+								<Button
+									type='dashed'
+									onClick={handleAddExpenseRow}
+									style={{ marginBottom: "1rem", width: "100%" }}
+								>
+									+ Add Expense
+								</Button>
+								<Button type='primary' onClick={handleSaveExpenses} block>
+									Save Expenses
+								</Button>
+							</>
+						)}
 
 						{/* Summary Container */}
 						<div
@@ -837,7 +899,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 								}}
 							>
 								<span>Net Total:</span>
-								<strong>${netTotal.toFixed(2)}</strong>
+								<strong>${(grossTotal - totalExpensesValue).toFixed(2)}</strong>
 							</SummaryRow>
 						</div>
 					</div>
