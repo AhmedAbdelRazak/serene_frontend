@@ -1,10 +1,4 @@
-import React, {
-	useEffect,
-	useState,
-	Suspense,
-	lazy,
-	startTransition,
-} from "react";
+import React, { useEffect, Suspense, lazy, startTransition } from "react";
 import {
 	BrowserRouter as Router,
 	Switch,
@@ -18,10 +12,13 @@ import "slick-carousel/slick/slick-theme.css";
 import "react-quill/dist/quill.snow.css";
 import ReactGA from "react-ga4";
 // import ReactPixel from "react-facebook-pixel";
-import { Modal, Button } from "antd"; // for the modal
+
 import NavbarTop from "./NavbarUpdate/NavbarTop";
 import NavbarBottom from "./NavbarUpdate/NavbarBottom";
 import Footer from "./Footer";
+import AnimationWalkingComponent from "./pages/MyAnimationComponents/AnimationWalkingComponent";
+import ModalApp from "./ModalApp";
+import AnimationKickoff from "./pages/MyAnimationComponents/AnimationKickoff";
 
 const SellerDashboardMain = lazy(
 	() => import("./Seller/SellerDashboard/SellerDashboardMain")
@@ -120,7 +117,6 @@ const App = () => {
 
 const AppContent = () => {
 	const location = useLocation(); // get current route info
-	const [isModalVisible, setIsModalVisible] = useState(false);
 
 	// Determine if path includes 'admin' or 'seller'
 	const shouldHideLayout =
@@ -159,52 +155,9 @@ const AppContent = () => {
 	//   // eslint-disable-next-line
 	// }, []);
 
-	// ==================== 7-second one-time Modal logic ====================
-	useEffect(() => {
-		// 1. Skip if current route includes admin or seller
-		if (shouldHideLayout) return;
-
-		// 2. Skip if route contains "custom"
-		if (location.pathname.includes("custom")) return;
-
-		// 3. If user already dismissed => do nothing.
-		const hasSeenModal = localStorage.getItem("customGiftModalDismissed");
-		if (hasSeenModal) return;
-
-		// 4. If user is on checkout => skip
-		if (location.pathname.includes("/checkout")) return;
-
-		// 5. Set a timer
-		const timer = setTimeout(() => {
-			setIsModalVisible(true);
-		}, 4000);
-
-		return () => clearTimeout(timer); // cleanup
-	}, [location, shouldHideLayout]);
-
-	const handleYes = () => {
-		localStorage.setItem("customGiftModalDismissed", "true");
-		// GA event
-		ReactGA.event({
-			category: "Custom Gift Modal",
-			action: "User clicked YES - show me /custom-gifts",
-		});
-		// Redirect
-		window.location.href = "/custom-gifts";
-	};
-
-	const handleNo = () => {
-		localStorage.setItem("customGiftModalDismissed", "true");
-		// GA event
-		ReactGA.event({
-			category: "Custom Gift Modal",
-			action: "User clicked NO - not interested",
-		});
-		setIsModalVisible(false);
-	};
-
-	const modalText =
-		"Your loved ones deserve just 3 minutes of your time to create their perfect gift. Click below to be unique! ❤️😉";
+	//1- Design an Animated nice character
+	//2- Ensure to add all animation positions
+	//3- integrate with your components accordingly
 
 	return (
 		<>
@@ -253,6 +206,16 @@ const AppContent = () => {
 					<Route path='/sellingagent/signup' exact component={RegisterSeller} />
 					<Route path='/signin' exact component={Login} />
 					<Route path='/cart' exact component={Cart} />
+					<Route
+						path='/my-animation-component'
+						exact
+						component={AnimationWalkingComponent}
+					/>
+					<Route
+						path='/my-animation-component2'
+						exact
+						component={AnimationKickoff}
+					/>
 					<Route
 						path='/payment-link/:orderId'
 						exact
@@ -347,34 +310,7 @@ const AppContent = () => {
 				{!shouldHideLayout && <Footer />}
 			</Suspense>
 
-			{/* 7-second popup modal */}
-			<Modal
-				open={isModalVisible}
-				onCancel={handleNo}
-				closable={false}
-				footer={null}
-				centered
-			>
-				<p
-					style={{
-						fontSize: "1.1rem",
-						textAlign: "center",
-						margin: "20px 0",
-					}}
-				>
-					{modalText}
-				</p>
-				<div style={{ textAlign: "center" }}>
-					<Button
-						type='primary'
-						style={{ marginRight: 10 }}
-						onClick={handleYes}
-					>
-						Yes, Let’s Do It!
-					</Button>
-					<Button onClick={handleNo}>No, Thank You</Button>
-				</div>
-			</Modal>
+			<ModalApp shouldHideLayout={shouldHideLayout} location={location} />
 		</>
 	);
 };

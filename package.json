@@ -22,6 +22,7 @@
 		"emoji-picker-react": "^4.9.3",
 		"express": "^4.18.2",
 		"fabric": "^6.5.4",
+		"framer-motion": "^12.6.3",
 		"heic2any": "^0.0.4",
 		"html-react-parser": "^5.2.2",
 		"html2canvas": "^1.4.1",

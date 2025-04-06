@@ -127,8 +127,84 @@ body {
 	font-size: 12px;
 }
 
+.modalButtonWrapper {
+	text-align: center;
+	margin-top: 100px;
+}
+
+.animationStylingWrapper {
+	position: absolute;
+	top: -90px;
+	left: 0px;
+}
+
 @media (max-width: 700px) {
 	.whole-select-options {
 		display: none;
 	}
+
+	.modalButtonWrapper {
+		text-align: right !important;
+		margin-top: 100px !important;
+		button {
+			font-size: 13px !important;
+		}
+	}
+
+	.sereneWatermark {
+		top: -65px !important;
+		left: 50% !important; /* Adjust to move it horizontally */
+		transform: rotate(-15deg) !important;
+		font-size: 3rem !important; /* Make it large */
+	}
+
+	.sereneWatermark2 {
+		top: -65px !important;
+		left: 0% !important; /* Adjust to move it horizontally */
+		transform: rotate(-15deg) !important;
+		font-size: 3rem !important; /* Make it large */
+	}
+}
+
+.sereneModal .ant-modal-content {
+	background-color: #e8f7fa; /* A nice serene pastel color */
+	border: 3px solid #f3e6c0;
+}
+
+/* Ensures positioning context for watermark */
+.sereneModalContainer {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+/* The diagonal watermark behind everything */
+.sereneWatermark {
+	position: absolute;
+	top: -100px;
+	left: 60%; /* Adjust to move it horizontally */
+	transform: rotate(-30deg);
+	font-size: 3.5rem; /* Make it large */
+	color: rgba(0, 0, 0, 0.05); /* Very light to avoid distraction */
+	pointer-events: none; /* So it doesn’t interfere with clicks */
+	user-select: none; /* Prevent text selection */
+	z-index: 0;
+}
+
+.sereneWatermark2 {
+	position: absolute;
+	top: -100px;
+	left: 10%; /* Adjust to move it horizontally */
+	transform: rotate(-30deg);
+	font-size: 3.5rem; /* Make it large */
+	color: rgba(0, 0, 0, 0.05); /* Very light to avoid distraction */
+	pointer-events: none; /* So it doesn’t interfere with clicks */
+	user-select: none; /* Prevent text selection */
+	z-index: 0;
+}
+
+/* Ensure actual modal content appears above the watermark */
+.sereneModalContent {
+	position: relative;
+	z-index: 1;
 }
