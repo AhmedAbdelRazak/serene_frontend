@@ -69,9 +69,14 @@ export default function ModalApp({ shouldHideLayout, location }) {
 			onCancel={handleNo}
 			closable={false}
 			footer={null}
-			style={{ height: "50%" }}
+			style={{ height: "19%" }}
 			centered
 			maskClosable={false} // prevent closing unless they pick yes/no
+			styles={{
+				mask: {
+					backgroundColor: "rgba(0,0,0,0.9)", // darker overlay
+				},
+			}}
 		>
 			{/* 
         Container for both the watermark and the content 

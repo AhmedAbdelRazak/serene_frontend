@@ -16,9 +16,12 @@ import ReactGA from "react-ga4";
 import NavbarTop from "./NavbarUpdate/NavbarTop";
 import NavbarBottom from "./NavbarUpdate/NavbarBottom";
 import Footer from "./Footer";
+// eslint-disable-next-line
 import AnimationWalkingComponent from "./pages/MyAnimationComponents/AnimationWalkingComponent";
-import ModalApp from "./ModalApp";
+// eslint-disable-next-line
 import AnimationKickoff from "./pages/MyAnimationComponents/AnimationKickoff";
+
+import ModalApp from "./ModalApp";
 
 const SellerDashboardMain = lazy(
 	() => import("./Seller/SellerDashboard/SellerDashboardMain")
@@ -206,7 +209,7 @@ const AppContent = () => {
 					<Route path='/sellingagent/signup' exact component={RegisterSeller} />
 					<Route path='/signin' exact component={Login} />
 					<Route path='/cart' exact component={Cart} />
-					<Route
+					{/* <Route
 						path='/my-animation-component'
 						exact
 						component={AnimationWalkingComponent}
@@ -215,7 +218,7 @@ const AppContent = () => {
 						path='/my-animation-component2'
 						exact
 						component={AnimationKickoff}
-					/>
+					/> */}
 					<Route
 						path='/payment-link/:orderId'
 						exact
