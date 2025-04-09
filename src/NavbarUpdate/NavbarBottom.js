@@ -86,7 +86,7 @@ const NavbarBottom = () => {
 						onClick={() => handleNavLinkClick("customgifts")}
 						className={clickedLink === "customgifts" ? "active" : ""}
 					>
-						Custom Gifts
+						Print on Demand
 					</StyledNavLink>
 					<StyledNavLink
 						$isSticky={isSticky}

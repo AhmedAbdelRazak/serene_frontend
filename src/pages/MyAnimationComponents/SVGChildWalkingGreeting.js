@@ -368,7 +368,7 @@ export default function SVGChildWalkingGreeting({
 								fill='#000'
 								fontFamily='Arial, sans-serif'
 							>
-								My name is Jake.
+								My name is Gabriel.
 							</text>
 							<text
 								x='10'
@@ -389,7 +389,7 @@ export default function SVGChildWalkingGreeting({
 								fill='#000'
 								fontFamily='Arial, sans-serif'
 							>
-								Click here to have an idea! 💡
+								Check our Print On Demand Products! 💡
 							</text>
 							<text
 								x='10'

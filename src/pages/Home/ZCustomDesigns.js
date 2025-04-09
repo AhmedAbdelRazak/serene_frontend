@@ -91,8 +91,8 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 			speed: 300,
 			slidesToShow: 5,
 			slidesToScroll: 1,
-			autoplay: true,
-			autoplaySpeed: 5000,
+			autoplay: false,
+			autoplaySpeed: 7000,
 			centerMode: true,
 			centerPadding: "60px",
 			responsive: [

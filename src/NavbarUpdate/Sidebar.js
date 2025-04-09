@@ -177,7 +177,7 @@ const Sidebar = ({
 						onClick={() => handleNavLinkClick("customgifts")}
 						$isActive={activeLink === "customgifts"}
 					>
-						<FaProductHunt /> Custom Gifts
+						<FaProductHunt /> Print on Demand
 					</StyledLink>
 
 					<StyledLink

@@ -99,8 +99,8 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 			speed: 300,
 			slidesToShow: 5,
 			slidesToScroll: 1,
-			autoplay: true,
-			autoplaySpeed: 5000,
+			autoplay: false,
+			autoplaySpeed: 9000,
 			centerMode: true,
 			centerPadding: "60px",
 			responsive: [

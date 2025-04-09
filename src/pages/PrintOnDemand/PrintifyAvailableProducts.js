@@ -4,16 +4,18 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 import Slider from "react-slick";
 import ReactGA from "react-ga4";
-// 1) Import your PrintifyPageHelmet component:
+
+// 1) Import your components:
 import PrintifyPageHelmet from "./PrintifyPageHelmet";
+import AnimationProductPresentation from "../MyAnimationComponents/AnimationProductPresentation";
 
 // Slick carousel settings
 const sliderSettings = {
 	dots: true,
 	infinite: true,
 	speed: 500,
-	autoplay: true,
-	autoplaySpeed: 3000,
+	autoplay: false,
+	autoplaySpeed: 9000,
 	slidesToShow: 1,
 	slidesToScroll: 1,
 	pauseOnHover: true,
@@ -26,43 +28,36 @@ const PrintifyAvailableProducts = () => {
 
 	// Sorting logic function
 	const getPriority = (product) => {
-		// We'll check productName (convert to lowercase)
 		const name = product.productName?.toLowerCase() || "";
-
-		// If you want to also check category or tags, you can do so here:
-		// e.g. const categoryName = product.category?.categoryName?.toLowerCase() || "";
-		// e.g. const allTags = product.printifyProductDetails?.tags?.map(t => t.toLowerCase()) || [];
-
-		// 1) T-shirt, hoodies, clothing => return 1
+		if (name.includes("unisex garment-dyed t-shirt")) {
+			return 1;
+		}
 		if (
+			name.includes("bag") ||
 			name.includes("shirt") ||
 			name.includes("hoodie") ||
 			name.includes("clothing")
 		) {
-			return 1;
-		}
-		// 2) Bags => return 2
-		if (name.includes("bag")) {
 			return 2;
 		}
-		// 3) Mugs => return 3
 		if (name.includes("mug")) {
 			return 3;
 		}
-		// 4) Remainder => return 4
+		// Remainder => 4
 		return 4;
 	};
 
 	useEffect(() => {
 		localStorage.setItem("customGiftModalDismissed", "true");
 		localStorage.setItem("customGiftModalDismissed2", "Yes");
+
 		const fetchProducts = async () => {
 			try {
 				const response = await axios.get(
 					`${process.env.REACT_APP_API_URL}/products/pod/print-on-demand-products`
 				);
 				if (Array.isArray(response.data)) {
-					// Sort them right after fetching:
+					// Sort them right after fetching
 					const sortedData = response.data.slice().sort((a, b) => {
 						return getPriority(a) - getPriority(b);
 					});
@@ -102,6 +97,14 @@ const PrintifyAvailableProducts = () => {
 			<PrintifyPageHelmet products={products} />
 
 			<Wrapper>
+				{/*
+          3) Absolutely‐positioned animation with higher z‐index.
+             Adjust top/left/width/height as you like.
+        */}
+				<AbsoluteAnimationWrapper>
+					<AnimationProductPresentation />
+				</AbsoluteAnimationWrapper>
+
 				<SectionTitle>
 					Show you care with a one-of-a-kind gift—add your own text or photo to
 					any product for a personal touch they’ll never forget!
@@ -164,7 +167,22 @@ export default PrintifyAvailableProducts;
   Styled Components
 ------------------------------------- */
 
+// 4) This wrapper ensures the animation is positioned absolutely
+//    over other elements, with a high z-index:
+const AbsoluteAnimationWrapper = styled.div`
+	position: absolute;
+	top: 10px;
+	left: -500px;
+	z-index: 9999; /* ensure it's on top */
+
+	@media (max-width: 700px) {
+		left: -410px;
+		top: 30px;
+	}
+`;
+
 const Wrapper = styled.section`
+	position: relative;
 	padding: 40px 20px;
 	background-color: var(--neutral-light);
 	min-height: 100vh;
@@ -202,26 +220,18 @@ const LoadingText = styled.p`
 `;
 
 const SectionTitle = styled.h1`
-	/* font-family: "Brush Script MT", cursive, sans-serif; */
 	color: var(--secondary-color-darker);
 	font-size: 1.8rem;
 	margin-top: 5px;
 	margin-bottom: 15px;
-	font-style: italic;
 	font-weight: bolder;
 	line-height: 1;
 	text-align: center;
 
 	@media (max-width: 900px) {
-		/* font-family: "Brush Script MT", cursive, sans-serif; */
-		color: var(--secondary-color-darker);
 		font-size: 1rem;
 		margin-top: 5px;
 		margin-bottom: 20px;
-		font-style: italic;
-		font-weight: bolder;
-		line-height: 1;
-		text-align: center;
 	}
 `;
 

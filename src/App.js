@@ -17,12 +17,14 @@ import NavbarTop from "./NavbarUpdate/NavbarTop";
 import NavbarBottom from "./NavbarUpdate/NavbarBottom";
 import Footer from "./Footer";
 // eslint-disable-next-line
-import AnimationWalkingComponent from "./pages/MyAnimationComponents/AnimationWalkingComponent";
+// import AnimationWalkingComponent from "./pages/MyAnimationComponents/AnimationWalkingComponent";
 // eslint-disable-next-line
-import AnimationKickoff from "./pages/MyAnimationComponents/AnimationKickoff";
+// import AnimationKickoff from "./pages/MyAnimationComponents/AnimationKickoff";
+// eslint-disable-next-line
+// import AnimationWalkingGreeting from "./pages/MyAnimationComponents/AnimationWalkingGreeting";
 
 import ModalApp from "./ModalApp";
-import AnimationWalkingGreeting from "./pages/MyAnimationComponents/AnimationWalkingGreeting";
+import AnimationProductPresentation from "./pages/MyAnimationComponents/AnimationProductPresentation";
 
 const SellerDashboardMain = lazy(
 	() => import("./Seller/SellerDashboard/SellerDashboardMain")
@@ -221,10 +223,16 @@ const AppContent = () => {
 						component={AnimationKickoff}
 					/> */}
 
-					<Route
+					{/* <Route
 						path='/my-animation-component3'
 						exact
 						component={AnimationWalkingGreeting}
+					/> */}
+
+					<Route
+						path='/my-animation-component4'
+						exact
+						component={AnimationProductPresentation}
 					/>
 					<Route
 						path='/payment-link/:orderId'

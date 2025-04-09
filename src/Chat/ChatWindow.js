@@ -62,6 +62,10 @@ const ChatWindow = ({ closeChatWindow, chosenLanguage }) => {
 	const [productSuggestions, setProductSuggestions] = useState([]);
 	const [showSuggestions, setShowSuggestions] = useState(false);
 
+	// NEW states/refs for controlling suggestions after selection
+	const [hasSelectedProduct, setHasSelectedProduct] = useState(false);
+	const selectedProductNameRef = useRef("");
+
 	// -----------------------------
 	// 1) On mount, load user & chat
 	// -----------------------------
@@ -219,6 +223,35 @@ const ChatWindow = ({ closeChatWindow, chosenLanguage }) => {
 	// -----------------------------
 	useEffect(() => {
 		const doFetch = async () => {
+			// If user already selected a product, only show suggestions again
+			// if the user has actually shortened (deleted from) the product name
+			// AND still has at least 4 characters.
+			if (hasSelectedProduct) {
+				if (
+					inquiryAbout === "product" &&
+					productName.trim().length <
+						selectedProductNameRef.current.trim().length &&
+					productName.trim().length >= 4
+				) {
+					try {
+						const suggestions = await autoCompleteProducts(productName.trim());
+						setProductSuggestions(suggestions);
+						setShowSuggestions(true);
+						setHasSelectedProduct(false); // user changed/deleted text; revert back
+					} catch (err) {
+						console.error("Error auto-completing products:", err);
+					}
+					return;
+				} else {
+					// Keep them hidden if the user hasn't deleted letters,
+					// or if the length is below 4, etc.
+					setProductSuggestions([]);
+					setShowSuggestions(false);
+					return;
+				}
+			}
+
+			// Original logic (unchanged) if user hasn't selected a product yet
 			if (inquiryAbout === "product" && productName.trim().length >= 4) {
 				try {
 					const suggestions = await autoCompleteProducts(productName.trim());
@@ -233,11 +266,18 @@ const ChatWindow = ({ closeChatWindow, chosenLanguage }) => {
 			}
 		};
 		doFetch();
-	}, [inquiryAbout, productName]);
+	}, [inquiryAbout, productName, hasSelectedProduct]);
 
 	const handleSelectProduct = (prod) => {
+		// On selecting from suggestions, state changes
 		setProductName(prod.productName);
 		setStoreId(prod.store || null);
+
+		// Mark that a product has been selected; store its name
+		selectedProductNameRef.current = prod.productName;
+		setHasSelectedProduct(true);
+
+		// Hide suggestions
 		setShowSuggestions(false);
 		setProductSuggestions([]);
 	};
@@ -694,6 +734,13 @@ const ChatWindowWrapper = styled.div`
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 	padding: 20px;
 	overflow: hidden;
+
+	select,
+	option,
+	input,
+	strong {
+		text-transform: capitalize !important;
+	}
 
 	@media (max-width: 768px) {
 		bottom: 85px;
