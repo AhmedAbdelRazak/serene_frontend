@@ -22,6 +22,7 @@ import AnimationWalkingComponent from "./pages/MyAnimationComponents/AnimationWa
 import AnimationKickoff from "./pages/MyAnimationComponents/AnimationKickoff";
 
 import ModalApp from "./ModalApp";
+import AnimationWalkingGreeting from "./pages/MyAnimationComponents/AnimationWalkingGreeting";
 
 const SellerDashboardMain = lazy(
 	() => import("./Seller/SellerDashboard/SellerDashboardMain")
@@ -219,6 +220,12 @@ const AppContent = () => {
 						exact
 						component={AnimationKickoff}
 					/> */}
+
+					<Route
+						path='/my-animation-component3'
+						exact
+						component={AnimationWalkingGreeting}
+					/>
 					<Route
 						path='/payment-link/:orderId'
 						exact

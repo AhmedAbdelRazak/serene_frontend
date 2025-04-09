@@ -134,8 +134,8 @@ body {
 
 .animationStylingWrapper {
 	position: absolute;
-	top: -90px;
-	left: 0px;
+	top: -240px;
+	left: -100px;
 }
 
 @media (max-width: 700px) {
@@ -152,7 +152,7 @@ body {
 	}
 
 	.sereneWatermark {
-		top: -65px !important;
+		top: -10px !important;
 		left: 50% !important; /* Adjust to move it horizontally */
 		transform: rotate(-15deg) !important;
 		font-size: 3rem !important; /* Make it large */

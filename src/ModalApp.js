@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Modal, Button } from "antd";
 import ReactGA from "react-ga4";
-import AnimationKickoff from "./pages/MyAnimationComponents/AnimationKickoff";
+import AnimationWalkingGreeting from "./pages/MyAnimationComponents/AnimationWalkingGreeting";
 
 export default function ModalApp({ shouldHideLayout, location }) {
 	const [isModalVisible, setIsModalVisible] = useState(false);
@@ -9,7 +9,7 @@ export default function ModalApp({ shouldHideLayout, location }) {
 	// Track user's action for specialized animation: "YES" or "NO"
 	const [action, setAction] = useState(null);
 
-	// One-time modal logic
+	// Show modal only if user hasn't dismissed it before, and not on specific routes
 	useEffect(() => {
 		if (shouldHideLayout) return;
 		if (location.pathname.includes("custom")) return;
@@ -19,11 +19,11 @@ export default function ModalApp({ shouldHideLayout, location }) {
 
 		const timer = setTimeout(() => {
 			setIsModalVisible(true);
-		}, 1500);
+		}, 1000);
 		return () => clearTimeout(timer);
 	}, [location, shouldHideLayout]);
 
-	// User clicks YES => specialized "jump & laugh" animation, then redirect
+	// User clicks YES => specialized jump animation, then redirect
 	const handleYes = () => {
 		localStorage.setItem("customGiftModalDismissed", "true");
 		localStorage.setItem("customGiftModalDismissed2", "Yes");
@@ -34,11 +34,10 @@ export default function ModalApp({ shouldHideLayout, location }) {
 		setAction("YES");
 	};
 
-	// User clicks NO => specialized "it's ok" animation, then close
+	// User clicks NO => specialized shrug animation, then close
 	const handleNo = () => {
 		localStorage.setItem("customGiftModalDismissed", "true");
 		localStorage.setItem("customGiftModalDismissed2", "No");
-
 		ReactGA.event({
 			category: "Custom Gift Modal",
 			action: "User clicked NO - not interested",
@@ -46,7 +45,7 @@ export default function ModalApp({ shouldHideLayout, location }) {
 		setAction("NO");
 	};
 
-	// Callback from child that indicates the yes/no animation is done
+	// Called by child once the specialized yes/no animation finishes
 	const onSpecialAnimationEnd = useCallback(() => {
 		if (action === "YES") {
 			// Redirect
@@ -78,10 +77,6 @@ export default function ModalApp({ shouldHideLayout, location }) {
 				},
 			}}
 		>
-			{/* 
-        Container for both the watermark and the content 
-        so the watermark can sit behind everything 
-      */}
 			<div className='sereneModalContainer'>
 				{/* The diagonal watermark text */}
 				<div className='sereneWatermark'>SERENE</div>
@@ -90,23 +85,21 @@ export default function ModalApp({ shouldHideLayout, location }) {
 				<div className='sereneModalContent' style={{ position: "relative" }}>
 					{/* Absolutely-position the animation near the top-left corner */}
 					<div className='animationStylingWrapper'>
-						<AnimationKickoff
+						<AnimationWalkingGreeting
 							action={action}
 							onSpecialAnimationEnd={onSpecialAnimationEnd}
 						/>
 					</div>
 
-					{/* 
-            <p
-              style={{
-                fontSize: "1.1rem",
-                textAlign: "center",
-                margin: "20px 0 10px 0",
-              }}
-            >
-              {modalText}
-            </p> 
-          */}
+					{/* <p
+						style={{
+							fontSize: "1.1rem",
+							textAlign: "center",
+							margin: "20px 0 10px 0",
+						}}
+					>
+						{modalText}
+					</p> */}
 
 					<div className='modalButtonWrapper'>
 						<Button

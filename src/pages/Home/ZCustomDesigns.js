@@ -164,8 +164,9 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 		<Container>
 			<ZCustomDesignsWrapper>
 				<h2>
-					Create a keepsake they’ll treasure. Personalize any item with your
-					special words or favorite picture.
+					Welcome to our <strong className='mx-1'>PRINT ON DEMAND</strong>{" "}
+					Section. Upload an image of a cherished memory for your loved ones in
+					just seconds!
 				</h2>
 
 				<Slider {...settings}>
@@ -284,17 +285,21 @@ const ZCustomDesignsWrapper = styled.div`
 	margin: auto;
 
 	h2 {
+		strong {
+			font-weight: bold !important;
+			color: darkgoldenrod !important;
+			font-style: italic !important;
+			text-decoration: underline;
+		}
 		font-weight: bold;
 		text-align: center;
 		margin-bottom: 40px;
 		color: var(--text-color-dark);
-		font-family: "Brush Script MT", cursive, sans-serif;
 		color: var(--secondary-color-darker);
-		font-size: 2.3rem;
+		font-size: 1.35rem;
 		margin-top: 5px;
 		margin-bottom: 5px;
-		font-style: italic;
-		font-weight: bolder;
+		font-weight: bold;
 		line-height: 1;
 		text-align: left;
 	}
@@ -328,9 +333,10 @@ const ZCustomDesignsWrapper = styled.div`
 		}
 
 		h2 {
-			font-size: 1.5rem;
+			font-size: 1.1rem;
 			margin-top: 5px;
 			margin-bottom: 5px;
+			padding: 10px;
 		}
 	}
 `;

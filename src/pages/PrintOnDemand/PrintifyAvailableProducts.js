@@ -54,6 +54,8 @@ const PrintifyAvailableProducts = () => {
 	};
 
 	useEffect(() => {
+		localStorage.setItem("customGiftModalDismissed", "true");
+		localStorage.setItem("customGiftModalDismissed2", "Yes");
 		const fetchProducts = async () => {
 			try {
 				const response = await axios.get(
@@ -200,22 +202,22 @@ const LoadingText = styled.p`
 `;
 
 const SectionTitle = styled.h1`
-	font-family: "Brush Script MT", cursive, sans-serif;
+	/* font-family: "Brush Script MT", cursive, sans-serif; */
 	color: var(--secondary-color-darker);
-	font-size: 2.3rem;
+	font-size: 1.8rem;
 	margin-top: 5px;
-	margin-bottom: 5px;
+	margin-bottom: 15px;
 	font-style: italic;
 	font-weight: bolder;
 	line-height: 1;
 	text-align: center;
 
 	@media (max-width: 900px) {
-		font-family: "Brush Script MT", cursive, sans-serif;
+		/* font-family: "Brush Script MT", cursive, sans-serif; */
 		color: var(--secondary-color-darker);
-		font-size: 1.5rem;
+		font-size: 1rem;
 		margin-top: 5px;
-		margin-bottom: 5px;
+		margin-bottom: 20px;
 		font-style: italic;
 		font-weight: bolder;
 		line-height: 1;
