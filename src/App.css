@@ -208,3 +208,17 @@ body {
 	position: relative;
 	z-index: 1;
 }
+
+.rnd-element,
+.react-draggable,
+.react-draggable-dragged,
+.sc-jOQqux,
+.sc-faCEiL,
+.cszixt,
+.text-toolbar {
+	z-index: 9001 !important;
+}
+
+g > path {
+	z-index: -1 !important;
+}

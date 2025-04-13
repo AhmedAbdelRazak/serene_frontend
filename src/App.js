@@ -22,9 +22,9 @@ import Footer from "./Footer";
 // import AnimationKickoff from "./pages/MyAnimationComponents/AnimationKickoff";
 // eslint-disable-next-line
 // import AnimationWalkingGreeting from "./pages/MyAnimationComponents/AnimationWalkingGreeting";
+// import AnimationProductPresentation from "./pages/MyAnimationComponents/AnimationProductPresentation";
 
 import ModalApp from "./ModalApp";
-import AnimationProductPresentation from "./pages/MyAnimationComponents/AnimationProductPresentation";
 
 const SellerDashboardMain = lazy(
 	() => import("./Seller/SellerDashboard/SellerDashboardMain")
@@ -229,11 +229,11 @@ const AppContent = () => {
 						component={AnimationWalkingGreeting}
 					/> */}
 
-					<Route
+					{/* <Route
 						path='/my-animation-component4'
 						exact
 						component={AnimationProductPresentation}
-					/>
+					/> */}
 					<Route
 						path='/payment-link/:orderId'
 						exact

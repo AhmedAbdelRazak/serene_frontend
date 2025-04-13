@@ -51,8 +51,15 @@ import heic2any from "heic2any";
 // Fallback library for final image conversion
 import domtoimage from "dom-to-image-more";
 
+// ----------- ADDED: import the child -----------
+import AnimationPODWalkThrough from "../MyAnimationComponents/AnimationPODWalkThrough";
+
 const { Title } = Typography;
 const { Option } = Select;
+
+//Ensure that the sizes and colors are changing
+//Finish the upload photo through the animation
+//Ensure that the component with the animation is responsive
 
 /**
  * ------------------------------------------------------------------------
@@ -473,6 +480,8 @@ export default function CustomizeSelectedProduct() {
 		},
 		shipping_method: "",
 	});
+	const [userJustSingleClickedText, setUserJustSingleClickedText] =
+		useState(false);
 
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 	useEffect(() => {
@@ -553,6 +562,14 @@ export default function CustomizeSelectedProduct() {
 
 	const [uploadingImage, setUploadingImage] = useState(false);
 
+	// ----------- ADDED states to track user actions -----------
+
+	const [didUserAddToCart, setDidUserAddToCart] = useState(false);
+	const [hasChangedSizeOrColor, setHasChangedSizeOrColor] = useState(false);
+	const [userJustDoubleClickedCanvas, setUserJustDoubleClickedCanvas] =
+		useState(false);
+	const [hasMultipleSizeOrColor, setHasMultipleSizeOrColor] = useState(false);
+
 	// 1) LOAD PRODUCT
 	useEffect(() => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
@@ -615,7 +632,6 @@ export default function CustomizeSelectedProduct() {
 
 				// If we have colorOption:
 				if (colorOption?.values?.length) {
-					// If there's a ?color= in the URL and it matches a valid color, use it; otherwise fallback to the first
 					if (
 						colorParam &&
 						colorOption.values.some((val) => val.title === colorParam)
@@ -630,14 +646,12 @@ export default function CustomizeSelectedProduct() {
 
 				// If we have sizeOption:
 				if (sizeOption?.values?.length) {
-					// If there's a ?size= in the URL and it matches a valid size, use it
 					if (
 						sizeParam &&
 						sizeOption.values.some((val) => val.title === sizeParam)
 					) {
 						setSelectedSize(sizeParam);
 					} else {
-						// original logic: pick default variant if it exists, else pick first
 						const defVar = validVariants.find((v) => v.is_default);
 						if (defVar) {
 							const defSizeVal = sizeOption.values.find((sv) =>
@@ -668,6 +682,28 @@ export default function CustomizeSelectedProduct() {
 		};
 		fetchProduct();
 	}, [productId]);
+
+	useEffect(() => {
+		if (!product) return;
+
+		// Find the color & size option
+		const colorOption = product.options.find(
+			(opt) => opt.name.toLowerCase() === "colors"
+		);
+		const sizeOption = product.options.find(
+			(opt) => opt.name.toLowerCase() === "sizes"
+		);
+
+		const multipleColors = colorOption?.values?.length > 1;
+		const multipleSizes = sizeOption?.values?.length > 1;
+
+		// If we have >1 color or >1 size => true
+		if (multipleColors || multipleSizes) {
+			setHasMultipleSizeOrColor(true);
+		} else {
+			setHasMultipleSizeOrColor(false);
+		}
+	}, [product]);
 
 	// Add a default text box in the middle
 	useEffect(() => {
@@ -766,11 +802,30 @@ export default function CustomizeSelectedProduct() {
 		}));
 	}, [product, selectedColor, selectedSize]);
 
+	// If user changes color or size from initial => set hasChangedSizeOrColor
+	useEffect(() => {
+		// Once changed, we keep it true
+		if (!hasChangedSizeOrColor && (selectedColor || selectedSize)) {
+			setHasChangedSizeOrColor(true);
+		}
+	}, [selectedColor, selectedSize, hasChangedSizeOrColor]);
+
 	/**
 	 * ------------------------------------------------------------------------
 	 * 2) IMAGE UPLOAD LOGIC
 	 * ------------------------------------------------------------------------
 	 */
+
+	function handleBlankAreaDoubleClick(e) {
+		// Make sure the user did NOT double-click on an existing element
+		// You can check if e.target.closest('.rnd-element') is null, etc.
+		if (!e.target.closest(".rnd-element")) {
+			setUserJustDoubleClickedCanvas(true);
+			// Optionally reset it after a moment
+			setTimeout(() => setUserJustDoubleClickedCanvas(false), 500);
+		}
+	}
+
 	const addImageElement = async (file) => {
 		// If user picks .mov => error
 		if (
@@ -999,7 +1054,9 @@ export default function CustomizeSelectedProduct() {
 	 * 3) TEXT + ELEMENT EDITING
 	 * ------------------------------------------------------------------------
 	 */
-	function addTextElement(textValue) {
+	function addTextElement(textValue, fromRightSide = false) {
+		// If fromRightSide => user used the right-hand box
+
 		const finalText = textValue ? textValue.trim() : userText.trim();
 		if (!finalText) {
 			message.warning("Please enter some text first.");
@@ -1044,6 +1101,7 @@ export default function CustomizeSelectedProduct() {
 		setSelectedElementId(el.id);
 
 		if (el.type === "text") {
+			setUserJustSingleClickedText(true);
 			setUserText(el.text || "");
 			setTextColor(el.color || "#000000");
 			setFontFamily(el.fontFamily || "Arial");
@@ -1085,6 +1143,7 @@ export default function CustomizeSelectedProduct() {
 			)
 		);
 		setInlineEditId(null);
+		setUserJustSingleClickedText(false);
 	}
 
 	async function deleteSelectedElement(elId) {
@@ -1382,6 +1441,8 @@ export default function CustomizeSelectedProduct() {
 		}
 		document.addEventListener("mousedown", handleGlobalClick);
 		document.addEventListener("touchstart", handleGlobalClick);
+		setUserJustSingleClickedText(true);
+		setUserJustSingleClickedText(true);
 		return () => {
 			document.removeEventListener("mousedown", handleGlobalClick);
 			document.removeEventListener("touchstart", handleGlobalClick);
@@ -1798,6 +1859,9 @@ export default function CustomizeSelectedProduct() {
 
 			openSidebar2();
 			message.success("Added to cart with custom design!");
+
+			// ADDED => user definitely added to cart
+			setDidUserAddToCart(true);
 		} catch (error) {
 			console.error("Screenshot or final upload failed:", error);
 			message.error(
@@ -1931,6 +1995,7 @@ export default function CustomizeSelectedProduct() {
 
 	function handleColorChange(newColor) {
 		setSelectedColor(newColor);
+		setHasChangedSizeOrColor(true); // user definitely changed
 		const sizeOption = product.options.find(
 			(opt) => opt.name.toLowerCase() === "sizes"
 		);
@@ -1967,6 +2032,11 @@ export default function CustomizeSelectedProduct() {
 		}
 	}
 
+	function handleSizeChange(value) {
+		setSelectedSize(value);
+		setHasChangedSizeOrColor(true);
+	}
+
 	return (
 		<CustomizeWrapper>
 			<Helmet>
@@ -1987,6 +2057,53 @@ export default function CustomizeSelectedProduct() {
 					content={["Print On Demand", "Custom Gift"].join(", ")}
 				/>
 			</Helmet>
+
+			{/** ------------- ADDED: Our child with props ------------- */}
+			<AnimationPODWalkThroughWrapper>
+				<AnimationPODWalkThrough
+					userAddedText={elements.some(
+						(el) =>
+							el.type === "text" &&
+							el.text.trim() !== "" &&
+							el.text !== "Start typing here..."
+					)}
+					userAddedImage={!!elements.find((el) => el.type === "image")}
+					userAddedToCart={didUserAddToCart}
+					// Key events
+					isSomethingSelected={!!selectedElementId}
+					userJustDoubleClickedCanvas={userJustDoubleClickedCanvas}
+					userJustSingleClickedText={userJustSingleClickedText}
+					// If there are multiple color/size options
+					hasMultipleSizeOrColor={hasMultipleSizeOrColor}
+					// Called by “Add to Cart” final button
+					onUserAddToCart={handleAddToCart}
+					// Called by “upload photo” step
+					onUserUploadPhoto={() => {
+						console.log(
+							"PARENT: onUserUploadPhoto function triggered => clicking hidden input"
+						);
+						hiddenGalleryInputRef.current?.click();
+					}}
+					// For step 3 (if multiple color/size)
+					onHandleColorChange={handleColorChange}
+					onHandleSizeChange={handleSizeChange}
+					// For the bubble’s color/size <Select>:
+					colorOptions={
+						product.options
+							.find((opt) => opt.name.toLowerCase() === "colors")
+							?.values.map((v) => v.title) || []
+					}
+					sizeOptions={
+						product.options
+							.find((opt) => opt.name.toLowerCase() === "sizes")
+							?.values.map((v) => v.title) || []
+					}
+					selectedColor={selectedColor}
+					selectedSize={selectedSize}
+				/>
+			</AnimationPODWalkThroughWrapper>
+
+			{/** -------------------------------------------------------- */}
 
 			<Row gutter={[18, 20]}>
 				{/* LEFT COLUMN: SLIDER/IMAGES */}
@@ -2036,7 +2153,7 @@ export default function CustomizeSelectedProduct() {
 														style={{ width: "100%" }}
 														placeholder='Size'
 														value={selectedSize}
-														onChange={setSelectedSize}
+														onChange={handleSizeChange}
 													>
 														{product.options
 															.find((opt) => opt.name.toLowerCase() === "sizes")
@@ -2156,7 +2273,11 @@ export default function CustomizeSelectedProduct() {
 											alt={`${product.title}-front`}
 											crossOrigin='anonymous'
 										/>
-										<PrintArea id='print-area' ref={printAreaRef}>
+										<PrintArea
+											id='print-area'
+											ref={printAreaRef}
+											onDoubleClick={handleBlankAreaDoubleClick}
+										>
 											{showCenterLine && <CenterIndicator />}
 											<DottedOverlay className='noScreenshot' />
 											{renderDesignElements()}
@@ -2248,7 +2369,7 @@ export default function CustomizeSelectedProduct() {
 										className='selectDesktopOrMobile'
 										placeholder='Size'
 										value={selectedSize}
-										onChange={setSelectedSize}
+										onChange={handleSizeChange}
 									>
 										{product.options
 											.find((opt) => opt.name.toLowerCase() === "sizes")
@@ -2290,7 +2411,7 @@ export default function CustomizeSelectedProduct() {
 									<Button
 										type='primary'
 										block
-										onClick={() => addTextElement()}
+										onClick={() => addTextElement(null, true)}
 										style={{ fontWeight: "bold" }}
 									>
 										Add Text
@@ -2371,7 +2492,7 @@ export default function CustomizeSelectedProduct() {
 										style={{ width: "100%" }}
 										placeholder='Size'
 										value={selectedSize}
-										onChange={setSelectedSize}
+										onChange={handleSizeChange}
 									>
 										{product.options
 											.find((opt) => opt.name.toLowerCase() === "sizes")
@@ -2411,7 +2532,7 @@ export default function CustomizeSelectedProduct() {
 							<Button
 								type='primary'
 								block
-								onClick={() => addTextElement()}
+								onClick={() => addTextElement(null, true)}
 								style={{ fontWeight: "bold" }}
 							>
 								Add Text
@@ -2446,7 +2567,7 @@ export default function CustomizeSelectedProduct() {
 				open={textModalVisible}
 				onCancel={() => setTextModalVisible(false)}
 				onOk={() => {
-					addTextElement(mobileTextInput);
+					addTextElement(mobileTextInput, true);
 					setTextModalVisible(false);
 				}}
 			>
@@ -3112,7 +3233,9 @@ const MobileBottomPanel = styled.div`
 	margin-top: 2rem;
 `;
 
-const TextElement = styled.div``;
+const TextElement = styled.div`
+	z-index: 2 !important;
+`;
 const ImageElement = styled.img``;
 
 const TextToolbarContainer = styled.div`
@@ -3382,4 +3505,27 @@ const UploadOverlay = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
+`;
+
+const AnimationPODWalkThroughWrapper = styled.div`
+	position: absolute;
+	top: 50%;
+	left: -80px;
+	z-index: 1; /* ensure it's on top */
+
+	@media (max-width: 700px) {
+		left: -220px;
+		top: 40%;
+
+		.addCartWrapper {
+			bottom: 20px !important;
+		}
+
+		button {
+			position: absolute;
+			left: 180px;
+			top: -90px;
+			width: 200px !important;
+		}
+	}
 `;
