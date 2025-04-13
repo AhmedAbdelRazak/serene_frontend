@@ -3519,13 +3519,12 @@ const AnimationPODWalkThroughWrapper = styled.div`
 
 		.addCartWrapper {
 			bottom: 20px !important;
-		}
-
-		button {
-			position: absolute;
-			left: 180px;
-			top: -90px;
-			width: 200px !important;
+			button {
+				position: absolute;
+				left: 180px;
+				top: -90px;
+				width: 200px !important;
+			}
 		}
 	}
 `;

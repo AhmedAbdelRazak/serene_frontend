@@ -11,7 +11,8 @@ import { motion, AnimatePresence } from "framer-motion";
  *   onBubbleButtonClick(label) => function
  *   shouldFadeOut => bool
  *
- *   bubbleTextStyle => optional style object for fade-out or transitions
+ *   // NEW:
+ *   bubbleTextStyle => optional style object (for fade-out or other transitions)
  */
 
 export default function SVGChildPODWalkThrough({
@@ -22,9 +23,9 @@ export default function SVGChildPODWalkThrough({
 	isMobile,
 	onBubbleButtonClick,
 	shouldFadeOut,
-	bubbleTextStyle = {},
+	bubbleTextStyle = {}, // <-- ADDED
 }) {
-	// Mouth “talk” animation
+	// mouth “talk” animation
 	const [talkFrame, setTalkFrame] = useState(0);
 	useEffect(() => {
 		if (bubbleText || (bubbleButtons && bubbleButtons.length) || bubbleUI) {
@@ -36,7 +37,7 @@ export default function SVGChildPODWalkThrough({
 		}
 	}, [bubbleText, bubbleButtons, bubbleUI]);
 
-	// Eyes blink
+	// eyes blink
 	const [blinkFrame, setBlinkFrame] = useState(0);
 	useEffect(() => {
 		const blinkTimer = setInterval(() => {
@@ -46,7 +47,7 @@ export default function SVGChildPODWalkThrough({
 		return () => clearInterval(blinkTimer);
 	}, []);
 
-	// Character arm/leg frames
+	// character arm/leg frames
 	const framesData = [
 		{ backArm: -10, frontArm: 10, backLeg: 20, frontLeg: -20, offsetX: 0 },
 		{ backArm: 10, frontArm: -10, backLeg: -5, frontLeg: 5, offsetX: 5 },
@@ -54,11 +55,11 @@ export default function SVGChildPODWalkThrough({
 		{ backArm: 10, frontArm: -10, backLeg: -5, frontLeg: 5, offsetX: 15 },
 		// 4 => stand => arms by side
 		{ backArm: -140, frontArm: 0, backLeg: 0, frontLeg: 0, offsetX: 20 },
-		// 5 => point => left arm up
+		// 5 => point => left arm ~ -40
 		{ backArm: -40, frontArm: 0, backLeg: 0, frontLeg: 0, offsetX: 20 },
 	];
 
-	// Simpler walking for mobile
+	// Slightly simpler walking for mobile
 	if (isMobile) {
 		framesData[2] = framesData[1];
 		framesData[3] = framesData[1];
@@ -66,7 +67,6 @@ export default function SVGChildPODWalkThrough({
 	const pose = framesData[frameIndex] || framesData[4];
 	const { backArm, frontArm, backLeg, frontLeg, offsetX } = pose;
 
-	// Render eyes
 	function renderEyes() {
 		if (blinkFrame === 1) {
 			return (
@@ -84,11 +84,12 @@ export default function SVGChildPODWalkThrough({
 		);
 	}
 
-	// Render mouth (talking or closed)
 	function renderMouth() {
 		if (talkFrame === 1) {
+			// “talking” shape
 			return <path d='M65 61 Q70 64 75 61 Q70 67 65 61' fill='#000' />;
 		}
+		// normal closed mouth
 		return (
 			<path
 				d='M65 61 Q70 65 75 61'
@@ -99,7 +100,7 @@ export default function SVGChildPODWalkThrough({
 		);
 	}
 
-	// Speech bubble
+	// speech bubble bounding box
 	const bubbleRef = useRef(null);
 	const [bubbleBBox, setBubbleBBox] = useState({ width: 0, height: 0 });
 
@@ -108,14 +109,13 @@ export default function SVGChildPODWalkThrough({
 			const box = bubbleRef.current.getBBox();
 			setBubbleBBox({ width: box.width, height: box.height });
 		}
-	}, [bubbleText, bubbleButtons, bubbleUI, bubbleTextStyle]);
+	}, [bubbleText, bubbleButtons, bubbleUI, bubbleTextStyle]); // <-- watch textStyle too
 
 	function getBubblePath(w, h) {
 		const pad = 10;
 		const tail = 12;
 		const totalW = w + pad * 2;
 		const totalH = h + pad * 2;
-		// Simple pointer on the left
 		return `
       M0,${totalH / 2}
       L${tail},0
@@ -136,7 +136,7 @@ export default function SVGChildPODWalkThrough({
 	function renderBubble() {
 		if (!hasBubble) return null;
 		return (
-			<g transform='translate(200,85)'>
+			<g transform='translate(180,80)'>
 				{/* Outer bubble shape */}
 				<motion.path
 					fill='#fff'
@@ -149,7 +149,7 @@ export default function SVGChildPODWalkThrough({
 
 				{/* The text/UI inside */}
 				<g ref={bubbleRef} transform='translate(15,15)'>
-					{/* Bubble text */}
+					{/* Render bubble text */}
 					{bubbleText && (
 						<text
 							x='0'
@@ -157,39 +157,33 @@ export default function SVGChildPODWalkThrough({
 							fontSize='14'
 							fill='#000'
 							dy='1em'
-							style={bubbleTextStyle}
+							style={bubbleTextStyle} // <-- Use the style from the parent
 						>
 							{bubbleText}
 						</text>
 					)}
 
-					{/* Bubble UI if present */}
+					{/* Render bubble UI if present */}
 					{bubbleUI && (
 						<foreignObject
 							x='0'
 							y={bubbleText ? 40 : 0}
 							width='220'
 							height='140'
-							style={{
-								overflow: "visible",
-								pointerEvents: "all", // <-- Ensure clicks on desktop
-							}}
+							style={{ overflow: "visible" }}
 						>
 							<div xmlns='http://www.w3.org/1999/xhtml'>{bubbleUI}</div>
 						</foreignObject>
 					)}
 
-					{/* Bubble buttons if present */}
+					{/* Render bubble buttons if present */}
 					{bubbleButtons && bubbleButtons.length > 0 && (
 						<foreignObject
 							x='0'
 							y={bubbleText || bubbleUI ? 30 : 0}
 							width='220'
 							height='60'
-							style={{
-								overflow: "visible",
-								pointerEvents: "all", // <-- Also allow pointer events
-							}}
+							style={{ overflow: "visible" }}
 						>
 							<div
 								style={{
@@ -227,7 +221,7 @@ export default function SVGChildPODWalkThrough({
 
 	return (
 		<AnimatePresence>
-			{/* If shouldFadeOut is true => fade out the entire SVG */}
+			{/* If shouldFadeOut is true, we fade out the entire SVG */}
 			{!shouldFadeOut && (
 				<motion.svg
 					key='character'
@@ -293,7 +287,7 @@ export default function SVGChildPODWalkThrough({
                 '
 								fill='#4B8BBE'
 							/>
-							{/* Torso details */}
+							{/* Some extra details on torso */}
 							<circle cx='70' cy='82' r='1.5' fill='#fff' />
 							<circle cx='70' cy='90' r='1.5' fill='#fff' />
 							<circle cx='70' cy='98' r='1.5' fill='#fff' />
@@ -336,6 +330,7 @@ export default function SVGChildPODWalkThrough({
 							{/* HEAD */}
 							<g style={{ transformOrigin: "70px 55px", transition: "0.25s" }}>
 								<ellipse cx='70' cy='55' rx='10' ry='12' fill='#f1c27d' />
+
 								{/* Hair */}
 								<path
 									d={`
@@ -349,8 +344,10 @@ export default function SVGChildPODWalkThrough({
                   `}
 									fill='#3c2e2d'
 								/>
+
 								{/* Eyes */}
 								{renderEyes()}
+
 								{/* Nose */}
 								<path
 									d='M69 57 L71 57 L70 59'
@@ -358,6 +355,7 @@ export default function SVGChildPODWalkThrough({
 									stroke='#333'
 									strokeWidth='0.5'
 								/>
+
 								{/* Mouth */}
 								{renderMouth()}
 							</g>
