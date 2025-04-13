@@ -57,7 +57,7 @@ const Z3StepTwo = ({
 			}
 		}
 		// For Printify items, add $4 for each
-		finalPrice += printifyCount * 4;
+		finalPrice += printifyCount * 6;
 
 		// If there are multiple store IDs, add a 75% surcharge
 		if (hasMultipleStores) {
