@@ -7,6 +7,8 @@ import { getColors } from "../apiCore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
+
 import { Modal } from "antd";
 
 /* Keyframe animations */
@@ -372,6 +374,18 @@ const SidebarCart = ({ from }) => {
 										ReactGA.event({
 											category: "Continue To Checkout",
 											action: "User Clicked Continue To Checkout From Cart",
+										});
+
+										ReactPixel.track("InitiateCheckout", {
+											content_ids: cart.map((item) => item.id),
+											contents: cart.map((item) => ({
+												id: item.id,
+												quantity: item.amount,
+												item_price: item.priceAfterDiscount, // optional, if you want the per-item price
+											})),
+											value: Number(total_amount).toFixed(2), // total cart value
+											currency: "USD",
+											content_type: "product",
 										});
 									} else {
 										// find out-of-stock items

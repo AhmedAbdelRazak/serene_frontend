@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Modal, Button } from "antd";
 import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
 import AnimationWalkingGreeting from "./pages/MyAnimationComponents/AnimationWalkingGreeting";
 
 export default function ModalApp({ shouldHideLayout, location }) {
@@ -31,6 +32,13 @@ export default function ModalApp({ shouldHideLayout, location }) {
 			category: "Custom Gift Modal",
 			action: "User clicked YES - show me /custom-gifts",
 		});
+		ReactPixel.track("Lead", {
+			content_name: "Custom Gift Modal",
+			click_type: "Yes",
+			// You can add more parameters if you want
+			// e.g. currency: "USD", value: 0
+		});
+
 		setAction("YES");
 	};
 
@@ -42,6 +50,12 @@ export default function ModalApp({ shouldHideLayout, location }) {
 			category: "Custom Gift Modal",
 			action: "User clicked NO - not interested",
 		});
+
+		ReactPixel.trackCustom("CustomGiftModalDismissedNo", {
+			content_name: "Custom Gift Modal",
+			click_type: "No",
+		});
+
 		setAction("NO");
 	};
 
