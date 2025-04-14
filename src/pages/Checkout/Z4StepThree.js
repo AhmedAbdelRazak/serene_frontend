@@ -6,6 +6,8 @@ import { Modal, Spin, Checkbox } from "antd";
 import { toast } from "react-toastify";
 import SquarePaymentForm from "./SquarePaymentForm";
 import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
+
 import {
 	signup,
 	signin,
@@ -301,6 +303,17 @@ const Z4StepThree = ({
 					category: "User Successfully Paid",
 					action: "User Successfully Paid",
 				});
+
+				ReactPixel.track("Purchase", {
+					currency: "USD",
+					value: Number(totalAmountAdjusted), // e.g. 59.99
+					contents: cart.map((item) => ({
+						id: item._id,
+						quantity: item.amount,
+					})),
+					content_type: "product",
+				});
+
 				toast.success("Order successfully created.");
 
 				if (window.gtag) {

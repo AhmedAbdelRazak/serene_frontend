@@ -44,6 +44,7 @@ import { Helmet } from "react-helmet";
 
 // GA 4
 import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
 
 // heic2any for .heic → jpeg
 import heic2any from "heic2any";
@@ -534,6 +535,11 @@ export default function CustomizeSelectedProduct() {
 						category: "User Uploaded Image In Custom Design",
 						action: "User Uploaded Image In Custom Design",
 						label: "User Uploaded Image In Custom Design",
+					});
+
+					ReactPixel.track("User Uploaded Image In Custom Design", {
+						action: "User Uploaded Image In Custom Design",
+						page: "Print On Demand Single Product",
 					});
 				}
 			} catch {}
@@ -1854,6 +1860,20 @@ export default function CustomizeSelectedProduct() {
 						action: "User Added Product From The Custom Products",
 						label: `User added ${product.productName} to the cart`,
 					});
+
+					ReactPixel.track("AddToCart", {
+						content_name: product.title || product.productName,
+						content_ids: [product._id],
+						content_type: "product",
+						currency: "USD",
+						value: getVariantPrice(), // or product.price / product.priceAfterDiscount
+						contents: [
+							{
+								id: product._id,
+								quantity: 1,
+							},
+						],
+					});
 				}
 			} catch {}
 
@@ -2204,6 +2224,14 @@ export default function CustomizeSelectedProduct() {
 																	action: "User Added Text In Custom Design",
 																	label: "User Added Text In Custom Design",
 																});
+
+																ReactPixel.track(
+																	"User Added Text In Custom Design",
+																	{
+																		action: "User Added Text In Custom Design",
+																		page: "Print On Demand Single Product",
+																	}
+																);
 															}
 														} catch {}
 													}}
@@ -2245,6 +2273,15 @@ export default function CustomizeSelectedProduct() {
 																		"User Uploaded Image In Custom Design",
 																	label: "User Uploaded Image In Custom Design",
 																});
+
+																ReactPixel.track(
+																	"User Uploaded Image In Custom Design",
+																	{
+																		action:
+																			"User Uploaded Image In Custom Design",
+																		page: "Print On Demand Single Product",
+																	}
+																);
 															}
 														} catch {}
 														hiddenGalleryInputRef.current.click();

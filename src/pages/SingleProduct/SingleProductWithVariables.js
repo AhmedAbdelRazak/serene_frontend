@@ -8,6 +8,8 @@ import { getColors, like, unlike, userlike, userunlike } from "../../apiCore";
 import ColorsAndSizes from "./ColorsAndSizes";
 import DisplayImages from "./DisplayImages";
 import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
+
 import {
 	HeartOutlined,
 	ShoppingCartOutlined,
@@ -465,6 +467,23 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 								ReactGA.event({
 									category: "SingleProduct Add To Cart",
 									action: "User Added To The Cart From Single Product",
+								});
+
+								ReactPixel.track("AddToCart", {
+									// Standard Meta parameters:
+									content_name: product.productName,
+									content_ids: [product._id],
+									content_type: "product",
+									currency: "USD",
+									value: product.priceAfterDiscount || product.price, // the price you'd like to track
+
+									// Optionally, you could pass `contents`:
+									contents: [
+										{
+											id: product._id,
+											quantity: 1,
+										},
+									],
 								});
 							}}
 							color='var(--primary-color-darker)'

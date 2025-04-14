@@ -11,6 +11,7 @@ import { isAuthenticated } from "../../auth";
 import { Modal, message } from "antd";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
+import ReactPixel from "react-facebook-pixel";
 
 const Cart = () => {
 	const [step, setStep] = useState(1);
@@ -138,6 +139,11 @@ const Cart = () => {
 			ReactGA.event({
 				category: "Checkout Page Customer Added Info",
 				action: "Checkout Page Customer Added Info",
+			});
+
+			ReactPixel.track("Checkout Page Customer Added Info", {
+				action: "Checkout Page Customer Added Info",
+				page: "Cart Page",
 			});
 		}
 

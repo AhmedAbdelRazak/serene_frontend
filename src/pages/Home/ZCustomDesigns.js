@@ -5,6 +5,7 @@ import { Card } from "antd";
 import { useHistory } from "react-router-dom";
 import ReactGA from "react-ga4";
 import { gettingSpecificProducts } from "../../apiCore";
+import ReactPixel from "react-facebook-pixel";
 
 const { Meta } = Card;
 
@@ -145,6 +146,12 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 					action: "Custom Design Clicked",
 					label: `User Custom Design ${product.productName} single page`,
 				});
+
+				ReactPixel.track("Custom Product Clicked", {
+					action: `User Navigated to ${product.productName} single page`,
+					page: "Home Page",
+				});
+
 				history.push(`/custom-gifts/${product._id}`);
 				return;
 			}

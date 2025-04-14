@@ -21,6 +21,8 @@ import {
 import { gettingFilteredProducts, getColors, readProduct } from "../../apiCore";
 import { useCartContext } from "../../cart_context";
 import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
+
 import ShopPageHelmet from "./ShopPageHelmet";
 
 const { Meta } = Card;
@@ -666,6 +668,24 @@ function ShopPageMain() {
 																		"User added product from Products Page",
 																	label: `User added ${prod?.productName || "unknown"}`,
 																});
+
+																ReactPixel.track("AddToCart", {
+																	// Standard Meta parameters:
+																	content_name: prod.productName,
+																	content_ids: [prod._id],
+																	content_type: "product",
+																	currency: "USD",
+																	value: prod.priceAfterDiscount || prod.price, // the price you'd like to track
+
+																	// Optionally, you could pass `contents`:
+																	contents: [
+																		{
+																			id: prod._id,
+																			quantity: 1,
+																		},
+																	],
+																});
+
 																readProduct(prod?._id).then((res) => {
 																	if (res?.error) {
 																		console.log(res.error);
@@ -701,6 +721,15 @@ function ShopPageMain() {
 																		"User Navigated To Single Product From Products Page",
 																	label: `User viewed ${prod?.productName || "unknown"}`,
 																});
+
+																ReactPixel.track(
+																	"Single Product Clicked From Shop Page",
+																	{
+																		action: `User viewed ${prod?.productName || "unknown"}`,
+																		page: "Shop Page",
+																	}
+																);
+
 																window.scrollTo({ top: 0, behavior: "smooth" });
 																history.push(getProductLink(prod));
 															}}

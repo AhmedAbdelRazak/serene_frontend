@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { Card } from "antd";
 import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
 
 /**
  * Helper to insert Cloudinary transformations:
@@ -58,6 +59,11 @@ const ZCategories = ({ allCategories }) => {
 			action: "User Clicked On Category In Home Page",
 			label: `User Clicked on ${categoryName} In The Home Page`,
 		});
+		ReactPixel.track("Category Clicked Home Page", {
+			action: `User Clicked on ${categoryName} In The Home Page`,
+			page: "Home Page",
+		});
+
 		window.scrollTo({ top: 0, behavior: "smooth" });
 	}, []);
 

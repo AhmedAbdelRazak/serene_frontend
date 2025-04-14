@@ -4,6 +4,7 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 import Slider from "react-slick";
 import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
 
 // 1) Import your components:
 import PrintifyPageHelmet from "./PrintifyPageHelmet";
@@ -78,6 +79,12 @@ const PrintifyAvailableProducts = () => {
 			action: "User Clicked On Product From Custom Design Products",
 			label: `User Clicked On Product From Custom Design Products`,
 		});
+
+		ReactPixel.track("User Clicked On Product From Custom Design Products", {
+			action: "User Clicked On Product From Custom Design Products",
+			page: "Custom Design (Print On Demand)",
+		});
+
 		const printifyId = product._id;
 		history.push(`/custom-gifts/${printifyId}`);
 	};

@@ -7,6 +7,7 @@ import { useCartContext } from "../../cart_context";
 import { readProduct, gettingSpecificProducts } from "../../apiCore";
 import { useHistory } from "react-router-dom";
 import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
 
 const { Meta } = Card;
 
@@ -163,6 +164,11 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 				label: `User added ${product.productName} to the cart from New Arrivals`,
 			});
 
+			ReactPixel.track("Add To The Cart New Arrivals", {
+				action: `User added ${product.productName} to the cart from New Arrivals`,
+				page: "Home Page",
+			});
+
 			try {
 				const data3 = await readProduct(product._id);
 				if (data3 && !data3.error) {
@@ -187,6 +193,24 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 				action: "New Arrival Product Clicked",
 				label: `User Navigated to ${product.productName} single page`,
 			});
+
+			ReactPixel.track("AddToCart", {
+				// Standard Meta parameters:
+				content_name: product.productName,
+				content_ids: [product._id],
+				content_type: "product",
+				currency: "USD",
+				value: product.priceAfterDiscount || product.price, // the price you'd like to track
+
+				// Optionally, you could pass `contents`:
+				contents: [
+					{
+						id: product._id,
+						quantity: 1,
+					},
+				],
+			});
+
 			window.scrollTo({ top: 0, behavior: "smooth" });
 			history.push(
 				`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`

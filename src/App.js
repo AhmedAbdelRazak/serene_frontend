@@ -11,7 +11,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "react-quill/dist/quill.snow.css";
 import ReactGA from "react-ga4";
-// import ReactPixel from "react-facebook-pixel";
+import ReactPixel from "react-facebook-pixel";
 
 import NavbarTop from "./NavbarUpdate/NavbarTop";
 import NavbarBottom from "./NavbarUpdate/NavbarBottom";
@@ -150,25 +150,31 @@ const AppContent = () => {
 	}, [location]);
 
 	// Facebook Pixel Setup
-	// const options = {
-	//   autoConfig: true,
-	//   debug: false,
-	// };
+	const PixelRouteTracker = () => {
+		const location = useLocation();
 
-	// useEffect(() => {
-	//   ReactPixel.init(process.env.REACT_APP_FACEBOOK_PIXEL_ID, options);
-	//   ReactPixel.pageView();
-	//   // eslint-disable-next-line
-	// }, []);
+		useEffect(() => {
+			// Trigger PageView event on route change
+			ReactPixel.pageView(); // Logs the page view
+			ReactPixel.track("PageView", { path: location.pathname }); // Optionally add path as a parameter
+		}, [location]);
 
-	//1- Design an Animated nice character
-	//2- Ensure to add all animation positions
-	//3- integrate with your components accordingly
+		return null;
+	};
+
+	useEffect(() => {
+		// Initialize Facebook Pixel with ID from .env
+		ReactPixel.init(process.env.REACT_APP_FACEBOOK_PIXEL_ID);
+
+		// Trigger the initial page view when the app loads
+		ReactPixel.pageView();
+	}, []);
 
 	return (
 		<>
 			<ToastContainer className='toast-top-center' position='top-center' />
 			<Suspense fallback={<div>Loading...</div>}>
+				<PixelRouteTracker />
 				{/* Only show Navbars if NOT admin/seller */}
 				{!shouldHideLayout && (
 					<>
