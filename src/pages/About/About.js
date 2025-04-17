@@ -88,6 +88,22 @@ const About = () => {
 						<meta property='og:locale' content='en_US' />
 						<link rel='icon' href='gq_frontend/src/GeneralImgs/favicon.ico' />
 						<link rel='canonical' href='https://serenejannat.com/about' />
+
+						<script
+							type='application/ld+json'
+							dangerouslySetInnerHTML={{
+								__html: JSON.stringify({
+									"@context": "https://schema.org",
+									"@type": "Organization",
+									url: "https://serenejannat.com",
+									name: "Serene Jannat",
+									logo: "https://serenejannat.com/logo192.png",
+									sameAs: [
+										"https://www.facebook.com/profile.php?id=61575325586166",
+									],
+								}),
+							}}
+						/>
 					</Helmet>
 
 					<div className='my-4'>

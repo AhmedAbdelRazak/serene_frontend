@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 import Slider from "react-slick";
 import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
-
 // 1) Import your components:
 import PrintifyPageHelmet from "./PrintifyPageHelmet";
 import AnimationProductPresentation from "../MyAnimationComponents/AnimationProductPresentation";

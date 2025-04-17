@@ -341,6 +341,22 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 					)}
 				</title>
 				<meta name='description' content={plainDescription} />
+
+				<script
+					type='application/ld+json'
+					dangerouslySetInnerHTML={{
+						__html: JSON.stringify({
+							"@context": "https://schema.org",
+							"@type": "Organization",
+							url: "https://serenejannat.com",
+							name: "Serene Jannat",
+							logo: "https://serenejannat.com/logo192.png",
+							sameAs: [
+								"https://www.facebook.com/profile.php?id=61575325586166",
+							],
+						}),
+					}}
+				/>
 			</Helmet>
 
 			<SigninModal

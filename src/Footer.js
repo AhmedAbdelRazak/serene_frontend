@@ -31,7 +31,7 @@ const Footer = () => {
 
 				<SocialIcons>
 					<Icon
-						href='https://facebook.com'
+						href='https://www.facebook.com/profile.php?id=61575325586166'
 						target='_blank'
 						aria-label='Facebook'
 					>
@@ -41,7 +41,7 @@ const Footer = () => {
 						<FaTwitter />
 					</Icon>
 					<Icon
-						href='https://instagram.com'
+						href='https://www.facebook.com/profile.php?id=61575325586166'
 						target='_blank'
 						aria-label='Instagram'
 					>
