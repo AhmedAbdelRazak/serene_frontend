@@ -19,8 +19,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[blue, turquoise, white, gold]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -50,8 +50,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[gray, white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -81,8 +81,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[blue, green, yellow, brown, gold]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -111,8 +111,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Pot &amp; Planter Liners</g:google_product_category>
               <g:product_type><![CDATA[planters]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[blue, green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -142,8 +142,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
               <g:product_type><![CDATA[outdoors]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[blue, light blue, white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -173,8 +173,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[amber, white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -204,8 +204,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Home Fragrances &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[votives]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -234,8 +234,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[black, silver]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -265,8 +265,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[gray]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -296,8 +296,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[caramel]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -326,8 +326,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[mint, amber]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -357,8 +357,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[gray, amber]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -388,8 +388,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[amber, white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -418,8 +418,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[light blue, white, gold]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -449,8 +449,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[gray]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -480,8 +480,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Home Fragrances &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[votives]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[gold]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -511,8 +511,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white, gray]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -541,8 +541,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[taupe, brown]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -572,8 +572,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
               <g:product_type><![CDATA[vases]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[aqua, white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -603,8 +603,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Pot &amp; Planter Liners</g:google_product_category>
               <g:product_type><![CDATA[planters]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[blue, orange, gold]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -634,8 +634,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[brown, blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -665,8 +665,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[blue, green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -696,8 +696,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[brown]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -727,8 +727,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[brown]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -758,8 +758,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[brown, blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -789,8 +789,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -819,8 +819,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
               <g:product_type><![CDATA[outdoors]]></g:product_type>
-              <g:size>small</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[small]]></g:size>
+              <g:color><![CDATA[green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -850,8 +850,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[orange]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -881,8 +881,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
               <g:product_type><![CDATA[outdoors]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[multicolor]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -912,8 +912,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>medium</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[medium]]></g:size>
+              <g:color><![CDATA[brown, blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -943,8 +943,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>large</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[large]]></g:size>
+              <g:color><![CDATA[brown, blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -973,8 +973,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
               <g:product_type><![CDATA[outdoors]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[light green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1003,8 +1003,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1034,8 +1034,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1064,8 +1064,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1094,8 +1094,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Home Fragrances &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[votives]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1125,8 +1125,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
               <g:product_type><![CDATA[outdoors]]></g:product_type>
-              <g:size>large</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[large]]></g:size>
+              <g:color><![CDATA[blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1156,8 +1156,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>small</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[small]]></g:size>
+              <g:color><![CDATA[orange]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1187,8 +1187,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>small</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[small]]></g:size>
+              <g:color><![CDATA[brown]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1218,8 +1218,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>small</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[small]]></g:size>
+              <g:color><![CDATA[emerald green, gold]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1249,8 +1249,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[amber, blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1280,8 +1280,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[brown]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1311,8 +1311,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[light blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1342,8 +1342,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[black]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1373,8 +1373,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
               <g:product_type><![CDATA[outdoors]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1404,8 +1404,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[transparent]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1434,8 +1434,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>small</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[small]]></g:size>
+              <g:color><![CDATA[caramel]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1464,8 +1464,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>medium</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[medium]]></g:size>
+              <g:color><![CDATA[caramel]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1494,8 +1494,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>large</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[large]]></g:size>
+              <g:color><![CDATA[caramel]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1525,8 +1525,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[purple]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1555,8 +1555,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
               <g:product_type><![CDATA[outdoors]]></g:product_type>
-              <g:size>small</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[small]]></g:size>
+              <g:color><![CDATA[blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1585,8 +1585,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
               <g:product_type><![CDATA[outdoors]]></g:product_type>
-              <g:size>small</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[small]]></g:size>
+              <g:color><![CDATA[royal blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1616,8 +1616,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[caramel]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1647,8 +1647,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[amber, white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1678,8 +1678,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
               <g:product_type><![CDATA[outdoors]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[red]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1709,8 +1709,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Lawn &amp; Garden &gt; Gardening &gt; Gardening Accessories</g:google_product_category>
               <g:product_type><![CDATA[outdoors]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[aqua]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1740,8 +1740,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>large</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[large]]></g:size>
+              <g:color><![CDATA[royal blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1771,8 +1771,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>small</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[small]]></g:size>
+              <g:color><![CDATA[royal blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1801,8 +1801,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[gray, white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1832,8 +1832,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[gray, white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1863,8 +1863,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>large</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[large]]></g:size>
+              <g:color><![CDATA[emerald green, gold]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1894,8 +1894,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[bronze]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1925,8 +1925,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[silver]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1955,8 +1955,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[silver]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -1986,8 +1986,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>small</g:size>
-              <g:color>Unspecified</g:color>
+              <g:size><![CDATA[small]]></g:size>
+              <g:color><![CDATA[multicolor]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2017,8 +2017,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[caramel]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2048,8 +2048,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[brown]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2079,8 +2079,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[multicolor]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2110,8 +2110,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[purple]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2141,8 +2141,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
               <g:product_type><![CDATA[vases]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[amber]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2170,8 +2170,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[candles]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2199,8 +2199,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[candles]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2228,8 +2228,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[candles]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2257,8 +2257,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[candles]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2286,8 +2286,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[candles]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2315,8 +2315,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[candles]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2344,8 +2344,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[candles]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2373,8 +2373,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[candles]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2402,8 +2402,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[candles]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2431,8 +2431,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[candles]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2460,8 +2460,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Candles</g:google_product_category>
               <g:product_type><![CDATA[candles]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -2476,390 +2476,6 @@
               <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
             </item>
           
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-0</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (2XL, royal blue)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/ptrd5szhw7mdevtlqzr5.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/n8op2otigjrbhrsunkf9.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/otmw1rbvay06qbxbb3kq.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>14.75 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>2XL</g:size>
-                <g:color>royal blue</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-1</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (2XL, black)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/oqfei1kpe4uk091jynab.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/csxxgnstzmmdyri0p0qh.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/ddnnpwqcr6yrwajoqcbu.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>14.75 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>2XL</g:size>
-                <g:color>black</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-2</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (3XL, black)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/y8tbcnifp72zlnznrzwt.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/i2apggefcqpf52ms84yr.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/rkcoyplibewkxtcmtxtq.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>15.84 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>3XL</g:size>
-                <g:color>black</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-3</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (3XL, royal blue)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/uijt3c2jjl422o0y4uro.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/mq93euckuxcxa0c3qjds.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/o3bexvbxhcymt0wwvafq.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>15.84 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>3XL</g:size>
-                <g:color>royal blue</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-4</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (S, royal blue)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/i7ymy0ayomnnzbxg660r.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/o3iixooyfuoq2pfbmrwc.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/deporkfuliliinm4kxpq.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>13.08 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>S</g:size>
-                <g:color>royal blue</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-5</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (S, black)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/o5p7bbnepstoegwbvgqg.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/b7poilparlscenwhdpft.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/dpp7mm2l8pfgaieidj8a.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>13.08 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>S</g:size>
-                <g:color>black</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-6</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (M, black)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/t6mdozvrh81a01nx698u.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/xrnlyxdamx5eliiwiv37.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/meed3n6ugxdnnjehsamf.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>13.08 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>M</g:size>
-                <g:color>black</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-7</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (M, royal blue)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/fjl1kogmxscz38akgsb6.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/ormooznh8xnssijdn39y.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/dsdvckxwa3l8e7obwlkn.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>13.08 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>M</g:size>
-                <g:color>royal blue</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-8</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (L, royal blue)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/qnxaintoj3iyusnvuqnb.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/nogsjqbnktrawwhfnbvq.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/bcfeou8oackfweqwfg94.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>13.08 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>L</g:size>
-                <g:color>royal blue</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-9</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (L, black)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/hxf8kobspkewkhnlepe4.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/rns8hotk1rulpxffgyex.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/vszvmgezaamykkq00afc.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>13.08 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>L</g:size>
-                <g:color>black</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-10</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (XL, black)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/cgj1fncpssni03v6jbxl.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/lgxhzr0dy672f0feebig.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200408/serene_janat/products/avz7f4z9gs7fht7jup11.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>13.08 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>XL</g:size>
-                <g:color>black</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
-
-              <item>
-                <g:id>6791c6b527660d1af18c144d-11</g:id>
-                <g:title><![CDATA[Unisex Heavy Cotton Tee (XL, royal blue)]]></g:title>
-                <g:description><![CDATA[The unisex heavy cotton tee is the basic staple of any wardrobe. It is the foundation upon which casual fashion grows. All it needs is a personalized design to elevate things to profitability. The specially spun fibers provide a smooth surface for premium printing vividity and sharpness. No side seams mean there are no itchy interruptions under the arms. The shoulders have tape for improved durability..: Made with medium fabric (5.3 oz/yd² (180 g/m²)) consisting of 100% cotton for year-round comfort that is sustainable and highly durable. .: The classic fit of this shirt ensures a comfy, relaxed wear while the crew neckline adds that neat, timeless look that can blend into any occasion, casual or semi-formal..: The tear-away label means a scratch-free experience with no irritation or discomfort whatsoever..: Made using 100% US cotton that is ethically grown and harvested. Gildan is also a proud member of the US Cotton Trust Protocol ensuring ethical and sustainable means of production. This blank tee is certified by Oeko-Tex for safety and quality assurance.]]></g:description>
-                <g:link>https://serenejannat.com/single-product/unisex-heavy-cotton-tee-12316549060954099402/t-shirts/6791c6b527660d1af18c144d</g:link>
-                <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/d2qpbv7bsapijmrbvimr.jpg</g:image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/vp7bwn5xiays2ptg4itc.jpg</g:additional_image_link>
-<g:additional_image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1738200409/serene_janat/products/hmhze1tyyawwtynjlrns.jpg</g:additional_image_link>
-                <g:availability>in stock</g:availability>
-                <g:price>13.08 USD</g:price>
-                <g:brand>Serene Jannat</g:brand>
-                <g:condition>new</g:condition>
-                <g:google_product_category>Apparel &amp; Accessories &gt; Clothing &gt; Shirts &amp; Tops</g:google_product_category>
-                <g:product_type><![CDATA[t shirts]]></g:product_type>
-                <g:item_group_id>6791c6b527660d1af18c144d</g:item_group_id>
-                <g:size>XL</g:size>
-                <g:color>royal blue</g:color>
-                <g:age_group>adult</g:age_group>
-                <g:gender>unisex</g:gender>
-                <g:identifier_exists>false</g:identifier_exists>
-                <g:shipping_weight>1.00 kg</g:shipping_weight>
-                <g:shipping_length>10.00 cm</g:shipping_length>
-                <g:shipping_width>10.00 cm</g:shipping_width>
-                <g:shipping_height>10.00 cm</g:shipping_height>
-
-                <!-- Custom labels -->
-                <g:custom_label_0>t_shirts</g:custom_label_0>
-                <g:custom_label_1>general_campaign</g:custom_label_1>
-                <g:additional_link>https://serenejannat.com/return-refund-policy</g:additional_link>
-              </item>
-            
 
               <item>
                 <g:id>67b7fb903d0cd90c4fc410d6-0</g:id>
@@ -3008,7 +2624,7 @@
 
               <item>
                 <g:id>67b7fb9c3d0cd90c4fc410e3-0</g:id>
-                <g:title><![CDATA[Black Mug (11oz, 15oz) (Custom Design, Unspecified, 11oz)]]></g:title>
+                <g:title><![CDATA[Black Mug (11oz, 15oz) (Custom Design, , 11oz)]]></g:title>
                 <g:description><![CDATA[Warm your soul with a nice cuppa out of this  black ceramic mug. Customize with cool designs, photos, or logos to make that “aaahhh!” moment even better. It’s BPA and lead-free, microwave and dishwasher-safe, and made of black durable ceramic and available in 11-ounce and 15-ounce sizes. The high-quality sublimation printing makes this black ceramic mug the perfect gift for your true coffee, tea, or hot chocolate lover..: Material: 100% ceramic with a glossy finish.: Available in two sizes: 11oz (0.33 l) and 15oz (0.44 l).: C-shaped easy-grip handle.: Microwave and dishwasher safe.: Lead and BPA-free.: Blank product sourced from China]]></g:description>
                 <g:link>https://serenejannat.com/custom-gifts/67b7fb9c3d0cd90c4fc410e3?color=11oz</g:link>
                 <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1740110746/serene_janat/products/kjwzlyukfojldhrb4iru.jpg</g:image_link>
@@ -3021,7 +2637,7 @@
                 <g:google_product_category>Home &amp; Garden &gt; Kitchen &amp; Dining &gt; Tableware &gt; Drinkware &gt; Mugs</g:google_product_category>
                 <g:product_type><![CDATA[custom design]]></g:product_type>
                 <g:item_group_id>67b7fb9c3d0cd90c4fc410e3</g:item_group_id>
-                <g:size><![CDATA[Unspecified]]></g:size>
+                
                 <g:color><![CDATA[11oz]]></g:color>
                 <g:age_group>adult</g:age_group>
                 <g:gender>unisex</g:gender>
@@ -3037,7 +2653,7 @@
 
               <item>
                 <g:id>67b7fb9c3d0cd90c4fc410e3-1</g:id>
-                <g:title><![CDATA[Black Mug (11oz, 15oz) (Custom Design, Unspecified, 15oz)]]></g:title>
+                <g:title><![CDATA[Black Mug (11oz, 15oz) (Custom Design, , 15oz)]]></g:title>
                 <g:description><![CDATA[Warm your soul with a nice cuppa out of this  black ceramic mug. Customize with cool designs, photos, or logos to make that “aaahhh!” moment even better. It’s BPA and lead-free, microwave and dishwasher-safe, and made of black durable ceramic and available in 11-ounce and 15-ounce sizes. The high-quality sublimation printing makes this black ceramic mug the perfect gift for your true coffee, tea, or hot chocolate lover..: Material: 100% ceramic with a glossy finish.: Available in two sizes: 11oz (0.33 l) and 15oz (0.44 l).: C-shaped easy-grip handle.: Microwave and dishwasher safe.: Lead and BPA-free.: Blank product sourced from China]]></g:description>
                 <g:link>https://serenejannat.com/custom-gifts/67b7fb9c3d0cd90c4fc410e3?color=15oz</g:link>
                 <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1740110748/serene_janat/products/cznltrcmc5avbq0eh20h.jpg</g:image_link>
@@ -3050,7 +2666,7 @@
                 <g:google_product_category>Home &amp; Garden &gt; Kitchen &amp; Dining &gt; Tableware &gt; Drinkware &gt; Mugs</g:google_product_category>
                 <g:product_type><![CDATA[custom design]]></g:product_type>
                 <g:item_group_id>67b7fb9c3d0cd90c4fc410e3</g:item_group_id>
-                <g:size><![CDATA[Unspecified]]></g:size>
+                
                 <g:color><![CDATA[15oz]]></g:color>
                 <g:age_group>adult</g:age_group>
                 <g:gender>unisex</g:gender>
@@ -3066,7 +2682,7 @@
 
               <item>
                 <g:id>67b7fba13d0cd90c4fc410e9-0</g:id>
-                <g:title><![CDATA[Ceramic Mug, (11oz, 15oz) (Custom Design, Unspecified, 11oz)]]></g:title>
+                <g:title><![CDATA[Ceramic Mug, (11oz, 15oz) (Custom Design, , 11oz)]]></g:title>
                 <g:description><![CDATA[Warm-up with a nice cuppa out of this customized ceramic coffee mug. Personalize it with cool designs, photos or logos to make that &quot;aaahhh!&quot; moment even better. It’s BPA and Lead-free, microwave &amp; dishwasher-safe, and made of white, durable ceramic in 11-ounce and 15-ounce sizes. Thanks to the advanced printing tech, your designs come to life with incredibly vivid colors – the perfect gift for coffee, tea, and chocolate lovers..: These mugs are made with durable white ceramic so that your prints can stand out..: Available in two sizes: 11oz (0.33 l) and 15oz (0.44 l).: All mugs feature a comfortable C-handle and a shiny finish so that they&apos;re both easy to use and great to look at..: Drink confidently on a daily basis as all mugs are lead and BPA-free.]]></g:description>
                 <g:link>https://serenejannat.com/custom-gifts/67b7fba13d0cd90c4fc410e9?color=11oz</g:link>
                 <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1740110751/serene_janat/products/icgv6jkopcuhbixnlnum.jpg</g:image_link>
@@ -3079,7 +2695,7 @@
                 <g:google_product_category>Home &amp; Garden &gt; Kitchen &amp; Dining &gt; Tableware &gt; Drinkware &gt; Mugs</g:google_product_category>
                 <g:product_type><![CDATA[custom design]]></g:product_type>
                 <g:item_group_id>67b7fba13d0cd90c4fc410e9</g:item_group_id>
-                <g:size><![CDATA[Unspecified]]></g:size>
+                
                 <g:color><![CDATA[11oz]]></g:color>
                 <g:age_group>adult</g:age_group>
                 <g:gender>unisex</g:gender>
@@ -3095,7 +2711,7 @@
 
               <item>
                 <g:id>67b7fba13d0cd90c4fc410e9-1</g:id>
-                <g:title><![CDATA[Ceramic Mug, (11oz, 15oz) (Custom Design, Unspecified, 15oz)]]></g:title>
+                <g:title><![CDATA[Ceramic Mug, (11oz, 15oz) (Custom Design, , 15oz)]]></g:title>
                 <g:description><![CDATA[Warm-up with a nice cuppa out of this customized ceramic coffee mug. Personalize it with cool designs, photos or logos to make that &quot;aaahhh!&quot; moment even better. It’s BPA and Lead-free, microwave &amp; dishwasher-safe, and made of white, durable ceramic in 11-ounce and 15-ounce sizes. Thanks to the advanced printing tech, your designs come to life with incredibly vivid colors – the perfect gift for coffee, tea, and chocolate lovers..: These mugs are made with durable white ceramic so that your prints can stand out..: Available in two sizes: 11oz (0.33 l) and 15oz (0.44 l).: All mugs feature a comfortable C-handle and a shiny finish so that they&apos;re both easy to use and great to look at..: Drink confidently on a daily basis as all mugs are lead and BPA-free.]]></g:description>
                 <g:link>https://serenejannat.com/custom-gifts/67b7fba13d0cd90c4fc410e9?color=15oz</g:link>
                 <g:image_link>https://res.cloudinary.com/infiniteapps/image/upload/v1740110751/serene_janat/products/dh2w6lbyfj63bzbwm6bb.jpg</g:image_link>
@@ -3108,7 +2724,7 @@
                 <g:google_product_category>Home &amp; Garden &gt; Kitchen &amp; Dining &gt; Tableware &gt; Drinkware &gt; Mugs</g:google_product_category>
                 <g:product_type><![CDATA[custom design]]></g:product_type>
                 <g:item_group_id>67b7fba13d0cd90c4fc410e9</g:item_group_id>
-                <g:size><![CDATA[Unspecified]]></g:size>
+                
                 <g:color><![CDATA[15oz]]></g:color>
                 <g:age_group>adult</g:age_group>
                 <g:gender>unisex</g:gender>
@@ -5891,8 +5507,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[amber gray]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -5922,8 +5538,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
               <g:product_type><![CDATA[vases]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[ruby, tangerine]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -5953,8 +5569,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Vases</g:google_product_category>
               <g:product_type><![CDATA[vases]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[ruby, tangerine]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -5984,8 +5600,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[multicolor]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6015,8 +5631,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6046,8 +5662,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[blue green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6076,8 +5692,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[amber]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6106,8 +5722,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6137,8 +5753,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[aqua]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6168,8 +5784,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[blue]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6199,8 +5815,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[brown]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6230,8 +5846,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor</g:google_product_category>
               <g:product_type><![CDATA[home decor]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[burnt sienna]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6261,8 +5877,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[amber]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6291,8 +5907,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[white]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6321,8 +5937,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6351,8 +5967,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
@@ -6381,8 +5997,8 @@
               <g:condition>new</g:condition>
               <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Seasonal &amp; Holiday Decorations</g:google_product_category>
               <g:product_type><![CDATA[seasonal]]></g:product_type>
-              <g:size>Unspecified</g:size>
-              <g:color>Unspecified</g:color>
+              
+              <g:color><![CDATA[green]]></g:color>
               <g:age_group>adult</g:age_group>
               <g:gender>unisex</g:gender>
               <g:identifier_exists>false</g:identifier_exists>
