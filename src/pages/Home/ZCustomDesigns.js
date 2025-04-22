@@ -147,9 +147,11 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 					label: `User Custom Design ${product.productName} single page`,
 				});
 
-				ReactPixel.track("Custom Product Clicked", {
-					action: `User Navigated to ${product.productName} single page`,
-					page: "Home Page",
+				ReactPixel.track("Lead", {
+					content_name: `User Navigated to ${product.productName} single page`,
+					click_type: "Print On Demand Clicked",
+					// You can add more parameters if you want
+					// e.g. currency: "USD", value: 0
 				});
 
 				history.push(`/custom-gifts/${product._id}`);

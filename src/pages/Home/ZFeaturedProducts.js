@@ -180,9 +180,11 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 				label: `User Navigated to ${product.productName} single page`,
 			});
 
-			ReactPixel.track("Featured Product Clicked", {
-				action: `User Navigated to ${product.productName} single page`,
-				page: "Home Page",
+			ReactPixel.track("Lead", {
+				content_name: `User Navigated to ${product.productName} single page`,
+				click_type: "Featured Product Clicked",
+				// You can add more parameters if you want
+				// e.g. currency: "USD", value: 0
 			});
 
 			window.scrollTo({ top: 0, behavior: "smooth" });

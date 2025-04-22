@@ -79,9 +79,11 @@ const PrintifyAvailableProducts = () => {
 			label: `User Clicked On Product From Custom Design Products`,
 		});
 
-		ReactPixel.track("User Clicked On Product From Custom Design Products", {
-			action: "User Clicked On Product From Custom Design Products",
-			page: "Custom Design (Print On Demand)",
+		ReactPixel.track("Lead", {
+			content_name: "User Clicked On Product From Custom Design Products",
+			click_type: "Custom Design (Print On Demand)",
+			// You can add more parameters if you want
+			// e.g. currency: "USD", value: 0
 		});
 
 		const printifyId = product._id;

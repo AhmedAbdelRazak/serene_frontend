@@ -722,13 +722,12 @@ function ShopPageMain() {
 																	label: `User viewed ${prod?.productName || "unknown"}`,
 																});
 
-																ReactPixel.track(
-																	"Single Product Clicked From Shop Page",
-																	{
-																		action: `User viewed ${prod?.productName || "unknown"}`,
-																		page: "Shop Page",
-																	}
-																);
+																ReactPixel.track("Lead", {
+																	content_name: `User viewed ${prod?.productName || "unknown"} From Shop Page`,
+																	click_type: "Shop Page Product Clicked",
+																	// You can add more parameters if you want
+																	// e.g. currency: "USD", value: 0
+																});
 
 																window.scrollTo({ top: 0, behavior: "smooth" });
 																history.push(getProductLink(prod));

@@ -59,9 +59,12 @@ const ZCategories = ({ allCategories }) => {
 			action: "User Clicked On Category In Home Page",
 			label: `User Clicked on ${categoryName} In The Home Page`,
 		});
-		ReactPixel.track("Category Clicked Home Page", {
-			action: `User Clicked on ${categoryName} In The Home Page`,
-			page: "Home Page",
+
+		ReactPixel.track("Lead", {
+			content_name: `User Clicked on ${categoryName} In The Home Page`,
+			click_type: "Category Clicked",
+			// You can add more parameters if you want
+			// e.g. currency: "USD", value: 0
 		});
 
 		window.scrollTo({ top: 0, behavior: "smooth" });

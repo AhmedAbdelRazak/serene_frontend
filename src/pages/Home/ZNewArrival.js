@@ -164,9 +164,21 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 				label: `User added ${product.productName} to the cart from New Arrivals`,
 			});
 
-			ReactPixel.track("Add To The Cart New Arrivals", {
-				action: `User added ${product.productName} to the cart from New Arrivals`,
-				page: "Home Page",
+			ReactPixel.track("AddToCart", {
+				// Standard Meta parameters:
+				content_name: product.productName,
+				content_ids: [product._id],
+				content_type: "product",
+				currency: "USD",
+				value: product.priceAfterDiscount || product.price, // the price you'd like to track
+
+				// Optionally, you could pass `contents`:
+				contents: [
+					{
+						id: product._id,
+						quantity: 1,
+					},
+				],
 			});
 
 			try {
@@ -194,21 +206,11 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 				label: `User Navigated to ${product.productName} single page`,
 			});
 
-			ReactPixel.track("AddToCart", {
-				// Standard Meta parameters:
-				content_name: product.productName,
-				content_ids: [product._id],
-				content_type: "product",
-				currency: "USD",
-				value: product.priceAfterDiscount || product.price, // the price you'd like to track
-
-				// Optionally, you could pass `contents`:
-				contents: [
-					{
-						id: product._id,
-						quantity: 1,
-					},
-				],
+			ReactPixel.track("Lead", {
+				content_name: `User Navigated to ${product.productName} single page`,
+				click_type: "New Arrival Product Clicked",
+				// You can add more parameters if you want
+				// e.g. currency: "USD", value: 0
 			});
 
 			window.scrollTo({ top: 0, behavior: "smooth" });
