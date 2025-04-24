@@ -52,28 +52,15 @@ import heic2any from "heic2any";
 // Fallback library for final image conversion
 import domtoimage from "dom-to-image-more";
 
-// ----------- ADDED: import the child -----------
+// Child tutorial/animation
 import AnimationPODWalkThrough from "../MyAnimationComponents/AnimationPODWalkThrough";
 
 const { Title } = Typography;
 const { Option } = Select;
 
-//Ensure that the sizes and colors are changing
-//Finish the upload photo through the animation
-//Ensure that the component with the animation is responsive
-
 /**
  * ------------------------------------------------------------------------
- * NOTE about "findDOMNode is deprecated":
- * ------------------------------------------------------------------------
- * This warning arises from react-rnd’s internal usage of findDOMNode.
- * If it bothers you, remove StrictMode in your React root or upgrade react-rnd
- * to a version that no longer uses findDOMNode.
- */
-
-/**
- * ------------------------------------------------------------------------
- * A) PERMISSION HELPER
+ * PERMISSION HELPER (camera fallback)
  * ------------------------------------------------------------------------
  */
 async function requestImagePermissions() {
@@ -83,19 +70,16 @@ async function requestImagePermissions() {
 				video: { facingMode: "environment" },
 				audio: false,
 			});
-			console.log("Camera permission requested as last fallback…");
+			console.log("Camera permission requested as fallback…");
 		}
 	} catch (err) {
-		console.warn(
-			"User denied or device not supported for camera permission:",
-			err
-		);
+		console.warn("User denied camera permission or device not supported:", err);
 	}
 }
 
 /**
  * ------------------------------------------------------------------------
- * B) HELPER FUNCTIONS
+ * HELPER FUNCTIONS
  * ------------------------------------------------------------------------
  */
 function stripHtmlTags(html) {
@@ -110,7 +94,7 @@ function truncateText(text, wordLimit) {
 }
 
 /**
- * We pass `willReadFrequently: true` to suppress the “Canvas2D multiple readback…” warning
+ * Crop a canvas to remove fully-transparent edges
  */
 function cropCanvasToTransparentBounds(originalCanvas) {
 	const ctx = originalCanvas.getContext("2d", { willReadFrequently: true });
@@ -122,31 +106,27 @@ function cropCanvasToTransparentBounds(originalCanvas) {
 		left = 0,
 		right = width;
 
-	// top
 	topLoop: for (; top < height; top++) {
 		for (let x = 0; x < width; x++) {
 			const idx = (top * width + x) * 4 + 3;
 			if (imageData[idx] !== 0) break topLoop;
 		}
 	}
-	// bottom
 	bottomLoop: for (; bottom > top; bottom--) {
 		for (let x = 0; x < width; x++) {
 			const idx = ((bottom - 1) * width + x) * 4 + 3;
 			if (imageData[idx] !== 0) break bottomLoop;
 		}
 	}
-	// left
 	leftLoop: for (; left < width; left++) {
 		for (let y = top; y < bottom; y++) {
 			const idx = (y * width + left) * 4 + 3;
 			if (imageData[idx] !== 0) break leftLoop;
 		}
 	}
-	// right
 	rightLoop: for (; right > left; right--) {
 		for (let y = top; y < bottom; y++) {
-			const idx = (y * width + (right - 1)) * 4 + 3;
+			const idx = (y * width + right - 1) * 4 + 3;
 			if (imageData[idx] !== 0) break rightLoop;
 		}
 	}
@@ -154,7 +134,8 @@ function cropCanvasToTransparentBounds(originalCanvas) {
 	const croppedWidth = right - left;
 	const croppedHeight = bottom - top;
 	if (croppedWidth <= 0 || croppedHeight <= 0) {
-		return originalCanvas; // everything is transparent => return original
+		// everything is transparent => return original
+		return originalCanvas;
 	}
 	const newCanvas = document.createElement("canvas");
 	newCanvas.width = croppedWidth;
@@ -197,7 +178,6 @@ function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 				quality
 			);
 		} else {
-			// fallback for older browsers
 			try {
 				const dataURL = canvas.toDataURL(mimeType, quality);
 				const blob = dataURLtoBlob(dataURL);
@@ -212,13 +192,9 @@ function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 	});
 }
 
-/**
- * If .heic => convert it to JPEG
- */
 async function convertHeicToJpegIfNeeded(file) {
 	const fileType = file.type?.toLowerCase() || "";
 	const fileName = file.name?.toLowerCase() || "";
-
 	if (!fileType.includes("heic") && !fileName.endsWith(".heic")) {
 		return file;
 	}
@@ -249,7 +225,7 @@ async function convertHeicToJpegIfNeeded(file) {
 async function fallbackCanvasConvert(file) {
 	if (
 		file.type?.toLowerCase().includes("video") ||
-		file.name?.endsWith(".mov")
+		file.name?.toLowerCase().endsWith(".mov")
 	) {
 		throw new Error(
 			"This file is a video/Live Photo. Cannot convert to image."
@@ -267,7 +243,7 @@ async function fallbackCanvasConvert(file) {
 				ctx.drawImage(img, 0, 0);
 				canvas.toBlob(
 					(blob) => {
-						if (!blob) return reject(new Error("Canvas toBlob produced null"));
+						if (!blob) return reject(new Error("Canvas toBlob returned null"));
 						const newFile = new File([blob], file.name || "fallback.jpg", {
 							type: "image/jpeg",
 							lastModified: Date.now(),
@@ -344,9 +320,6 @@ async function fallbackDomToImageConvert(file) {
 	});
 }
 
-/**
- * Plain XHR fallback for uploading
- */
 async function fallbackVanillaJSXHRUpload(file, userId, token) {
 	return new Promise((resolve, reject) => {
 		const formData = new FormData();
@@ -359,7 +332,6 @@ async function fallbackVanillaJSXHRUpload(file, userId, token) {
 			`${process.env.REACT_APP_API_URL}/admin/vanilla-upload`,
 			true
 		);
-
 		xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 
 		xhr.onload = function () {
@@ -382,63 +354,16 @@ async function fallbackVanillaJSXHRUpload(file, userId, token) {
 				);
 			}
 		};
-
 		xhr.onerror = function () {
 			reject(new Error("Vanilla XHR: Network error or CORS blocked."));
 		};
-
-		xhr.send(formData);
-	});
-}
-
-/**
- * Plain XHR fallback for screenshot
- */
-async function fallbackVanillaJSXHRUploadScreenshot(blob, userId, token) {
-	return new Promise((resolve, reject) => {
-		const formData = new FormData();
-		formData.append("image", blob, "screenshot.jpg");
-		formData.append("userId", userId);
-
-		const xhr = new XMLHttpRequest();
-		xhr.open(
-			"POST",
-			`${process.env.REACT_APP_API_URL}/admin/vanilla-upload`,
-			true
-		);
-		xhr.setRequestHeader("Authorization", `Bearer ${token}`);
-
-		xhr.onload = function () {
-			if (xhr.status === 200) {
-				try {
-					const data = JSON.parse(xhr.responseText);
-					if (data && data.public_id && data.url) {
-						resolve({ public_id: data.public_id, url: data.url });
-					} else {
-						reject(
-							new Error("Vanilla XHR screenshot: Missing public_id or url")
-						);
-					}
-				} catch (e) {
-					reject(
-						new Error("Vanilla XHR screenshot: Could not parse JSON response.")
-					);
-				}
-			} else {
-				reject(new Error(`Vanilla XHR screenshot: status ${xhr.status}`));
-			}
-		};
-		xhr.onerror = function () {
-			reject(new Error("Vanilla XHR screenshot: Network error or CORS?"));
-		};
-
 		xhr.send(formData);
 	});
 }
 
 /**
  * ------------------------------------------------------------------------
- * C) COMPONENT
+ * The main component
  * ------------------------------------------------------------------------
  */
 export default function CustomizeSelectedProduct() {
@@ -447,8 +372,11 @@ export default function CustomizeSelectedProduct() {
 	const [loading, setLoading] = useState(true);
 
 	const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+	// selected color, size, scent
 	const [selectedColor, setSelectedColor] = useState("");
 	const [selectedSize, setSelectedSize] = useState("");
+	const [selectedScent, setSelectedScent] = useState("");
 
 	// Current text styling
 	const [userText, setUserText] = useState("");
@@ -459,7 +387,7 @@ export default function CustomizeSelectedProduct() {
 	const [fontStyle, setFontStyle] = useState("normal");
 	const [borderRadius, setBorderRadius] = useState(0);
 
-	// All design elements (text/images)
+	// All design elements (text or images)
 	const [elements, setElements] = useState([]);
 	const [selectedElementId, setSelectedElementId] = useState(null);
 	const [inlineEditId, setInlineEditId] = useState(null);
@@ -481,6 +409,7 @@ export default function CustomizeSelectedProduct() {
 		},
 		shipping_method: "",
 	});
+
 	const [userJustSingleClickedText, setUserJustSingleClickedText] =
 		useState(false);
 
@@ -494,7 +423,7 @@ export default function CustomizeSelectedProduct() {
 	const { addToCart, openSidebar2 } = useCartContext();
 	const { user, token } = isAuthenticated();
 
-	// If user/token missing, fallback:
+	// fallback user ID / token
 	const fallbackUserId = user?._id || "663539b4eb1a090ebd349d65";
 	const fallbackToken = token || "token";
 
@@ -536,10 +465,9 @@ export default function CustomizeSelectedProduct() {
 						action: "User Uploaded Image In Custom Design",
 						label: "User Uploaded Image In Custom Design",
 					});
-
 					ReactPixel.track("CustomizeProduct", {
-						content_name: product.title || product.productName,
-						content_ids: [product._id],
+						content_name: product?.title || product?.productName,
+						content_ids: [product?._id],
 						content_type: "product",
 					});
 				}
@@ -569,15 +497,18 @@ export default function CustomizeSelectedProduct() {
 
 	const [uploadingImage, setUploadingImage] = useState(false);
 
-	// ----------- ADDED states to track user actions -----------
-
+	// Additional states to track user actions
 	const [didUserAddToCart, setDidUserAddToCart] = useState(false);
 	const [hasChangedSizeOrColor, setHasChangedSizeOrColor] = useState(false);
 	const [userJustDoubleClickedCanvas, setUserJustDoubleClickedCanvas] =
 		useState(false);
 	const [hasMultipleSizeOrColor, setHasMultipleSizeOrColor] = useState(false);
 
-	// 1) LOAD PRODUCT
+	/**
+	 * ----------------------------------------------------------------
+	 * 1) LOAD PRODUCT
+	 * ----------------------------------------------------------------
+	 */
 	useEffect(() => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
 		const fetchProduct = async () => {
@@ -590,7 +521,7 @@ export default function CustomizeSelectedProduct() {
 					setLoading(false);
 					return;
 				}
-				let fetchedProduct = {
+				const fetchedProduct = {
 					...response.data,
 					variants: response.data.printifyProductDetails?.variants || [],
 					options: response.data.printifyProductDetails?.options || [],
@@ -604,6 +535,7 @@ export default function CustomizeSelectedProduct() {
 						"",
 				};
 
+				// only keep variants with a numeric price
 				const validVariants = fetchedProduct.variants.filter(
 					(variant) => typeof variant.price === "number" && variant.price > 0
 				);
@@ -614,6 +546,7 @@ export default function CustomizeSelectedProduct() {
 				}
 				fetchedProduct.variants = validVariants;
 
+				// filter out option values that have no matching variant
 				fetchedProduct.options = fetchedProduct.options.map((opt) => {
 					const newValues = opt.values.filter((val) =>
 						validVariants.some((v) => v.options.includes(val.id))
@@ -623,69 +556,102 @@ export default function CustomizeSelectedProduct() {
 
 				setProduct(fetchedProduct);
 
+				// FB pixel track
 				ReactPixel.track("CustomizeProduct", {
 					content_name: fetchedProduct.title || fetchedProduct.productName,
 					content_ids: [fetchedProduct._id],
 					content_type: "product",
-					// currency / value are optional for “CustomizeProduct”
 				});
 
-				// -----------------------------------------
-				// ADDITION: check query params for color/size
-				// -----------------------------------------
+				// Check query params for color/size/scent
 				const queryParams = new URLSearchParams(window.location.search);
 				const colorParam = queryParams.get("color");
 				const sizeParam = queryParams.get("size");
+				const scentParam = queryParams.get("scent");
 
-				const colorOption = fetchedProduct.options.find(
-					(opt) => opt.name.toLowerCase() === "colors"
+				const colorOpt = fetchedProduct.options.find(
+					(o) => o.name.toLowerCase() === "colors"
 				);
-				const sizeOption = fetchedProduct.options.find(
-					(opt) => opt.name.toLowerCase() === "sizes"
+				const sizeOpt = fetchedProduct.options.find(
+					(o) => o.name.toLowerCase() === "sizes"
+				);
+				const scentOpt = fetchedProduct.options.find(
+					(o) => o.name.toLowerCase() === "scents"
 				);
 
-				// If we have colorOption:
-				if (colorOption?.values?.length) {
+				// color
+				if (colorOpt?.values?.length) {
 					if (
 						colorParam &&
-						colorOption.values.some((val) => val.title === colorParam)
+						colorOpt.values.some((val) => val.title === colorParam)
 					) {
 						setSelectedColor(colorParam);
 					} else {
-						setSelectedColor(colorOption.values[0].title);
+						setSelectedColor(colorOpt.values[0].title);
 					}
 				} else {
 					setSelectedColor("");
 				}
 
-				// If we have sizeOption:
-				if (sizeOption?.values?.length) {
+				// size - existing approach
+				let chosenSize = "";
+				if (sizeOpt?.values?.length) {
 					if (
 						sizeParam &&
-						sizeOption.values.some((val) => val.title === sizeParam)
+						sizeOpt.values.some((val) => val.title === sizeParam)
 					) {
-						setSelectedSize(sizeParam);
+						chosenSize = sizeParam;
 					} else {
+						// check if there's an is_default variant
 						const defVar = validVariants.find((v) => v.is_default);
 						if (defVar) {
-							const defSizeVal = sizeOption.values.find((sv) =>
+							const defSizeVal = sizeOpt.values.find((sv) =>
 								defVar.options.includes(sv.id)
 							);
 							if (defSizeVal) {
-								setSelectedSize(defSizeVal.title);
+								chosenSize = defSizeVal.title;
 							} else {
-								setSelectedSize(sizeOption.values[0].title);
+								chosenSize = sizeOpt.values[0].title;
 							}
 						} else {
-							setSelectedSize(sizeOption.values[0].title);
+							chosenSize = sizeOpt.values[0].title;
 						}
 					}
-				} else {
-					setSelectedSize("");
 				}
-				// -----------------------------------------
-				// END of addition
-				// -----------------------------------------
+
+				// If STILL no chosenSize => fallback to productAttributes
+				if (!chosenSize && fetchedProduct.productAttributes?.length) {
+					const foundAttrWithSize = fetchedProduct.productAttributes.find(
+						(attr) => attr.size && attr.size.trim() !== ""
+					);
+					if (foundAttrWithSize) {
+						chosenSize = foundAttrWithSize.size;
+					}
+				}
+				setSelectedSize(chosenSize || "");
+
+				// scent
+				let chosenScent = "";
+				if (scentOpt?.values?.length) {
+					if (
+						scentParam &&
+						scentOpt.values.some((val) => val.title === scentParam)
+					) {
+						chosenScent = scentParam;
+					} else {
+						chosenScent = scentOpt.values[0].title;
+					}
+				}
+				// fallback: check productAttributes if needed
+				if (!chosenScent && fetchedProduct.productAttributes?.length) {
+					const foundAttrWithScent = fetchedProduct.productAttributes.find(
+						(attr) => attr.scent && attr.scent.trim() !== ""
+					);
+					if (foundAttrWithScent) {
+						chosenScent = foundAttrWithScent.scent;
+					}
+				}
+				setSelectedScent(chosenScent || "");
 
 				setLoading(false);
 			} catch (err) {
@@ -697,29 +663,35 @@ export default function CustomizeSelectedProduct() {
 		fetchProduct();
 	}, [productId]);
 
+	/**
+	 * Check if multiple color/size/scent
+	 */
 	useEffect(() => {
 		if (!product) return;
-
-		// Find the color & size option
-		const colorOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "colors"
+		const colorOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "colors"
 		);
-		const sizeOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "sizes"
+		const sizeOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "sizes"
+		);
+		const scentOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "scents"
 		);
 
-		const multipleColors = colorOption?.values?.length > 1;
-		const multipleSizes = sizeOption?.values?.length > 1;
+		const multipleColors = colorOpt?.values?.length > 1;
+		const multipleSizes = sizeOpt?.values?.length > 1;
+		const multipleScents = scentOpt?.values?.length > 1;
 
-		// If we have >1 color or >1 size => true
-		if (multipleColors || multipleSizes) {
+		if (multipleColors || multipleSizes || multipleScents) {
 			setHasMultipleSizeOrColor(true);
 		} else {
 			setHasMultipleSizeOrColor(false);
 		}
 	}, [product]);
 
-	// Add a default text box in the middle
+	/**
+	 * 2) Add a default text box in the middle
+	 */
 	useEffect(() => {
 		if (!product || defaultTextAdded) return;
 		if (!printAreaRef.current) return;
@@ -754,94 +726,215 @@ export default function CustomizeSelectedProduct() {
 		setDefaultTextAdded(true);
 	}, [product, defaultTextAdded]);
 
-	// Whenever color/size changes => update variant_id
+	/**
+	 * 3) Whenever color/size/scent changes => update variant_id
+	 */
 	useEffect(() => {
 		if (!product) return;
+		function numOrStr(x) {
+			return typeof x === "number" ? x : parseInt(x, 10);
+		}
 
-		const colorOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "colors"
+		const colorOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "colors"
 		);
-		const sizeOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "sizes"
+		const sizeOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "sizes"
+		);
+		const scentOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "scents"
+		);
+
+		let matchingVariant = null;
+		// gather chosen IDs
+		const chosenIds = [];
+		if (colorOpt && selectedColor) {
+			const cVal = colorOpt.values.find((v) => v.title === selectedColor);
+			if (cVal) chosenIds.push(numOrStr(cVal.id));
+		}
+		if (sizeOpt && selectedSize) {
+			const sVal = sizeOpt.values.find((v) => v.title === selectedSize);
+			if (sVal) chosenIds.push(numOrStr(sVal.id));
+		}
+		if (scentOpt && selectedScent) {
+			const scVal = scentOpt.values.find((v) => v.title === selectedScent);
+			if (scVal) chosenIds.push(numOrStr(scVal.id));
+		}
+
+		matchingVariant = product.variants.find((v) => {
+			const varIds = v.options.map(numOrStr);
+			return chosenIds.every((ch) => varIds.includes(ch));
+		});
+
+		setOrder((prev) => ({ ...prev, variant_id: matchingVariant?.id || null }));
+	}, [product, selectedColor, selectedSize, selectedScent]);
+
+	// If user changes color/size/scent => setHasChanged
+	useEffect(() => {
+		if (
+			!hasChangedSizeOrColor &&
+			(selectedColor || selectedSize || selectedScent)
+		) {
+			setHasChangedSizeOrColor(true);
+		}
+	}, [selectedColor, selectedSize, selectedScent, hasChangedSizeOrColor]);
+
+	/**
+	 * 3a) HELPER to see if a given color combination is valid =>
+	 * (We usually won't disable color the same way we do size, but if you need it, here's a sample.)
+	 */
+	function variantExistsForColor(colorTitle, chosenSize, chosenScent) {
+		if (!product) return false;
+
+		const colorOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "colors"
+		);
+		const sizeOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "sizes"
+		);
+		const scentOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "scents"
 		);
 
 		function numOrStr(val) {
 			return typeof val === "number" ? val : parseInt(val, 10);
 		}
 
-		let matchingVariant = null;
-		if (!colorOption && !sizeOption) {
-			matchingVariant = product.variants[0] || null;
-		} else if (colorOption && !sizeOption) {
-			const selectedColorValue = colorOption.values.find(
-				(val) => val.title === selectedColor
-			);
-			matchingVariant = product.variants.find((variant) => {
-				const varOptionIds = variant.options.map(numOrStr);
-				return selectedColorValue
-					? varOptionIds.includes(numOrStr(selectedColorValue.id))
-					: false;
-			});
-		} else if (!colorOption && sizeOption) {
-			const selectedSizeValue = sizeOption.values.find(
-				(val) => val.title === selectedSize
-			);
-			matchingVariant = product.variants.find((variant) => {
-				const varOptionIds = variant.options.map(numOrStr);
-				return selectedSizeValue
-					? varOptionIds.includes(numOrStr(selectedSizeValue.id))
-					: false;
-			});
-		} else if (colorOption && sizeOption) {
-			const selectedColorValue = colorOption.values.find(
-				(val) => val.title === selectedColor
-			);
-			const selectedSizeValue = sizeOption.values.find(
-				(val) => val.title === selectedSize
-			);
-			matchingVariant = product.variants.find((variant) => {
-				const varOptionIds = variant.options.map(numOrStr);
-				return (
-					selectedColorValue &&
-					selectedSizeValue &&
-					varOptionIds.includes(numOrStr(selectedColorValue.id)) &&
-					varOptionIds.includes(numOrStr(selectedSizeValue.id))
-				);
-			});
+		let chosenColorId = null;
+		if (colorOpt && colorTitle) {
+			const colorVal = colorOpt.values.find((v) => v.title === colorTitle);
+			if (!colorVal) return false;
+			chosenColorId = numOrStr(colorVal.id);
 		}
 
-		setOrder((prev) => ({
-			...prev,
-			variant_id: matchingVariant?.id || null,
-		}));
-	}, [product, selectedColor, selectedSize]);
-
-	// If user changes color or size from initial => set hasChangedSizeOrColor
-	useEffect(() => {
-		// Once changed, we keep it true
-		if (!hasChangedSizeOrColor && (selectedColor || selectedSize)) {
-			setHasChangedSizeOrColor(true);
+		let chosenSizeId = null;
+		if (sizeOpt && chosenSize) {
+			const sVal = sizeOpt.values.find((v) => v.title === chosenSize);
+			if (sVal) chosenSizeId = numOrStr(sVal.id);
 		}
-	}, [selectedColor, selectedSize, hasChangedSizeOrColor]);
+
+		let chosenScentId = null;
+		if (scentOpt && chosenScent) {
+			const scVal = scentOpt.values.find((v) => v.title === chosenScent);
+			if (scVal) chosenScentId = numOrStr(scVal.id);
+		}
+
+		return product.variants.some((v) => {
+			const varIds = v.options.map(numOrStr);
+			if (chosenColorId != null && !varIds.includes(chosenColorId)) {
+				return false;
+			}
+			if (chosenSizeId != null && !varIds.includes(chosenSizeId)) {
+				return false;
+			}
+			if (chosenScentId != null && !varIds.includes(chosenScentId)) {
+				return false;
+			}
+			return true;
+		});
+	}
 
 	/**
-	 * ------------------------------------------------------------------------
-	 * 2) IMAGE UPLOAD LOGIC
-	 * ------------------------------------------------------------------------
+	 * We already have "variantExistsForOption" for size:
 	 */
+	function variantExistsForOption(sizeObj, colorTitle, scentTitle) {
+		if (!product) return false;
 
+		const colorOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "colors"
+		);
+		const scentOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "scents"
+		);
+
+		function numOrStr(val) {
+			return typeof val === "number" ? val : parseInt(val, 10);
+		}
+
+		let chosenColorId = null;
+		if (colorOpt && colorTitle) {
+			const colorVal = colorOpt.values.find((v) => v.title === colorTitle);
+			if (!colorVal) return false;
+			chosenColorId = numOrStr(colorVal.id);
+		}
+
+		let sizeValId = sizeObj ? numOrStr(sizeObj.id) : null;
+		let chosenScentId = null;
+		if (scentOpt && scentTitle) {
+			const scVal = scentOpt.values.find((v) => v.title === scentTitle);
+			if (scVal) chosenScentId = numOrStr(scVal.id);
+		}
+
+		return product.variants.some((v) => {
+			const varIds = v.options.map(numOrStr);
+			if (chosenColorId != null && !varIds.includes(chosenColorId)) {
+				return false;
+			}
+			if (sizeValId != null && !varIds.includes(sizeValId)) {
+				return false;
+			}
+			if (chosenScentId != null && !varIds.includes(chosenScentId)) {
+				return false;
+			}
+			return true;
+		});
+	}
+
+	function variantExistsForScent(scentObj, colorTitle, sizeTitle) {
+		if (!product) return false;
+		const colorOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "colors"
+		);
+		const sizeOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "sizes"
+		);
+
+		function numOrStr(val) {
+			return typeof val === "number" ? val : parseInt(val, 10);
+		}
+
+		let chosenColorId = null;
+		if (colorOpt && colorTitle) {
+			const colorVal = colorOpt.values.find((v) => v.title === colorTitle);
+			if (!colorVal) return false;
+			chosenColorId = numOrStr(colorVal.id);
+		}
+		let chosenSizeId = null;
+		if (sizeOpt && sizeTitle) {
+			const sizeVal = sizeOpt.values.find((v) => v.title === sizeTitle);
+			if (sizeVal) chosenSizeId = numOrStr(sizeVal.id);
+		}
+		let thisScentId = scentObj ? numOrStr(scentObj.id) : null;
+		if (!thisScentId) return false;
+
+		return product.variants.some((v) => {
+			const varIds = v.options.map(numOrStr);
+
+			if (chosenColorId != null && !varIds.includes(chosenColorId)) {
+				return false;
+			}
+			if (chosenSizeId != null && !varIds.includes(chosenSizeId)) {
+				return false;
+			}
+			if (!varIds.includes(thisScentId)) {
+				return false;
+			}
+			return true;
+		});
+	}
+
+	/**
+	 * 4) IMAGE UPLOAD LOGIC
+	 */
 	function handleBlankAreaDoubleClick(e) {
-		// Make sure the user did NOT double-click on an existing element
-		// You can check if e.target.closest('.rnd-element') is null, etc.
 		if (!e.target.closest(".rnd-element")) {
 			setUserJustDoubleClickedCanvas(true);
-			// Optionally reset it after a moment
 			setTimeout(() => setUserJustDoubleClickedCanvas(false), 500);
 		}
 	}
 
 	const addImageElement = async (file) => {
-		// If user picks .mov => error
+		// if .mov => error
 		if (
 			file.type?.toLowerCase().includes("video") ||
 			file.name?.toLowerCase().endsWith(".mov")
@@ -851,42 +944,37 @@ export default function CustomizeSelectedProduct() {
 			);
 			return;
 		}
-
 		setUploadingImage(true);
 		try {
-			// 1) Convert from HEIC if needed
+			// 1) heic => jpeg
 			let workingFile = await convertHeicToJpegIfNeeded(file);
 
-			// 2) Attempt direct upload
+			// 2) direct
 			try {
 				await uploadDirectly(workingFile);
-			} catch (directErr) {
-				console.warn("Direct upload failed; try resizing...", directErr);
-				// 3) try resizing => re-upload
+			} catch (err1) {
+				console.warn("Direct upload failed; try resizing...", err1);
 				try {
 					await handleImageResizingThenUpload(workingFile);
-				} catch (resizeErr) {
-					console.warn("Resizing failed; fallback to canvas...", resizeErr);
-					// 4) fallback => canvas
+				} catch (err2) {
+					console.warn("Resizing failed; fallback to canvas...", err2);
 					try {
 						const fallbackFile = await fallbackCanvasConvert(workingFile);
 						await uploadDirectly(fallbackFile);
-					} catch (canvasErr) {
+					} catch (err3) {
 						console.warn(
 							"Canvas fallback also failed; try dom-to-image...",
-							canvasErr
+							err3
 						);
-						// 5) fallback => dom-to-image
 						try {
 							const fallbackFile2 =
 								await fallbackDomToImageConvert(workingFile);
 							await uploadDirectly(fallbackFile2);
-						} catch (dom2Err) {
+						} catch (err4) {
 							console.warn(
-								"dom-to-image fallback also failed => final attempt vanilla XHR.",
-								dom2Err
+								"dom-to-image fallback also failed => final attempt XHR.",
+								err4
 							);
-							// 6) final => plain XHR => THEN ask permission
 							try {
 								const { public_id, url } = await fallbackVanillaJSXHRUpload(
 									workingFile,
@@ -894,35 +982,32 @@ export default function CustomizeSelectedProduct() {
 									fallbackToken
 								);
 								addImageElementToCanvas(public_id, url);
-							} catch (vanillaFail) {
+							} catch (finalErr) {
 								console.error(
 									"All fallback attempts for upload failed!",
-									vanillaFail
+									finalErr
 								);
-
-								// =========== ASK PERMISSION & re-try final attempt ===========
+								// try requestImagePermissions => re-try
 								try {
 									await requestImagePermissions();
 									message.info(
 										"Trying final fallback once more with permission granted..."
 									);
-
 									const { public_id, url } = await fallbackVanillaJSXHRUpload(
 										workingFile,
 										fallbackUserId,
 										fallbackToken
 									);
 									addImageElementToCanvas(public_id, url);
-								} catch (vanillaPermFail) {
+								} catch (permFail) {
 									console.error(
-										"Even after permissions, final fallback attempt failed.",
-										vanillaPermFail
+										"Even after permissions, final attempt failed.",
+										permFail
 									);
 									message.error(
 										"We encountered an issue uploading your image. Please try again or pick a different photo."
 									);
 								}
-								// =============================================================
 							}
 						}
 					}
@@ -931,7 +1016,7 @@ export default function CustomizeSelectedProduct() {
 		} catch (finalErr) {
 			console.error("Image upload (all attempts) failed:", finalErr);
 			message.error(
-				"We encountered an issue uploading your image. Please try again or pick a different photo."
+				"We encountered an issue uploading your image. Please try again."
 			);
 		} finally {
 			setUploadingImage(false);
@@ -948,7 +1033,7 @@ export default function CustomizeSelectedProduct() {
 			}
 		);
 		if (!public_id || !url) {
-			throw new Error("Missing public_id or url in direct upload response");
+			throw new Error("Missing public_id or url from direct upload response");
 		}
 		addImageElementToCanvas(public_id, url);
 	}
@@ -1049,7 +1134,6 @@ export default function CustomizeSelectedProduct() {
 					0.9
 				);
 			};
-
 			img.onerror = (err) => reject(err);
 		});
 	}
@@ -1064,13 +1148,9 @@ export default function CustomizeSelectedProduct() {
 	}
 
 	/**
-	 * ------------------------------------------------------------------------
-	 * 3) TEXT + ELEMENT EDITING
-	 * ------------------------------------------------------------------------
+	 * 5) TEXT + ELEMENT EDITING
 	 */
 	function addTextElement(textValue, fromRightSide = false) {
-		// If fromRightSide => user used the right-hand box
-
 		const finalText = textValue ? textValue.trim() : userText.trim();
 		if (!finalText) {
 			message.warning("Please enter some text first.");
@@ -1107,7 +1187,6 @@ export default function CustomizeSelectedProduct() {
 	}
 
 	function handleElementClick(el) {
-		// Bring element to top
 		setElements((prev) => {
 			const rest = prev.filter((item) => item.id !== el.id);
 			return [...rest, el];
@@ -1164,7 +1243,6 @@ export default function CustomizeSelectedProduct() {
 		const el = elements.find((x) => x.id === elId);
 		if (!el) return;
 
-		// If it's an image on Cloudinary, remove it
 		if (el.type === "image" && el.public_id) {
 			try {
 				await axios.post(
@@ -1226,7 +1304,6 @@ export default function CustomizeSelectedProduct() {
 
 	const DRAGGABLE_REGION_CLASS = "drag-handle";
 
-	// Rotation
 	function onRotationStart(evt, elId) {
 		evt.stopPropagation();
 		evt.preventDefault();
@@ -1299,42 +1376,37 @@ export default function CustomizeSelectedProduct() {
 
 	function getVariantPrice() {
 		if (!product || !product.variants) return 0;
-		function numOrStr(val) {
-			return typeof val === "number" ? val : parseInt(val, 10);
+		function numOrStr(x) {
+			return typeof x === "number" ? x : parseInt(x, 10);
 		}
-		const colorOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "colors"
+		// gather chosen
+		const colorOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "colors"
 		);
-		const sizeOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "sizes"
+		const sizeOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "sizes"
+		);
+		const scentOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "scents"
 		);
 
-		let matchingVariant = null;
-		if (!colorOption && !sizeOption) {
-			matchingVariant = product.variants[0];
-		} else if (colorOption && !sizeOption) {
-			const cVal = colorOption.values.find((v) => v.title === selectedColor);
-			matchingVariant = product.variants.find((v) =>
-				v.options.map(numOrStr).includes(numOrStr(cVal?.id))
-			);
-		} else if (!colorOption && sizeOption) {
-			const sVal = sizeOption.values.find((v) => v.title === selectedSize);
-			matchingVariant = product.variants.find((v) =>
-				v.options.map(numOrStr).includes(numOrStr(sVal?.id))
-			);
-		} else if (colorOption && sizeOption) {
-			const cVal = colorOption.values.find((v) => v.title === selectedColor);
-			const sVal = sizeOption.values.find((v) => v.title === selectedSize);
-			matchingVariant = product.variants.find((v) => {
-				const varIds = v.options.map(numOrStr);
-				return (
-					cVal &&
-					sVal &&
-					varIds.includes(numOrStr(cVal.id)) &&
-					varIds.includes(numOrStr(sVal.id))
-				);
-			});
+		const chosenIds = [];
+		if (colorOpt && selectedColor) {
+			const cVal = colorOpt.values.find((v) => v.title === selectedColor);
+			if (cVal) chosenIds.push(numOrStr(cVal.id));
 		}
+		if (sizeOpt && selectedSize) {
+			const sVal = sizeOpt.values.find((v) => v.title === selectedSize);
+			if (sVal) chosenIds.push(numOrStr(sVal.id));
+		}
+		if (scentOpt && selectedScent) {
+			const scVal = scentOpt.values.find((v) => v.title === selectedScent);
+			if (scVal) chosenIds.push(numOrStr(scVal.id));
+		}
+		const matchingVariant = product.variants.find((v) => {
+			const varIds = v.options.map(numOrStr);
+			return chosenIds.every((cid) => varIds.includes(cid));
+		});
 		if (matchingVariant && typeof matchingVariant.price === "number") {
 			return parseFloat(matchingVariant.price / 100);
 		}
@@ -1345,45 +1417,31 @@ export default function CustomizeSelectedProduct() {
 	}
 	const displayedPrice = `$${getVariantPrice().toFixed(2)}`;
 
-	const uniqueColorsForDropdown = useMemo(() => {
-		if (!product) return [];
-		const colorOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "colors"
-		);
-		if (!colorOption?.values?.length) return [];
-		const uniqueTitles = new Set(colorOption.values.map((c) => c.title));
-		return Array.from(uniqueTitles);
-	}, [product]);
-
-	// Filter images based on color
+	// Filter the images based on color
 	const filteredImages = useMemo(() => {
 		if (!product) return [];
-		if (!selectedColor) {
+		const colorOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "colors"
+		);
+		if (!selectedColor || !colorOpt) {
 			return product.images.slice(0, 6);
 		}
-		const colorOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "colors"
-		);
-		if (!colorOption) return product.images.slice(0, 6);
-
-		function numOrStr(val) {
-			return typeof val === "number" ? val : parseInt(val, 10);
+		function numOrStr(x) {
+			return typeof x === "number" ? x : parseInt(x, 10);
 		}
-		const colorVal = colorOption.values.find(
-			(val) => val.title === selectedColor
-		);
+		const colorVal = colorOpt.values.find((v) => v.title === selectedColor);
 		if (!colorVal) return product.images.slice(0, 6);
 
-		const matchingVariants = product.variants.filter((v) => {
+		const matchingVars = product.variants.filter((v) => {
 			const varIds = v.options.map(numOrStr);
 			return varIds.includes(numOrStr(colorVal.id));
 		});
-		const matchingVariantIds = matchingVariants.map((mv) => mv.id);
+		const matchingIds = matchingVars.map((mv) => mv.id);
 		const filtered = product.images.filter((img) =>
-			img.variant_ids.some((id) => matchingVariantIds.includes(id))
+			img.variant_ids.some((id) => matchingIds.includes(id))
 		);
 		return filtered.length ? filtered.slice(0, 6) : product.images.slice(0, 6);
-	}, [selectedColor, product]);
+	}, [product, selectedColor]);
 
 	const sliderSettings = {
 		ref: sliderRef,
@@ -1466,19 +1524,14 @@ export default function CustomizeSelectedProduct() {
 	const [isCheckoutModalVisible, setIsCheckoutModalVisible] = useState(false);
 
 	/**
-	 * ------------------------------------------------------------------------
-	 * 4) ADD TO CART => SCREENSHOT
-	 * ------------------------------------------------------------------------
+	 * 6) ADD TO CART => SCREENSHOT
 	 */
 	async function handleAddToCart() {
 		if (isAddToCartDisabled) return;
-
-		// If no variant_id => must pick color/size
 		if (!order.variant_id) {
 			message.warning("Please select required options before adding to cart.");
 			return;
 		}
-
 		setIsAddToCartDisabled(true);
 
 		const previouslySelected = selectedElementId;
@@ -1488,7 +1541,6 @@ export default function CustomizeSelectedProduct() {
 		let bareUrl, finalUrl;
 
 		try {
-			// #1) Attempt normal html2canvas
 			const screenshotOptions = {
 				scale: 3,
 				useCORS: true,
@@ -1537,10 +1589,9 @@ export default function CustomizeSelectedProduct() {
 				}
 			);
 			finalUrl = finalUpload.url;
-		} catch (attemptOneErr) {
-			console.warn("Screenshot #1 failed, fallback #2...", attemptOneErr);
+		} catch (err1) {
+			console.warn("Screenshot #1 failed, fallback #2...", err1);
 			try {
-				// #2) Attempt relaxed config
 				const fallbackOptions = {
 					scale: 2,
 					useCORS: false,
@@ -1582,10 +1633,10 @@ export default function CustomizeSelectedProduct() {
 					}
 				);
 				finalUrl = finalUp2.url;
-			} catch (attemptTwoErr) {
+			} catch (err2) {
 				console.warn(
 					"Screenshot #2 also failed, fallback #3 (dom-to-image)...",
-					attemptTwoErr
+					err2
 				);
 				try {
 					const domOptions = {
@@ -1636,110 +1687,17 @@ export default function CustomizeSelectedProduct() {
 						}
 					);
 					finalUrl = finalUp3.url;
-				} catch (finalErr) {
+				} catch (err3) {
 					console.warn(
-						"dom-to-image also failed => final vanilla XHR fallback",
-						finalErr
+						"dom-to-image also failed => final fallback not possible",
+						err3
 					);
-					try {
-						// #4) final final fallback => do XHR => THEN ask for permission
-						const fallbackCanvas = document.createElement("canvas");
-						fallbackCanvas.width = 300;
-						fallbackCanvas.height = 300;
-						const ctx = fallbackCanvas.getContext("2d", {
-							willReadFrequently: true,
-						});
-						ctx.fillStyle = "#fff";
-						ctx.fillRect(0, 0, 300, 300);
-
-						const screenshotBlob = await new Promise(
-							(resolveBlob, rejectBlob) => {
-								fallbackCanvas.toBlob(
-									(blob) => {
-										if (!blob) {
-											rejectBlob(
-												new Error("Could not create fallback canvas blob")
-											);
-										} else {
-											resolveBlob(blob);
-										}
-									},
-									"image/jpeg",
-									0.8
-								);
-							}
-						);
-
-						const { url: fallbackScreenshotUrl } =
-							await fallbackVanillaJSXHRUploadScreenshot(
-								screenshotBlob,
-								fallbackUserId,
-								fallbackToken
-							);
-
-						bareUrl = fallbackScreenshotUrl;
-						finalUrl = fallbackScreenshotUrl;
-					} catch (vanillaScreenshotErr) {
-						console.error(
-							"Even final vanilla screenshot fallback failed",
-							vanillaScreenshotErr
-						);
-						// =========== ASK PERMISSION & re-try final screenshot attempt ============
-						try {
-							await requestImagePermissions();
-							message.info("Retrying screenshot after permission…");
-
-							const fallbackCanvas2 = document.createElement("canvas");
-							fallbackCanvas2.width = 300;
-							fallbackCanvas2.height = 300;
-							const ctx2 = fallbackCanvas2.getContext("2d", {
-								willReadFrequently: true,
-							});
-							ctx2.fillStyle = "#fff";
-							ctx2.fillRect(0, 0, 300, 300);
-
-							const screenshotBlob2 = await new Promise(
-								(resolveBlob, rejectBlob) => {
-									fallbackCanvas2.toBlob(
-										(blob) => {
-											if (!blob) {
-												rejectBlob(
-													new Error(
-														"Could not create fallback canvas blob again"
-													)
-												);
-											} else {
-												resolveBlob(blob);
-											}
-										},
-										"image/jpeg",
-										0.8
-									);
-								}
-							);
-
-							const { url: fallbackScreenshotUrl2 } =
-								await fallbackVanillaJSXHRUploadScreenshot(
-									screenshotBlob2,
-									fallbackUserId,
-									fallbackToken
-								);
-
-							bareUrl = fallbackScreenshotUrl2;
-							finalUrl = fallbackScreenshotUrl2;
-						} catch (permScreenshotErr) {
-							console.error(
-								"Last fallback screenshot attempt after permission also failed",
-								permScreenshotErr
-							);
-							message.error(
-								"Screenshot attempts all failed. Please refresh or try on another device."
-							);
-							setSelectedElementId(previouslySelected);
-							setIsAddToCartDisabled(false);
-							return;
-						}
-					}
+					message.error(
+						"Screenshot attempts all failed. Please refresh or try on another device."
+					);
+					setSelectedElementId(previouslySelected);
+					setIsAddToCartDisabled(false);
+					return;
 				}
 			}
 		}
@@ -1753,64 +1711,51 @@ export default function CustomizeSelectedProduct() {
 			return;
 		}
 
-		// If we have bareUrl & finalUrl
 		try {
+			// find matching variant again
 			let variantImage = "";
 			let matchingVariant = null;
 			function numOrStr(val) {
 				return typeof val === "number" ? val : parseInt(val, 10);
 			}
-			const colorOpt = product?.options?.find(
-				(opt) => opt.name.toLowerCase() === "colors"
+
+			const colorOpt = product.options.find(
+				(o) => o.name.toLowerCase() === "colors"
 			);
-			const sizeOpt = product?.options?.find(
-				(opt) => opt.name.toLowerCase() === "sizes"
+			const sizeOpt = product.options.find(
+				(o) => o.name.toLowerCase() === "sizes"
+			);
+			const scentOpt = product.options.find(
+				(o) => o.name.toLowerCase() === "scents"
 			);
 
-			if (product?.options && product?.variants && product?.images) {
-				if (!colorOpt && !sizeOpt) {
-					matchingVariant = product.variants[0] || null;
-				} else if (colorOpt && !sizeOpt) {
-					const cVal = colorOpt.values.find(
-						(val) => val.title === selectedColor
-					);
-					matchingVariant = product.variants.find((v) =>
-						v.options.map(numOrStr).includes(numOrStr(cVal?.id))
-					);
-				} else if (!colorOpt && sizeOpt) {
-					const sVal = sizeOpt.values.find((val) => val.title === selectedSize);
-					matchingVariant = product.variants.find((v) =>
-						v.options.map(numOrStr).includes(numOrStr(sVal?.id))
-					);
-				} else if (colorOpt && sizeOpt) {
-					const cVal = colorOpt.values.find(
-						(val) => val.title === selectedColor
-					);
-					const sVal = sizeOpt.values.find((val) => val.title === selectedSize);
-					matchingVariant = product.variants.find((v) => {
-						const varIds = v.options.map(numOrStr);
-						return (
-							cVal &&
-							sVal &&
-							varIds.includes(numOrStr(cVal.id)) &&
-							varIds.includes(numOrStr(sVal.id))
-						);
-					});
-				}
-				if (matchingVariant) {
-					const matchingImageObj = product.images.find((img) =>
-						img.variant_ids.includes(matchingVariant.id)
-					);
-					if (matchingImageObj) {
-						variantImage = matchingImageObj.src;
-					}
-				}
+			const chosenIds = [];
+			if (colorOpt && selectedColor) {
+				const cVal = colorOpt.values.find((v) => v.title === selectedColor);
+				if (cVal) chosenIds.push(numOrStr(cVal.id));
+			}
+			if (sizeOpt && selectedSize) {
+				const sVal = sizeOpt.values.find((v) => v.title === selectedSize);
+				if (sVal) chosenIds.push(numOrStr(sVal.id));
+			}
+			if (scentOpt && selectedScent) {
+				const scVal = scentOpt.values.find((v) => v.title === selectedScent);
+				if (scVal) chosenIds.push(numOrStr(scVal.id));
 			}
 
-			const firstImageElement = elements.find((el) => el.type === "image");
-			const originalPrintifyImageURL =
-				variantImage || (firstImageElement ? firstImageElement.src : "");
+			matchingVariant = product.variants.find((v) => {
+				const varIds = v.options.map(numOrStr);
+				return chosenIds.every((x) => varIds.includes(x));
+			});
 
+			if (matchingVariant) {
+				const matchingImageObj = product.images.find((img) =>
+					img.variant_ids.includes(matchingVariant.id)
+				);
+				if (matchingImageObj) {
+					variantImage = matchingImageObj.src;
+				}
+			}
 			let finalPrice = 0;
 			let finalPriceAfterDiscount = 0;
 			if (matchingVariant && typeof matchingVariant.price === "number") {
@@ -1826,9 +1771,12 @@ export default function CustomizeSelectedProduct() {
 				finalScreenshotUrl: finalUrl,
 				texts: order.customizations.texts,
 				images: order.customizations.images,
-				originalPrintifyImageURL,
+				originalPrintifyImageURL: variantImage,
 				size: selectedSize,
 				color: selectedColor,
+				scent: selectedScent,
+				printArea: "front",
+				PrintifyProductId: product.printifyProductDetails?.id || null,
 				variants: {
 					color: colorOpt
 						? colorOpt.values.find((c) => c.title === selectedColor)
@@ -1836,15 +1784,17 @@ export default function CustomizeSelectedProduct() {
 					size: sizeOpt
 						? sizeOpt.values.find((s) => s.title === selectedSize)
 						: null,
+					scent: scentOpt
+						? scentOpt.values.find((sc) => sc.title === selectedScent)
+						: null,
 				},
-				printArea: "front",
-				PrintifyProductId: product.printifyProductDetails?.id || null,
 			};
 
 			const chosenProductAttributes = {
 				SubSKU: String(Date.now()),
 				color: selectedColor,
 				size: selectedSize,
+				scent: selectedScent,
 				quantity: 999,
 				productImages: [],
 				price: finalPrice,
@@ -1868,13 +1818,12 @@ export default function CustomizeSelectedProduct() {
 						action: "User Added Product From The Custom Products",
 						label: `User added ${product.productName} to the cart`,
 					});
-
 					ReactPixel.track("AddToCart", {
 						content_name: product.title || product.productName,
 						content_ids: [product._id],
 						content_type: "product",
 						currency: "USD",
-						value: getVariantPrice(), // or product.price / product.priceAfterDiscount
+						value: getVariantPrice(),
 						contents: [
 							{
 								id: product._id,
@@ -1887,8 +1836,6 @@ export default function CustomizeSelectedProduct() {
 
 			openSidebar2();
 			message.success("Added to cart with custom design!");
-
-			// ADDED => user definitely added to cart
 			setDidUserAddToCart(true);
 		} catch (error) {
 			console.error("Screenshot or final upload failed:", error);
@@ -1953,15 +1900,12 @@ export default function CustomizeSelectedProduct() {
 		);
 	}
 
-	// Show tooltip for text
 	useEffect(() => {
 		if (selectedElementId) {
 			const el = elements.find((e) => e.id === selectedElementId);
 			if (el && el.type === "text") {
 				setShowTooltipForText(selectedElementId);
-				const timer = setTimeout(() => {
-					setShowTooltipForText(null);
-				}, 5000);
+				const timer = setTimeout(() => setShowTooltipForText(null), 5000);
 				return () => clearTimeout(timer);
 			}
 		}
@@ -1992,78 +1936,14 @@ export default function CustomizeSelectedProduct() {
 			? truncateText(productDescription, 30)
 			: productDescription;
 
-	function variantExistsForColorSize(sizeObj) {
-		if (!product) return false;
-		const colorOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "colors"
-		);
-		const sizeOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "sizes"
-		);
-		function numOrStr(val) {
-			return typeof val === "number" ? val : parseInt(val, 10);
-		}
-		if (!colorOption && sizeOption) {
-			return product.variants.some((v) =>
-				v.options.map(numOrStr).includes(numOrStr(sizeObj.id))
-			);
-		}
-		const selColorVal = colorOption?.values.find(
-			(val) => val.title === selectedColor
-		);
-		if (!selColorVal) return false;
-		return product.variants.some((v) => {
-			const varIds = v.options.map(numOrStr);
-			return (
-				varIds.includes(numOrStr(selColorVal.id)) &&
-				varIds.includes(numOrStr(sizeObj.id))
-			);
-		});
-	}
-
-	function handleColorChange(newColor) {
-		setSelectedColor(newColor);
-		setHasChangedSizeOrColor(true); // user definitely changed
-		const sizeOption = product.options.find(
-			(opt) => opt.name.toLowerCase() === "sizes"
-		);
-		if (sizeOption && sizeOption.values.length) {
-			const colorOption = product.options.find(
-				(opt) => opt.name.toLowerCase() === "colors"
-			);
-			const selectedColorValue = colorOption?.values.find(
-				(val) => val.title === newColor
-			);
-			if (!selectedColorValue) return;
-			const validVariants = product.variants.filter((v) => {
-				const varIds = v.options.map((xx) =>
-					typeof xx === "number" ? xx : parseInt(xx, 10)
-				);
-				return varIds.includes(
-					typeof selectedColorValue.id === "number"
-						? selectedColorValue.id
-						: parseInt(selectedColorValue.id, 10)
-				);
-			});
-			if (validVariants.length > 0) {
-				for (let sizeVal of sizeOption.values) {
-					if (
-						validVariants.some((v) =>
-							v.options.map(String).includes(String(sizeVal.id))
-						)
-					) {
-						setSelectedSize(sizeVal.title);
-						return;
-					}
-				}
-			}
-		}
-	}
-
-	function handleSizeChange(value) {
-		setSelectedSize(value);
-		setHasChangedSizeOrColor(true);
-	}
+	// color/size/scent option objects:
+	const colorOpt = product.options.find(
+		(o) => o.name.toLowerCase() === "colors"
+	);
+	const sizeOpt = product.options.find((o) => o.name.toLowerCase() === "sizes");
+	const scentOpt = product.options.find(
+		(o) => o.name.toLowerCase() === "scents"
+	);
 
 	return (
 		<CustomizeWrapper>
@@ -2101,7 +1981,7 @@ export default function CustomizeSelectedProduct() {
 				/>
 			</Helmet>
 
-			{/** ------------- ADDED: Our child with props ------------- */}
+			{/* Child Animation/Tutorial */}
 			<AnimationPODWalkThroughWrapper>
 				<AnimationPODWalkThrough
 					userAddedText={elements.some(
@@ -2112,44 +1992,32 @@ export default function CustomizeSelectedProduct() {
 					)}
 					userAddedImage={!!elements.find((el) => el.type === "image")}
 					userAddedToCart={didUserAddToCart}
-					// Key events
 					isSomethingSelected={!!selectedElementId}
 					userJustDoubleClickedCanvas={userJustDoubleClickedCanvas}
 					userJustSingleClickedText={userJustSingleClickedText}
-					// If there are multiple color/size options
 					hasMultipleSizeOrColor={hasMultipleSizeOrColor}
-					// Called by “Add to Cart” final button
 					onUserAddToCart={handleAddToCart}
-					// Called by “upload photo” step
 					onUserUploadPhoto={() => {
-						console.log(
-							"PARENT: onUserUploadPhoto function triggered => clicking hidden input"
-						);
 						hiddenGalleryInputRef.current?.click();
 					}}
-					// For step 3 (if multiple color/size)
-					onHandleColorChange={handleColorChange}
-					onHandleSizeChange={handleSizeChange}
-					// For the bubble’s color/size <Select>:
-					colorOptions={
-						product.options
-							.find((opt) => opt.name.toLowerCase() === "colors")
-							?.values.map((v) => v.title) || []
-					}
-					sizeOptions={
-						product.options
-							.find((opt) => opt.name.toLowerCase() === "sizes")
-							?.values.map((v) => v.title) || []
-					}
+					// color, size, scent
+					onHandleColorChange={setSelectedColor}
+					onHandleSizeChange={setSelectedSize}
+					onHandleScentChange={setSelectedScent}
+					colorOptions={colorOpt?.values.map((v) => v.title) || []}
+					sizeOptions={sizeOpt?.values.map((v) => v.title) || []}
+					scentOptions={scentOpt?.values.map((v) => v.title) || []}
 					selectedColor={selectedColor}
 					selectedSize={selectedSize}
+					selectedScent={selectedScent}
+					// Provide the 3 "variantExists" functions
+					variantExistsForColor={variantExistsForColor}
+					variantExistsForSize={variantExistsForOption}
+					variantExistsForScent={variantExistsForScent}
 				/>
 			</AnimationPODWalkThroughWrapper>
 
-			{/** -------------------------------------------------------- */}
-
 			<Row gutter={[18, 20]}>
-				{/* LEFT COLUMN: SLIDER/IMAGES */}
 				<Col xs={24} md={12}>
 					<StyledSlider {...sliderSettings}>
 						{filteredImages.map((image, idx) => {
@@ -2172,50 +2040,86 @@ export default function CustomizeSelectedProduct() {
 											}}
 										>
 											<MobileLeftCorner>
-												{product.options.some(
-													(opt) => opt.name.toLowerCase() === "colors"
-												) && (
+												{colorOpt?.values?.length > 0 && (
 													<Select
 														style={{ width: "100%", marginBottom: 8 }}
 														placeholder='Color'
 														value={selectedColor}
-														onChange={handleColorChange}
+														onChange={(val) => {
+															setSelectedColor(val);
+															setHasChangedSizeOrColor(true);
+														}}
 													>
-														{uniqueColorsForDropdown.map((colorTitle) => (
-															<Option key={colorTitle} value={colorTitle}>
-																{colorTitle}
+														{colorOpt.values.map((cObj) => (
+															<Option key={cObj.title} value={cObj.title}>
+																{cObj.title}
 															</Option>
 														))}
 													</Select>
 												)}
 
-												{product.options.some(
-													(opt) => opt.name.toLowerCase() === "sizes"
-												) && (
+												{sizeOpt?.values?.length > 0 && (
 													<Select
-														style={{ width: "100%" }}
+														style={{ width: "100%", marginBottom: 8 }}
 														placeholder='Size'
 														value={selectedSize}
-														onChange={handleSizeChange}
+														onChange={(val) => {
+															setSelectedSize(val);
+															setHasChangedSizeOrColor(true);
+														}}
 													>
-														{product.options
-															.find((opt) => opt.name.toLowerCase() === "sizes")
-															?.values.map((sizeObj) => {
-																const isDisabled =
-																	!variantExistsForColorSize(sizeObj);
-																return (
-																	<Option
-																		key={sizeObj.title}
-																		value={sizeObj.title}
-																		disabled={isDisabled}
-																		style={{
-																			color: isDisabled ? "#aaa" : "inherit",
-																		}}
-																	>
-																		{sizeObj.title}
-																	</Option>
-																);
-															})}
+														{sizeOpt.values.map((sizeObj) => {
+															const isDisabled = !variantExistsForOption(
+																sizeObj,
+																selectedColor,
+																selectedScent
+															);
+															return (
+																<Option
+																	key={sizeObj.title}
+																	value={sizeObj.title}
+																	disabled={isDisabled}
+																	style={{
+																		color: isDisabled ? "#aaa" : "inherit",
+																	}}
+																>
+																	{sizeObj.title}
+																</Option>
+															);
+														})}
+													</Select>
+												)}
+
+												{/* SCENT if present */}
+												{scentOpt?.values?.length > 0 && (
+													<Select
+														style={{ width: "100%" }}
+														placeholder='Scent'
+														value={selectedScent}
+														onChange={(val) => {
+															setSelectedScent(val);
+															setHasChangedSizeOrColor(true);
+														}}
+													>
+														{scentOpt.values.map((scObj) => {
+															const isDisabled = !variantExistsForScent(
+																scObj,
+																selectedColor,
+																selectedSize
+															);
+															return (
+																<Option
+																	key={scObj.title}
+																	value={scObj.title}
+																	disabled={isDisabled}
+																	style={{
+																		color: isDisabled ? "#aaa" : "inherit",
+																	}}
+																>
+																	{scObj.title}
+																</Option>
+															);
+														})}
 													</Select>
 												)}
 											</MobileLeftCorner>
@@ -2247,7 +2151,6 @@ export default function CustomizeSelectedProduct() {
 																	action: "User Added Text In Custom Design",
 																	label: "User Added Text In Custom Design",
 																});
-
 																ReactPixel.track("CustomizeProduct", {
 																	content_name:
 																		product.title || product.productName,
@@ -2295,7 +2198,6 @@ export default function CustomizeSelectedProduct() {
 																		"User Uploaded Image In Custom Design",
 																	label: "User Uploaded Image In Custom Design",
 																});
-
 																ReactPixel.track("CustomizeProduct", {
 																	content_name:
 																		product.title || product.productName,
@@ -2397,56 +2299,103 @@ export default function CustomizeSelectedProduct() {
 							Select Options:
 						</Title>
 						<Row gutter={12}>
-							{product.options.some(
-								(opt) => opt.name.toLowerCase() === "colors"
-							) && (
+							{colorOpt?.values?.length > 0 && (
 								<Col span={12}>
 									<Select
 										style={{ width: "100%" }}
 										className='selectDesktopOrMobile'
 										placeholder='Color'
 										value={selectedColor}
-										onChange={handleColorChange}
+										onChange={(val) => {
+											setSelectedColor(val);
+											setHasChangedSizeOrColor(true);
+										}}
 									>
-										{uniqueColorsForDropdown.map((colorTitle) => (
-											<Option key={colorTitle} value={colorTitle}>
-												{colorTitle}
+										{colorOpt.values.map((cObj) => (
+											<Option key={cObj.title} value={cObj.title}>
+												{cObj.title}
 											</Option>
 										))}
 									</Select>
 								</Col>
 							)}
 
-							{product.options.some(
-								(opt) => opt.name.toLowerCase() === "sizes"
-							) && (
+							{sizeOpt?.values?.length > 0 && (
 								<Col span={12}>
 									<Select
 										style={{ width: "100%" }}
 										className='selectDesktopOrMobile'
 										placeholder='Size'
 										value={selectedSize}
-										onChange={handleSizeChange}
+										onChange={(val) => {
+											setSelectedSize(val);
+											setHasChangedSizeOrColor(true);
+										}}
 									>
-										{product.options
-											.find((opt) => opt.name.toLowerCase() === "sizes")
-											?.values.map((sizeObj) => {
-												const isDisabled = !variantExistsForColorSize(sizeObj);
-												return (
-													<Option
-														key={sizeObj.title}
-														value={sizeObj.title}
-														disabled={isDisabled}
-														style={{ color: isDisabled ? "#aaa" : "inherit" }}
-													>
-														{sizeObj.title}
-													</Option>
-												);
-											})}
+										{sizeOpt.values.map((sizeObj) => {
+											const isDisabled = !variantExistsForOption(
+												sizeObj,
+												selectedColor,
+												selectedScent
+											);
+											return (
+												<Option
+													key={sizeObj.title}
+													value={sizeObj.title}
+													disabled={isDisabled}
+													style={{ color: isDisabled ? "#aaa" : "inherit" }}
+												>
+													{sizeObj.title}
+												</Option>
+											);
+										})}
 									</Select>
 								</Col>
 							)}
 						</Row>
+
+						{/* Scent if any */}
+						{scentOpt?.values?.length > 0 && (
+							<Row gutter={12} style={{ marginTop: 16 }}>
+								<Col span={24}>
+									<Title
+										level={4}
+										style={{ color: "var(--text-color-dark)", marginBottom: 8 }}
+									>
+										Scent:
+									</Title>
+									<Select
+										style={{ width: "100%" }}
+										className='selectDesktopOrMobile'
+										placeholder='Scent'
+										value={selectedScent}
+										onChange={(val) => {
+											setSelectedScent(val);
+											setHasChangedSizeOrColor(true);
+										}}
+									>
+										{scentOpt.values.map((scObj) => {
+											const isDisabled = !variantExistsForScent(
+												scObj,
+												selectedColor,
+												selectedSize
+											);
+											return (
+												<Option
+													key={scObj.title}
+													value={scObj.title}
+													disabled={isDisabled}
+													style={{ color: isDisabled ? "#aaa" : "inherit" }}
+												>
+													{scObj.title}
+												</Option>
+											);
+										})}
+									</Select>
+								</Col>
+							</Row>
+						)}
+
 						<Divider style={{ margin: "16px 0" }} />
 
 						<Title level={4} style={{ color: "var(--text-color-dark)" }}>
@@ -2469,7 +2418,6 @@ export default function CustomizeSelectedProduct() {
 										type='primary'
 										block
 										onClick={() => addTextElement(null, true)}
-										style={{ fontWeight: "bold" }}
 									>
 										Add Text
 									</Button>
@@ -2522,54 +2470,96 @@ export default function CustomizeSelectedProduct() {
 							Select Options:
 						</Title>
 						<Row gutter={12}>
-							{product.options.some(
-								(opt) => opt.name.toLowerCase() === "colors"
-							) && (
+							{colorOpt?.values?.length > 0 && (
 								<Col span={12}>
 									<Select
 										style={{ width: "100%" }}
 										placeholder='Color'
 										value={selectedColor}
-										onChange={handleColorChange}
+										onChange={(val) => {
+											setSelectedColor(val);
+											setHasChangedSizeOrColor(true);
+										}}
 									>
-										{uniqueColorsForDropdown.map((colorTitle) => (
-											<Option key={colorTitle} value={colorTitle}>
-												{colorTitle}
+										{colorOpt.values.map((cObj) => (
+											<Option key={cObj.title} value={cObj.title}>
+												{cObj.title}
 											</Option>
 										))}
 									</Select>
 								</Col>
 							)}
 
-							{product.options.some(
-								(opt) => opt.name.toLowerCase() === "sizes"
-							) && (
+							{sizeOpt?.values?.length > 0 && (
 								<Col span={12}>
 									<Select
 										style={{ width: "100%" }}
 										placeholder='Size'
 										value={selectedSize}
-										onChange={handleSizeChange}
+										onChange={(val) => {
+											setSelectedSize(val);
+											setHasChangedSizeOrColor(true);
+										}}
 									>
-										{product.options
-											.find((opt) => opt.name.toLowerCase() === "sizes")
-											?.values.map((sizeObj) => {
-												const isDisabled = !variantExistsForColorSize(sizeObj);
-												return (
-													<Option
-														key={sizeObj.title}
-														value={sizeObj.title}
-														disabled={isDisabled}
-														style={{ color: isDisabled ? "#aaa" : "inherit" }}
-													>
-														{sizeObj.title}
-													</Option>
-												);
-											})}
+										{sizeOpt.values.map((sizeObj) => {
+											const isDisabled = !variantExistsForOption(
+												sizeObj,
+												selectedColor,
+												selectedScent
+											);
+											return (
+												<Option
+													key={sizeObj.title}
+													value={sizeObj.title}
+													disabled={isDisabled}
+													style={{ color: isDisabled ? "#aaa" : "inherit" }}
+												>
+													{sizeObj.title}
+												</Option>
+											);
+										})}
 									</Select>
 								</Col>
 							)}
 						</Row>
+
+						{/* Scent if any */}
+						{scentOpt?.values?.length > 0 && (
+							<>
+								<Divider style={{ margin: "16px 0" }} />
+								<Title level={4} style={{ color: "var(--text-color-dark)" }}>
+									Scent
+								</Title>
+								<Select
+									style={{ width: "100%" }}
+									placeholder='Scent'
+									value={selectedScent}
+									onChange={(val) => {
+										setSelectedScent(val);
+										setHasChangedSizeOrColor(true);
+									}}
+								>
+									{scentOpt.values.map((scObj) => {
+										const isDisabled = !variantExistsForScent(
+											scObj,
+											selectedColor,
+											selectedSize
+										);
+										return (
+											<Option
+												key={scObj.title}
+												value={scObj.title}
+												disabled={isDisabled}
+												style={{ color: isDisabled ? "#aaa" : "inherit" }}
+											>
+												{scObj.title}
+											</Option>
+										);
+									})}
+								</Select>
+							</>
+						)}
+
 						<Divider style={{ margin: "16px 0" }} />
 
 						<Title level={4} style={{ color: "var(--text-color-dark)" }}>
@@ -2590,7 +2580,6 @@ export default function CustomizeSelectedProduct() {
 								type='primary'
 								block
 								onClick={() => addTextElement(null, true)}
-								style={{ fontWeight: "bold" }}
 							>
 								Add Text
 							</Button>
@@ -2598,7 +2587,6 @@ export default function CustomizeSelectedProduct() {
 
 						<Divider />
 						<Title level={4}>Upload Your Image</Title>
-
 						<UploadZone {...getRootProps()}>
 							<input {...getInputProps()} />
 							<p>Drag &amp; drop or tap to select an image</p>
@@ -2719,6 +2707,9 @@ export default function CustomizeSelectedProduct() {
 		</CustomizeWrapper>
 	);
 
+	/**
+	 * Renders the draggable design elements in the main “printArea”
+	 */
 	function renderDesignElements() {
 		return elements.map((el) => {
 			const isSelected = el.id === selectedElementId;
@@ -3165,7 +3156,7 @@ export default function CustomizeSelectedProduct() {
 
 /**
  * ------------------------------------------------------------------------
- * D) STYLED COMPONENTS
+ * STYLED COMPONENTS
  * ------------------------------------------------------------------------
  */
 const CustomizeWrapper = styled.section`
@@ -3568,7 +3559,7 @@ const AnimationPODWalkThroughWrapper = styled.div`
 	position: absolute;
 	top: 50%;
 	left: -80px;
-	z-index: 1; /* ensure it's on top */
+	z-index: 1;
 
 	@media (max-width: 700px) {
 		left: -220px;

@@ -45,6 +45,7 @@ const Z3StepTwo = ({
 		const personalStockCount = cart.filter(
 			(item) => !item.isPrintifyProduct
 		).length;
+		// eslint-disable-next-line
 		const printifyCount = cart.filter((item) => item.isPrintifyProduct).length;
 
 		let finalPrice = 0;
@@ -57,7 +58,24 @@ const Z3StepTwo = ({
 			}
 		}
 		// For Printify items, add $4 for each
-		finalPrice += printifyCount * 6;
+		// ----------------------------------------------
+		// Updated logic to handle "Mug" vs. non-mug, plus +4 for each additional POD item
+		cart
+			.filter((item) => item.isPrintifyProduct)
+			.forEach((item) => {
+				const isMug = item.name.toLowerCase().includes("mug");
+				const basePrice = isMug ? 8 : 6; // If "Mug" in name => 8, otherwise 6
+				const quantity = item.amount || 1;
+
+				// Add base for the first POD product
+				finalPrice += basePrice;
+
+				// For each extra unit of this product => +4
+				if (quantity > 1) {
+					finalPrice += 4 * (quantity - 1);
+				}
+			});
+		// ----------------------------------------------
 
 		// If there are multiple store IDs, add a 75% surcharge
 		if (hasMultipleStores) {
@@ -249,7 +267,7 @@ const Z3StepTwo = ({
 							Your custom-designed item requires extra production time. Please
 							note that it can take up to <strong>10 days</strong> for Print on
 							Demand (POD) items to be produced and shipped. We appreciate your
-							patience and look forward to delivering your unique creation!
+							patience and look forward to delivering your unique design!
 						</PODNote>
 					)}
 

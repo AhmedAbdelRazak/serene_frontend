@@ -8,7 +8,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
-
 import { Modal } from "antd";
 
 /* Keyframe animations */
@@ -42,6 +41,7 @@ const SidebarCart = ({ from }) => {
 		toggleAmount,
 		changeColor,
 		changeSize,
+		changeScent, // <-- you need this if you actually allow changing the scent in-cart
 		removeItem,
 		clearCart,
 		total_amount,
@@ -61,26 +61,41 @@ const SidebarCart = ({ from }) => {
 		});
 	}, []);
 
-	// Check stock availability
+	/**
+	 * ----------------------------------------------------------------------------
+	 * “Stock availability” check: now includes color + size + scent,
+	 * and also allows backorder if it's a POD or otherwise.
+	 * ----------------------------------------------------------------------------
+	 */
 	const checkingAvailability = cart.map((item) => {
 		const product = item.allProductDetailsIncluded || {};
 		const productAttrs = product.productAttributes || [];
 
-		// If local variations exist
+		// if it’s a POD item, we might allow backorder or treat it differently
+		// eslint-disable-next-line
+		const isPodProduct =
+			item.isPrintifyProduct && product.printifyProductDetails?.POD === true;
+
+		// find the “chosenAttr” by color + size + scent
 		const chosenAttr = productAttrs.find(
-			(attr) => attr.color === item.color && attr.size === item.size
+			(attr) =>
+				attr.color === item.color &&
+				attr.size === item.size &&
+				attr.scent === item.scent
 		);
 
+		// The product might be active OR on backorder for it to be considered “in stock”
+		// If there’s a matching attribute, check that quantity; otherwise fallback to product.quantity
 		if (productAttrs.length > 0 && chosenAttr) {
 			return (
-				product.activeProduct &&
+				(product.activeProduct || product.activeBackorder) && // allow if either is true
 				chosenAttr.quantity >= item.amount &&
 				item.amount > 0
 			);
 		} else {
-			// No local variant => compare to product.quantity
+			// if no matching attribute or productAttrs is empty => fallback
 			return (
-				product.activeProduct &&
+				(product.activeProduct || product.activeBackorder) &&
 				product.quantity >= item.amount &&
 				item.amount > 0
 			);
@@ -122,16 +137,12 @@ const SidebarCart = ({ from }) => {
 							const product = item.allProductDetailsIncluded || {};
 							const productAttrs = product.productAttributes || [];
 
-							const uniqueProductColors = [
-								...new Set(productAttrs.map((attr) => attr.color)),
-							];
-							const uniqueProductSizes = [
-								...new Set(productAttrs.map((attr) => attr.size)),
-							];
-
-							// find the chosen attribute
+							// figure out which attribute the user selected
 							const chosenAttr = productAttrs.find(
-								(attr) => attr.color === item.color && attr.size === item.size
+								(attr) =>
+									attr.color === item.color &&
+									attr.size === item.size &&
+									attr.scent === item.scent
 							);
 							const maxQuantity = chosenAttr
 								? chosenAttr.quantity
@@ -144,10 +155,23 @@ const SidebarCart = ({ from }) => {
 									chosenAttr.quantity < item.amount) ||
 								product.quantity <= 0;
 
-							// if it's a Printify POD item, we often disable color/size changes
+							// check if POD product => disable color/size/scent changes
 							const isPodProduct =
 								item.isPrintifyProduct &&
 								product.printifyProductDetails?.POD === true;
+
+							// build arrays for color/size/scent (filter out blanks)
+							const uniqueProductColors = [
+								...new Set(productAttrs.map((attr) => attr.color)),
+							].filter((c) => c && c !== "nocolor");
+
+							const uniqueProductSizes = [
+								...new Set(productAttrs.map((attr) => attr.size)),
+							].filter((s) => s && s !== "nosizes");
+
+							const uniqueProductScents = [
+								...new Set(productAttrs.map((attr) => attr.scent)),
+							].filter((sc) => sc && sc !== "noscent");
 
 							return (
 								<CartItem key={i}>
@@ -199,14 +223,14 @@ const SidebarCart = ({ from }) => {
 											{(item.priceAfterDiscount * item.amount).toFixed(2)}
 										</ItemTotal>
 
-										{/* If the product has variations => color/size */}
-										{item.chosenProductAttributes &&
-											productAttrs.length > 0 && (
-												<AttributeWrapper>
-													{/* ========== COLOR SELECT ========== */}
-													{uniqueProductColors.length > 0 &&
-														(isPodProduct && item.customDesign ? (
-															/* If it's a POD item with a custom design => single disabled option */
+										{/* Only show color/size/scent if they exist */}
+										{productAttrs.length > 0 && (
+											<AttributeWrapper>
+												{/* ========== COLOR SELECT ========== */}
+												{uniqueProductColors.length > 0 && (
+													<>
+														{isPodProduct && item.customDesign ? (
+															// POD => single disabled option
 															<AttributeSelect
 																disabled
 																style={{ color: "grey" }}
@@ -229,7 +253,7 @@ const SidebarCart = ({ from }) => {
 																</option>
 															</AttributeSelect>
 														) : (
-															/* Normal color select logic */
+															// Normal color select
 															<AttributeSelect
 																disabled={isPodProduct}
 																style={{
@@ -244,25 +268,29 @@ const SidebarCart = ({ from }) => {
 																				a.color.toLowerCase() ===
 																					newColor.toLowerCase() &&
 																				a.size.toLowerCase() ===
-																					item.size.toLowerCase()
+																					item.size.toLowerCase() &&
+																				a.scent.toLowerCase() ===
+																					item.scent.toLowerCase()
 																		);
 																		const chosenColorImage =
 																			newChosenAttr?.productImages?.[0]?.url ||
 																			item.image;
 																		const newQuantity =
 																			newChosenAttr?.quantity || 0;
+
 																		changeColor(
 																			item.id,
 																			newColor,
 																			item.size,
 																			chosenColorImage,
 																			newQuantity,
-																			item.color
+																			item.color,
+																			item.scent // pass current scent
 																		);
 																	}
 																}}
 															>
-																{uniqueProductColors.map((colorVal, ii) => {
+																{uniqueProductColors.map((colorVal, idx) => {
 																	// Attempt to match color name from allColors
 																	const foundColorObj = allColors.find(
 																		(clr) => clr.hexa === colorVal
@@ -271,19 +299,21 @@ const SidebarCart = ({ from }) => {
 																		? foundColorObj.color
 																		: colorVal;
 																	return (
-																		<option key={ii} value={colorVal}>
+																		<option key={idx} value={colorVal}>
 																			{colorName}
 																		</option>
 																	);
 																})}
 															</AttributeSelect>
-														))}
+														)}
+													</>
+												)}
 
-													{/* ========== SIZE SELECT ========== */}
-													{uniqueProductSizes[0] !== "nosizes" &&
-														uniqueProductSizes.length > 0 &&
-														(isPodProduct && item.customDesign ? (
-															/* POD w/ custom design => single disabled option */
+												{/* ========== SIZE SELECT ========== */}
+												{uniqueProductSizes.length > 0 && (
+													<>
+														{isPodProduct && item.customDesign ? (
+															// POD => single disabled option
 															<AttributeSelect
 																disabled
 																style={{ color: "grey" }}
@@ -306,7 +336,7 @@ const SidebarCart = ({ from }) => {
 																</option>
 															</AttributeSelect>
 														) : (
-															/* Normal size select */
+															// Normal size select
 															<AttributeSelect
 																disabled={isPodProduct}
 																style={{
@@ -321,7 +351,9 @@ const SidebarCart = ({ from }) => {
 																				a.size.toLowerCase() ===
 																					newSize.toLowerCase() &&
 																				a.color.toLowerCase() ===
-																					item.color.toLowerCase()
+																					item.color.toLowerCase() &&
+																				a.scent.toLowerCase() ===
+																					item.scent.toLowerCase()
 																		);
 																		const newQuantity =
 																			newChosenAttr?.quantity || 0;
@@ -330,20 +362,92 @@ const SidebarCart = ({ from }) => {
 																			newSize,
 																			item.color,
 																			newQuantity,
-																			item.size
+																			item.size,
+																			item.scent
 																		);
 																	}
 																}}
 															>
-																{uniqueProductSizes.map((sz, iii) => (
-																	<option key={iii} value={sz}>
+																{uniqueProductSizes.map((sz, i2) => (
+																	<option key={i2} value={sz}>
 																		{sz}
 																	</option>
 																))}
 															</AttributeSelect>
-														))}
-												</AttributeWrapper>
-											)}
+														)}
+													</>
+												)}
+
+												{/* ========== SCENT SELECT ========== */}
+												{uniqueProductScents.length > 0 && (
+													<>
+														{isPodProduct && item.customDesign ? (
+															// POD => single disabled option
+															<AttributeSelect
+																disabled
+																style={{ color: "grey" }}
+																value={
+																	item.customDesign.variants?.scent?.title ||
+																	item.customDesign.scent ||
+																	item.scent
+																}
+															>
+																<option
+																	value={
+																		item.customDesign.variants?.scent?.title ||
+																		item.customDesign.scent ||
+																		item.scent
+																	}
+																>
+																	{item.customDesign.variants?.scent?.title ||
+																		item.customDesign.scent ||
+																		item.scent}
+																</option>
+															</AttributeSelect>
+														) : (
+															// Normal scent select
+															<AttributeSelect
+																disabled={isPodProduct}
+																style={{
+																	color: isPodProduct ? "grey" : "inherit",
+																}}
+																value={item.scent}
+																onChange={(e) => {
+																	if (!isPodProduct) {
+																		const newScent = e.target.value;
+																		const newChosenAttr = productAttrs.find(
+																			(a) =>
+																				a.scent.toLowerCase() ===
+																					newScent.toLowerCase() &&
+																				a.color.toLowerCase() ===
+																					item.color.toLowerCase() &&
+																				a.size.toLowerCase() ===
+																					item.size.toLowerCase()
+																		);
+																		const newQuantity =
+																			newChosenAttr?.quantity || 0;
+																		changeScent(
+																			item.id,
+																			newScent,
+																			item.color,
+																			item.size,
+																			newQuantity,
+																			item.scent
+																		);
+																	}
+																}}
+															>
+																{uniqueProductScents.map((sc, i3) => (
+																	<option key={i3} value={sc}>
+																		{sc}
+																	</option>
+																))}
+															</AttributeSelect>
+														)}
+													</>
+												)}
+											</AttributeWrapper>
+										)}
 
 										<RemoveButton
 											onClick={() => removeItem(item.id, item.size, item.color)}
@@ -381,16 +485,16 @@ const SidebarCart = ({ from }) => {
 											contents: cart.map((item) => ({
 												id: item.id,
 												quantity: item.amount,
-												item_price: item.priceAfterDiscount, // optional, if you want the per-item price
+												item_price: item.priceAfterDiscount,
 											})),
-											value: Number(total_amount).toFixed(2), // total cart value
+											value: Number(total_amount).toFixed(2),
 											currency: "USD",
 											content_type: "product",
 										});
 									} else {
-										// find out-of-stock items
+										// find which items are out of stock
 										const outOfStockItems = cart.filter(
-											(item, index) => !checkingAvailability[index]
+											(itm, idx) => !checkingAvailability[idx]
 										);
 										outOfStockItems.forEach((itm) => {
 											toast.error(
@@ -417,15 +521,8 @@ const SidebarCart = ({ from }) => {
 				onCancel={() => setModalItem(null)}
 				footer={null}
 				title={null}
-				closable={true}
+				closable
 				centered
-				// Instead of bodyStyle, use the new 'styles' prop
-				styles={{
-					body: {
-						padding: "10px",
-						textAlign: "center",
-					},
-				}}
 				maskClosable
 				width='auto'
 				zIndex={9999}
@@ -450,7 +547,6 @@ export default SidebarCart;
 
 /* -------------- STYLED COMPONENTS -------------- */
 
-/* Overlay behind the cart sidebar */
 const Overlay = styled.div`
 	position: fixed;
 	top: 0;
@@ -462,7 +558,6 @@ const Overlay = styled.div`
 	animation: ${fadeIn} 0.3s ease-in-out;
 `;
 
-/* CartWrapper with $ prop to avoid warnings */
 const CartWrapper = styled.div`
 	position: fixed;
 	top: 0;
@@ -590,6 +685,7 @@ const AttributeWrapper = styled.div`
 	display: flex;
 	align-items: center;
 	margin-top: 10px;
+	flex-wrap: wrap;
 `;
 
 const AttributeSelect = styled.select`
@@ -598,7 +694,7 @@ const AttributeSelect = styled.select`
 	border: 1px solid var(--border-color-dark);
 	border-radius: 5px;
 	cursor: pointer;
-	max-width: 80% !important;
+	max-width: 70%;
 	text-transform: capitalize;
 	font-size: 14px;
 

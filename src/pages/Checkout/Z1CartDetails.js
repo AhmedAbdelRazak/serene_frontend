@@ -16,16 +16,16 @@ const Z1CartDetails = ({ appliedCoupon, goodCoupon }) => {
 		toggleAmount,
 		changeColor,
 		changeSize,
+		changeScent, // <-- If you allow changing scents, ensure your context has this
 		// eslint-disable-next-line
 		shipmentChosen,
 	} = useCartContext();
+
 	const [allColors, setAllColors] = useState([]);
 	const [modalItem, setModalItem] = useState(null);
 
-	console.log(cart, "cart");
-
 	useEffect(() => {
-		// Fetch all available colors
+		// Fetch all available colors (for color naming)
 		getColors().then((data) => {
 			if (data.error) {
 				console.log(data.error);
@@ -35,6 +35,7 @@ const Z1CartDetails = ({ appliedCoupon, goodCoupon }) => {
 		});
 	}, []);
 
+	// If the coupon is good, apply the discount
 	const totalAmountAdjusted = goodCoupon
 		? (
 				total_amount -
@@ -62,25 +63,32 @@ const Z1CartDetails = ({ appliedCoupon, goodCoupon }) => {
 							const product = item.allProductDetailsIncluded || {};
 							const productAttrs = product.productAttributes || [];
 
-							// Gather unique colors/sizes
+							// gather unique colors/sizes/scents from productAttrs
 							const uniqueProductColors = [
 								...new Set(productAttrs.map((attr) => attr.color)),
-							];
+							].filter((c) => c && c !== "nocolor");
 							const uniqueProductSizes = [
 								...new Set(productAttrs.map((attr) => attr.size)),
-							];
+							].filter((s) => s && s !== "nosizes");
+							const uniqueProductScents = [
+								...new Set(productAttrs.map((attr) => attr.scent)),
+							].filter((sc) => sc && sc !== "noscent");
 
-							// Find matching local attribute
+							// find the matching local attribute
 							const chosenAttr = productAttrs.find(
-								(attr) => attr.color === item.color && attr.size === item.size
+								(attr) =>
+									attr.color === item.color &&
+									attr.size === item.size &&
+									// if your product doesn't have a scent, it won't match anyway
+									attr.scent === item.scent
 							);
 
-							// Determine the maximum allowed quantity
+							// max quantity
 							const maxQuantity = chosenAttr
 								? chosenAttr.quantity
 								: product.quantity || item.max || 999;
 
-							// Check if product is POD => disable color/size changes
+							// if product is POD => disable color/size/scent changes
 							const isPodProduct =
 								item.isPrintifyProduct &&
 								product.printifyProductDetails?.POD === true;
@@ -126,153 +134,235 @@ const Z1CartDetails = ({ appliedCoupon, goodCoupon }) => {
 
 										<ItemPrice>Price: ${item.priceAfterDiscount}</ItemPrice>
 										<ItemTotal>
-											Item Total: ${item.priceAfterDiscount * item.amount}
+											Item Total: $
+											{(item.priceAfterDiscount * item.amount).toFixed(2)}
 										</ItemTotal>
 
-										{/* If local variant => color/size selectors */}
+										{/* If we have chosenProductAttributes => show color/size/scent (if present) */}
 										{item.chosenProductAttributes && (
 											<AttributeWrapper>
 												{/* ===== COLOR SELECT ===== */}
-												{uniqueProductColors.length > 0 &&
-													(isPodProduct && item.customDesign ? (
-														// POD with customDesign => show single disabled option
-														<AttributeSelect
-															disabled
-															style={{ color: "grey" }}
-															value={
-																item.customDesign.variants?.color?.title ||
-																item.customDesign.color ||
-																item.color
-															}
-														>
-															<option
+												{uniqueProductColors.length > 0 && (
+													<>
+														{isPodProduct && item.customDesign ? (
+															// POD with customDesign => single disabled option
+															<AttributeSelect
+																disabled
+																style={{ color: "grey" }}
 																value={
 																	item.customDesign.variants?.color?.title ||
 																	item.customDesign.color ||
 																	item.color
 																}
 															>
-																{item.customDesign.variants?.color?.title ||
-																	item.customDesign.color ||
-																	item.color}
-															</option>
-														</AttributeSelect>
-													) : (
-														// Normal color select => multiple options
-														<AttributeSelect
-															disabled={isPodProduct}
-															style={{
-																color: isPodProduct ? "grey" : "inherit",
-															}}
-															value={item.color}
-															onChange={(e) => {
-																if (!isPodProduct) {
-																	const newColor = e.target.value;
-																	const chosenColorImageHelper =
-																		productAttrs.find(
-																			(attr) => attr.color === newColor
-																		);
-																	const chosenColorImage =
-																		chosenColorImageHelper?.productImages?.[0]
-																			?.url;
-																	const chosenAttribute2 = productAttrs.find(
-																		(attr) =>
-																			attr.color.toLowerCase() ===
-																				newColor.toLowerCase() &&
-																			attr.size.toLowerCase() ===
-																				item.size.toLowerCase()
-																	);
-																	const newQuantity =
-																		chosenAttribute2?.quantity || 0;
-
-																	changeColor(
-																		item.id,
-																		newColor,
-																		item.size,
-																		chosenColorImage,
-																		newQuantity,
+																<option
+																	value={
+																		item.customDesign.variants?.color?.title ||
+																		item.customDesign.color ||
 																		item.color
+																	}
+																>
+																	{item.customDesign.variants?.color?.title ||
+																		item.customDesign.color ||
+																		item.color}
+																</option>
+															</AttributeSelect>
+														) : (
+															// Normal color select => multiple options
+															<AttributeSelect
+																disabled={isPodProduct}
+																style={{
+																	color: isPodProduct ? "grey" : "inherit",
+																}}
+																value={item.color}
+																onChange={(e) => {
+																	if (!isPodProduct) {
+																		const newColor = e.target.value;
+																		// find matching attribute with the new color
+																		const chosenColorImageHelper =
+																			productAttrs.find(
+																				(attr) => attr.color === newColor
+																			);
+																		const chosenColorImage =
+																			chosenColorImageHelper?.productImages?.[0]
+																				?.url;
+																		const chosenAttribute2 = productAttrs.find(
+																			(attr) =>
+																				attr.color?.toLowerCase() ===
+																					newColor.toLowerCase() &&
+																				attr.size?.toLowerCase() ===
+																					item.size.toLowerCase() &&
+																				attr.scent?.toLowerCase() ===
+																					item.scent?.toLowerCase()
+																		);
+																		const newQuantity =
+																			chosenAttribute2?.quantity || 0;
+
+																		changeColor(
+																			item.id,
+																			newColor,
+																			item.size,
+																			chosenColorImage,
+																			newQuantity,
+																			item.color
+																			// If you also need to pass scent, add item.scent here
+																		);
+																	}
+																}}
+															>
+																{uniqueProductColors.map((cc, ii) => {
+																	const colorName = allColors.find(
+																		(c) => c.hexa === cc
+																	)?.color;
+																	return (
+																		<option key={ii} value={cc}>
+																			{colorName || cc}
+																		</option>
 																	);
-																}
-															}}
-														>
-															{uniqueProductColors.map((cc, ii) => {
-																const colorName = allColors.find(
-																	(c) => c.hexa === cc
-																)?.color;
-																return (
-																	<option key={ii} value={cc}>
-																		{colorName || cc}
-																	</option>
-																);
-															})}
-														</AttributeSelect>
-													))}
+																})}
+															</AttributeSelect>
+														)}
+													</>
+												)}
 
 												{/* ===== SIZE SELECT ===== */}
-												{uniqueProductSizes[0] !== "nosizes" &&
-													uniqueProductSizes.length > 0 &&
-													(isPodProduct && item.customDesign ? (
-														// POD with customDesign => show single disabled option for size
-														<AttributeSelect
-															disabled
-															style={{ color: "grey" }}
-															value={
-																item.customDesign.variants?.size?.title ||
-																item.customDesign.size ||
-																item.size
-															}
-														>
-															<option
+												{uniqueProductSizes.length > 0 && (
+													<>
+														{isPodProduct && item.customDesign ? (
+															// POD => single disabled option for size
+															<AttributeSelect
+																disabled
+																style={{ color: "grey" }}
 																value={
 																	item.customDesign.variants?.size?.title ||
 																	item.customDesign.size ||
 																	item.size
 																}
 															>
-																{item.customDesign.variants?.size?.title ||
-																	item.customDesign.size ||
-																	item.size}
-															</option>
-														</AttributeSelect>
-													) : (
-														// Normal size select => multiple options
-														<AttributeSelect
-															disabled={isPodProduct}
-															style={{
-																color: isPodProduct ? "grey" : "inherit",
-															}}
-															value={item.size}
-															onChange={(e) => {
-																if (!isPodProduct) {
-																	const newSize = e.target.value;
-																	const chosenAttribute2 = productAttrs.find(
-																		(attr) =>
-																			attr.size.toLowerCase() ===
-																				newSize.toLowerCase() &&
-																			attr.color.toLowerCase() ===
-																				item.color.toLowerCase()
-																	);
-																	const newQuantity =
-																		chosenAttribute2?.quantity || 0;
-
-																	changeSize(
-																		item.id,
-																		newSize,
-																		item.color,
-																		newQuantity,
+																<option
+																	value={
+																		item.customDesign.variants?.size?.title ||
+																		item.customDesign.size ||
 																		item.size
-																	);
-																}
-															}}
-														>
-															{uniqueProductSizes.map((ss, ii) => (
-																<option key={ii} value={ss}>
-																	{ss}
+																	}
+																>
+																	{item.customDesign.variants?.size?.title ||
+																		item.customDesign.size ||
+																		item.size}
 																</option>
-															))}
-														</AttributeSelect>
-													))}
+															</AttributeSelect>
+														) : (
+															// Normal size select => multiple options
+															<AttributeSelect
+																disabled={isPodProduct}
+																style={{
+																	color: isPodProduct ? "grey" : "inherit",
+																}}
+																value={item.size}
+																onChange={(e) => {
+																	if (!isPodProduct) {
+																		const newSize = e.target.value;
+																		const chosenAttribute2 = productAttrs.find(
+																			(attr) =>
+																				attr.size?.toLowerCase() ===
+																					newSize.toLowerCase() &&
+																				attr.color?.toLowerCase() ===
+																					item.color.toLowerCase() &&
+																				attr.scent?.toLowerCase() ===
+																					item.scent?.toLowerCase()
+																		);
+																		const newQuantity =
+																			chosenAttribute2?.quantity || 0;
+
+																		changeSize(
+																			item.id,
+																			newSize,
+																			item.color,
+																			newQuantity,
+																			item.size
+																		);
+																	}
+																}}
+															>
+																{uniqueProductSizes.map((ss, ii) => (
+																	<option key={ii} value={ss}>
+																		{ss}
+																	</option>
+																))}
+															</AttributeSelect>
+														)}
+													</>
+												)}
+
+												{/* ===== SCENT SELECT ===== */}
+												{uniqueProductScents.length > 0 && (
+													<>
+														{isPodProduct && item.customDesign ? (
+															// POD => single disabled option for scent
+															<AttributeSelect
+																disabled
+																style={{ color: "grey" }}
+																value={
+																	item.customDesign.variants?.scent?.title ||
+																	item.customDesign.scent ||
+																	item.scent
+																}
+															>
+																<option
+																	value={
+																		item.customDesign.variants?.scent?.title ||
+																		item.customDesign.scent ||
+																		item.scent
+																	}
+																>
+																	{item.customDesign.variants?.scent?.title ||
+																		item.customDesign.scent ||
+																		item.scent}
+																</option>
+															</AttributeSelect>
+														) : (
+															// Normal scent select => multiple options
+															<AttributeSelect
+																disabled={isPodProduct}
+																style={{
+																	color: isPodProduct ? "grey" : "inherit",
+																}}
+																value={item.scent}
+																onChange={(e) => {
+																	if (!isPodProduct && changeScent) {
+																		const newScent = e.target.value;
+																		const chosenAttribute2 = productAttrs.find(
+																			(attr) =>
+																				attr.scent?.toLowerCase() ===
+																					newScent.toLowerCase() &&
+																				attr.size?.toLowerCase() ===
+																					item.size.toLowerCase() &&
+																				attr.color?.toLowerCase() ===
+																					item.color.toLowerCase()
+																		);
+																		const newQuantity =
+																			chosenAttribute2?.quantity || 0;
+
+																		changeScent(
+																			item.id,
+																			newScent,
+																			item.color,
+																			item.size,
+																			newQuantity,
+																			item.scent
+																		);
+																	}
+																}}
+															>
+																{uniqueProductScents.map((sc, index) => (
+																	<option key={index} value={sc}>
+																		{sc}
+																	</option>
+																))}
+															</AttributeSelect>
+														)}
+													</>
+												)}
 											</AttributeWrapper>
 										)}
 
@@ -305,6 +395,8 @@ const Z1CartDetails = ({ appliedCoupon, goodCoupon }) => {
 					</CartItems>
 				</Panel>
 			</Collapse>
+
+			{/* Optional modal for product image */}
 			<Modal
 				open={!!modalItem}
 				onCancel={() => setModalItem(null)}
@@ -362,6 +454,7 @@ const ItemImage = styled.img`
 	object-fit: cover;
 	border-radius: 8px;
 	margin-right: 15px;
+	cursor: pointer;
 `;
 
 const ItemDetails = styled.div`
@@ -420,10 +513,11 @@ const AttributeWrapper = styled.div`
 	display: flex;
 	align-items: center;
 	margin-top: 10px;
+	flex-wrap: wrap;
+	gap: 10px;
 `;
 
 const AttributeSelect = styled.select`
-	margin-right: 10px;
 	padding: 5px;
 	border: 1px solid #ccc;
 	border-radius: 5px;

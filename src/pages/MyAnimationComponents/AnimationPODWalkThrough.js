@@ -13,17 +13,20 @@ export default function AnimationPODWalkThrough({
 	userJustSingleClickedText,
 	hasMultipleSizeOrColor,
 
-	// For color & size
+	// For color, size, scent
 	colorOptions = [],
 	sizeOptions = [],
+	scentOptions = [], // NEW
 	selectedColor,
 	selectedSize,
+	selectedScent, // NEW
 	onHandleColorChange,
 	onHandleSizeChange,
+	onHandleScentChange, // NEW
 
 	// Main actions
 	onUserAddToCart,
-	onUserUploadPhoto, // <-- must be a function!
+	onUserUploadPhoto, // must be a function!
 }) {
 	const [xPos, setXPos] = useState(0);
 	const [frameIndex, setFrameIndex] = useState(0); // 0..3=walk, 4=stand, 5=point arrow
@@ -36,11 +39,6 @@ export default function AnimationPODWalkThrough({
 	const [subStep2, setSubStep2] = useState(0);
 	const [isSubStep2_0FadingOut, setIsSubStep2_0FadingOut] = useState(false);
 
-	const goToStep = useCallback((nextStep) => {
-		setStepIndex(nextStep);
-		resetBubble();
-	}, []);
-
 	// bubble content
 	const [bubbleText, setBubbleText] = useState("");
 	const [bubbleButtons, setBubbleButtons] = useState(null);
@@ -49,7 +47,7 @@ export default function AnimationPODWalkThrough({
 
 	const isMobile = window.innerWidth < 768;
 
-	// A) “walk in”
+	// Step “walk in” effect
 	useEffect(() => {
 		setXPos(0);
 		const t1 = setTimeout(() => setXPos(isMobile ? 150 : 300), 150);
@@ -83,7 +81,7 @@ export default function AnimationPODWalkThrough({
 		setOverrideFrame(null);
 	}
 
-	// Hide if step≥7 or user is selecting
+	// Hide if step>=7 or user is selecting an element
 	const [forceHidden, setForceHidden] = useState(false);
 	useEffect(() => {
 		if (stepIndex >= 7) {
@@ -96,6 +94,11 @@ export default function AnimationPODWalkThrough({
 			setForceHidden(false);
 		}
 	}, [stepIndex, isSomethingSelected]);
+
+	const goToStep = useCallback((nextStep) => {
+		setStepIndex(nextStep);
+		resetBubble();
+	}, []);
 
 	/**
 	 * ----------------------------------------------------------------
@@ -122,14 +125,14 @@ export default function AnimationPODWalkThrough({
 		}
 	}, [stepIndex]);
 
-	// If user double-clicked => hide text => wait for user to add text
+	// If user double-clicked => remove bubble text
 	useEffect(() => {
 		if (stepIndex === 1 && userJustDoubleClickedCanvas) {
 			setBubbleText("");
 		}
 	}, [stepIndex, userJustDoubleClickedCanvas]);
 
-	// Once user has actually added text => step2
+	// Once user actually added text => go to step2
 	useEffect(() => {
 		if (stepIndex === 1 && userAddedText) {
 			goToStep(2);
@@ -138,8 +141,8 @@ export default function AnimationPODWalkThrough({
 
 	/**
 	 * ----------------------------------------------------------------
-	 * STEP 2 => subStep2=0 => "Great! Let’s style your text!" => no buttons
-	 *       after 1.5s => fade => subStep2=1 => "Single-click text" => [Done, Skip]
+	 * STEP 2 => subStep2=0 => "Great! Let’s style your text!"
+	 *           subStep2=1 => "Single-click text to open toolbar"
 	 * ----------------------------------------------------------------
 	 */
 	useEffect(() => {
@@ -168,64 +171,100 @@ export default function AnimationPODWalkThrough({
 		}
 	}, [stepIndex]);
 
-	// If user single-clicks text in subStep2=1, we do NOT skip automatically.
-	// They must press “Done” or “Skip” in the bubble to proceed.
+	// user single-clicks text => still requires them to press Done or Skip
 
 	/**
 	 * ----------------------------------------------------------------
-	 * STEP 3 => If multiple size/color => "Now pick a size & color" => [Done, Skip]
+	 * STEP 3 => "Now pick color/size/scent if you'd like!" => [Done, Skip]
+	 *           Only show if we have 2+ options for that field
 	 * ----------------------------------------------------------------
 	 */
 	useEffect(() => {
 		if (stepIndex === 3) {
-			if (!hasMultipleSizeOrColor) {
-				// skip if no multiple color/size
+			// Are there at least 2 color, size, or scent choices?
+			const showColorUI = colorOptions.length > 1;
+			const showSizeUI = sizeOptions.length > 1;
+			const showScentUI = scentOptions.length > 1; // NEW
+
+			// If none have 2+ options => skip
+			if (!showColorUI && !showSizeUI && !showScentUI) {
 				goToStep(4);
 				return;
 			}
-			setBubbleText("Now pick a size & color if you’d like!");
+
+			// Build a dynamic message
+			let msgParts = [];
+			if (showColorUI) msgParts.push("color");
+			if (showSizeUI) msgParts.push("size");
+			if (showScentUI) msgParts.push("scent");
+			const joined = msgParts.join(", ");
+
+			setBubbleText(`Now pick your ${joined} if you'd like!`);
 			setOverrideFrame(5);
 
-			// inline UI for color/size
+			// inline UI with only the fields that have >1 option
 			const inlineUI = (
 				<div style={{ marginTop: 40, paddingBottom: 6 }}>
-					<div style={{ marginBottom: 6 }}>
-						<label style={{ marginRight: 4 }}>Color:</label>
-						<Select
-							style={{ width: 120 }}
-							value={selectedColor}
-							onChange={(val) =>
-								onHandleColorChange && onHandleColorChange(val)
-							}
-						>
-							{colorOptions.map((clr) => (
-								<Option key={clr} value={clr}>
-									{clr}
-								</Option>
-							))}
-							{/* fallback if parent's selectedColor is not in colorOptions */}
-							{!colorOptions.includes(selectedColor) && selectedColor && (
-								<Option value={selectedColor}>{selectedColor}</Option>
-							)}
-						</Select>
-					</div>
-					<div style={{ marginBottom: 8 }}>
-						<label style={{ marginRight: 4 }}>Size:</label>
-						<Select
-							style={{ width: 120 }}
-							value={selectedSize}
-							onChange={(val) => onHandleSizeChange && onHandleSizeChange(val)}
-						>
-							{sizeOptions.map((sz) => (
-								<Option key={sz} value={sz}>
-									{sz}
-								</Option>
-							))}
-							{!sizeOptions.includes(selectedSize) && selectedSize && (
-								<Option value={selectedSize}>{selectedSize}</Option>
-							)}
-						</Select>
-					</div>
+					{showColorUI && (
+						<div style={{ marginBottom: 8 }}>
+							<label style={{ marginRight: 4 }}>Color:</label>
+							<Select
+								style={{ width: 140 }}
+								value={selectedColor}
+								onChange={(val) => onHandleColorChange?.(val)}
+							>
+								{colorOptions.map((clr) => (
+									<Option key={clr} value={clr}>
+										{clr}
+									</Option>
+								))}
+								{/* fallback if parent's selectedColor not in colorOptions */}
+								{!colorOptions.includes(selectedColor) && selectedColor && (
+									<Option value={selectedColor}>{selectedColor}</Option>
+								)}
+							</Select>
+						</div>
+					)}
+
+					{showSizeUI && (
+						<div style={{ marginBottom: 8 }}>
+							<label style={{ marginRight: 4 }}>Size:</label>
+							<Select
+								style={{ width: 140 }}
+								value={selectedSize}
+								onChange={(val) => onHandleSizeChange?.(val)}
+							>
+								{sizeOptions.map((sz) => (
+									<Option key={sz} value={sz}>
+										{sz}
+									</Option>
+								))}
+								{!sizeOptions.includes(selectedSize) && selectedSize && (
+									<Option value={selectedSize}>{selectedSize}</Option>
+								)}
+							</Select>
+						</div>
+					)}
+
+					{showScentUI && (
+						<div style={{ marginBottom: 8 }}>
+							<label style={{ marginRight: 4 }}>Scent:</label>
+							<Select
+								style={{ width: 230 }}
+								value={selectedScent}
+								onChange={(val) => onHandleScentChange?.(val)}
+							>
+								{scentOptions.map((sc) => (
+									<Option key={sc} value={sc}>
+										{sc}
+									</Option>
+								))}
+								{!scentOptions.includes(selectedScent) && selectedScent && (
+									<Option value={selectedScent}>{selectedScent}</Option>
+								)}
+							</Select>
+						</div>
+					)}
 				</div>
 			);
 			setBubbleUI(inlineUI);
@@ -233,13 +272,15 @@ export default function AnimationPODWalkThrough({
 		}
 	}, [
 		stepIndex,
-		hasMultipleSizeOrColor,
-		selectedColor,
-		selectedSize,
 		colorOptions,
 		sizeOptions,
+		scentOptions, // NEW
+		selectedColor,
+		selectedSize,
+		selectedScent,
 		onHandleColorChange,
 		onHandleSizeChange,
+		onHandleScentChange, // NEW
 		goToStep,
 	]);
 
@@ -266,7 +307,7 @@ export default function AnimationPODWalkThrough({
 
 	/**
 	 * ----------------------------------------------------------------
-	 * STEP 5 => "Reposition or resize your design!" => [Done, Skip]
+	 * STEP 5 => "Reposition or resize your design as you like!" => [Done, Skip]
 	 * ----------------------------------------------------------------
 	 */
 	useEffect(() => {
@@ -292,7 +333,7 @@ export default function AnimationPODWalkThrough({
 		}
 	}, [stepIndex]);
 
-	// Step7 => fade => final big "Add to Cart" button
+	// Step7 => fade out => show big "Add to Cart" button
 	const [showCartButton, setShowCartButton] = useState(false);
 	useEffect(() => {
 		if (stepIndex === 7) {
@@ -309,9 +350,11 @@ export default function AnimationPODWalkThrough({
 		}
 	}, [userAddedToCart]);
 
-	// handle bubble button clicks
+	/**
+	 * Handle bubble button clicks
+	 */
 	function handleBubbleButtonClick(label) {
-		// Step0 => yes/no
+		// STEP 0 => "Would you like me to guide you?"
 		if (stepIndex === 0) {
 			if (label === "Yes") {
 				goToStep(1);
@@ -323,25 +366,25 @@ export default function AnimationPODWalkThrough({
 			return;
 		}
 
-		// Step1 => [Done, Skip] => step2
+		// STEP 1 => [Done, Skip] => step2
 		if (stepIndex === 1) {
 			goToStep(2);
 			return;
 		}
 
-		// Step2 => if subStep2=1 => [Done, Skip] => step3
+		// STEP 2 => subStep2=1 => [Done, Skip] => step3
 		if (stepIndex === 2 && subStep2 === 1) {
 			goToStep(3);
 			return;
 		}
 
-		// Step3 => [Done, Skip] => step4
+		// STEP 3 => [Done, Skip] => step4
 		if (stepIndex === 3) {
 			goToStep(4);
 			return;
 		}
 
-		// Step4 => "Add photo?" => yes/no
+		// STEP 4 => "Add photo?" => yes/no
 		if (stepIndex === 4) {
 			if (label === "Yes") {
 				// show a quick UI => “Upload Photo” or “Skip”
@@ -354,19 +397,18 @@ export default function AnimationPODWalkThrough({
 			return;
 		}
 
-		// Step5 => [Done, Skip] => step6
+		// STEP 5 => [Done, Skip] => step6
 		if (stepIndex === 5) {
 			goToStep(6);
 			return;
 		}
 
-		// Step6 => [Yes] => step7 => fade => final "Add to Cart" button
+		// STEP 6 => [Yes] => step7 => fade => final "Add to Cart" button
 		if (stepIndex === 6) {
 			goToStep(7);
 		}
 	}
 
-	// UI for "Upload Photo"
 	function renderUploadPhotoUI() {
 		return (
 			<div
@@ -385,8 +427,8 @@ export default function AnimationPODWalkThrough({
 						color: "#fff",
 					}}
 					onClick={() => {
-						console.log("CHILD: Upload Photo button clicked (bubble)!");
-						onUserUploadPhoto();
+						// child bubble button => triggers parent's hidden file input
+						onUserUploadPhoto && onUserUploadPhoto();
 					}}
 				>
 					Upload Photo
@@ -407,7 +449,6 @@ export default function AnimationPODWalkThrough({
 		);
 	}
 
-	// render
 	const hideCharacter = shouldFadeOut || forceHidden;
 	const finalFrameIndex = overrideFrame != null ? overrideFrame : frameIndex;
 
