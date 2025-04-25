@@ -64,7 +64,8 @@ const Z3StepTwo = ({
 			.filter((item) => item.isPrintifyProduct)
 			.forEach((item) => {
 				const isMug = item.name.toLowerCase().includes("mug");
-				const basePrice = isMug ? 8 : 6; // If "Mug" in name => 8, otherwise 6
+				const isCandle = item.name.toLowerCase().includes("candle");
+				const basePrice = isMug || isCandle ? 8 : 6; // If "Mug" in name => 8, otherwise 6
 				const quantity = item.amount || 1;
 
 				// Add base for the first POD product
