@@ -313,19 +313,26 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 										{new Date(order.orderCreationDate).toLocaleDateString()}{" "}
 										{new Date(order.orderCreationDate).toLocaleTimeString()}
 									</StyledText>
-
 									<StyledText>
 										<FaTruck style={{ marginRight: "5px" }} />
 										<strong>Tracking Number:</strong>{" "}
 										{order.trackingNumber ? (
-											<a
-												href={order.trackingNumber}
-												target='_blank'
-												rel='noopener noreferrer'
-											>
-												Click Here...
-											</a>
+											// If `order.trackingNumber` contains 'http' or 'https', render a clickable link
+											order.trackingNumber.includes("http") ||
+											order.trackingNumber.includes("https") ? (
+												<a
+													href={order.trackingNumber}
+													target='_blank'
+													rel='noopener noreferrer'
+												>
+													Click Here...
+												</a>
+											) : (
+												// Otherwise, just display the tracking number as plain text
+												order.trackingNumber
+											)
 										) : (
+											// If `order.trackingNumber` is falsy, display a fallback
 											"No Tracking # Yet"
 										)}{" "}
 										<FaEdit
@@ -333,6 +340,7 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 											onClick={handleEditTrackingClick}
 										/>
 									</StyledText>
+
 									<StyledText>
 										<FaUser style={{ marginRight: "5px" }} />
 										<strong>

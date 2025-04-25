@@ -42,14 +42,22 @@ const OrdersPage = ({ orders }) => {
 								<FaTruck style={{ marginRight: "5px" }} />
 								<strong>Tracking Number:</strong>{" "}
 								{order.trackingNumber ? (
-									<a
-										href={order.trackingNumber}
-										target='_blank'
-										rel='noopener noreferrer'
-									>
-										Click To Check Tracking Number
-									</a>
+									// Check if the trackingNumber includes "http" or "https"
+									order.trackingNumber.includes("http") ||
+									order.trackingNumber.includes("https") ? (
+										<a
+											href={order.trackingNumber}
+											target='_blank'
+											rel='noopener noreferrer'
+										>
+											Click To Check Tracking Number
+										</a>
+									) : (
+										// If no "http"/"https", just show the tracking number
+										order.trackingNumber
+									)
 								) : (
+									// Fallback if there's no tracking number
 									"No Tracking # Yet"
 								)}
 							</StyledText>

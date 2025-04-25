@@ -292,20 +292,49 @@ const OrdersHistory = ({ showModal }) => {
 			key: "trackingNumber",
 			width: 130,
 			render: (_, record) => {
+				// If it's a Printify order:
 				if (record.printifyOrderDetails && record.printifyOrderDetails.id) {
-					return record.trackingNumber ? (
-						<a
-							href={record.trackingNumber}
-							target='_blank'
-							rel='noopener noreferrer'
-						>
-							Click Here...
-						</a>
-					) : (
-						"No Tracking #"
-					);
+					if (record.trackingNumber) {
+						// If trackingNumber includes 'http' or 'https', render link
+						if (
+							record.trackingNumber.includes("http") ||
+							record.trackingNumber.includes("https")
+						) {
+							return (
+								<a
+									href={record.trackingNumber}
+									target='_blank'
+									rel='noopener noreferrer'
+								>
+									Click Here...
+								</a>
+							);
+						}
+						// Otherwise, just display the text
+						return record.trackingNumber;
+					}
+					return "No Tracking #";
 				}
-				return record.trackingNumber ? record.trackingNumber : "No Tracking #";
+
+				// Non-Printify order logic:
+				if (record.trackingNumber) {
+					if (
+						record.trackingNumber.includes("http") ||
+						record.trackingNumber.includes("https")
+					) {
+						return (
+							<a
+								href={record.trackingNumber}
+								target='_blank'
+								rel='noopener noreferrer'
+							>
+								Click Here...
+							</a>
+						);
+					}
+					return record.trackingNumber;
+				}
+				return "No Tracking #";
 			},
 		},
 		{
