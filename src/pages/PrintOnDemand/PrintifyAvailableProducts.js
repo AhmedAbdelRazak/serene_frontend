@@ -8,6 +8,7 @@ import ReactPixel from "react-facebook-pixel";
 // 1) Import your components:
 import PrintifyPageHelmet from "./PrintifyPageHelmet";
 import AnimationProductPresentation from "../MyAnimationComponents/AnimationProductPresentation";
+import { isAuthenticated } from "../../auth";
 
 // Slick carousel settings
 const sliderSettings = {
@@ -25,7 +26,7 @@ const PrintifyAvailableProducts = () => {
 	const [products, setProducts] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const history = useHistory();
-
+	const { user } = isAuthenticated();
 	// Sorting logic function
 	const getPriority = (product) => {
 		const name = product.productName?.toLowerCase() || "";
@@ -79,11 +80,23 @@ const PrintifyAvailableProducts = () => {
 			label: `User Clicked On Product From Custom Design Products`,
 		});
 
+		const eventId = `print-on-demand-${Date.now()}`;
+
 		ReactPixel.track("Lead", {
 			content_name: "User Clicked On Product From Custom Design Products",
 			click_type: "Custom Design (Print On Demand)",
-			// You can add more parameters if you want
-			// e.g. currency: "USD", value: 0
+			eventID: eventId,
+		});
+
+		axios.post(`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`, {
+			eventName: "Lead",
+			eventId,
+			email: user?.email || "Unknown", // if you have a user object
+			phone: user?.phone || "Unknown", // likewise
+			currency: "USD", // not essential for "Lead," but you can pass
+			value: 0,
+			contentIds: [`cat-print-on-demand`], // or any ID you want
+			userAgent: window.navigator.userAgent,
 		});
 
 		const printifyId = product._id;

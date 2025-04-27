@@ -3,9 +3,12 @@ import { Modal, Button } from "antd";
 import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
 import AnimationWalkingGreeting from "./pages/MyAnimationComponents/AnimationWalkingGreeting";
+import axios from "axios";
+import { isAuthenticated } from "./auth";
 
 export default function ModalApp({ shouldHideLayout, location }) {
 	const [isModalVisible, setIsModalVisible] = useState(false);
+	const { user } = isAuthenticated();
 
 	// Track user's action for specialized animation: "YES" or "NO"
 	const [action, setAction] = useState(null);
@@ -26,6 +29,8 @@ export default function ModalApp({ shouldHideLayout, location }) {
 
 	// User clicks YES => specialized jump animation, then redirect
 	const handleYes = () => {
+		const eventId = `lead-customGiftModal-yes-${Date.now()}`;
+
 		localStorage.setItem("customGiftModalDismissed", "true");
 		localStorage.setItem("customGiftModalDismissed2", "Yes");
 		ReactGA.event({
@@ -37,6 +42,17 @@ export default function ModalApp({ shouldHideLayout, location }) {
 			click_type: "Yes",
 			// You can add more parameters if you want
 			// e.g. currency: "USD", value: 0
+		});
+
+		axios.post(`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`, {
+			eventName: "Lead",
+			eventId,
+			email: user?.email || null,
+			phone: user?.phone || null,
+			currency: "USD",
+			value: 0,
+			contentIds: ["customGiftModalYes"],
+			userAgent: window.navigator.userAgent,
 		});
 
 		setAction("YES");

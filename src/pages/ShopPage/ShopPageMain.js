@@ -24,6 +24,8 @@ import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
 
 import ShopPageHelmet from "./ShopPageHelmet";
+import axios from "axios";
+import { isAuthenticated } from "../../auth";
 
 const { Meta } = Card;
 const { Option } = Select;
@@ -62,6 +64,8 @@ function ShopPageMain() {
 	const records = 80;
 
 	const { openSidebar2, addToCart } = useCartContext();
+
+	const { user } = isAuthenticated();
 
 	// (1) Cloudinary Transform Helper
 	//     If the URL isn't Cloudinary, returns original.
@@ -686,6 +690,23 @@ function ShopPageMain() {
 																	],
 																});
 
+																const eventId = `AddToCart-ShopMain-${prod?._id}-${Date.now()}`;
+
+																axios.post(
+																	`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
+																	{
+																		eventName: "AddToCart",
+																		eventId,
+																		email: user?.email || "Unknown",
+																		phone: user?.phone || "Unknown",
+																		currency: "USD",
+																		value:
+																			prod?.priceAfterDiscount || prod?.price,
+																		contentIds: [prod?._id],
+																		userAgent: window.navigator.userAgent,
+																	}
+																);
+
 																readProduct(prod?._id).then((res) => {
 																	if (res?.error) {
 																		console.log(res.error);
@@ -715,6 +736,8 @@ function ShopPageMain() {
 															src={fallbackUrl}
 															alt={prod?.productName || "Product Image"}
 															onClick={() => {
+																const eventId = `Lead-ShopMain-${prod?._id}-${Date.now()}`;
+
 																ReactGA.event({
 																	category: "Single Product Clicked",
 																	action:
@@ -728,6 +751,20 @@ function ShopPageMain() {
 																	// You can add more parameters if you want
 																	// e.g. currency: "USD", value: 0
 																});
+
+																axios.post(
+																	`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
+																	{
+																		eventName: "Lead",
+																		eventId,
+																		email: user?.email || "Unknown", // if you have a user object
+																		phone: user?.phone || "Unknown", // likewise
+																		currency: "USD", // not essential for "Lead," but you can pass
+																		value: 0,
+																		contentIds: [prod?._id], // or any ID you want
+																		userAgent: window.navigator.userAgent,
+																	}
+																);
 
 																window.scrollTo({ top: 0, behavior: "smooth" });
 																history.push(getProductLink(prod));

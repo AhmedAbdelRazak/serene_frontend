@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { Card } from "antd";
 import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
+import axios from "axios";
+import { isAuthenticated } from "../../auth";
 
 /**
  * Helper to insert Cloudinary transformations:
@@ -52,23 +54,47 @@ const getCloudinaryOptimizedUrl = (
 };
 
 const ZCategories = ({ allCategories }) => {
+	const { user } = isAuthenticated();
 	// Memoize the click handler
-	const handleCategoryClick = useCallback((categoryName) => {
-		ReactGA.event({
-			category: "Category Clicked Home Page",
-			action: "User Clicked On Category In Home Page",
-			label: `User Clicked on ${categoryName} In The Home Page`,
-		});
+	const handleCategoryClick = useCallback(
+		(categoryName) => {
+			ReactGA.event({
+				category: "Category Clicked Home Page",
+				action: "User Clicked On Category In Home Page",
+				label: `User Clicked on ${categoryName} In The Home Page`,
+			});
 
-		ReactPixel.track("Lead", {
-			content_name: `User Clicked on ${categoryName} In The Home Page`,
-			click_type: "Category Clicked",
-			// You can add more parameters if you want
-			// e.g. currency: "USD", value: 0
-		});
+			const eventId = `lead-category-${Date.now()}`;
 
-		window.scrollTo({ top: 0, behavior: "smooth" });
-	}, []);
+			ReactPixel.track(
+				"Lead",
+				{
+					content_name: `User Clicked on ${categoryName} In The Home Page`,
+					click_type: "Category Clicked",
+				},
+				{
+					eventID: eventId,
+				}
+			);
+
+			axios.post(
+				`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
+				{
+					eventName: "Lead",
+					eventId,
+					email: user?.email || "Unknown", // if you have a user object
+					phone: user?.phone || "Unknown", // likewise
+					currency: "USD", // not essential for "Lead," but you can pass
+					value: 0,
+					contentIds: [`cat-${categoryName}`], // or any ID you want
+					userAgent: window.navigator.userAgent,
+				}
+			);
+
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		},
+		[user]
+	);
 
 	return (
 		<Container>

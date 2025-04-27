@@ -16,6 +16,7 @@ import {
 } from "../../auth/index";
 import { createOrder } from "../../apiCore";
 import { useCartContext } from "../../cart_context";
+import axios from "axios";
 
 const Z4StepThree = ({
 	step,
@@ -235,8 +236,8 @@ const Z4StepThree = ({
 					price: item.priceAfterDiscount,
 					image: item.image,
 					isPrintifyProduct: item.isPrintifyProduct,
-					printifyProductDetails: item.printifyProductDetails, // <-- important
-					customDesign: item.customDesign, // <-- might still be null for normal products
+					printifyProductDetails: item.printifyProductDetails,
+					customDesign: item.customDesign,
 					storeId: item.storeId,
 				})),
 			chosenProductQtyWithVariables: cart
@@ -250,10 +251,10 @@ const Z4StepThree = ({
 						ordered_quantity: item.amount,
 						price: item.priceAfterDiscount,
 						image: imageUrl,
-						chosenAttributes: item.chosenProductAttributes, // <-- includes color, size, SubSKU
+						chosenAttributes: item.chosenProductAttributes,
 						isPrintifyProduct: item.isPrintifyProduct,
-						printifyProductDetails: item.printifyProductDetails, // <-- important
-						customDesign: item.customDesign, // <-- if it's a POD item w/ design
+						printifyProductDetails: item.printifyProductDetails,
+						customDesign: item.customDesign,
 					};
 				}),
 			customerDetails: {
@@ -294,28 +295,59 @@ const Z4StepThree = ({
 				paymentToken,
 				userId
 			);
+
 			if (orderResponse.error) {
 				toast.error(orderResponse.error);
 				setIsModalVisible(false);
 			} else {
-				// GA, gtag, success toast, etc.
+				// 1) Google Analytics event
 				ReactGA.event({
 					category: "User Successfully Paid",
 					action: "User Successfully Paid",
 				});
 
-				ReactPixel.track("Purchase", {
-					currency: "USD",
-					value: Number(totalAmountAdjusted), // e.g. 59.99
-					contents: cart.map((item) => ({
-						id: item._id,
-						quantity: item.amount,
-					})),
-					content_type: "product",
-				});
+				// 2) Facebook Pixel - Purchase
+				const eventId = `purchase-${Date.now()}`;
+				ReactPixel.track(
+					"Purchase",
+					{
+						currency: "USD",
+						value: Number(totalAmountAdjusted), // e.g. 59.99
+						contents: cart.map((item) => ({
+							id: item._id,
+							quantity: item.amount,
+						})),
+						content_type: "product",
+					},
+					{
+						eventID: eventId,
+					}
+				);
+
+				// 3) Server-Side Conversions API
+				//    For potential deduplication, use the same eventId
+				axios
+					.post(
+						`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
+						{
+							eventName: "Purchase",
+							eventId,
+							email: customerDetails.email || null,
+							phone: customerDetails.phone || null,
+							currency: "USD",
+							value: Number(totalAmountAdjusted),
+							contentIds: cart.map((item) => item._id),
+							userAgent: window.navigator.userAgent,
+							// omit clientIpAddress so the server infers from req.ip
+						}
+					)
+					.catch((err) => {
+						console.error("Server-side Purchase event error:", err);
+					});
 
 				toast.success("Order successfully created.");
 
+				// 4) Google Ads conversion tracking if gtag is available
 				if (window.gtag) {
 					const orderValue = Number(totalAmountAdjusted);
 					const orderId = orderResponse?.order?._id || "some-fallback-id";
@@ -328,6 +360,7 @@ const Z4StepThree = ({
 					});
 				}
 
+				// 5) Clear cart & redirect after short delay
 				setTimeout(() => {
 					clearCart();
 					setIsLoading(false);

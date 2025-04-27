@@ -8,6 +8,8 @@ import { readProduct, gettingSpecificProducts } from "../../apiCore";
 import { useHistory } from "react-router-dom";
 import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
+import axios from "axios";
+import { isAuthenticated } from "../../auth";
 
 const { Meta } = Card;
 
@@ -49,6 +51,7 @@ const getCloudinaryOptimizedUrl = (
 
 const ZNewArrival = ({ newArrivalProducts }) => {
 	const { openSidebar2, addToCart } = useCartContext();
+	const { user } = isAuthenticated();
 	const history = useHistory();
 
 	// -----------------------------
@@ -150,6 +153,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 	// -----------------------------
 	// 3) Handlers
 	// -----------------------------
+
 	const handleCartIconClick = useCallback(
 		async (product, e) => {
 			e.stopPropagation();
@@ -158,28 +162,47 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 				history.push(`/custom-gifts/${product._id}`);
 				return;
 			}
+
+			const eventId = `addToCart-newArrivals-${product._id}-${Date.now()}`;
+
 			ReactGA.event({
 				category: "Add To The Cart New Arrivals",
 				action: "User Added New Arrival Product To The Cart",
 				label: `User added ${product.productName} to the cart from New Arrivals`,
 			});
 
-			ReactPixel.track("AddToCart", {
-				// Standard Meta parameters:
-				content_name: product.productName,
-				content_ids: [product._id],
-				content_type: "product",
-				currency: "USD",
-				value: product.priceAfterDiscount || product.price, // the price you'd like to track
+			ReactPixel.track(
+				"AddToCart",
+				{
+					content_name: product.productName,
+					content_ids: [product._id],
+					content_type: "product",
+					currency: "USD",
+					value: product.priceAfterDiscount || product.price,
+					contents: [{ id: product._id, quantity: 1 }],
+				},
+				{
+					eventID: eventId,
+				}
+			);
 
-				// Optionally, you could pass `contents`:
-				contents: [
+			try {
+				await axios.post(
+					`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
 					{
-						id: product._id,
-						quantity: 1,
-					},
-				],
-			});
+						eventName: "AddToCart",
+						eventId,
+						email: user?.email || "Unknown",
+						phone: user?.phone || "Unknown",
+						currency: "USD",
+						value: product.priceAfterDiscount || product.price,
+						contentIds: [product._id],
+						userAgent: window.navigator.userAgent,
+					}
+				);
+			} catch (err) {
+				console.error("Server-side AddToCart error (ZNewArrival)", err);
+			}
 
 			try {
 				const data3 = await readProduct(product._id);
@@ -191,6 +214,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 				console.error(error);
 			}
 		},
+		// eslint-disable-next-line
 		[history, openSidebar2, addToCart]
 	);
 
@@ -206,6 +230,8 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 				label: `User Navigated to ${product.productName} single page`,
 			});
 
+			const eventId = `Lead-newArrivals-${product._id}-${Date.now()}`;
+
 			ReactPixel.track("Lead", {
 				content_name: `User Navigated to ${product.productName} single page`,
 				click_type: "New Arrival Product Clicked",
@@ -213,11 +239,26 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 				// e.g. currency: "USD", value: 0
 			});
 
+			axios.post(
+				`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
+				{
+					eventName: "Lead",
+					eventId,
+					email: user?.email || "Unknown", // if you have a user object
+					phone: user?.phone || "Unknown", // likewise
+					currency: "USD", // not essential for "Lead," but you can pass
+					value: 0,
+					contentIds: [product._id], // or any ID you want
+					userAgent: window.navigator.userAgent,
+				}
+			);
+
 			window.scrollTo({ top: 0, behavior: "smooth" });
 			history.push(
 				`/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`
 			);
 		},
+		// eslint-disable-next-line
 		[history]
 	);
 

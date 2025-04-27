@@ -9,6 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
 import { Modal } from "antd";
+import axios from "axios";
+import { isAuthenticated } from "../auth";
 
 /* Keyframe animations */
 const fadeIn = keyframes`
@@ -473,24 +475,55 @@ const SidebarCart = ({ from }) => {
 								to='/cart'
 								onClick={() => {
 									if (isStockAvailable) {
-										window.scrollTo({ top: 0, behavior: "smooth" });
-										closeSidebar2();
 										ReactGA.event({
 											category: "Continue To Checkout",
 											action: "User Clicked Continue To Checkout From Cart",
 										});
 
-										ReactPixel.track("InitiateCheckout", {
-											content_ids: cart.map((item) => item.id),
-											contents: cart.map((item) => ({
-												id: item.id,
-												quantity: item.amount,
-												item_price: item.priceAfterDiscount,
-											})),
-											value: Number(total_amount).toFixed(2),
-											currency: "USD",
-											content_type: "product",
-										});
+										const eventId = `initiateCheckout-${Date.now()}`;
+
+										ReactPixel.track(
+											"InitiateCheckout",
+											{
+												content_ids: cart.map((item) => item.id),
+												contents: cart.map((item) => ({
+													id: item.id,
+													quantity: item.amount,
+													item_price: item.priceAfterDiscount,
+												})),
+												value: Number(total_amount).toFixed(2),
+												currency: "USD",
+												content_type: "product",
+											},
+											{
+												eventID: eventId,
+											}
+										);
+
+										axios
+											.post(
+												`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
+												{
+													eventName: "InitiateCheckout",
+													eventId,
+													email: isAuthenticated()?.user?.email || null,
+													phone: isAuthenticated()?.user?.phone || null,
+													currency: "USD",
+													value: Number(total_amount).toFixed(2),
+													contentIds: cart.map((item) => item.id),
+													userAgent: window.navigator.userAgent,
+													// Omit clientIpAddress to let the server pick up req.ip
+												}
+											)
+											.catch((err) => {
+												console.error(
+													"Server-side InitiateCheckout event error:",
+													err
+												);
+											});
+
+										window.scrollTo({ top: 0, behavior: "smooth" });
+										closeSidebar2();
 									} else {
 										// find which items are out of stock
 										const outOfStockItems = cart.filter(

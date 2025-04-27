@@ -20,6 +20,7 @@ import { isAuthenticated } from "../../auth";
 import RelatedProductsCarousel from "./RelatedProductsCarousel";
 import SigninModal from "./SigninModal/SigninModal";
 import { Helmet } from "react-helmet";
+import axios from "axios";
 
 const { Panel } = Collapse;
 
@@ -500,6 +501,22 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 										},
 									],
 								});
+
+								const eventId = `AddToCart-SingleProduct-${product?._id}-${Date.now()}`;
+
+								axios.post(
+									`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
+									{
+										eventName: "AddToCart",
+										eventId,
+										email: user?.email || "Unknown",
+										phone: user?.phone || "Unknown",
+										currency: "USD",
+										value: product?.priceAfterDiscount || product?.price,
+										contentIds: [product?._id],
+										userAgent: window.navigator.userAgent,
+									}
+								);
 							}}
 							color='var(--primary-color-darker)'
 							disabled={isOutOfStock}

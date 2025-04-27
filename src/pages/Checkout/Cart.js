@@ -12,6 +12,7 @@ import { Modal, message } from "antd";
 import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 import ReactPixel from "react-facebook-pixel";
+import axios from "axios";
 
 const Cart = () => {
 	const [step, setStep] = useState(1);
@@ -136,15 +137,44 @@ const Cart = () => {
 
 			setPasswordError("");
 
+			// 1) Google Analytics
 			ReactGA.event({
 				category: "Checkout Page Customer Added Info",
 				action: "Checkout Page Customer Added Info",
 			});
 
-			ReactPixel.track("Checkout Page Customer Added Info", {
-				action: "Checkout Page Customer Added Info",
-				page: "Cart Page",
-			});
+			// 2) Facebook Pixel
+			const eventIdStep1 = `checkoutStep1-${Date.now()}`;
+			ReactPixel.track(
+				"Checkout Page Customer Added Info",
+				{
+					action: "Checkout Page Customer Added Info",
+					page: "Cart Page",
+				},
+				{
+					eventID: eventIdStep1,
+				}
+			);
+
+			// 3) Server-Side Conversions API
+			axios
+				.post(`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`, {
+					eventName: "Checkout Page Customer Added Info",
+					eventId: eventIdStep1,
+					email: isAuthenticated()?.user?.email || null,
+					phone: isAuthenticated()?.user?.phone || null,
+					currency: "USD",
+					value: 0,
+					contentIds: ["checkoutStep1"], // just a placeholder
+					userAgent: window.navigator.userAgent,
+					// omit clientIpAddress so the server can pick it up from req.ip
+				})
+				.then(() => {
+					// optional: console.log("Step 1 Conversions API call success");
+				})
+				.catch((err) => {
+					console.error("Step 1 Conversions API call error:", err);
+				});
 		}
 
 		// Step 2 validation
@@ -174,19 +204,87 @@ const Cart = () => {
 				return;
 			}
 
+			// 1) Google Analytics
 			ReactGA.event({
 				category: "Checkout Page Customer Added Shipping Details",
 				action: "Checkout Page Customer Added Shipping Details",
 			});
+
+			// 2) Facebook Pixel
+			const eventIdStep2 = `checkoutStep2-${Date.now()}`;
+			ReactPixel.track(
+				"Checkout Page Customer Added Shipping Details",
+				{
+					action: "Checkout Page Customer Added Shipping Details",
+					page: "Cart Page",
+				},
+				{
+					eventID: eventIdStep2,
+				}
+			);
+
+			// 3) Server-Side Conversions API
+			axios
+				.post(`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`, {
+					eventName: "Checkout Page Customer Added Shipping Details",
+					eventId: eventIdStep2,
+					email: isAuthenticated()?.user?.email || null,
+					phone: isAuthenticated()?.user?.phone || null,
+					currency: "USD",
+					value: 0,
+					contentIds: ["checkoutStep2"],
+					userAgent: window.navigator.userAgent,
+				})
+				.then(() => {
+					// optional: console.log("Step 2 Conversions API call success");
+				})
+				.catch((err) => {
+					console.error("Step 2 Conversions API call error:", err);
+				});
 		}
 
+		// Step 3
 		if (step === 3) {
+			// 1) Google Analytics
 			ReactGA.event({
 				category: "Checkout Page Customer Reviewing Order",
 				action: "Checkout Page Customer Reviewing Order",
 			});
+
+			// 2) Facebook Pixel
+			const eventIdStep3 = `checkoutStep3-${Date.now()}`;
+			ReactPixel.track(
+				"Checkout Page Customer Reviewing Order",
+				{
+					action: "Checkout Page Customer Reviewing Order",
+					page: "Cart Page",
+				},
+				{
+					eventID: eventIdStep3,
+				}
+			);
+
+			// 3) Server-Side Conversions API
+			axios
+				.post(`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`, {
+					eventName: "Checkout Page Customer Reviewing Order",
+					eventId: eventIdStep3,
+					email: isAuthenticated()?.user?.email || null,
+					phone: isAuthenticated()?.user?.phone || null,
+					currency: "USD",
+					value: 0,
+					contentIds: ["checkoutStep3"],
+					userAgent: window.navigator.userAgent,
+				})
+				.then(() => {
+					// optional: console.log("Step 3 Conversions API call success");
+				})
+				.catch((err) => {
+					console.error("Step 3 Conversions API call error:", err);
+				});
 		}
 
+		// Finally, move on to the next step
 		setStep(step + 1);
 	};
 

@@ -1818,6 +1818,9 @@ export default function CustomizeSelectedProduct() {
 						action: "User Added Product From The Custom Products",
 						label: `User added ${product.productName} to the cart`,
 					});
+
+					const eventId = `AddToCart-print-on-demand-${product._id}-${Date.now()}`;
+
 					ReactPixel.track("AddToCart", {
 						content_name: product.title || product.productName,
 						content_ids: [product._id],
@@ -1830,7 +1833,31 @@ export default function CustomizeSelectedProduct() {
 								quantity: 1,
 							},
 						],
+						eventID: eventId,
 					});
+
+					try {
+						await axios.post(
+							`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
+							{
+								eventName: "AddToCart",
+								eventId, // the same as you passed to client pixel for dedup
+								// If user is logged in, pass their email/phone:
+								email: user && user.email ? user.email : null,
+								phone: user && user.phone ? user.phone : null,
+
+								currency: "USD",
+								value: product.priceAfterDiscount || product.price,
+								contentIds: [product._id],
+
+								// Optionally pass user agent or IP, but IP is often gleaned automatically on server
+								userAgent: window.navigator.userAgent,
+								clientIpAddress: null, // or from some other source
+							}
+						);
+					} catch (apiError) {
+						console.error("Server-side AddToCart event error", apiError);
+					}
 				}
 			} catch {}
 
