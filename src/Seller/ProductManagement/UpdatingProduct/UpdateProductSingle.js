@@ -904,6 +904,9 @@ const UpdateProductSingle = ({ productId }) => {
 			sizeChart: sizeChart || {},
 			color: mainColor,
 			size: mainSize,
+			brandName: selectedProductToUpdate.brandName
+				? selectedProductToUpdate.brandName
+				: "Serene Jannat",
 
 			// belongsTo
 			belongsTo:

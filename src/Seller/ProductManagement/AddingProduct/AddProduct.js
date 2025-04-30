@@ -864,6 +864,10 @@ const AddProduct = () => {
 			featuredProduct: false,
 			color: mainColor,
 			size: mainSize,
+			brandName:
+				storeData && storeData.addStoreName
+					? storeData.addStoreName
+					: "Serene Jannat",
 			geodata,
 			policy: "",
 			policy_Arabic: "",
