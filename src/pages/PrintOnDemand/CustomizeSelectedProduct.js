@@ -415,6 +415,8 @@ export default function CustomizeSelectedProduct() {
 
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 	useEffect(() => {
+		localStorage.setItem("customGiftModalDismissed", "true");
+		localStorage.setItem("customGiftModalDismissed2", "Yes");
 		const handleResize = () => setIsMobile(window.innerWidth < 800);
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
