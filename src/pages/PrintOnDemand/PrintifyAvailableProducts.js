@@ -144,6 +144,12 @@ const PrintifyAvailableProducts = () => {
 						// We'll just show up to 5 images in the slider
 						const displayImages = allImages.slice(0, 5);
 
+						// Check if it's a POD product and get the example design image
+						const isPOD =
+							product.isPrintifyProduct && product.printifyProductDetails?.POD;
+						const exampleDesignImage =
+							product?.productAttributes?.[0]?.exampleDesignImage?.url;
+
 						return (
 							<Card
 								key={product._id}
@@ -162,6 +168,16 @@ const PrintifyAvailableProducts = () => {
 										))}
 									</Slider>
 								</CarouselWrapper>
+
+								{/* 
+                  Only show example design overlay if it's a POD product 
+                  and there's an example design image.
+                */}
+								{isPOD && exampleDesignImage && (
+									<ExampleDesignOverlay className='exampleDesignOverlay'>
+										<img src={exampleDesignImage} alt='Example Design' />
+									</ExampleDesignOverlay>
+								)}
 
 								<CardBody>
 									<TooltipWrapper title={product.productName}>
@@ -276,10 +292,16 @@ const Card = styled.div`
 	flex-direction: column;
 	justify-content: space-between;
 	text-transform: capitalize;
+	position: relative; /* Added to position the overlay absolutely */
 
 	&:hover {
 		transform: translateY(-8px);
 		box-shadow: var(--box-shadow-dark);
+
+		/* Show the example design image on hover */
+		.exampleDesignOverlay {
+			opacity: 1;
+		}
 	}
 `;
 
@@ -312,6 +334,25 @@ const ImageContainer = styled.div`
 	width: 100%;
 	height: 300px;
 	overflow: hidden;
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+`;
+
+/* Overlay for the example design image */
+const ExampleDesignOverlay = styled.div`
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 300px;
+	opacity: 0;
+	z-index: 2;
+	transition: opacity 0.4s ease;
 
 	img {
 		width: 100%;

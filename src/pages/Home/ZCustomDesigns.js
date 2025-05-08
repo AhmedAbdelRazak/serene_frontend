@@ -181,12 +181,15 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 				<Slider {...settings}>
 					{designList.map((product, i) => {
 						const chosenProductAttributes = product.productAttributes[0];
+
+						// eslint-disable-next-line
 						const images =
 							chosenProductAttributes?.productImages ||
 							product.thumbnailImage[0].images;
 
 						// Always just take the first image
-						const firstImage = images && images[0];
+						const firstImage = chosenProductAttributes?.exampleDesignImage;
+
 						const originalPrice = product.price || 0;
 						const discountedPrice =
 							product.priceAfterDiscount > 0
