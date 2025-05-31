@@ -574,6 +574,27 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 																			)
 																		}
 																	/>
+
+																	<StyledText>
+																		<strong>Raw Design Image:</strong>
+																	</StyledText>
+																	<img
+																		src={
+																			product.customDesign.finalScreenshotUrl
+																		}
+																		alt='Final Design'
+																		style={{
+																			width: "150px",
+																			border: "1px solid #ccc",
+																			cursor: "pointer",
+																			marginBottom: "10px",
+																		}}
+																		onClick={() =>
+																			handleImageClick(
+																				product.customDesign.finalScreenshotUrl
+																			)
+																		}
+																	/>
 																</>
 															)}
 
@@ -717,6 +738,25 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 																		onClick={() =>
 																			handleImageClick(
 																				product.customDesign.finalScreenshotUrl
+																			)
+																		}
+																	/>
+
+																	<StyledText>
+																		<strong>Raw Design:</strong>
+																	</StyledText>
+																	<img
+																		src={product.customDesign.bareScreenshotUrl}
+																		alt='Final Design'
+																		style={{
+																			width: "150px",
+																			border: "1px solid #ccc",
+																			cursor: "pointer",
+																			marginBottom: "10px",
+																		}}
+																		onClick={() =>
+																			handleImageClick(
+																				product.customDesign.bareScreenshotUrl
 																			)
 																		}
 																	/>
