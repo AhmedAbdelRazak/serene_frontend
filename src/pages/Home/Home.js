@@ -280,6 +280,12 @@ const HomePageHelmet = ({
 					}),
 				}}
 			/>
+
+			<script
+				async
+				src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980713140793330'
+				crossorigin='anonymous'
+			></script>
 		</Helmet>
 	);
 };
