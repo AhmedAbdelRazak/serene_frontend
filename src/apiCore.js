@@ -740,3 +740,17 @@ export const checkInvoiceNumber = async (invoiceNumber) => {
 		return { found: false, storeId: null, message: "Error checking invoice" };
 	}
 };
+
+export const createStripeCheckoutSession = (token, orderData) => {
+	return fetch(`${process.env.REACT_APP_API_URL}/stripe/checkout-session`, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`, // optional; your API allows guest checkout too
+		},
+		body: JSON.stringify({ orderData }),
+	})
+		.then((res) => res.json())
+		.catch((err) => ({ error: "Network error", details: err }));
+};

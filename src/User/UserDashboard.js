@@ -14,45 +14,111 @@ import ContactCustomerServicePage from "./ContactCustomerServicePage";
 import UserWishlist from "./UserWishlist";
 import styled from "styled-components";
 import { Helmet } from "react-helmet";
+import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
+import axios from "axios";
+import { useCartContext } from "../cart_context"; //  ← NEW import
 
 const { Sider, Content } = Layout;
+
+/* ──────────────────────────────────────────────────────────────── */
 
 const UserDashboard = () => {
 	const [collapsed, setCollapsed] = useState(false);
 	const [currentPage, setCurrentPage] = useState("orders");
 	const [orders, setOrders] = useState([]);
+
 	const { user, token } = isAuthenticated();
 	const history = useHistory();
 	const location = useLocation();
+	const { clearCart } = useCartContext(); //  ← NEW hook
 
+	/* stable primitives for deps */
+	const { email: userEmail, phone: userPhone } = user || {};
+
+	/* ─── Fetch orders & handle forced reload ─── */
 	useEffect(() => {
-		const queryParams = new URLSearchParams(location.search);
-		const page = queryParams.get("page");
-		if (page) {
-			setCurrentPage(page);
-		}
+		const qp = new URLSearchParams(location.search);
+		const pg = qp.get("page");
+		if (pg) setCurrentPage(pg);
 
 		getPurchaseHistory(user._id, token).then((data) => {
-			if (data.error) {
-				console.log(data.error);
-			} else {
-				setOrders(data);
-			}
+			if (data.error) console.error(data.error);
+			else setOrders(data);
 		});
 
-		// Check if the user came from the cart page and if the page hasn't been refreshed yet
 		const cameFromCart = location.state && location.state.from === "/cart";
 		const hasRefreshed = localStorage.getItem("hasRefreshed");
-
 		if (cameFromCart && !hasRefreshed) {
 			localStorage.setItem("hasRefreshed", "true");
 			window.location.reload();
 		}
 	}, [location.search, location.state, user._id, token]);
 
-	const toggleCollapse = () => {
-		setCollapsed(!collapsed);
-	};
+	/* ─── Detect first‑time Paid order → analytics + clear cart ─── */
+	useEffect(() => {
+		if (!orders.length) return;
+
+		const latestPaid = orders
+			.filter((o) => o.paymentStatus === "Paid")
+			.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+
+		if (!latestPaid) return;
+
+		const key = `purchase-fired-${latestPaid.invoiceNumber}`;
+		if (localStorage.getItem(key)) return; // already processed
+
+		/* --- Google Analytics --- */
+		ReactGA.event({
+			category: "User Successfully Paid",
+			action: "User Successfully Paid",
+			value: Number(latestPaid.totalAmountAfterDiscount),
+		});
+
+		/* --- Facebook Pixel + CAPI --- */
+		const fbEventId = `purchase-${latestPaid.invoiceNumber}`;
+		const allItems = latestPaid.chosenProductQtyWithVariables.concat(
+			latestPaid.productsNoVariable
+		);
+
+		ReactPixel.track(
+			"Purchase",
+			{
+				currency: "USD",
+				value: Number(latestPaid.totalAmountAfterDiscount),
+				contents: allItems.map((p) => ({
+					id: p.productId,
+					quantity: p.ordered_quantity,
+				})),
+				content_type: "product",
+			},
+			{ eventID: fbEventId }
+		);
+
+		axios
+			.post(`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`, {
+				eventName: "Purchase",
+				eventId: fbEventId,
+				email: userEmail || null,
+				phone: userPhone || null,
+				currency: "USD",
+				value: Number(latestPaid.totalAmountAfterDiscount),
+				contentIds: allItems.map((p) => p.productId),
+				userAgent: window.navigator.userAgent,
+			})
+			.catch(() => {
+				/* silent */
+			});
+
+		/* --- Clear cart once --- */
+		clearCart(); //  ← NEW call
+
+		/* mark as handled */
+		localStorage.setItem(key, "true");
+	}, [orders, userEmail, userPhone, clearCart]);
+
+	/* ─── side‑menu handlers ─── */
+	const toggleCollapse = () => setCollapsed(!collapsed);
 
 	const handleMenuClick = ({ key }) => {
 		setCurrentPage(key);
@@ -62,14 +128,10 @@ const UserDashboard = () => {
 	const renderContent = () => {
 		switch (currentPage) {
 			case "orders":
-				return (
-					<>
-						{orders && orders.length > 0 ? (
-							<OrdersPage orders={orders} />
-						) : (
-							<>No Orders</>
-						)}
-					</>
+				return orders && orders.length ? (
+					<OrdersPage orders={orders} />
+				) : (
+					<>No Orders</>
 				);
 			case "profile":
 				return <UpdateProfilePage />;
@@ -82,23 +144,11 @@ const UserDashboard = () => {
 		}
 	};
 
+	/* ─── Render ─── */
 	return (
 		<UserDashboardWrapper>
-			<Helmet>
-				{/* <script>
-					{`
-						gtag('event', 'conversion_event_purchase', {
-						  // <event_parameters>
-						});
-					`}
-				</script> */}
+			<Helmet>{/* extra tags if needed */}</Helmet>
 
-				<script>
-					{`
-						gtag('event', 'conversion_event_purchase');
-					`}
-				</script>
-			</Helmet>
 			<Layout style={{ minHeight: "100vh" }}>
 				<Sider
 					collapsible
@@ -121,13 +171,14 @@ const UserDashboard = () => {
 							Update Profile
 						</Menu.Item>
 						{/* <Menu.Item key='contact' icon={<CustomerServiceOutlined />}>
-							Contact Customer Service
-						</Menu.Item> */}
+              Contact Customer Service
+            </Menu.Item> */}
 						<Menu.Item key='wishlist' icon={<HeartOutlined />}>
 							Wish List
 						</Menu.Item>
 					</Menu>
 				</Sider>
+
 				<Layout>
 					<Content
 						style={{
@@ -145,6 +196,8 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
+
+/* ───────────────────────────── styled components ─────────────────────────── */
 
 const UserDashboardWrapper = styled.div`
 	@media (max-width: 800px) {
