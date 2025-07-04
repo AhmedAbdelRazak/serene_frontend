@@ -10,6 +10,7 @@ import { Modal, Spin, Checkbox } from "antd";
 import { toast } from "react-toastify";
 import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
+// eslint-disable-next-line
 import axios from "axios";
 
 import { signup, signin, authenticate, isAuthenticated } from "../../auth";
