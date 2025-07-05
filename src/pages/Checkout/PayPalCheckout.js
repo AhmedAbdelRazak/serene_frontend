@@ -56,6 +56,7 @@ const PayPalCheckout = ({
 				// onLoading(false);
 			}
 		},
+		// eslint-disable-next-line
 		[authToken, onLoading]
 	);
 
@@ -78,12 +79,15 @@ const PayPalCheckout = ({
 				style={{ layout: "vertical", label: "paypal" }}
 				createOrder={() =>
 					call("post", "/paypal/create-order", { orderData }).then(
-						(r) => r.paypalOrderId // return Order‑ID to SDK
+						(r) => r.paypalOrderId
 					)
 				}
 				onApprove={(data) =>
 					call("post", "/paypal/capture-order", { paypalOrderId: data.orderID })
-						.then(onSuccess)
+						.then(
+							() =>
+								(window.location.href = "https://serenejannat.com/dashboard")
+						)
 						.catch(onError)
 				}
 				onError={onError}
@@ -100,7 +104,10 @@ const PayPalCheckout = ({
 				}
 				onApprove={(data) =>
 					call("post", "/paypal/capture-order", { paypalOrderId: data.orderID })
-						.then(onSuccess)
+						.then(
+							() =>
+								(window.location.href = "https://serenejannat.com/dashboard")
+						)
 						.catch(onError)
 				}
 				onError={onError}
