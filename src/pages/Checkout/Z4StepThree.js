@@ -10,6 +10,7 @@ import { Modal, Spin, Checkbox } from "antd";
 import { toast } from "react-toastify";
 import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
+import PayPalCheckout from "./PayPalCheckout";
 // eslint-disable-next-line
 import axios from "axios";
 
@@ -42,6 +43,102 @@ const Z4StepThree = ({
 
 	const history = useHistory();
 
+	const authInfo = isAuthenticated() || {};
+	const token = authInfo.token;
+	const authUser = authInfo.user;
+	const userId = authUser?._id;
+
+	/** Build the order payload ONCE so both Stripe and PayPal share it */
+	const orderData = React.useMemo(
+		() => ({
+			productsNoVariable: cart
+				.filter((i) => !i.chosenProductAttributes)
+				.map((i) => ({
+					productId: i._id,
+					name: i.name,
+					ordered_quantity: i.amount,
+					price: i.priceAfterDiscount,
+					image: i.image,
+					isPrintifyProduct: i.isPrintifyProduct,
+					printifyProductDetails: i.printifyProductDetails,
+					customDesign: i.customDesign,
+					storeId: i.storeId,
+				})),
+			chosenProductQtyWithVariables: cart
+				.filter((i) => i.chosenProductAttributes)
+				.map((i) => ({
+					productId: i._id,
+					name: i.name,
+					ordered_quantity: i.amount,
+					price: i.priceAfterDiscount,
+					image: i.chosenProductAttributes?.productImages?.[0]?.url || "",
+					chosenAttributes: i.chosenProductAttributes,
+					isPrintifyProduct: i.isPrintifyProduct,
+					printifyProductDetails: i.printifyProductDetails,
+					customDesign: i.customDesign,
+				})),
+			customerDetails: {
+				name: customerDetails.name,
+				email: customerDetails.email,
+				phone: customerDetails.phone,
+				address,
+				city,
+				state,
+				zipcode,
+				userId,
+			},
+			totalOrderQty: cart.reduce((s, i) => s + i.amount, 0),
+			status: "Awaiting Payment",
+			onHoldStatus: "None",
+			totalAmount: total_amount,
+			totalAmountAfterDiscount: goodCoupon
+				? (
+						total_amount -
+						Number(total_amount) * (appliedCoupon.discount / 100)
+					).toFixed(2)
+				: total_amount,
+			chosenShippingOption: shipmentChosen,
+			orderSource: "Website",
+			appliedCoupon: goodCoupon ? appliedCoupon : {},
+			shipDate: new Date(),
+			orderCreationDate: new Date(),
+			sendSMS: true,
+			freeShipping: false,
+			shippingFees: shipmentChosen?.shippingPrice || 10,
+			paymentStatus: "Pending",
+			orderComment: comments,
+			privacyPolicyAgreement: isTermsAccepted,
+		}),
+		[
+			cart,
+			customerDetails,
+			address,
+			city,
+			state,
+			zipcode,
+			userId,
+			total_amount,
+			appliedCoupon,
+			goodCoupon,
+			shipmentChosen,
+			comments,
+			isTermsAccepted,
+		]
+	);
+
+	const cleanOrderData = React.useMemo(() => {
+		const clone = JSON.parse(JSON.stringify(orderData));
+
+		delete clone.customerDetails.userId;
+
+		if (clone.chosenShippingOption) {
+			const keep = ["carrierName", "shippingPrice"]; // fields the backend expects
+			Object.keys(clone.chosenShippingOption).forEach((k) => {
+				if (!keep.includes(k)) delete clone.chosenShippingOption[k];
+			});
+		}
+		return clone;
+	}, [orderData]);
 	/* ───────── helpers ───────── */
 
 	/* quick validations then open modal */
@@ -127,63 +224,11 @@ const Z4StepThree = ({
 
 			setIsLoading(true);
 			const { token, user: authUser } = isAuthenticated();
+			// eslint-disable-next-line
 			const userId = authUser?._id;
 
 			/* build backend payload */
-			const orderData = {
-				productsNoVariable: cart
-					.filter((i) => !i.chosenProductAttributes)
-					.map((i) => ({
-						productId: i._id,
-						name: i.name,
-						ordered_quantity: i.amount,
-						price: i.priceAfterDiscount,
-						image: i.image,
-						isPrintifyProduct: i.isPrintifyProduct,
-						printifyProductDetails: i.printifyProductDetails,
-						customDesign: i.customDesign,
-						storeId: i.storeId,
-					})),
-				chosenProductQtyWithVariables: cart
-					.filter((i) => i.chosenProductAttributes)
-					.map((i) => ({
-						productId: i._id,
-						name: i.name,
-						ordered_quantity: i.amount,
-						price: i.priceAfterDiscount,
-						image: i.chosenProductAttributes?.productImages?.[0]?.url || "",
-						chosenAttributes: i.chosenProductAttributes,
-						isPrintifyProduct: i.isPrintifyProduct,
-						printifyProductDetails: i.printifyProductDetails,
-						customDesign: i.customDesign,
-					})),
-				customerDetails: {
-					name: customerDetails.name,
-					email: customerDetails.email,
-					phone: customerDetails.phone,
-					address,
-					city,
-					state,
-					zipcode,
-					userId,
-				},
-				totalOrderQty: cart.reduce((s, i) => s + i.amount, 0),
-				status: "Awaiting Payment",
-				onHoldStatus: "None",
-				totalAmount: total_amount,
-				totalAmountAfterDiscount: totalAmountAdjusted,
-				chosenShippingOption: shipmentChosen,
-				orderSource: "Website",
-				appliedCoupon: goodCoupon ? appliedCoupon : {},
-				shipDate: new Date(),
-				orderCreationDate: new Date(),
-				sendSMS: true,
-				freeShipping: false,
-				shippingFees: shipmentChosen?.shippingPrice || 10,
-				paymentStatus: "Pending",
-				orderComment: comments,
-				privacyPolicyAgreement: isTermsAccepted,
-			};
+			const payload = cleanOrderData;
 
 			/* analytics */
 			ReactGA.event({ category: "Stripe Checkout", action: "Redirect" });
@@ -201,7 +246,7 @@ const Z4StepThree = ({
 			);
 
 			/* server call */
-			const resp = await createStripeCheckoutSession(token, orderData);
+			const resp = await createStripeCheckoutSession(token, payload);
 			console.log("Stripe response:", resp);
 
 			const redirectUrl = resp.redirectUrl || resp.url; // accept either
@@ -306,9 +351,23 @@ const Z4StepThree = ({
 						{isLoading ? (
 							<Spin />
 						) : isTermsAccepted ? (
-							<PayNowButton onClick={startStripeCheckout}>
-								Pay with Card — Secure Stripe Checkout
-							</PayNowButton>
+							<>
+								{/* existing Stripe button (optional) */}
+								<PayNowButton onClick={startStripeCheckout}>
+									Pay with Card — Secure Stripe Checkout
+								</PayNowButton>
+
+								{/* NEW: PayPal wallet + card */}
+								<div style={{ marginTop: 20 }}>
+									<PayPalCheckout
+										orderData={cleanOrderData}
+										authToken={token}
+										onLoading={setIsLoading}
+										onSuccess={() => (window.location.href = "/dashboard")}
+										onError={(msg) => toast.error(msg)}
+									/>
+								</div>
+							</>
 						) : (
 							<TermsWrapper>
 								<Checkbox
