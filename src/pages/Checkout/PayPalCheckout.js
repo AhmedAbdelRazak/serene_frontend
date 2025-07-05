@@ -46,7 +46,7 @@ const PayPalCheckout = ({
 					method,
 					url: `${process.env.REACT_APP_API_URL}${url}`,
 					data,
-					headers: { Authorization: `Bearer ${authToken}` },
+					// headers: { Authorization: `Bearer ${authToken}` },
 				});
 				return resp;
 			} catch (err) {
