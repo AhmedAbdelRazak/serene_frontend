@@ -82,7 +82,7 @@ const PayPalCheckout = ({
 					)
 				}
 				onApprove={(data) =>
-					call("post", "/capture-order", { paypalOrderId: data.orderID })
+					call("post", "/paypal/capture-order", { paypalOrderId: data.orderID })
 						.then(onSuccess)
 						.catch(onError)
 				}
