@@ -1,6 +1,6 @@
 /*******************************************************************
  *  src/pages/Checkout/PayPalCheckout.js
- *  – Wallet + Hosted Card Fields (July 2025, error‑free build)
+ *  – Wallet + Hosted Card Fields (July 2025, production‑ready)
  *******************************************************************/
 import React, {
 	useCallback,
@@ -32,18 +32,17 @@ const CLIENT_ID = IS_PROD
 /*  2.  Component                                                     */
 /* ------------------------------------------------------------------ */
 export default function PayPalCheckout({
-	orderData, // cleaned order payload
-	authToken, // bearer for your API
+	orderData,
+	authToken,
 	onLoading = () => {},
 	onError = () => {},
 }) {
-	/* ------------ state & refs ------------------------------------- */
 	const [clientToken, setClientToken] = useState(null);
 	const [isPending, setIsPending] = useState(false);
 	const [cardValid, setCardValid] = useState(false);
-	const invoiceRef = useRef(null); // provisional invoice #
+	const invoiceRef = useRef(null);
 
-	/* ------------ 3. Fetch the JS‑SDK client token ----------------- */
+	/* ------------ 3. Fetch client‑token ---------------------------- */
 	useEffect(() => {
 		let alive = true;
 		axios
@@ -57,13 +56,12 @@ export default function PayPalCheckout({
 				console.error(err);
 				onError("Unable to initialise PayPal");
 			});
-
 		return () => {
 			alive = false;
 		};
 	}, [authToken, onError]);
 
-	/* ------------ 4. Small helper around axios with loader --------- */
+	/* ------------ 4. Axios helper w/ loader ------------------------ */
 	const call = useCallback(
 		async (method, url, data = {}) => {
 			try {
@@ -83,13 +81,13 @@ export default function PayPalCheckout({
 		[onLoading]
 	);
 
-	/* ------------ 5. Shared create & capture helpers --------------- */
+	/* ------------ 5. Create & Capture helpers --------------------- */
 	const createOrder = useCallback(
 		() =>
 			call("post", "/paypal/create-order", { orderData }).then(
 				({ paypalOrderId, provisionalInvoice }) => {
 					invoiceRef.current = provisionalInvoice;
-					return paypalOrderId; // PayPal SDK needs only the ID
+					return paypalOrderId;
 				}
 			),
 		[call, orderData]
@@ -112,12 +110,13 @@ export default function PayPalCheckout({
 		[call, onError, orderData]
 	);
 
-	/* ------------ 6. SDK options (memoised) ------------------------- */
+	/* ------------ 6. SDK options (memoised) ------------------------ */
 	const sdkOptions = useMemo(
 		() =>
 			clientToken && {
 				"client-id": CLIENT_ID,
-				"data-client-token": clientToken,
+				"data-client-token": clientToken, // query‑string for the SDK script
+				dataClientToken: clientToken, // ✅ passes react‑paypal‑js validator
 				currency: "USD",
 				intent: "capture",
 				components: "buttons,hosted-fields",
@@ -127,7 +126,6 @@ export default function PayPalCheckout({
 		[clientToken]
 	);
 
-	/* ------------ render guard ------------------------------------- */
 	if (!sdkOptions) return <Spin />;
 
 	/* ----------------------------------------------------------------
@@ -136,26 +134,23 @@ export default function PayPalCheckout({
 	return (
 		<PayPalScriptProvider
 			options={sdkOptions}
-			/* A changing `key` forces the SDK <script> to reload when the
-         client‑token or environment changes, preventing stale scripts */
 			key={`pp-sdk-${IS_PROD ? "live" : "sb"}-${clientToken}`}
 		>
-			{/* ---------- A. PayPal / Venmo / Pay Later – no HostedFields --- */}
+			{/* ---------- A. Wallet / Pay Later / Venmo ------------------- */}
 			<PayPalButtons
 				fundingSource='paypal'
 				disabled={isPending}
 				style={{ layout: "vertical", label: "paypal" }}
 				createOrder={createOrder}
-				onApprove={(data) => captureOrder(data.orderID)}
+				onApprove={({ orderID }) => captureOrder(orderID)}
 				onError={(err) => {
 					console.error(err);
 					onError("PayPal wallet error.");
 				}}
 			/>
 
-			{/* ---------- B. Card: Advanced Credit / Debit ---------------- */}
+			{/* ---------- B. Card – Hosted Fields ------------------------- */}
 			<PayPalHostedFieldsProvider createOrder={createOrder}>
-				{/* SDK injects iframes into these containers */}
 				<div
 					style={{
 						marginTop: 24,
@@ -167,29 +162,18 @@ export default function PayPalCheckout({
 					<label htmlFor='card-number'>Card number</label>
 					<div id='card-number' style={{ minHeight: 38, marginBottom: 12 }} />
 
-					<label htmlFor='card-expiration'>Expiry</label>
-					<div
-						id='card-expiration'
-						style={{ minHeight: 38, marginBottom: 12 }}
-					/>
+					<label htmlFor='card-exp'>Expiry</label>
+					<div id='card-exp' style={{ minHeight: 38, marginBottom: 12 }} />
 
 					<label htmlFor='card-cvv'>CVV</label>
 					<div id='card-cvv' style={{ minHeight: 38 }} />
 				</div>
 
-				{/* Hosted‑Fields components – nothing is displayed, they
-            just wire the SDK to the containers above               */}
 				<PayPalHostedField
 					hostedFieldType='number'
 					options={{
 						selector: "#card-number",
 						placeholder: "4111 1111 1111 1111",
-					}}
-					onBlur={() => {
-						/* optional */
-					}}
-					onFocus={() => {
-						/* optional */
 					}}
 					onValidityChange={({ fields }) =>
 						setCardValid(
@@ -201,20 +185,19 @@ export default function PayPalCheckout({
 				/>
 				<PayPalHostedField
 					hostedFieldType='expirationDate'
-					options={{ selector: "#card-expiration", placeholder: "MM/YY" }}
+					options={{ selector: "#card-exp", placeholder: "MM/YY" }}
 				/>
 				<PayPalHostedField
 					hostedFieldType='cvv'
 					options={{ selector: "#card-cvv", placeholder: "***" }}
 				/>
 
-				{/* Pay button for cards */}
 				<PayPalButtons
 					fundingSource='card'
 					style={{ layout: "vertical", label: "pay" }}
 					disabled={!cardValid || isPending}
 					createOrder={createOrder}
-					onApprove={(data) => captureOrder(data.orderID)}
+					onApprove={({ orderID }) => captureOrder(orderID)}
 					onError={(err) => {
 						console.error(err);
 						onError("Card payment error.");
