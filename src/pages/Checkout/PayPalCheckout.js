@@ -1,119 +1,125 @@
-import React, { useEffect, useState, useCallback } from "react";
+/*******************************************************************
+ *  src/pages/Checkout/PayPalCheckout.js
+ *  ‑‑ Wallet + hosted Card fields (no redirect) – July 2025 build
+ *******************************************************************/
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Spin } from "antd";
 import axios from "axios";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
-const PayPalCheckout = ({
-	orderData,
-	authToken,
-	onLoading,
-	onSuccess,
-	onError,
-}) => {
+/* ------------------------------------------------------------------ */
+
+const API = process.env.REACT_APP_API_URL; // back‑end base
+const NODE_ENV = (process.env.REACT_APP_NODE_ENV || "").toUpperCase();
+const CLIENT_ID =
+	NODE_ENV === "PRODUCTION"
+		? process.env.REACT_APP_PAYPAL_CLIENT_ID_LIVE
+		: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX;
+
+/* ------------------------------------------------------------------ */
+
+export default function PayPalCheckout({
+	orderData, // clean order payload
+	authToken, // if you need Bearer auth (remove header if not)
+	onLoading, // fn(bool)   – toggle parent spinner
+	onError, // fn(msg)
+}) {
 	const [clientToken, setClientToken] = useState(null);
+	const invoiceRef = useRef(null); // holds provisionalInvoice returned by /create‑order
 
-	// Decide which ID to show to the SDK based on env
-	const clientId =
-		process.env.REACT_APP_NODE_ENV?.toUpperCase() === "PRODUCTION"
-			? process.env.REACT_APP_PAYPAL_CLIENT_ID_LIVE
-			: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX;
-
-	/** Step 1: get client‑token (required for card fields) */
+	/* ------------ 1. Get JS‑SDK client token ---------------------- */
 	useEffect(() => {
-		let isMounted = true;
+		let mounted = true;
 		axios
 			.post(
-				`${process.env.REACT_APP_API_URL}/paypal/client-token`,
+				`${API}/paypal/client-token`,
 				{},
-				{
-					headers: { Authorization: `Bearer ${authToken}` },
-				}
+				{ headers: { Authorization: `Bearer ${authToken}` } }
 			)
-			.then((r) => isMounted && setClientToken(r.data.clientToken))
+			.then(({ data }) => mounted && setClientToken(data.clientToken))
 			.catch((e) => {
-				console.error("client‑token error:", e);
+				console.error(e);
 				onError("Unable to initialise PayPal");
 			});
-		return () => (isMounted = false);
+		return () => (mounted = false);
 	}, [authToken, onError]);
 
-	/** Small helper – wrap axios calls with loading toggles */
+	/* ------------ helper to call our API with loader -------------- */
 	const call = useCallback(
 		async (method, url, data = {}) => {
 			try {
-				// onLoading(true);
+				onLoading?.(true);
 				const { data: resp } = await axios({
 					method,
-					url: `${process.env.REACT_APP_API_URL}${url}`,
+					url: `${API}${url}`,
 					data,
-					// headers: { Authorization: `Bearer ${authToken}` },
 				});
 				return resp;
-			} catch (err) {
-				console.error(err);
-				throw err?.response?.data?.error || "Payment error";
 			} finally {
-				// onLoading(false);
+				onLoading?.(false);
 			}
 		},
-		// eslint-disable-next-line
-		[authToken, onLoading]
+		[onLoading]
 	);
 
 	if (!clientToken) return <Spin />;
 
+	/* ------------ create & capture helpers (shared) --------------- */
+	const createOrder = () =>
+		call("post", "/paypal/create-order", { orderData }).then(
+			({ paypalOrderId, provisionalInvoice }) => {
+				invoiceRef.current = provisionalInvoice;
+				return paypalOrderId; // PayPal SDK needs only the ID
+			}
+		);
+
+	const captureOrder = (paypalOrderId) =>
+		call("post", "/paypal/capture-order", {
+			paypalOrderId,
+			orderData,
+			provisionalInvoice: invoiceRef.current,
+		})
+			.then(() => (window.location.href = "/dashboard"))
+			.catch((e) => {
+				console.error(e);
+				onError(typeof e === "string" ? e : "Payment could not be completed.");
+			});
+
+	/* ------------ Render ------------------------------------------------ */
 	return (
 		<PayPalScriptProvider
 			options={{
-				"client-id": clientId,
+				"client-id": CLIENT_ID,
 				"data-client-token": clientToken,
 				currency: "USD",
 				intent: "capture",
-				components: "buttons",
+				components: "buttons", // card fields auto‑included
 				"enable-funding": "card,paypal",
 			}}
 		>
-			{/* ① PayPal wallet / Venmo / Pay Later  */}
+			{/* Wallet / Venmo / Pay Later */}
 			<PayPalButtons
 				fundingSource='paypal'
 				style={{ layout: "vertical", label: "paypal" }}
-				createOrder={() =>
-					call("post", "/paypal/create-order", { orderData }).then(
-						(r) => r.paypalOrderId
-					)
-				}
-				onApprove={(data) =>
-					call("post", "/paypal/capture-order", { paypalOrderId: data.orderID })
-						.then(
-							() =>
-								(window.location.href = "https://serenejannat.com/dashboard")
-						)
-						.catch(onError)
-				}
-				onError={onError}
+				createOrder={createOrder}
+				onApprove={(data) => captureOrder(data.orderID)}
+				onError={(err) => {
+					console.error(err);
+					onError("PayPal wallet error.");
+				}}
 			/>
 
-			{/* ② Card‑only – no redirect, PayPal renders hosted fields inline */}
+			{/* Card –   Advanced Credit / Debit  (hosted fields, no redirect) */}
 			<PayPalButtons
 				fundingSource='card'
-				style={{ layout: "vertical", label: "pay" }} // PayPal shows card fields
-				createOrder={() =>
-					call("post", "/paypal/create-order", { orderData }).then(
-						(r) => r.paypalOrderId
-					)
-				}
-				onApprove={(data) =>
-					call("post", "/paypal/capture-order", { paypalOrderId: data.orderID })
-						.then(
-							() =>
-								(window.location.href = "https://serenejannat.com/dashboard")
-						)
-						.catch(onError)
-				}
-				onError={onError}
+				style={{ layout: "vertical", label: "pay" }}
+				createOrder={createOrder}
+				onApprove={(data) => captureOrder(data.orderID)}
+				onError={(err) => {
+					console.error(err);
+					onError("Card payment error.");
+				}}
 			/>
 		</PayPalScriptProvider>
 	);
-};
-
-export default PayPalCheckout;
+}

@@ -352,18 +352,17 @@ const Z4StepThree = ({
 							<Spin />
 						) : isTermsAccepted ? (
 							<>
-								{/* existing Stripe button (optional) */}
+								{/* Stripe button (unchanged) */}
 								<PayNowButton onClick={startStripeCheckout}>
 									Pay with Card — Secure Stripe Checkout
 								</PayNowButton>
 
-								{/* NEW: PayPal wallet + card */}
+								{/* PayPal wallet + inline card */}
 								<div style={{ marginTop: 20 }}>
 									<PayPalCheckout
 										orderData={cleanOrderData}
 										authToken={token}
 										onLoading={setIsLoading}
-										onSuccess={() => (window.location.href = "/dashboard")}
 										onError={(msg) => toast.error(msg)}
 									/>
 								</div>
