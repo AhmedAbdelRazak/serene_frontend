@@ -5,7 +5,14 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Spin } from "antd";
 import axios from "axios";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import {
+	PayPalScriptProvider,
+	PayPalButtons,
+	PayPalHostedFieldsProvider,
+	PayPalHostedField,
+	// eslint-disable-next-line
+	PayPalHostedFields,
+} from "@paypal/react-paypal-js";
 
 /* ------------------------------------------------------------------ */
 
@@ -93,7 +100,7 @@ export default function PayPalCheckout({
 				"data-client-token": clientToken,
 				currency: "USD",
 				intent: "capture",
-				components: "buttons", // card fields auto‑included
+				components: "buttons,hosted-fields",
 				"enable-funding": "card,paypal",
 			}}
 		>
@@ -110,16 +117,46 @@ export default function PayPalCheckout({
 			/>
 
 			{/* Card –   Advanced Credit / Debit  (hosted fields, no redirect) */}
-			<PayPalButtons
-				fundingSource='card'
-				style={{ layout: "vertical", label: "pay" }}
-				createOrder={createOrder}
-				onApprove={(data) => captureOrder(data.orderID)}
-				onError={(err) => {
-					console.error(err);
-					onError("Card payment error.");
-				}}
-			/>
+			<PayPalHostedFieldsProvider
+				createOrder={createOrder} /* the same helper you already have */
+			>
+				<div style={{ border: "1px solid #ccc", padding: 16, borderRadius: 8 }}>
+					<label>Card number</label>
+					<PayPalHostedField
+						id='card-number'
+						hostedFieldType='number'
+						options={{
+							selector: "#card-number",
+							placeholder: "4111 1111 1111 1111",
+						}}
+					/>
+
+					<label>Expiry</label>
+					<PayPalHostedField
+						id='card-exp'
+						hostedFieldType='expirationDate'
+						options={{ selector: "#card-exp", placeholder: "MM/YY" }}
+					/>
+
+					<label>CVV</label>
+					<PayPalHostedField
+						id='card-cvv'
+						hostedFieldType='cvv'
+						options={{ selector: "#card-cvv", placeholder: "***" }}
+					/>
+				</div>
+
+				<PayPalButtons
+					fundingSource='card'
+					style={{ layout: "vertical", label: "pay" }}
+					disabled={false}
+					onApprove={(data) => captureOrder(data.orderID)}
+					onError={(err) => {
+						console.error(err);
+						onError("Card payment error.");
+					}}
+				/>
+			</PayPalHostedFieldsProvider>
 		</PayPalScriptProvider>
 	);
 }
