@@ -1,8 +1,14 @@
 /*******************************************************************
  *  src/pages/Checkout/PayPalCheckout.js
- *  ‑‑ Wallet + hosted Card fields (no redirect) – July 2025 build
+ *  – Wallet + Hosted Card Fields (July 2025, error‑free build)
  *******************************************************************/
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { Spin } from "antd";
 import axios from "axios";
 import {
@@ -10,52 +16,59 @@ import {
 	PayPalButtons,
 	PayPalHostedFieldsProvider,
 	PayPalHostedField,
-	// eslint-disable-next-line
-	PayPalHostedFields,
 } from "@paypal/react-paypal-js";
 
 /* ------------------------------------------------------------------ */
-
-const API = process.env.REACT_APP_API_URL; // back‑end base
-const NODE_ENV = (process.env.REACT_APP_NODE_ENV || "").toUpperCase();
-const CLIENT_ID =
-	NODE_ENV === "PRODUCTION"
-		? process.env.REACT_APP_PAYPAL_CLIENT_ID_LIVE
-		: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX;
+/*  1.  Environment helpers                                           */
+/* ------------------------------------------------------------------ */
+const API = process.env.REACT_APP_API_URL;
+const IS_PROD =
+	(process.env.REACT_APP_NODE_ENV || "").toUpperCase() === "PRODUCTION";
+const CLIENT_ID = IS_PROD
+	? process.env.REACT_APP_PAYPAL_CLIENT_ID_LIVE
+	: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX;
 
 /* ------------------------------------------------------------------ */
-
+/*  2.  Component                                                     */
+/* ------------------------------------------------------------------ */
 export default function PayPalCheckout({
-	orderData, // clean order payload
-	authToken, // if you need Bearer auth (remove header if not)
-	onLoading, // fn(bool)   – toggle parent spinner
-	onError, // fn(msg)
+	orderData, // cleaned order payload
+	authToken, // bearer for your API
+	onLoading = () => {},
+	onError = () => {},
 }) {
+	/* ------------ state & refs ------------------------------------- */
 	const [clientToken, setClientToken] = useState(null);
-	const invoiceRef = useRef(null); // holds provisionalInvoice returned by /create‑order
+	const [isPending, setIsPending] = useState(false);
+	const [cardValid, setCardValid] = useState(false);
+	const invoiceRef = useRef(null); // provisional invoice #
 
-	/* ------------ 1. Get JS‑SDK client token ---------------------- */
+	/* ------------ 3. Fetch the JS‑SDK client token ----------------- */
 	useEffect(() => {
-		let mounted = true;
+		let alive = true;
 		axios
 			.post(
 				`${API}/paypal/client-token`,
 				{},
 				{ headers: { Authorization: `Bearer ${authToken}` } }
 			)
-			.then(({ data }) => mounted && setClientToken(data.clientToken))
-			.catch((e) => {
-				console.error(e);
+			.then(({ data }) => alive && setClientToken(data.clientToken))
+			.catch((err) => {
+				console.error(err);
 				onError("Unable to initialise PayPal");
 			});
-		return () => (mounted = false);
+
+		return () => {
+			alive = false;
+		};
 	}, [authToken, onError]);
 
-	/* ------------ helper to call our API with loader -------------- */
+	/* ------------ 4. Small helper around axios with loader --------- */
 	const call = useCallback(
 		async (method, url, data = {}) => {
 			try {
-				onLoading?.(true);
+				onLoading(true);
+				setIsPending(true);
 				const { data: resp } = await axios({
 					method,
 					url: `${API}${url}`,
@@ -63,50 +76,74 @@ export default function PayPalCheckout({
 				});
 				return resp;
 			} finally {
-				onLoading?.(false);
+				onLoading(false);
+				setIsPending(false);
 			}
 		},
 		[onLoading]
 	);
 
-	if (!clientToken) return <Spin />;
+	/* ------------ 5. Shared create & capture helpers --------------- */
+	const createOrder = useCallback(
+		() =>
+			call("post", "/paypal/create-order", { orderData }).then(
+				({ paypalOrderId, provisionalInvoice }) => {
+					invoiceRef.current = provisionalInvoice;
+					return paypalOrderId; // PayPal SDK needs only the ID
+				}
+			),
+		[call, orderData]
+	);
 
-	/* ------------ create & capture helpers (shared) --------------- */
-	const createOrder = () =>
-		call("post", "/paypal/create-order", { orderData }).then(
-			({ paypalOrderId, provisionalInvoice }) => {
-				invoiceRef.current = provisionalInvoice;
-				return paypalOrderId; // PayPal SDK needs only the ID
-			}
-		);
+	const captureOrder = useCallback(
+		(paypalOrderId) =>
+			call("post", "/paypal/capture-order", {
+				paypalOrderId,
+				orderData,
+				provisionalInvoice: invoiceRef.current,
+			})
+				.then(() => (window.location.href = "/dashboard"))
+				.catch((e) => {
+					console.error(e);
+					onError(
+						typeof e === "string" ? e : "Payment could not be completed."
+					);
+				}),
+		[call, onError, orderData]
+	);
 
-	const captureOrder = (paypalOrderId) =>
-		call("post", "/paypal/capture-order", {
-			paypalOrderId,
-			orderData,
-			provisionalInvoice: invoiceRef.current,
-		})
-			.then(() => (window.location.href = "/dashboard"))
-			.catch((e) => {
-				console.error(e);
-				onError(typeof e === "string" ? e : "Payment could not be completed.");
-			});
-
-	/* ------------ Render ------------------------------------------------ */
-	return (
-		<PayPalScriptProvider
-			options={{
+	/* ------------ 6. SDK options (memoised) ------------------------- */
+	const sdkOptions = useMemo(
+		() =>
+			clientToken && {
 				"client-id": CLIENT_ID,
 				"data-client-token": clientToken,
 				currency: "USD",
 				intent: "capture",
 				components: "buttons,hosted-fields",
-				"enable-funding": "card,paypal",
-			}}
+				"enable-funding": "paypal,card",
+				commit: "true",
+			},
+		[clientToken]
+	);
+
+	/* ------------ render guard ------------------------------------- */
+	if (!sdkOptions) return <Spin />;
+
+	/* ----------------------------------------------------------------
+     7. Render
+     ---------------------------------------------------------------- */
+	return (
+		<PayPalScriptProvider
+			options={sdkOptions}
+			/* A changing `key` forces the SDK <script> to reload when the
+         client‑token or environment changes, preventing stale scripts */
+			key={`pp-sdk-${IS_PROD ? "live" : "sb"}-${clientToken}`}
 		>
-			{/* Wallet / Venmo / Pay Later */}
+			{/* ---------- A. PayPal / Venmo / Pay Later – no HostedFields --- */}
 			<PayPalButtons
 				fundingSource='paypal'
+				disabled={isPending}
 				style={{ layout: "vertical", label: "paypal" }}
 				createOrder={createOrder}
 				onApprove={(data) => captureOrder(data.orderID)}
@@ -116,40 +153,67 @@ export default function PayPalCheckout({
 				}}
 			/>
 
-			{/* Card –   Advanced Credit / Debit  (hosted fields, no redirect) */}
-			<PayPalHostedFieldsProvider
-				createOrder={createOrder} /* the same helper you already have */
-			>
-				<div style={{ border: "1px solid #ccc", padding: 16, borderRadius: 8 }}>
-					<label>Card number</label>
-					<PayPalHostedField
-						id='card-number'
-						hostedFieldType='number'
-						options={{
-							selector: "#card-number",
-							placeholder: "4111 1111 1111 1111",
-						}}
+			{/* ---------- B. Card: Advanced Credit / Debit ---------------- */}
+			<PayPalHostedFieldsProvider createOrder={createOrder}>
+				{/* SDK injects iframes into these containers */}
+				<div
+					style={{
+						marginTop: 24,
+						border: "1px solid #ccc",
+						padding: 16,
+						borderRadius: 8,
+					}}
+				>
+					<label htmlFor='card-number'>Card number</label>
+					<div id='card-number' style={{ minHeight: 38, marginBottom: 12 }} />
+
+					<label htmlFor='card-expiration'>Expiry</label>
+					<div
+						id='card-expiration'
+						style={{ minHeight: 38, marginBottom: 12 }}
 					/>
 
-					<label>Expiry</label>
-					<PayPalHostedField
-						id='card-exp'
-						hostedFieldType='expirationDate'
-						options={{ selector: "#card-exp", placeholder: "MM/YY" }}
-					/>
-
-					<label>CVV</label>
-					<PayPalHostedField
-						id='card-cvv'
-						hostedFieldType='cvv'
-						options={{ selector: "#card-cvv", placeholder: "***" }}
-					/>
+					<label htmlFor='card-cvv'>CVV</label>
+					<div id='card-cvv' style={{ minHeight: 38 }} />
 				</div>
 
+				{/* Hosted‑Fields components – nothing is displayed, they
+            just wire the SDK to the containers above               */}
+				<PayPalHostedField
+					hostedFieldType='number'
+					options={{
+						selector: "#card-number",
+						placeholder: "4111 1111 1111 1111",
+					}}
+					onBlur={() => {
+						/* optional */
+					}}
+					onFocus={() => {
+						/* optional */
+					}}
+					onValidityChange={({ fields }) =>
+						setCardValid(
+							fields.number?.isValid &&
+								fields.cvv?.isValid &&
+								fields.expirationDate?.isValid
+						)
+					}
+				/>
+				<PayPalHostedField
+					hostedFieldType='expirationDate'
+					options={{ selector: "#card-expiration", placeholder: "MM/YY" }}
+				/>
+				<PayPalHostedField
+					hostedFieldType='cvv'
+					options={{ selector: "#card-cvv", placeholder: "***" }}
+				/>
+
+				{/* Pay button for cards */}
 				<PayPalButtons
 					fundingSource='card'
 					style={{ layout: "vertical", label: "pay" }}
-					disabled={false}
+					disabled={!cardValid || isPending}
+					createOrder={createOrder}
 					onApprove={(data) => captureOrder(data.orderID)}
 					onError={(err) => {
 						console.error(err);
