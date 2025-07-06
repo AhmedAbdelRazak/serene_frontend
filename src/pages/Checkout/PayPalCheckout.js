@@ -174,11 +174,14 @@ function CardBlock({
 
 	/* merge‑update each field without resetting others */
 	const mergeValidity = (fields) =>
-		setFieldValidity((prev) => ({
-			number: fields.number?.isValid ?? prev.number,
-			exp: fields.expirationDate?.isValid ?? prev.exp,
-			cvv: fields.cvv?.isValid ?? prev.cvv,
-		}));
+		setFieldValidity((prev) => {
+			const update = { ...prev };
+			if ("number" in fields) update.number = fields.number?.isValid;
+			if ("expirationDate" in fields)
+				update.exp = fields.expirationDate?.isValid;
+			if ("cvv" in fields) update.cvv = fields.cvv?.isValid;
+			return update;
+		});
 
 	if (hostedEligible) {
 		const allValid = Object.values(fieldValidity).every(Boolean);
