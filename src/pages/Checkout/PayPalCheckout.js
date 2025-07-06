@@ -26,7 +26,7 @@ import {
 /*  CONSTANTS (static, no hooks)                                      */
 /* ------------------------------------------------------------------ */
 const API = process.env.REACT_APP_API_URL;
-const IS_PROD = process.env.NODE_ENV === "production";
+const IS_PROD = process.env.NODE_ENV === "PRODUCTION";
 const CLIENT_ID = IS_PROD
 	? process.env.REACT_APP_PAYPAL_CLIENT_ID_LIVE
 	: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX;
