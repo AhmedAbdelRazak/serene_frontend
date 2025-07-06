@@ -217,6 +217,7 @@ const Z4StepThree = ({
 		: total_amount;
 
 	/* ─────────  Stripe call  ───────── */
+	// eslint-disable-next-line
 	const startStripeCheckout = async () => {
 		try {
 			const authOk = await handleSignupAndSignin();
@@ -353,9 +354,9 @@ const Z4StepThree = ({
 						) : isTermsAccepted ? (
 							<>
 								{/* Stripe button (unchanged) */}
-								<PayNowButton onClick={startStripeCheckout}>
+								{/* <PayNowButton onClick={startStripeCheckout}>
 									Pay with Card — Secure Stripe Checkout
-								</PayNowButton>
+								</PayNowButton> */}
 
 								{/* PayPal wallet + inline card */}
 								<div style={{ marginTop: 20 }}>
@@ -583,6 +584,8 @@ const DiscountedPrice = styled.span`
 	margin-left: 10px;
 	font-weight: bold;
 `;
+
+// eslint-disable-next-line
 const PayNowButton = styled.button`
 	padding: 10px 20px;
 	background: var(--button-bg-primary, #25a26f);
