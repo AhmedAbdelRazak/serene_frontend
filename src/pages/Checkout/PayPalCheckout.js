@@ -1,6 +1,6 @@
 /*******************************************************************
  *  src/pages/Checkout/PayPalCheckout.js
- *  Wallet  +  Card Fields drop‑in  •  July 2025
+ *  Wallet + Card Fields (robust)  •  with verbose logging
  *******************************************************************/
 import React, {
 	useCallback,
@@ -15,17 +15,18 @@ import axios from "axios";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 /* ------------------------------------------------------------------ */
-/*  CONSTANTS                                                         */
-/* ------------------------------------------------------------------ */
 const API = process.env.REACT_APP_API_URL;
 const IS_PROD = process.env.NODE_ENV === "production";
 const CLIENT_ID = IS_PROD
 	? process.env.REACT_APP_PAYPAL_CLIENT_ID_LIVE
 	: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX;
 
-const SDK_COMPONENTS = "buttons,card-fields"; // 👈 Card Fields enabled
+const SDK_COMPONENTS = "buttons,card-fields";
 const WALLET_STYLE = { layout: "vertical", label: "paypal" };
 const CARD_FALLBACK = { layout: "vertical", label: "pay", height: 45 };
+
+// console.log("[PayPal] env =", IS_PROD ? "LIVE" : "SANDBOX");
+// console.log("[PayPal] client‑id =", CLIENT_ID);
 /* ------------------------------------------------------------------ */
 
 export default function PayPalCheckout({
@@ -36,9 +37,10 @@ export default function PayPalCheckout({
 }) {
 	const [clientToken, setClientToken] = useState(null);
 
-	/* 1. fetch JS‑SDK client token */
+	/* 1. get client‑token */
 	useEffect(() => {
 		let alive = true;
+		// console.log("[PayPal] requesting client‑token …");
 		axios
 			.post(
 				`${API}/paypal/client-token`,
@@ -47,9 +49,12 @@ export default function PayPalCheckout({
 					headers: { Authorization: `Bearer ${authToken}` },
 				}
 			)
-			.then(({ data }) => alive && setClientToken(data.clientToken))
+			.then(({ data }) => {
+				// console.log("[PayPal] client‑token fetched:", data.clientToken);
+				if (alive) setClientToken(data.clientToken);
+			})
 			.catch((err) => {
-				console.error(err);
+				console.error("[PayPal] client‑token error:", err);
 				onError("Unable to initialise PayPal");
 			});
 		return () => {
@@ -57,9 +62,12 @@ export default function PayPalCheckout({
 		};
 	}, [authToken, onError]);
 
-	/* 2. axios helper (loader only on capture) */
+	/* 2. helper */
 	const call = useCallback(
 		async (method, url, data = {}, withLoader = false) => {
+			// eslint-disable-next-line
+			const label = `[PayPal‑API] ${method.toUpperCase()} ${url}`;
+			// console.log(label, "⇢", data);
 			try {
 				if (withLoader) onLoading(true);
 				const { data: resp } = await axios({
@@ -67,6 +75,7 @@ export default function PayPalCheckout({
 					url: `${API}${url}`,
 					data,
 				});
+				// console.log(label, "⇠", resp);
 				return resp;
 			} finally {
 				if (withLoader) onLoading(false);
@@ -75,7 +84,7 @@ export default function PayPalCheckout({
 		[onLoading]
 	);
 
-	/* 3. create / capture helpers */
+	/* 3. order helpers */
 	const invoiceRef = useRef(null);
 
 	const createOrder = useCallback(
@@ -106,7 +115,7 @@ export default function PayPalCheckout({
 		[call, onError, orderData]
 	);
 
-	/* 4. SDK options (always at top level) */
+	/* 4. SDK options */
 	const sdkOptions = useMemo(
 		() =>
 			clientToken && {
@@ -124,26 +133,26 @@ export default function PayPalCheckout({
 
 	if (!sdkOptions) return <Spin />;
 
+	// console.log("[PayPal] SDK options", sdkOptions);
+
 	return (
 		<PayPalScriptProvider
 			key={`pp-${IS_PROD ? "live" : "sb"}-${clientToken}`}
 			options={sdkOptions}
 		>
-			{/* Card Fields drop‑in (or fallback Smart Button) */}
 			<CardFieldsOrFallback
 				createOrder={createOrder}
 				captureOrder={captureOrder}
 				onError={onError}
 			/>
 
-			{/* Wallet / Pay Later / Venmo */}
 			<PayPalButtons
 				fundingSource='paypal'
 				style={WALLET_STYLE}
 				createOrder={createOrder}
 				onApprove={({ orderID }) => captureOrder(orderID)}
 				onError={(err) => {
-					console.error(err);
+					console.error("[PayPal] wallet error:", err);
 					onError("PayPal wallet error.");
 				}}
 			/>
@@ -152,55 +161,71 @@ export default function PayPalCheckout({
 }
 
 /* ------------------------------------------------------------------ */
-/*  CardFields drop‑in                                                */
+/*  CardFields drop‑in + fallbacks                                    */
 /* ------------------------------------------------------------------ */
 function CardFieldsOrFallback({ createOrder, captureOrder, onError }) {
 	const containerRef = useRef(null);
-	const [ready, setReady] = useState(false);
-	const [failed, setFailed] = useState(false);
+	const [mode, setMode] = useState("pending"); // pending | cardfields | fallback
 
-	/* try to render Card Fields once */
 	useEffect(() => {
 		let destroy;
-		(async () => {
-			if (!window.paypal?.CardFields || !containerRef.current)
-				return setFailed(true);
+
+		const init = async () => {
+			const paypal = window.paypal;
+			if (!paypal?.CardFields) {
+				// console.log("[CardFields] component undefined → fallback");
+				return setMode("fallback");
+			}
+
+			if (typeof paypal.CardFields.isEligible === "function") {
+				const ok = paypal.CardFields.isEligible();
+				// console.log("[CardFields] isEligible() →", ok);
+				if (!ok) return setMode("fallback");
+			} else {
+				// console.log(
+				// 	"[CardFields] isEligible() not present (old SDK) – attempting render"
+				// );
+			}
 
 			try {
-				const cardFields = await window.paypal.CardFields({
+				const cardFields = await paypal.CardFields({
 					style: {
-						/* optional styling */
 						input: {
-							color: "#1a202c",
 							"font-size": "16px",
 							"font-family": "Inter",
+							color: "#1a202c",
 						},
-						":focus": { color: "#000" },
+						"::placeholder": { color: "#A0AEC0" },
 						valid: { color: "#2f855a" },
 						invalid: { color: "#e53e3e" },
 					},
 					createOrder,
-					onApprove: ({ orderID }) => captureOrder(orderID),
+					onApprove: ({ orderID }) => {
+						// console.log("[CardFields] onApprove orderID =", orderID);
+						captureOrder(orderID);
+					},
 					onError: (err) => {
-						console.error(err);
-						setFailed(true);
+						console.error("[CardFields] error:", err);
+						setMode("fallback"); // graceful degradation
 						onError("Card payment error.");
 					},
 				});
 				destroy = await cardFields.render(containerRef.current);
-				setReady(true);
+				// console.log("[CardFields] rendered");
+				setMode("cardfields");
 			} catch (e) {
-				console.error("CardFields error:", e);
-				setFailed(true);
+				console.error("[CardFields] render() threw:", e);
+				setMode("fallback");
 			}
-		})();
+		};
+
+		init();
 		return () => {
 			destroy?.();
 		};
 	}, [createOrder, captureOrder, onError]);
 
-	if (failed) {
-		/* Fallback: show standard Card Smart Button */
+	if (mode === "fallback") {
 		return (
 			<PayPalButtons
 				fundingSource='card'
@@ -212,12 +237,17 @@ function CardFieldsOrFallback({ createOrder, captureOrder, onError }) {
 		);
 	}
 
-	return <CardContainer ref={containerRef}>{!ready && <Spin />}</CardContainer>;
+	/* pending or cardfields */
+	return (
+		<CardContainer ref={containerRef}>
+			{mode === "pending" && <Spin />}
+		</CardContainer>
+	);
 }
 
 /* ------------------------------------------------------------------ */
 /*  STYLES                                                            */
 /* ------------------------------------------------------------------ */
 const CardContainer = styled.div`
-	margin: 12px 0; /* gap above PayPal wallet button */
+	margin: 12px 0; /* spacing above wallet button */
 `;
