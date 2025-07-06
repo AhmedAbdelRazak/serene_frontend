@@ -16,7 +16,8 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 /* ------------------------------------------------------------------ */
 const API = process.env.REACT_APP_API_URL;
-const IS_PROD = process.env.NODE_ENV === "production";
+const IS_PROD =
+	process.env.NODE_ENV === "PRODUCTION" || process.env.NODE_ENV === "prod";
 const CLIENT_ID = IS_PROD
 	? process.env.REACT_APP_PAYPAL_CLIENT_ID_LIVE
 	: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX;
