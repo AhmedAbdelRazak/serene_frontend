@@ -1,6 +1,7 @@
 /*******************************************************************
  *  src/pages/Checkout/PayPalCheckout.js
- *  Production build – wallet + Hosted Fields + Pay Now
+ *  Production‑ready – wallet + Hosted Fields + Pay Now
+ *  (Hooks ordered correctly, no ESLint warnings)
  *******************************************************************/
 import React, {
 	useCallback,
@@ -22,11 +23,16 @@ import {
 } from "@paypal/react-paypal-js";
 
 /* ------------------------------------------------------------------ */
+/*  CONSTANTS (static, no hooks)                                      */
+/* ------------------------------------------------------------------ */
 const API = process.env.REACT_APP_API_URL;
-const IS_PROD = (process.env.REACT_APP_NODE_ENV || "") === "PRODUCTION";
+const IS_PROD = process.env.NODE_ENV === "production";
 const CLIENT_ID = IS_PROD
 	? process.env.REACT_APP_PAYPAL_CLIENT_ID_LIVE
 	: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX;
+
+const WALLET_STYLE = { layout: "vertical", label: "paypal" };
+const CARD_BTN_STYLE = { layout: "vertical", label: "pay", height: 45 };
 /* ------------------------------------------------------------------ */
 
 export default function PayPalCheckout({
@@ -38,7 +44,7 @@ export default function PayPalCheckout({
 	const [clientToken, setClientToken] = useState(null);
 	const [isPending, setIsPending] = useState(false);
 
-	/* fetch JS‑SDK client token */
+	/* ─── fetch JS‑SDK client token ─────────────────────────────── */
 	useEffect(() => {
 		let alive = true;
 		axios
@@ -59,12 +65,14 @@ export default function PayPalCheckout({
 		};
 	}, [authToken, onError]);
 
-	/* helper around axios with loader */
+	/* ─── axios helper ──────────────────────────────────────────── */
 	const call = useCallback(
-		async (method, url, data = {}) => {
+		async (method, url, data = {}, withLoader = true) => {
 			try {
-				onLoading(true);
-				setIsPending(true);
+				if (withLoader) {
+					onLoading(true);
+					setIsPending(true);
+				}
 				const { data: resp } = await axios({
 					method,
 					url: `${API}${url}`,
@@ -72,18 +80,21 @@ export default function PayPalCheckout({
 				});
 				return resp;
 			} finally {
-				onLoading(false);
-				setIsPending(false);
+				if (withLoader) {
+					onLoading(false);
+					setIsPending(false);
+				}
 			}
 		},
 		[onLoading]
 	);
 
-	/* create / capture */
+	/* ─── create / capture helpers ─────────────────────────────── */
 	const invoiceRef = useRef(null);
+
 	const createOrder = useCallback(
 		() =>
-			call("post", "/paypal/create-order", { orderData }).then(
+			call("post", "/paypal/create-order", { orderData }, false).then(
 				({ paypalOrderId, provisionalInvoice }) => {
 					invoiceRef.current = provisionalInvoice;
 					return paypalOrderId;
@@ -104,6 +115,7 @@ export default function PayPalCheckout({
 		[call, onError, orderData]
 	);
 
+	/* ─── SDK options (hook at top level) ───────────────────────── */
 	const sdkOptions = useMemo(
 		() =>
 			clientToken && {
@@ -121,6 +133,7 @@ export default function PayPalCheckout({
 
 	if (!sdkOptions) return <Spin />;
 
+	/* ─── render ────────────────────────────────────────────────── */
 	return (
 		<PayPalScriptProvider
 			key={`pp-${IS_PROD ? "live" : "sb"}-${clientToken}`}
@@ -137,11 +150,13 @@ export default function PayPalCheckout({
 			{/* Wallet / Pay Later / Venmo */}
 			<PayPalButtons
 				fundingSource='paypal'
-				style={{ layout: "vertical", label: "paypal" }}
-				/* no disabled prop → let PayPal handle state internally */
+				style={WALLET_STYLE}
 				createOrder={createOrder}
 				onApprove={({ orderID }) => captureOrder(orderID)}
-				onError={() => onError("PayPal wallet error.")}
+				onError={(err) => {
+					console.error(err);
+					onError("PayPal wallet error.");
+				}}
 			/>
 		</PayPalScriptProvider>
 	);
@@ -165,23 +180,25 @@ function CardBlock({
 		cvv: false,
 	});
 
+	/* eligibility check */
 	useEffect(() => {
 		if (isResolved) {
 			setHostedEligible(window.paypal?.HostedFields?.isEligible?.() || false);
 		}
 	}, [isResolved]);
 
-	/* merge‑update each field without resetting others */
-	const mergeValidity = (fields) =>
-		setFieldValidity((prev) => {
-			const update = { ...prev };
-			if ("number" in fields) update.number = fields.number?.isValid;
-			if ("expirationDate" in fields)
-				update.exp = fields.expirationDate?.isValid;
-			if ("cvv" in fields) update.cvv = fields.cvv?.isValid;
-			return update;
-		});
+	/* validity merge */
+	const mergeValidity = useCallback(
+		(fields) =>
+			setFieldValidity((prev) => ({
+				number: fields.number?.isValid ?? prev.number,
+				exp: fields.expirationDate?.isValid ?? prev.exp,
+				cvv: fields.cvv?.isValid ?? prev.cvv,
+			})),
+		[]
+	);
 
+	/* ── Hosted‑Fields path ────────────────────────────────────── */
 	if (hostedEligible) {
 		const allValid = Object.values(fieldValidity).every(Boolean);
 
@@ -195,7 +212,7 @@ function CardBlock({
 					".valid": { color: "#2F855A" },
 				}}
 			>
-				{/* visible fields */}
+				{/* visible inputs */}
 				<FormGroup>
 					<Label>Card number</Label>
 					<IframeWrap className={cls(fieldValidity.number)} id='card-number' />
@@ -211,7 +228,7 @@ function CardBlock({
 					</FormGroup>
 				</FlexRow>
 
-				{/* direct children required by the SDK */}
+				{/* required HostedField children */}
 				<PayPalHostedField
 					hostedFieldType='number'
 					options={{
@@ -237,6 +254,7 @@ function CardBlock({
 					onValidityChange={({ fields }) => mergeValidity(fields)}
 				/>
 
+				{/* Pay Now */}
 				<PayNow
 					disabled={!allValid || isPending}
 					captureOrder={captureOrder}
@@ -247,11 +265,11 @@ function CardBlock({
 		);
 	}
 
-	/* merchant not ACDC‑enabled → fallback card Smart Button */
+	/* ── Fallback Smart Button ─────────────────────────────────── */
 	return (
 		<PayPalButtons
 			fundingSource='card'
-			style={{ layout: "vertical", label: "pay", height: 45 }}
+			style={CARD_BTN_STYLE}
 			createOrder={createOrder}
 			onApprove={({ orderID }) => captureOrder(orderID)}
 			onError={() => onError("Card payment error.")}
@@ -326,7 +344,7 @@ const PayNowButton = styled.button`
 	border-radius: 6px;
 	font-size: 0.95rem;
 	font-weight: 600;
-	margin: 12px 0; /* space above & below */
+	margin: 12px 0; /* gap above & below */
 	cursor: pointer;
 	transition: background 0.2s;
 
