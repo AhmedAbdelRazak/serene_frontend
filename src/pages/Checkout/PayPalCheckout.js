@@ -1,6 +1,6 @@
 /*******************************************************************
  *  src/pages/Checkout/PayPalCheckout.js
- *  – Wallet + Hosted Card Fields (July 2025, production‑ready)
+ *  Polished UI + explicit “Pay Now” button  •  July 2025 (final)
  *******************************************************************/
 import React, {
 	useCallback,
@@ -9,6 +9,7 @@ import React, {
 	useRef,
 	useState,
 } from "react";
+import styled from "styled-components";
 import { Spin } from "antd";
 import axios from "axios";
 import {
@@ -16,10 +17,12 @@ import {
 	PayPalButtons,
 	PayPalHostedFieldsProvider,
 	PayPalHostedField,
+	usePayPalHostedFields,
+	usePayPalScriptReducer,
 } from "@paypal/react-paypal-js";
 
 /* ------------------------------------------------------------------ */
-/*  1.  Environment helpers                                           */
+/*  ENV & CONSTS                                                      */
 /* ------------------------------------------------------------------ */
 const API = process.env.REACT_APP_API_URL;
 const IS_PROD =
@@ -29,7 +32,7 @@ const CLIENT_ID = IS_PROD
 	: process.env.REACT_APP_PAYPAL_CLIENT_ID_SANDBOX;
 
 /* ------------------------------------------------------------------ */
-/*  2.  Component                                                     */
+/*  MAIN COMPONENT                                                    */
 /* ------------------------------------------------------------------ */
 export default function PayPalCheckout({
 	orderData,
@@ -39,10 +42,8 @@ export default function PayPalCheckout({
 }) {
 	const [clientToken, setClientToken] = useState(null);
 	const [isPending, setIsPending] = useState(false);
-	const [cardValid, setCardValid] = useState(false);
-	const invoiceRef = useRef(null);
 
-	/* ------------ 3. Fetch client‑token ---------------------------- */
+	/* -------- fetch JS‑SDK client‑token --------------------------- */
 	useEffect(() => {
 		let alive = true;
 		axios
@@ -61,7 +62,7 @@ export default function PayPalCheckout({
 		};
 	}, [authToken, onError]);
 
-	/* ------------ 4. Axios helper w/ loader ------------------------ */
+	/* -------- helper to call our API ----------------------------- */
 	const call = useCallback(
 		async (method, url, data = {}) => {
 			try {
@@ -81,7 +82,9 @@ export default function PayPalCheckout({
 		[onLoading]
 	);
 
-	/* ------------ 5. Create & Capture helpers --------------------- */
+	/* -------- create / capture helpers -------------------------- */
+	const invoiceRef = useRef(null);
+
 	const createOrder = useCallback(
 		() =>
 			call("post", "/paypal/create-order", { orderData }).then(
@@ -110,13 +113,13 @@ export default function PayPalCheckout({
 		[call, onError, orderData]
 	);
 
-	/* ------------ 6. SDK options (memoised) ------------------------ */
+	/* -------- JS‑SDK options ------------------------------------ */
 	const sdkOptions = useMemo(
 		() =>
 			clientToken && {
 				"client-id": CLIENT_ID,
-				"data-client-token": clientToken, // query‑string for the SDK script
-				dataClientToken: clientToken, // ✅ passes react‑paypal‑js validator
+				"data-client-token": clientToken,
+				dataClientToken: clientToken,
 				currency: "USD",
 				intent: "capture",
 				components: "buttons,hosted-fields",
@@ -128,19 +131,27 @@ export default function PayPalCheckout({
 
 	if (!sdkOptions) return <Spin />;
 
-	/* ----------------------------------------------------------------
-     7. Render
-     ---------------------------------------------------------------- */
+	/* ================================================================
+        RENDER
+     =============================================================== */
 	return (
 		<PayPalScriptProvider
+			key={`pp-${IS_PROD ? "live" : "sb"}-${clientToken}`}
 			options={sdkOptions}
-			key={`pp-sdk-${IS_PROD ? "live" : "sb"}-${clientToken}`}
 		>
-			{/* ---------- A. Wallet / Pay Later / Venmo ------------------- */}
+			<CardBlock
+				createOrder={createOrder}
+				captureOrder={captureOrder}
+				isPending={isPending}
+				setPending={setIsPending}
+				onError={onError}
+			/>
+
+			{/* Wallet / Pay Later / Venmo */}
 			<PayPalButtons
 				fundingSource='paypal'
-				disabled={isPending}
 				style={{ layout: "vertical", label: "paypal" }}
+				disabled={isPending}
 				createOrder={createOrder}
 				onApprove={({ orderID }) => captureOrder(orderID)}
 				onError={(err) => {
@@ -148,62 +159,217 @@ export default function PayPalCheckout({
 					onError("PayPal wallet error.");
 				}}
 			/>
+		</PayPalScriptProvider>
+	);
+}
 
-			{/* ---------- B. Card – Hosted Fields ------------------------- */}
-			<PayPalHostedFieldsProvider createOrder={createOrder}>
-				<div
-					style={{
-						marginTop: 24,
-						border: "1px solid #ccc",
-						padding: 16,
-						borderRadius: 8,
-					}}
-				>
-					<label htmlFor='card-number'>Card number</label>
-					<div id='card-number' style={{ minHeight: 38, marginBottom: 12 }} />
+/* ------------------------------------------------------------------ */
+/*  CARD BLOCK                                                        */
+/* ------------------------------------------------------------------ */
+function CardBlock({
+	createOrder,
+	captureOrder,
+	isPending,
+	setPending,
+	onError,
+}) {
+	const [{ isResolved }] = usePayPalScriptReducer();
+	const [hostedEligible, setHostedEligible] = useState(false);
+	const [fieldValidity, setFieldValidity] = useState({
+		number: false,
+		exp: false,
+		cvv: false,
+	});
 
-					<label htmlFor='card-exp'>Expiry</label>
-					<div id='card-exp' style={{ minHeight: 38, marginBottom: 12 }} />
+	/* eligibility -------------------------------------------------- */
+	useEffect(() => {
+		if (isResolved) {
+			setHostedEligible(window.paypal?.HostedFields?.isEligible?.() || false);
+		}
+	}, [isResolved]);
 
-					<label htmlFor='card-cvv'>CVV</label>
-					<div id='card-cvv' style={{ minHeight: 38 }} />
-				</div>
+	/* validity helper --------------------------------------------- */
+	const updateValidity = (fields) =>
+		setFieldValidity({
+			number: fields.number?.isValid ?? false,
+			exp: fields.expirationDate?.isValid ?? false,
+			cvv: fields.cvv?.isValid ?? false,
+		});
 
+	/* ------- Hosted‑Fields path ---------------------------------- */
+	if (hostedEligible) {
+		const allValid = Object.values(fieldValidity).every(Boolean);
+
+		return (
+			<PayPalHostedFieldsProvider
+				createOrder={createOrder}
+				styles={{
+					input: { "font-size": "16px", "font-family": "Inter, sans-serif" },
+					"::placeholder": { color: "#A0AEC0" },
+					".invalid": { color: "#E53E3E" },
+					".valid": { color: "#2F855A" },
+				}}
+			>
+				{/* ---------------- 1. Visible form ----------------------- */}
+				<FormGroup>
+					<Label>Card number</Label>
+					<IframeWrap
+						className={classNameFromValidity(fieldValidity.number)}
+						id='card-number'
+					/>
+				</FormGroup>
+				<FlexRow>
+					<FormGroup style={{ flex: 1, marginRight: 8 }}>
+						<Label>Expiry</Label>
+						<IframeWrap
+							className={classNameFromValidity(fieldValidity.exp)}
+							id='card-exp'
+						/>
+					</FormGroup>
+					<FormGroup style={{ flex: 1, marginLeft: 8 }}>
+						<Label>CVV</Label>
+						<IframeWrap
+							className={classNameFromValidity(fieldValidity.cvv)}
+							id='card-cvv'
+						/>
+					</FormGroup>
+				</FlexRow>
+
+				{/* ---------------- 2. Required DIRECT children ----------- */}
 				<PayPalHostedField
 					hostedFieldType='number'
 					options={{
 						selector: "#card-number",
 						placeholder: "4111 1111 1111 1111",
 					}}
-					onValidityChange={({ fields }) =>
-						setCardValid(
-							fields.number?.isValid &&
-								fields.cvv?.isValid &&
-								fields.expirationDate?.isValid
-						)
-					}
+					onInput={({ fields }) => updateValidity(fields)}
+					onValidityChange={({ fields }) => updateValidity(fields)}
 				/>
 				<PayPalHostedField
 					hostedFieldType='expirationDate'
 					options={{ selector: "#card-exp", placeholder: "MM/YY" }}
+					onInput={({ fields }) => updateValidity(fields)}
+					onValidityChange={({ fields }) => updateValidity(fields)}
 				/>
 				<PayPalHostedField
 					hostedFieldType='cvv'
 					options={{ selector: "#card-cvv", placeholder: "***" }}
+					onInput={({ fields }) => updateValidity(fields)}
+					onValidityChange={({ fields }) => updateValidity(fields)}
 				/>
 
-				<PayPalButtons
-					fundingSource='card'
-					style={{ layout: "vertical", label: "pay" }}
-					disabled={!cardValid || isPending}
-					createOrder={createOrder}
-					onApprove={({ orderID }) => captureOrder(orderID)}
-					onError={(err) => {
-						console.error(err);
-						onError("Card payment error.");
-					}}
+				{/* ---------------- 3. Pay Now button --------------------- */}
+				<PayNow
+					disabled={!allValid || isPending}
+					captureOrder={captureOrder}
+					setPending={setPending}
+					onError={onError}
 				/>
 			</PayPalHostedFieldsProvider>
-		</PayPalScriptProvider>
+		);
+	}
+
+	/* ------- Fallback path -------------------------------------- */
+	return (
+		<PayPalButtons
+			fundingSource='card'
+			style={{ layout: "vertical", label: "pay", height: 45 }}
+			disabled={isPending}
+			createOrder={createOrder}
+			onApprove={({ orderID }) => captureOrder(orderID)}
+			onError={(err) => {
+				console.error(err);
+				onError("Card payment error.");
+			}}
+		/>
 	);
+}
+
+/* ------------------------------------------------------------------ */
+/*  PayNow – submits Hosted‑Fields                                    */
+/* ------------------------------------------------------------------ */
+function PayNow({ disabled, captureOrder, setPending, onError }) {
+	const hostedFields = usePayPalHostedFields();
+
+	const handleClick = async () => {
+		if (!hostedFields?.submit) return;
+		try {
+			setPending(true);
+			const { orderId } = await hostedFields.submit({
+				contingencies: ["3D_SECURE"],
+			});
+			await captureOrder(orderId);
+		} catch (e) {
+			console.error(e);
+			onError("Card payment error.");
+		} finally {
+			setPending(false);
+		}
+	};
+
+	return (
+		<PayNowButton className='my-3' onClick={handleClick} disabled={disabled}>
+			Pay Now
+		</PayNowButton>
+	);
+}
+
+/* ------------------------------------------------------------------ */
+/*  STYLE UTILS                                                       */
+/* ------------------------------------------------------------------ */
+const FormGroup = styled.div`
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 14px;
+`;
+const Label = styled.label`
+	font-size: 0.85rem;
+	color: #4a5568;
+	margin-bottom: 6px;
+`;
+const IframeWrap = styled.div`
+	height: 46px;
+	border: 1px solid #cbd5e0;
+	border-radius: 6px;
+	padding: 10px 12px;
+	display: flex;
+	align-items: center;
+	transition: border-color 0.2s;
+
+	&.valid {
+		border-color: #38a169;
+	}
+	&.invalid {
+		border-color: #e53e3e;
+	}
+`;
+const FlexRow = styled.div`
+	display: flex;
+`;
+const PayNowButton = styled.button`
+	width: 100%;
+	height: 45px;
+	background: #1a202c;
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	margin-top: 12px;
+	cursor: pointer;
+	transition: background 0.2s;
+
+	&:disabled {
+		background: #a0aec0;
+		cursor: not-allowed;
+	}
+	&:hover:enabled {
+		background: #2d3748;
+	}
+`;
+
+/* helper */
+function classNameFromValidity(isValid) {
+	if (isValid == null) return "";
+	return isValid ? "valid" : "invalid";
 }
