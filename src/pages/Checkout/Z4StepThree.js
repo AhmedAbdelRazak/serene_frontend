@@ -43,7 +43,7 @@ const Z4StepThree = ({
 
 	const history = useHistory();
 
-	const authInfo = isAuthenticated() || {};
+	const [authInfo, setAuthInfo] = useState(isAuthenticated() || {});
 	const token = authInfo.token;
 	const authUser = authInfo.user;
 	const userId = authUser?._id;
@@ -129,8 +129,6 @@ const Z4StepThree = ({
 	const cleanOrderData = React.useMemo(() => {
 		const clone = JSON.parse(JSON.stringify(orderData));
 
-		delete clone.customerDetails.userId;
-
 		if (clone.chosenShippingOption) {
 			const keep = ["carrierName", "shippingPrice"]; // fields the backend expects
 			Object.keys(clone.chosenShippingOption).forEach((k) => {
@@ -142,8 +140,8 @@ const Z4StepThree = ({
 	/* ───────── helpers ───────── */
 
 	/* quick validations then open modal */
-	const handleProceedToCheckout = () => {
-		/* address block */
+	const handleProceedToCheckout = async () => {
+		/* ➊  Shipping block validations */
 		if (
 			!address ||
 			!city ||
@@ -155,8 +153,8 @@ const Z4StepThree = ({
 			return toast.error("Please complete the shipping section.");
 		}
 
-		/* guest validations */
-		if (!user) {
+		/* ➋  Guest‑only field validations */
+		if (!authInfo.user) {
 			const { name, email, phone, password, confirmPassword } = customerDetails;
 			if (!name || !email || !phone || !password || !confirmPassword) {
 				setStep(1);
@@ -169,41 +167,56 @@ const Z4StepThree = ({
 			if (!/^\d{10}$/.test(phone))
 				return toast.error("Phone must be 10 digits.");
 			if (password.length < 6)
-				return toast.error("Password must be ≥ 6 characters.");
+				return toast.error("Password must be ≥ 6 characters.");
 			if (password !== confirmPassword)
 				return toast.error("Passwords do not match.");
 		}
 
+		/* ➌  Ensure the guest really has an account before payment */
+		if (!authInfo.user) {
+			const ok = await handleSignupAndSignin();
+			if (!ok) return; // abort if signup/login failed
+		}
+
+		/* ➍  Open PayPal / Stripe modal */
 		setIsModalVisible(true);
 	};
 
 	/* guest account helper */
 	const handleSignupAndSignin = async () => {
-		if (user) return true;
+		// Already logged‑in – nothing to do
+		if (authInfo.user) return true;
+
 		const { name, email, phone, password } = customerDetails;
 
 		try {
-			const signIn = await signin({ emailOrPhone: email, password });
-			if (!signIn.error) {
-				authenticate(signIn, () => {});
+			/* 1) Try to sign‑in (maybe the e‑mail already exists) */
+			const signInRes = await signin({ emailOrPhone: email, password });
+			if (!signInRes.error) {
+				authenticate(signInRes, () => {});
+				setAuthInfo(isAuthenticated() || {}); // ← refresh token + _id
 				return true;
 			}
-			/* user doesn’t exist ⇒ create then sign‑in */
-			const signUp = await signup({ name, email, password, phone });
-			if (signUp.error) {
-				toast.error(signUp.error);
+
+			/* 2) Create the account */
+			const signUpRes = await signup({ name, email, password, phone });
+			if (signUpRes.error) {
+				toast.error(signUpRes.error);
 				return false;
 			}
+
+			/* 3) Log‑in the newly created account */
 			const secondSignIn = await signin({ emailOrPhone: email, password });
 			if (secondSignIn.error) {
 				toast.error(secondSignIn.error);
 				return false;
 			}
 			authenticate(secondSignIn, () => {});
+			setAuthInfo(isAuthenticated() || {});
 			return true;
-		} catch (e) {
-			console.error("Auth error:", e);
-			toast.error("Cannot create / log in.");
+		} catch (err) {
+			console.error("Auth error:", err);
+			toast.error("Cannot create or log in.");
 			return false;
 		}
 	};
@@ -360,6 +373,7 @@ const Z4StepThree = ({
 
 								{/* PayPal wallet + inline card */}
 								<div style={{ marginTop: 20 }}>
+									{/* {isLoading && <Spin style={{ marginBottom: 16 }} />} */}
 									<PayPalCheckout
 										orderData={cleanOrderData}
 										authToken={token}
