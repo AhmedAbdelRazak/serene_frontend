@@ -1,6 +1,6 @@
 /*******************************************************************
  *  src/pages/Checkout/PayPalCheckout.js
- *  Polished UI + “Pay Now” – July 2025 (merge‑fix)
+ *  Production build – wallet + Hosted Fields + Pay Now
  *******************************************************************/
 import React, {
 	useCallback,
@@ -39,7 +39,7 @@ export default function PayPalCheckout({
 	const [clientToken, setClientToken] = useState(null);
 	const [isPending, setIsPending] = useState(false);
 
-	/* fetch client‑token */
+	/* fetch JS‑SDK client token */
 	useEffect(() => {
 		let alive = true;
 		axios
@@ -60,7 +60,7 @@ export default function PayPalCheckout({
 		};
 	}, [authToken, onError]);
 
-	/* helper to hit our API with loader */
+	/* helper around axios with loader */
 	const call = useCallback(
 		async (method, url, data = {}) => {
 			try {
@@ -80,7 +80,7 @@ export default function PayPalCheckout({
 		[onLoading]
 	);
 
-	/* create / capture helpers */
+	/* create / capture */
 	const invoiceRef = useRef(null);
 	const createOrder = useCallback(
 		() =>
@@ -101,14 +101,10 @@ export default function PayPalCheckout({
 				provisionalInvoice: invoiceRef.current,
 			})
 				.then(() => (window.location.href = "/dashboard"))
-				.catch((e) => {
-					console.error(e);
-					onError("Payment could not be completed.");
-				}),
+				.catch(() => onError("Payment could not be completed.")),
 		[call, onError, orderData]
 	);
 
-	/* SDK options */
 	const sdkOptions = useMemo(
 		() =>
 			clientToken && {
@@ -143,13 +139,10 @@ export default function PayPalCheckout({
 			<PayPalButtons
 				fundingSource='paypal'
 				style={{ layout: "vertical", label: "paypal" }}
-				disabled={isPending}
+				/* no disabled prop → let PayPal handle state internally */
 				createOrder={createOrder}
 				onApprove={({ orderID }) => captureOrder(orderID)}
-				onError={(err) => {
-					console.error(err);
-					onError("PayPal wallet error.");
-				}}
+				onError={() => onError("PayPal wallet error.")}
 			/>
 		</PayPalScriptProvider>
 	);
@@ -179,8 +172,8 @@ function CardBlock({
 		}
 	}, [isResolved]);
 
-	/* ❶ merge‑update, don’t overwrite the other fields */
-	const updateValidity = (fields) =>
+	/* merge‑update each field without resetting others */
+	const mergeValidity = (fields) =>
 		setFieldValidity((prev) => ({
 			number: fields.number?.isValid ?? prev.number,
 			exp: fields.expirationDate?.isValid ?? prev.exp,
@@ -200,52 +193,46 @@ function CardBlock({
 					".valid": { color: "#2F855A" },
 				}}
 			>
-				{/* visible form */}
+				{/* visible fields */}
 				<FormGroup>
 					<Label>Card number</Label>
-					<IframeWrap
-						className={classNameFromValidity(fieldValidity.number)}
-						id='card-number'
-					/>
+					<IframeWrap className={cls(fieldValidity.number)} id='card-number' />
 				</FormGroup>
 				<FlexRow>
 					<FormGroup style={{ flex: 1, marginRight: 8 }}>
 						<Label>Expiry</Label>
-						<IframeWrap
-							className={classNameFromValidity(fieldValidity.exp)}
-							id='card-exp'
-						/>
+						<IframeWrap className={cls(fieldValidity.exp)} id='card-exp' />
 					</FormGroup>
 					<FormGroup style={{ flex: 1, marginLeft: 8 }}>
 						<Label>CVV</Label>
-						<IframeWrap
-							className={classNameFromValidity(fieldValidity.cvv)}
-							id='card-cvv'
-						/>
+						<IframeWrap className={cls(fieldValidity.cvv)} id='card-cvv' />
 					</FormGroup>
 				</FlexRow>
 
-				{/* mandatory DIRECT children */}
+				{/* direct children required by the SDK */}
 				<PayPalHostedField
 					hostedFieldType='number'
 					options={{
 						selector: "#card-number",
 						placeholder: "4111 1111 1111 1111",
 					}}
-					onInput={({ fields }) => updateValidity(fields)}
-					onValidityChange={({ fields }) => updateValidity(fields)}
+					onInput={({ fields }) => mergeValidity(fields)}
+					onChange={({ fields }) => mergeValidity(fields)}
+					onValidityChange={({ fields }) => mergeValidity(fields)}
 				/>
 				<PayPalHostedField
 					hostedFieldType='expirationDate'
 					options={{ selector: "#card-exp", placeholder: "MM/YY" }}
-					onInput={({ fields }) => updateValidity(fields)}
-					onValidityChange={({ fields }) => updateValidity(fields)}
+					onInput={({ fields }) => mergeValidity(fields)}
+					onChange={({ fields }) => mergeValidity(fields)}
+					onValidityChange={({ fields }) => mergeValidity(fields)}
 				/>
 				<PayPalHostedField
 					hostedFieldType='cvv'
 					options={{ selector: "#card-cvv", placeholder: "***" }}
-					onInput={({ fields }) => updateValidity(fields)}
-					onValidityChange={({ fields }) => updateValidity(fields)}
+					onInput={({ fields }) => mergeValidity(fields)}
+					onChange={({ fields }) => mergeValidity(fields)}
+					onValidityChange={({ fields }) => mergeValidity(fields)}
 				/>
 
 				<PayNow
@@ -258,18 +245,14 @@ function CardBlock({
 		);
 	}
 
-	/* fallback */
+	/* merchant not ACDC‑enabled → fallback card Smart Button */
 	return (
 		<PayPalButtons
 			fundingSource='card'
 			style={{ layout: "vertical", label: "pay", height: 45 }}
-			disabled={isPending}
 			createOrder={createOrder}
 			onApprove={({ orderID }) => captureOrder(orderID)}
-			onError={(err) => {
-				console.error(err);
-				onError("Card payment error.");
-			}}
+			onError={() => onError("Card payment error.")}
 		/>
 	);
 }
@@ -286,8 +269,7 @@ function PayNow({ disabled, captureOrder, setPending, onError }) {
 				contingencies: ["3D_SECURE"],
 			});
 			await captureOrder(orderId);
-		} catch (e) {
-			console.error(e);
+		} catch {
 			onError("Card payment error.");
 		} finally {
 			setPending(false);
@@ -302,7 +284,7 @@ function PayNow({ disabled, captureOrder, setPending, onError }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  STYLE UTILS                                                       */
+/*  STYLES                                                            */
 /* ------------------------------------------------------------------ */
 const FormGroup = styled.div`
 	display: flex;
@@ -333,7 +315,6 @@ const IframeWrap = styled.div`
 const FlexRow = styled.div`
 	display: flex;
 `;
-/* ❷ margin‑bottom separates the buttons */
 const PayNowButton = styled.button`
 	width: 100%;
 	height: 45px;
@@ -343,7 +324,7 @@ const PayNowButton = styled.button`
 	border-radius: 6px;
 	font-size: 0.95rem;
 	font-weight: 600;
-	margin: 12px 0; /* top & bottom margin */
+	margin: 12px 0; /* space above & below */
 	cursor: pointer;
 	transition: background 0.2s;
 
@@ -355,8 +336,5 @@ const PayNowButton = styled.button`
 		background: #2d3748;
 	}
 `;
-
-function classNameFromValidity(isValid) {
-	if (isValid == null) return "";
-	return isValid ? "valid" : "invalid";
-}
+/* helper */
+const cls = (v) => (v ? "valid" : "invalid");
