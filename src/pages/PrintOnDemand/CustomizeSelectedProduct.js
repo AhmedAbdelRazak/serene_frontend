@@ -161,8 +161,12 @@ function dataURLtoBlob(dataURL) {
 	return new Blob([buffer], { type: mimeString });
 }
 
-function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
+function compressCanvas(canvas, { mimeType = "image/png", quality = 1 } = {}) {
+	// Force PNG to guarantee alpha channel
+	const targetMime = "image/png";
+
 	return new Promise((resolve, reject) => {
+		/* Modern browsers – use toBlob (asynchronous, avoids memory bloat) */
 		if (canvas.toBlob) {
 			canvas.toBlob(
 				(blob) => {
@@ -170,24 +174,26 @@ function compressCanvas(canvas, { mimeType = "image/jpeg", quality = 0.9 }) {
 						return reject(new Error("Canvas is empty or toBlob() failed."));
 					}
 					const reader = new FileReader();
-					reader.onload = () => resolve(reader.result);
+					reader.onload = () => resolve(reader.result); // data‑URL string
 					reader.onerror = (err) => reject(err);
 					reader.readAsDataURL(blob);
 				},
-				mimeType,
-				quality
+				targetMime,
+				quality // ignored for PNG but harmless
 			);
-		} else {
-			try {
-				const dataURL = canvas.toDataURL(mimeType, quality);
-				const blob = dataURLtoBlob(dataURL);
-				const reader = new FileReader();
-				reader.onload = () => resolve(reader.result);
-				reader.onerror = (err) => reject(err);
-				reader.readAsDataURL(blob);
-			} catch (error) {
-				return reject(error);
-			}
+			return;
+		}
+
+		/* Fallback – toDataURL then convert to Blob for parity */
+		try {
+			const dataURL = canvas.toDataURL(targetMime, quality);
+			const blob = dataURLtoBlob(dataURL); // ← you already have this helper
+			const reader = new FileReader();
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = (err) => reject(err);
+			reader.readAsDataURL(blob);
+		} catch (err) {
+			reject(err);
 		}
 	});
 }
@@ -1528,7 +1534,21 @@ export default function CustomizeSelectedProduct() {
 	/**
 	 * 6) ADD TO CART => SCREENSHOT
 	 */
+	/**
+	 * 6) ADD TO CART => SCREENSHOT
+	 */
 	async function handleAddToCart() {
+		/* ── Step 0: remove default placeholder text, if still present ────────── */
+		setElements((prev) =>
+			prev.filter(
+				(el) =>
+					!(el.type === "text" && el.text.trim() === "Start typing here...")
+			)
+		);
+		// wait a tick so the DOM reflects the removal before capture
+		await new Promise((res) => setTimeout(res, 50));
+
+		/* ── early guards ─────────────────────────────────────────────────────── */
 		if (isAddToCartDisabled) return;
 		if (!order.variant_id) {
 			message.warning("Please select required options before adding to cart.");
@@ -1536,32 +1556,29 @@ export default function CustomizeSelectedProduct() {
 		}
 		setIsAddToCartDisabled(true);
 
+		/* ── Step 1: deselect everything (so outlines aren’t captured) ────────── */
 		const previouslySelected = selectedElementId;
 		setSelectedElementId(null);
-		await new Promise((resolve) => setTimeout(resolve, 50));
+		await new Promise((res) => setTimeout(res, 50));
 
+		/* ── Step 2: try to capture screenshots (html2canvas → dom‑to‑image) ──── */
 		let bareUrl, finalUrl;
-
 		try {
 			const screenshotOptions = {
-				scale: 3,
+				scale: isMobile ? 2 : 3,
 				useCORS: true,
 				allowTaint: false,
-				ignoreElements: (element) =>
-					element.classList?.contains("noScreenshot"),
+				ignoreElements: (el) => el.classList?.contains("noScreenshot"),
 				backgroundColor: null,
 			};
-			if (isMobile) {
-				screenshotOptions.scale = 2;
-			}
 
-			// bare
+			/* bare print‑area only */
 			const bareCanvas = await html2canvas(
 				bareDesignRef.current,
 				screenshotOptions
 			);
-			const croppedBareCanvas = cropCanvasToTransparentBounds(bareCanvas);
-			const bareDataURL = await compressCanvas(croppedBareCanvas, {
+			const croppedBare = cropCanvasToTransparentBounds(bareCanvas);
+			const bareDataURL = await compressCanvas(croppedBare, {
 				mimeType: "image/jpeg",
 				quality: 0.9,
 			});
@@ -1574,7 +1591,7 @@ export default function CustomizeSelectedProduct() {
 			);
 			bareUrl = bareUpload.url;
 
-			// final
+			/* final overlay (base image + user elements) */
 			const finalCanvas = await html2canvas(
 				designOverlayRef.current,
 				screenshotOptions
@@ -1591,290 +1608,196 @@ export default function CustomizeSelectedProduct() {
 				}
 			);
 			finalUrl = finalUpload.url;
-		} catch (err1) {
-			console.warn("Screenshot #1 failed, fallback #2...", err1);
+		} catch (errHtml) {
+			console.warn("html2canvas failed, falling back …", errHtml);
 			try {
-				const fallbackOptions = {
-					scale: 2,
-					useCORS: false,
-					allowTaint: true,
-					ignoreElements: (element) =>
-						element.classList?.contains("noScreenshot"),
-					backgroundColor: null,
+				const domOptions = {
+					quality: 0.9,
+					bgcolor: null,
+					style: { transform: "scale(2)", transformOrigin: "top left" },
+					filter: (node) => !node.classList?.contains("noScreenshot"),
 				};
 
-				// bare
-				const bareCanvas2 = await html2canvas(
+				const bareBlob = await domtoimage.toBlob(
 					bareDesignRef.current,
-					fallbackOptions
+					domOptions
 				);
-				const croppedBare2 = cropCanvasToTransparentBounds(bareCanvas2);
-				const bareDataURL2 = await compressCanvas(croppedBare2, {
+				const bareCanvas = await blobToCanvas(bareBlob);
+				const bareDataURL = await compressCanvas(bareCanvas, {
 					mimeType: "image/jpeg",
-					quality: 0.85,
+					quality: 0.9,
 				});
-				const bareUp2 = await cloudinaryUpload1(fallbackUserId, fallbackToken, {
-					image: bareDataURL2,
-				});
-				bareUrl = bareUp2.url;
+				bareUrl = (
+					await cloudinaryUpload1(fallbackUserId, fallbackToken, {
+						image: bareDataURL,
+					})
+				).url;
 
-				// final
-				const finalCanvas2 = await html2canvas(
+				const finalBlob = await domtoimage.toBlob(
 					designOverlayRef.current,
-					fallbackOptions
+					domOptions
 				);
-				const finalDataURL2 = await compressCanvas(finalCanvas2, {
+				const finalCanvas = await blobToCanvas(finalBlob);
+				const finalDataURL = await compressCanvas(finalCanvas, {
 					mimeType: "image/jpeg",
-					quality: 0.85,
+					quality: 0.9,
 				});
-				const finalUp2 = await cloudinaryUpload1(
-					fallbackUserId,
-					fallbackToken,
-					{
-						image: finalDataURL2,
-					}
+				finalUrl = (
+					await cloudinaryUpload1(fallbackUserId, fallbackToken, {
+						image: finalDataURL,
+					})
+				).url;
+			} catch (errDom) {
+				console.error("All screenshot attempts failed.", errDom);
+				message.error(
+					"Screenshot attempts failed. Please refresh the page or try another device."
 				);
-				finalUrl = finalUp2.url;
-			} catch (err2) {
-				console.warn(
-					"Screenshot #2 also failed, fallback #3 (dom-to-image)...",
-					err2
-				);
-				try {
-					const domOptions = {
-						quality: 0.9,
-						bgcolor: null,
-						style: {
-							transform: "scale(2)",
-							transformOrigin: "top left",
-						},
-						filter: (node) => !node.classList?.contains("noScreenshot"),
-					};
-
-					// bare
-					const bareBlob3 = await domtoimage.toBlob(
-						bareDesignRef.current,
-						domOptions
-					);
-					const bareCanvas3 = await blobToCanvas(bareBlob3);
-					const croppedBare3 = cropCanvasToTransparentBounds(bareCanvas3);
-					const bareDataURL3 = await compressCanvas(croppedBare3, {
-						mimeType: "image/jpeg",
-						quality: 0.9,
-					});
-					const bareUp3 = await cloudinaryUpload1(
-						fallbackUserId,
-						fallbackToken,
-						{
-							image: bareDataURL3,
-						}
-					);
-					bareUrl = bareUp3.url;
-
-					// final
-					const finalBlob3 = await domtoimage.toBlob(
-						designOverlayRef.current,
-						domOptions
-					);
-					const finalCanvas3 = await blobToCanvas(finalBlob3);
-					const finalDataURL3 = await compressCanvas(finalCanvas3, {
-						mimeType: "image/jpeg",
-						quality: 0.9,
-					});
-					const finalUp3 = await cloudinaryUpload1(
-						fallbackUserId,
-						fallbackToken,
-						{
-							image: finalDataURL3,
-						}
-					);
-					finalUrl = finalUp3.url;
-				} catch (err3) {
-					console.warn(
-						"dom-to-image also failed => final fallback not possible",
-						err3
-					);
-					message.error(
-						"Screenshot attempts all failed. Please refresh or try on another device."
-					);
-					setSelectedElementId(previouslySelected);
-					setIsAddToCartDisabled(false);
-					return;
-				}
+				setSelectedElementId(previouslySelected);
+				setIsAddToCartDisabled(false);
+				return;
 			}
 		}
 
+		/* ── guard: both URLs must exist ──────────────────────────────────────── */
 		if (!bareUrl || !finalUrl) {
 			message.error(
-				"Screenshot attempts all failed. Please refresh or try on another device."
+				"Screenshot attempts failed. Please refresh the page or try another device."
 			);
 			setSelectedElementId(previouslySelected);
 			setIsAddToCartDisabled(false);
 			return;
 		}
 
-		try {
-			// find matching variant again
-			let variantImage = "";
-			let matchingVariant = null;
-			function numOrStr(val) {
-				return typeof val === "number" ? val : parseInt(val, 10);
-			}
+		/* ── Step 3: rebuild variant‑price info, assemble customDesign payload ── */
+		// helper to coerce ids
+		const numOrStr = (v) => (typeof v === "number" ? v : parseInt(v, 10));
 
-			const colorOpt = product.options.find(
-				(o) => o.name.toLowerCase() === "colors"
-			);
-			const sizeOpt = product.options.find(
-				(o) => o.name.toLowerCase() === "sizes"
-			);
-			const scentOpt = product.options.find(
-				(o) => o.name.toLowerCase() === "scents"
-			);
+		const colorOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "colors"
+		);
+		const sizeOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "sizes"
+		);
+		const scentOpt = product.options.find(
+			(o) => o.name.toLowerCase() === "scents"
+		);
 
-			const chosenIds = [];
-			if (colorOpt && selectedColor) {
-				const cVal = colorOpt.values.find((v) => v.title === selectedColor);
-				if (cVal) chosenIds.push(numOrStr(cVal.id));
-			}
-			if (sizeOpt && selectedSize) {
-				const sVal = sizeOpt.values.find((v) => v.title === selectedSize);
-				if (sVal) chosenIds.push(numOrStr(sVal.id));
-			}
-			if (scentOpt && selectedScent) {
-				const scVal = scentOpt.values.find((v) => v.title === selectedScent);
-				if (scVal) chosenIds.push(numOrStr(scVal.id));
-			}
-
-			matchingVariant = product.variants.find((v) => {
-				const varIds = v.options.map(numOrStr);
-				return chosenIds.every((x) => varIds.includes(x));
-			});
-
-			if (matchingVariant) {
-				const matchingImageObj = product.images.find((img) =>
-					img.variant_ids.includes(matchingVariant.id)
-				);
-				if (matchingImageObj) {
-					variantImage = matchingImageObj.src;
-				}
-			}
-			let finalPrice = 0;
-			let finalPriceAfterDiscount = 0;
-			if (matchingVariant && typeof matchingVariant.price === "number") {
-				finalPrice = matchingVariant.price / 100;
-				finalPriceAfterDiscount = finalPrice;
-			} else {
-				finalPrice = product.price || 0;
-				finalPriceAfterDiscount = product.priceAfterDiscount || finalPrice;
-			}
-
-			const customDesign = {
-				bareScreenshotUrl: bareUrl,
-				finalScreenshotUrl: finalUrl,
-				texts: order.customizations.texts,
-				images: order.customizations.images,
-				originalPrintifyImageURL: variantImage,
-				size: selectedSize,
-				color: selectedColor,
-				scent: selectedScent,
-				printArea: "front",
-				PrintifyProductId: product.printifyProductDetails?.id || null,
-				variants: {
-					color: colorOpt
-						? colorOpt.values.find((c) => c.title === selectedColor)
-						: null,
-					size: sizeOpt
-						? sizeOpt.values.find((s) => s.title === selectedSize)
-						: null,
-					scent: scentOpt
-						? scentOpt.values.find((sc) => sc.title === selectedScent)
-						: null,
-				},
-			};
-
-			const chosenProductAttributes = {
-				SubSKU: String(Date.now()),
-				color: selectedColor,
-				size: selectedSize,
-				scent: selectedScent,
-				quantity: 999,
-				productImages: [],
-				price: finalPrice,
-				priceAfterDiscount: finalPriceAfterDiscount,
-			};
-
-			addToCart(
-				product._id,
-				selectedColor,
-				1,
-				product,
-				chosenProductAttributes,
-				customDesign
-			);
-
-			// GA event
-			try {
-				if (ReactGA && typeof ReactGA.event === "function") {
-					ReactGA.event({
-						category: "Add To The Cart Custom Products",
-						action: "User Added Product From The Custom Products",
-						label: `User added ${product.productName} to the cart`,
-					});
-
-					const eventId = `AddToCart-print-on-demand-${product._id}-${Date.now()}`;
-
-					ReactPixel.track("AddToCart", {
-						content_name: product.title || product.productName,
-						content_ids: [product._id],
-						content_type: "product",
-						currency: "USD",
-						value: getVariantPrice(),
-						contents: [
-							{
-								id: product._id,
-								quantity: 1,
-							},
-						],
-						eventID: eventId,
-					});
-
-					try {
-						await axios.post(
-							`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
-							{
-								eventName: "AddToCart",
-								eventId, // the same as you passed to client pixel for dedup
-								// If user is logged in, pass their email/phone:
-								email: user && user.email ? user.email : null,
-								phone: user && user.phone ? user.phone : null,
-
-								currency: "USD",
-								value: product.priceAfterDiscount || product.price,
-								contentIds: [product._id],
-
-								// Optionally pass user agent or IP, but IP is often gleaned automatically on server
-								userAgent: window.navigator.userAgent,
-								clientIpAddress: null, // or from some other source
-							}
-						);
-					} catch (apiError) {
-						console.error("Server-side AddToCart event error", apiError);
-					}
-				}
-			} catch {}
-
-			openSidebar2();
-			message.success("Added to cart with custom design!");
-			setDidUserAddToCart(true);
-		} catch (error) {
-			console.error("Screenshot or final upload failed:", error);
-			message.error(
-				"There was an issue capturing your design screenshot. Please refresh or try again."
-			);
-		} finally {
-			setSelectedElementId(previouslySelected);
-			setIsAddToCartDisabled(false);
+		const chosenIds = [];
+		if (colorOpt && selectedColor) {
+			const cVal = colorOpt.values.find((v) => v.title === selectedColor);
+			if (cVal) chosenIds.push(numOrStr(cVal.id));
 		}
+		if (sizeOpt && selectedSize) {
+			const sVal = sizeOpt.values.find((v) => v.title === selectedSize);
+			if (sVal) chosenIds.push(numOrStr(sVal.id));
+		}
+		if (scentOpt && selectedScent) {
+			const scVal = scentOpt.values.find((v) => v.title === selectedScent);
+			if (scVal) chosenIds.push(numOrStr(scVal.id));
+		}
+
+		const matchingVariant = product.variants.find((v) =>
+			chosenIds.every((id) => v.options.map(numOrStr).includes(id))
+		);
+
+		/* price & variant image */
+		let finalPrice = product.price || 0;
+		let finalPriceAfterDiscount = product.priceAfterDiscount || finalPrice;
+		let variantImage = "";
+		if (matchingVariant) {
+			finalPrice = matchingVariant.price / 100;
+			finalPriceAfterDiscount = finalPrice;
+			const matchImg = product.images.find((img) =>
+				img.variant_ids.includes(matchingVariant.id)
+			);
+			if (matchImg) variantImage = matchImg.src;
+		}
+
+		const customDesign = {
+			bareScreenshotUrl: bareUrl,
+			finalScreenshotUrl: finalUrl,
+			originalPrintifyImageURL: variantImage,
+			size: selectedSize,
+			color: selectedColor,
+			scent: selectedScent,
+			printArea: "front",
+			PrintifyProductId: product.printifyProductDetails?.id || null,
+			variants: {
+				color: colorOpt
+					? colorOpt.values.find((c) => c.title === selectedColor)
+					: null,
+				size: sizeOpt
+					? sizeOpt.values.find((s) => s.title === selectedSize)
+					: null,
+				scent: scentOpt
+					? scentOpt.values.find((s) => s.title === selectedScent)
+					: null,
+			},
+		};
+
+		const chosenProductAttributes = {
+			SubSKU: String(Date.now()),
+			color: selectedColor,
+			size: selectedSize,
+			scent: selectedScent,
+			quantity: 999,
+			productImages: [],
+			price: finalPrice,
+			priceAfterDiscount: finalPriceAfterDiscount,
+		};
+
+		/* ── Step 4: push to cart & emit analytics ───────────────────────────── */
+		addToCart(
+			product._id,
+			selectedColor,
+			1,
+			product,
+			chosenProductAttributes,
+			customDesign
+		);
+
+		try {
+			if (ReactGA?.event) {
+				ReactGA.event({
+					category: "Add To The Cart Custom Products",
+					action: "User Added Product From The Custom Products",
+					label: `User added ${product.productName} to the cart`,
+				});
+				const eventId = `AddToCart-print-on-demand-${product._id}-${Date.now()}`;
+				ReactPixel.track("AddToCart", {
+					content_name: product.title || product.productName,
+					content_ids: [product._id],
+					content_type: "product",
+					currency: "USD",
+					value: finalPriceAfterDiscount,
+					contents: [{ id: product._id, quantity: 1 }],
+					eventID: eventId,
+				});
+				await axios.post(
+					`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
+					{
+						eventName: "AddToCart",
+						eventId,
+						email: user?.email || null,
+						phone: user?.phone || null,
+						currency: "USD",
+						value: finalPriceAfterDiscount,
+						contentIds: [product._id],
+						userAgent: window.navigator.userAgent,
+					}
+				);
+			}
+		} catch (analyticsErr) {
+			console.error("Analytics error", analyticsErr);
+		}
+
+		openSidebar2();
+		message.success("Added to cart with custom design!");
+		setDidUserAddToCart(true);
+
+		/* ── finally: restore selection & button state ───────────────────────── */
+		setSelectedElementId(previouslySelected);
+		setIsAddToCartDisabled(false);
 	}
 
 	async function blobToCanvas(blob) {
