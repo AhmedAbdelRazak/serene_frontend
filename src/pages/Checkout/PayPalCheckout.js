@@ -29,6 +29,7 @@ const api = (method, url, data, token = "") =>
 	}).then((r) => r.data);
 
 /* ---------- 3.  Card Fields component ---------- */
+// eslint-disable-next-line
 function CardFields({ createOrder, captureOrder, onError }) {
 	const [{ isResolved }] = usePayPalScriptReducer();
 
@@ -227,11 +228,11 @@ export default function PayPalCheckout({
 				/>
 
 				{/* Inline card checkout */}
-				<CardFields
+				{/* <CardFields
 					createOrder={createOrder}
 					captureOrder={captureOrder}
 					onError={onError}
-				/>
+				/> */}
 			</PayPalScriptProvider>
 		</div>
 	);
