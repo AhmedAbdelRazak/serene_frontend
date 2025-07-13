@@ -367,9 +367,9 @@ const Z4StepThree = ({
 						) : isTermsAccepted ? (
 							<>
 								{/* Stripe button (unchanged) */}
-								<PayNowButton onClick={startStripeCheckout}>
+								{/* <PayNowButton onClick={startStripeCheckout}>
 									Pay with Card — Secure Stripe Checkout
-								</PayNowButton>
+								</PayNowButton> */}
 
 								{/* PayPal wallet + inline card */}
 								<div style={{ marginTop: 20 }}>
