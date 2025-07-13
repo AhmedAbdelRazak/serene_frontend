@@ -1,6 +1,5 @@
 /*********************************************************************
- *  PayPalCheckout.js • Jul‑2025 (Wallet + Card Fields + 3‑DS)
- *  Sends CMID for Seller‑Protection eligibility
+ *  PayPalCheckout.js • Jul‑2025 (Wallet + Card Fields with fallback)
  *********************************************************************/
 
 import React, { useState, useEffect, useRef, useCallback, memo } from "react";
@@ -12,7 +11,7 @@ import {
 	usePayPalScriptReducer,
 } from "@paypal/react-paypal-js";
 
-/* ───────────────────────── 1.  Config & tiny helper ───────────────────── */
+/* ─────────────────────── 1. Config & helper ─────────────────────── */
 const API = process.env.REACT_APP_API_URL;
 const NODE_ENV = (process.env.REACT_APP_NODE_ENV || "").toUpperCase();
 const CLIENT_ID =
@@ -28,17 +27,16 @@ const api = (method, url, data, token = "") =>
 		headers: token ? { Authorization: `Bearer ${token}` } : {},
 	}).then((r) => r.data);
 
-/* helper: safe CMID getter */
-const getCMID = () => window.paypal?.getClientMetadataID?.() || undefined;
+const getCMID = () => window.paypal?.getClientMetadataID?.();
 
-/* ───────────────────────── 2.  Card Fields sub‑component ─────────────── */
+/* ─────────────────────── 2. Card Fields UI ──────────────────────── */
+// eslint-disable-next-line
 const CardFields = memo(function CardFields({
 	createOrder,
 	captureOrder,
 	onError,
 }) {
 	const [{ isResolved }] = usePayPalScriptReducer();
-
 	const nameRef = useRef(null);
 	const numberRef = useRef(null);
 	const expiryRef = useRef(null);
@@ -46,7 +44,9 @@ const CardFields = memo(function CardFields({
 
 	const [fields, setFields] = useState(null);
 	const [busy, setBusy] = useState(false);
+	const [eligible, setEligible] = useState(true);
 
+	/* init once SDK ready */
 	useEffect(() => {
 		if (!isResolved || fields || !window.paypal?.CardFields) return;
 
@@ -54,7 +54,7 @@ const CardFields = memo(function CardFields({
 			createOrder,
 			onApprove: ({ orderID }) => captureOrder(orderID),
 			onError: (e) => {
-				console.error("CardFields SDK error:", e);
+				console.error("CardFields error:", e);
 				onError("Card payment error.");
 			},
 			style: {
@@ -63,7 +63,10 @@ const CardFields = memo(function CardFields({
 			},
 		});
 
-		if (!cf.isEligible()) return;
+		if (!cf.isEligible()) {
+			setEligible(false);
+			return;
+		}
 
 		cf.NameField().render(nameRef.current);
 		cf.NumberField().render(numberRef.current);
@@ -72,20 +75,20 @@ const CardFields = memo(function CardFields({
 		setFields(cf);
 	}, [isResolved, fields, createOrder, captureOrder, onError]);
 
+	if (!eligible) return null;
+
 	const payNow = async () => {
 		if (!fields) return;
 		setBusy(true);
 		try {
 			await fields.submit({});
 		} catch (e) {
-			console.error("Card submit error:", e);
+			console.error(e);
 			onError("Card submission failed.");
 		} finally {
 			setBusy(false);
 		}
 	};
-
-	if (!window.paypal?.CardFields?.isEligible?.()) return null;
 
 	return (
 		<div style={{ marginTop: 32, position: "relative" }}>
@@ -125,7 +128,7 @@ const CardFields = memo(function CardFields({
 	);
 });
 
-/* ───────────────────────── 3.  Main component ─────────────────────────── */
+/* ─────────────────────── 3. Main component ──────────────────────── */
 export default function PayPalCheckout({
 	orderData,
 	authToken = "",
@@ -135,7 +138,7 @@ export default function PayPalCheckout({
 	const [overlay, setOverlay] = useState(false);
 	const invoiceRef = useRef(null);
 
-	/* 3.1  fetch JS‑SDK client‑token once */
+	/* 3.1 get JS‑SDK client‑token */
 	useEffect(() => {
 		api("post", "/paypal/client-token", {}, authToken)
 			.then((d) => setClientToken(d.clientToken))
@@ -146,15 +149,14 @@ export default function PayPalCheckout({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	/* 3.2  helpers shared by wallet & card */
+	/* 3.2 create & capture helpers */
 	const createOrder = useCallback(async () => {
 		setOverlay(true);
 		try {
-			const cmid = getCMID(); // device fingerprint
 			const { paypalOrderId, provisionalInvoice } = await api(
 				"post",
 				"/paypal/create-order",
-				{ orderData, cmid },
+				{ orderData, cmid: getCMID() },
 				authToken
 			);
 			invoiceRef.current = provisionalInvoice;
@@ -168,14 +170,13 @@ export default function PayPalCheckout({
 		async (paypalOrderId) => {
 			setOverlay(true);
 			try {
-				const cmid = getCMID();
 				await api(
 					"post",
 					"/paypal/capture-order",
 					{
 						paypalOrderId,
 						orderData,
-						cmid,
+						cmid: getCMID(),
 						provisionalInvoice: invoiceRef.current,
 					},
 					authToken
@@ -224,7 +225,7 @@ export default function PayPalCheckout({
 					locale: "en_US",
 				}}
 			>
-				{/* Wallet / Venmo / Pay Later */}
+				{/* 3a. Wallet / Venmo / Pay Later */}
 				<PayPalButtons
 					style={{ layout: "vertical", label: "paypal" }}
 					createOrder={createOrder}
@@ -235,11 +236,23 @@ export default function PayPalCheckout({
 					}}
 				/>
 
-				{/* Inline card checkout (3‑D Secure handled by PayPal) */}
-				<CardFields
+				{/* 3b. Inline Card Fields (only if eligible) */}
+				{/* <CardFields
 					createOrder={createOrder}
 					captureOrder={captureOrder}
 					onError={onError}
+				/> */}
+
+				{/* 3c. Optional dedicated “Card” button if CardFields not eligible  */}
+				<PayPalButtons
+					fundingSource='card'
+					style={{ layout: "vertical", label: "pay" }}
+					createOrder={createOrder}
+					onApprove={({ orderID }) => captureOrder(orderID)}
+					onError={(e) => {
+						console.error("card button error:", e);
+						onError("Card payment error.");
+					}}
 				/>
 			</PayPalScriptProvider>
 		</div>
