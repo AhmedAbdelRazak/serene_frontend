@@ -1646,27 +1646,25 @@ export const getListOfOrdersAggregated = (
 	token,
 	page,
 	records,
-	startDate,
-	endDate,
+	startDate, // "YYYY-MM-DD" _or_ "all"
+	endDate, // "YYYY-MM-DD" _or_ "all"
 	status,
-	userId
+	userId // "all" when admin needs every user
 ) => {
 	return fetch(
-		`${process.env.REACT_APP_API_URL}/list-of-orders-aggregated/${page}/${records}/${startDate}/${endDate}/${status}/${userId}`,
+		`${process.env.REACT_APP_API_URL}/list-of-orders-aggregated/` +
+			`${page}/${records}/${startDate}/${endDate}/${status}/${userId}`,
 		{
 			method: "GET",
 			headers: {
-				// content type?
-				"Content-Type": "application/json",
 				Accept: "application/json",
+				"Content-Type": "application/json",
 				Authorization: `Bearer ${token}`,
 			},
 		}
 	)
-		.then((response) => {
-			return response.json();
-		})
-		.catch((err) => console.log(err));
+		.then((r) => r.json())
+		.catch(console.error);
 };
 
 export const updatingAnOrder = (

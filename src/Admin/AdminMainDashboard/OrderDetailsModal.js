@@ -453,17 +453,18 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 											<StyledText>
 												<FaReceipt style={{ marginRight: "5px" }} />
 												<strong>TransactionId:</strong>{" "}
-												{order.paymentDetails?.payment?.receiptNumber}
+												{order.paymentDetails?.payment?.receiptNumber ||
+													order.paypalOrderId}
 											</StyledText>
 										</div>
 										<div className='col-md-4'>
 											<StyledText>
 												<span style={{ marginLeft: "10px" }}>
 													<strong>Last4:</strong>{" "}
-													{
-														order.paymentDetails?.payment?.cardDetails?.card
-															?.last4
-													}
+													{order.paymentDetails?.payment?.cardDetails?.card
+														?.last4 ||
+														order.paymentDetails?.payment_source?.card
+															?.last_digits}
 												</span>
 											</StyledText>
 										</div>
@@ -471,15 +472,30 @@ const OrderDetailsModal = ({ isVisible, order, onCancel, setIsVisible }) => {
 											<StyledText>
 												<span style={{ marginLeft: "10px" }}>
 													<strong>Expiry Date:</strong>{" "}
-													{
-														order.paymentDetails?.payment?.cardDetails?.card
-															?.expMonth
-													}
+													{order.paymentDetails?.payment?.cardDetails?.card
+														?.expMonth ||
+														order.paymentDetails?.payment_source?.card?.expiry}
 													/
 													{
 														order.paymentDetails?.payment?.cardDetails?.card
 															?.expYear
 													}
+												</span>
+											</StyledText>
+										</div>
+										<div className='col-md-4'>
+											<StyledText>
+												<span style={{ marginLeft: "10px" }}>
+													<strong>Card Type:</strong>{" "}
+													{order.paymentDetails?.payment_source?.card?.type}
+												</span>
+											</StyledText>
+										</div>
+										<div className='col-md-4'>
+											<StyledText>
+												<span style={{ marginLeft: "10px" }}>
+													<strong>Card Brand:</strong>{" "}
+													{order.paymentDetails?.payment_source?.card?.brand}
 												</span>
 											</StyledText>
 										</div>
