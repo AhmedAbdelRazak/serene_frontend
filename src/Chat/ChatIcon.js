@@ -8,6 +8,7 @@ import { getUnseenMessagesCountByCustomer } from "../Admin/apiAdmin"; // We shou
 import notificationSound from "./Notification.wav";
 import socket from "./socket";
 import ReactGA from "react-ga4";
+import { useCartContext } from "../cart_context";
 
 /* --------------------------------- Animations --------------------------------- */
 
@@ -132,6 +133,7 @@ const ChatIcon = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [unseenCount, setUnseenCount] = useState(0);
 	const [hasInteracted, setHasInteracted] = useState(false);
+	const { websiteSetup } = useCartContext();
 
 	const toggleChatWindow = () => {
 		ReactGA.event({
@@ -224,7 +226,12 @@ const ChatIcon = () => {
 			</ChatButtonBox>
 
 			{/* The chat window is shown/hidden based on isOpen */}
-			{isOpen && <ChatWindow closeChatWindow={toggleChatWindow} />}
+			{isOpen && (
+				<ChatWindow
+					closeChatWindow={toggleChatWindow}
+					websiteSetup={websiteSetup}
+				/>
+			)}
 		</ChatIconWrapper>
 	);
 };

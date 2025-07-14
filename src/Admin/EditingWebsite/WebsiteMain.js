@@ -29,6 +29,9 @@ const WebsiteMain = () => {
 		termsAndCondition: "",
 		termsAndCondition_B2B: "",
 		returnsAndRefund: "",
+		deactivateOrderCreation: "",
+		aiAgentToRespond: "",
+		deactivateChatResponse: "",
 	});
 
 	// We'll default to "home" if no stored tab

@@ -15,7 +15,12 @@ import {
 import styled, { keyframes } from "styled-components";
 import socket from "./socket"; // Adjust path to your socket instance
 import EmojiPicker from "emoji-picker-react";
-import { UploadOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+	UploadOutlined,
+	CloseOutlined,
+	WarningFilled,
+	CustomerServiceFilled,
+} from "@ant-design/icons";
 import StarRatings from "react-star-ratings";
 import { isAuthenticated } from "../auth";
 
@@ -28,7 +33,7 @@ const INQUIRY_TYPES = [
 	{ value: "other", label: "Other Inquiry" },
 ];
 
-const ChatWindow = ({ closeChatWindow, chosenLanguage }) => {
+const ChatWindow = ({ closeChatWindow, chosenLanguage, websiteSetup }) => {
 	// Basic user info
 	const [customerName, setCustomerName] = useState("");
 	const [customerEmail, setCustomerEmail] = useState("");
@@ -508,8 +513,23 @@ const ChatWindow = ({ closeChatWindow, chosenLanguage }) => {
 	// ==============================
 	return (
 		<ChatWindowWrapper>
+			{websiteSetup && websiteSetup.deactivateChatResponse ? (
+				<>
+					<OfflineNotice>
+						<span className='mr-1'>
+							<WarningFilled style={{ color: "#ff4d4f" }} />
+						</span>
+						<span>
+							All our agents are currently away. <br /> Please leave your name,
+							e‑mail / phone and your question. One of our specialists will get
+							back to you within the next business day.
+						</span>
+					</OfflineNotice>
+				</>
+			) : null}
 			<Header>
 				<h3>
+					<CustomerServiceFilled className='mr-1' />
 					{chosenLanguage === "Arabic" ? "دعم العملاء" : "Customer Support"}
 				</h3>
 				<Button
@@ -755,6 +775,10 @@ const Header = styled.div`
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 10px;
+	h3 {
+		font-weight: bold;
+		font-size: 1.5rem;
+	}
 `;
 
 const MessagesSection = styled.div`
@@ -869,4 +893,14 @@ const SuggestionItem = styled.li`
 	&:hover {
 		background-color: #eee;
 	}
+`;
+
+const OfflineNotice = styled.div`
+	background: #fafafa;
+	border: 1px solid #eee;
+	padding: 2px 5px;
+	margin-bottom: 16px;
+	border-radius: 6px;
+	font-size: 0.78rem;
+	font-weight: bold;
 `;
