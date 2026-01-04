@@ -2,10 +2,30 @@
 
 import React from "react";
 import styled from "styled-components";
+import { Helmet } from "react-helmet";
 
 const CookiePolicy = () => {
 	return (
 		<CookiePolicyWrapper>
+			<Helmet>
+				<title>Cookie Policy | Serene Jannat</title>
+				<meta
+					name='description'
+					content='Learn how Serene Jannat uses cookies and tracking technologies to improve your browsing experience.'
+				/>
+				<meta
+					name='keywords'
+					content='Cookie Policy, cookies, tracking technologies, Serene Jannat'
+				/>
+				<meta property='og:title' content='Cookie Policy | Serene Jannat' />
+				<meta
+					property='og:description'
+					content='Learn how Serene Jannat uses cookies and tracking technologies to improve your browsing experience.'
+				/>
+				<meta property='og:url' content='https://serenejannat.com/cookie-policy' />
+				<meta property='og:type' content='website' />
+				<link rel='canonical' href='https://serenejannat.com/cookie-policy' />
+			</Helmet>
 			<div className='container'>
 				<h1>Cookies Policy</h1>
 				<p>

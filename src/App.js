@@ -96,6 +96,8 @@ const LinkGenerated = lazy(() => import("./Admin/StorePOS/LinkGenerated"));
 const CouponManagement = lazy(
 	() => import("./Admin/CouponManagement/CouponManagement")
 );
+
+const AIMarketingMain = lazy(() => import("./Admin/Marketing/AIMarketingMain"));
 const AdminRoute = lazy(() => import("./auth/AdminRoute"));
 const SellerRoute = lazy(() => import("./auth/SellerRoute"));
 const PrivateRoute = lazy(() => import("./auth/PrivateRoute"));
@@ -323,6 +325,12 @@ const AppContent = () => {
 						path='/admin/coupon-management'
 						exact
 						component={CouponManagement}
+					/>
+
+					<AdminRoute
+						path='/admin/ai-marketing'
+						exact
+						component={AIMarketingMain}
 					/>
 
 					{/* User (Private) Routes */}

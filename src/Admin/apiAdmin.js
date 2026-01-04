@@ -2433,3 +2433,248 @@ export const listCoupons = () => {
 			return { error: err.response?.data?.error || "Something went wrong." };
 		});
 };
+
+/** ================= AI MARKETING CAMPAIGNS ================= **/
+
+export const createAiCampaign = (userId, token, campaign) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/ai/campaign/create/${userId}`,
+		{
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(campaign),
+		}
+	)
+		.then((response) => response.json())
+		.catch((err) => {
+			console.log(err);
+		});
+};
+
+export const getAiCampaigns = (userId, token) => {
+	return fetch(`${process.env.REACT_APP_API_URL}/ai/campaigns/${userId}`, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((response) => response.json())
+		.catch((err) => {
+			console.log(err);
+		});
+};
+
+export const getAiCampaign = (campaignId, token) => {
+	return fetch(`${process.env.REACT_APP_API_URL}/ai/campaign/${campaignId}`, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((response) => response.json())
+		.catch((err) => {
+			console.log(err);
+		});
+};
+
+export const runAiCampaignAudit = (campaignId, userId, token) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/ai/campaign/${campaignId}/audit/${userId}`,
+		{
+			method: "PUT",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((response) => response.json())
+		.catch((err) => {
+			console.log(err);
+		});
+};
+
+export const refreshAiCampaignAnalytics = (campaignId, userId, token) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/ai/campaign/${campaignId}/analytics/refresh/${userId}`,
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((response) => response.json())
+		.catch((err) => {
+			console.log(err);
+		});
+};
+
+export const updateAiCampaignStatus = (campaignId, userId, token, status) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/ai/campaign/${campaignId}/status/${userId}`,
+		{
+			method: "PATCH",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({ status }),
+		}
+	)
+		.then((response) => response.json())
+		.catch((err) => {
+			console.log(err);
+		});
+};
+
+// Optional: trigger cron endpoint manually from UI if ever needed
+export const runDueAiCampaignAudits = () => {
+	return fetch(`${process.env.REACT_APP_API_URL}/ai/campaigns/run-due-audits`, {
+		method: "GET",
+	})
+		.then((response) => response.json())
+		.catch((err) => {
+			console.log(err);
+		});
+};
+
+/** =========================
+ *  AI MARKETING CAMPAIGNS
+ *  Backend routes (aimarketing.js):
+ *  - POST   /api/ai/campaign/create/:userId
+ *  - GET    /api/ai/campaign/:campaignId
+ *  - GET    /api/ai/campaigns/:userId
+ *  - PUT    /api/ai/campaign/:campaignId/audit/:userId
+ *  - PATCH  /api/ai/campaign/:campaignId/status/:userId
+ *  - GET    /api/ai/campaign/:campaignId/analytics/refresh/:userId
+ *  - GET    /api/ai/campaign/products-and-categories/:userId
+ *  ========================= */
+
+export const createAICampaign = (userId, token, campaign) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/ai/campaign/create/${userId}`,
+		{
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(campaign),
+		}
+	)
+		.then((response) => response.json())
+		.catch((err) => console.log(err));
+};
+
+export const listAICampaigns = (userId, token, query = {}) => {
+	const params = new URLSearchParams();
+	if (query.storeId) params.append("storeId", query.storeId);
+
+	const qs = params.toString() ? `?${params.toString()}` : "";
+
+	return fetch(`${process.env.REACT_APP_API_URL}/ai/campaigns/${userId}${qs}`, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((response) => response.json())
+		.catch((err) => console.log(err));
+};
+
+export const getAICampaign = (campaignId, token) => {
+	return fetch(`${process.env.REACT_APP_API_URL}/ai/campaign/${campaignId}`, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((response) => response.json())
+		.catch((err) => console.log(err));
+};
+
+export const manualAuditAICampaign = (campaignId, userId, token) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/ai/campaign/${campaignId}/audit/${userId}`,
+		{
+			method: "PUT",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((response) => response.json())
+		.catch((err) => console.log(err));
+};
+
+export const updateAICampaignStatus = (campaignId, userId, token, status) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/ai/campaign/${campaignId}/status/${userId}`,
+		{
+			method: "PATCH",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({ status }),
+		}
+	)
+		.then((response) => response.json())
+		.catch((err) => console.log(err));
+};
+
+export const refreshAICampaignAnalytics = (campaignId, userId, token) => {
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/ai/campaign/${campaignId}/analytics/refresh/${userId}`,
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((response) => response.json())
+		.catch((err) => console.log(err));
+};
+
+// NEW: Get active products + distinct categories for campaign creation
+export const getAiCampaignProductsAndCategories = (
+	userId,
+	token,
+	query = {}
+) => {
+	const params = new URLSearchParams();
+	if (query.storeId) params.append("storeId", query.storeId);
+
+	const qs = params.toString() ? `?${params.toString()}` : "";
+
+	return fetch(
+		`${process.env.REACT_APP_API_URL}/ai/campaign/products-and-categories/${userId}${qs}`,
+		{
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	)
+		.then((response) => response.json())
+		.catch((err) => console.log(err));
+};

@@ -60,6 +60,13 @@ const escapeJsonString = (str) => {
 		.replace(/\f/g, "\\f");
 };
 
+const truncateMetaDescription = (text, limit = 155) => {
+	if (!text) return "";
+	const normalized = text.replace(/\s+/g, " ").trim();
+	if (normalized.length <= limit) return normalized;
+	return `${normalized.slice(0, limit - 3).trim()}...`;
+};
+
 const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 	const { addToCart, openSidebar2 } = useCartContext();
 	const [chosenImages, setChosenImages] = useState([]);
@@ -185,6 +192,8 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 		return formattedSKU;
 	};
 
+	const metaDescription = truncateMetaDescription(plainDescription);
+
 	return (
 		<div>
 			<Helmet>
@@ -305,7 +314,7 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 					href={`https://serenejannat.com/single-product/${product.slug}/${product.category.categorySlug}/${product._id}`}
 				/>
 				<meta property='og:title' content={product.productName} />
-				<meta property='og:description' content={plainDescription} />
+				<meta property='og:description' content={metaDescription} />
 				<meta property='og:image' content={chosenImages[0]} />
 				<meta
 					property='og:url'
@@ -341,7 +350,7 @@ const SingleProductNoVariables = ({ product, likee, setLikee }) => {
 						`${product.category.categoryName} | ${product.productName}`
 					)}
 				</title>
-				<meta name='description' content={plainDescription} />
+				<meta name='description' content={metaDescription} />
 
 				<script
 					type='application/ld+json'

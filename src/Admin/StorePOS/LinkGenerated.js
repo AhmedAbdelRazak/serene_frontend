@@ -3,6 +3,7 @@ import styled from "styled-components";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Helmet } from "react-helmet";
 import SquarePaymentForm from "./SquarePaymentForm";
 import { getColors } from "../apiAdmin";
 
@@ -68,12 +69,23 @@ const LinkGenerated = () => {
 		return colorObject ? colorObject.color : hexa;
 	};
 
+	const canonicalUrl = `https://serenejannat.com/payment-link/${orderId}`;
+
 	if (isLoading) {
 		return <div>Loading...</div>;
 	}
 
 	return (
 		<LinkGeneratedWrapper>
+			<Helmet>
+				<title>Payment Link | Serene Jannat</title>
+				<meta
+					name='description'
+					content='Secure payment link for your order at Serene Jannat.'
+				/>
+				<meta name='robots' content='noindex, nofollow' />
+				<link rel='canonical' href={canonicalUrl} />
+			</Helmet>
 			<OrderContainer>
 				<h2>Order Summary</h2>
 				<CustomerDetails>

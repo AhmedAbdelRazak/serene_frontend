@@ -112,7 +112,7 @@ const items = [
 		"black-bg"
 	),
 	getItem(
-		"Financials",
+		<Link to='/admin/ai-marketing'>AI Marketing</Link>,
 		"sub16",
 		<DollarCircleOutlined />,
 		null,
@@ -208,7 +208,9 @@ const AdminNavbar = ({
 																		? "sub23"
 																		: fromPage === "PrintifyMain"
 																			? "sub13"
-																			: "sub1"
+																			: fromPage === "Marketing"
+																				? "sub16"
+																				: "sub1"
 					}
 					defaultOpenKeys={["sub1"]}
 					mode='inline'

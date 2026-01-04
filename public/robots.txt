@@ -12,4 +12,3 @@ Allow: /
 
 # Specify the locations of your XML files for Google and other crawlers
 Sitemap: https://serenejannat.com/sitemap.xml
-Sitemap: https://serenejannat.com/merchant-center-feed.xml

@@ -1888,6 +1888,25 @@ export default function CustomizeSelectedProduct() {
 			? truncateText(productDescription, 30)
 			: productDescription;
 
+	const canonicalUrl = `https://serenejannat.com/custom-gifts/${productId}`;
+	const metaTitle = `${product.title || product.productName} | Customize`;
+	const rawMetaDescription =
+		product.printifyProductDetails?.description ||
+		product.description ||
+		"Customize this product with your own designs!";
+	const normalizedMetaDescription = stripHtmlTags(rawMetaDescription)
+		.replace(/\s+/g, " ")
+		.trim();
+	const metaDescription =
+		normalizedMetaDescription.length > 155
+			? `${normalizedMetaDescription.slice(0, 152).trim()}...`
+			: normalizedMetaDescription;
+	const metaImage =
+		filteredImages?.[0]?.src ||
+		product.images?.[0]?.src ||
+		product.thumbnailImage?.[0]?.images?.[0]?.url ||
+		"https://serenejannat.com/logo192.png";
+
 	// color/size/scent option objects:
 	const colorOpt = product.options.find(
 		(o) => o.name.toLowerCase() === "colors"
@@ -1900,22 +1919,20 @@ export default function CustomizeSelectedProduct() {
 	return (
 		<CustomizeWrapper>
 			<Helmet>
-				<title>
-					{product.printifyProductDetails?.title || product.productName} |
-					Customize
-				</title>
-				<meta
-					name='description'
-					content={
-						product.printifyProductDetails?.description ||
-						product.description ||
-						"Customize this product with your own designs!"
-					}
-				/>
-				<meta
-					name='keywords'
-					content={["Print On Demand", "Custom Gift"].join(", ")}
-				/>
+				<title>{metaTitle}</title>
+				<meta name='description' content={metaDescription} />
+				<meta name='keywords' content='Print On Demand, Custom Gift' />
+				<link rel='canonical' href={canonicalUrl} />
+				<meta property='og:title' content={metaTitle} />
+				<meta property='og:description' content={metaDescription} />
+				<meta property='og:image' content={metaImage} />
+				<meta property='og:url' content={canonicalUrl} />
+				<meta property='og:type' content='product' />
+				<meta name='twitter:card' content='summary_large_image' />
+				<meta name='twitter:title' content={metaTitle} />
+				<meta name='twitter:description' content={metaDescription} />
+				<meta name='twitter:image' content={metaImage} />
+				<meta name='twitter:url' content={canonicalUrl} />
 				<script
 					type='application/ld+json'
 					dangerouslySetInnerHTML={{

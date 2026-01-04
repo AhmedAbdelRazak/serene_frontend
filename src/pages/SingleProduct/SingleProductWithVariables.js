@@ -36,6 +36,13 @@ const escapeJsonString = (str) => {
 		.replace(/\f/g, "\\f");
 };
 
+const truncateMetaDescription = (text, limit = 155) => {
+	if (!text) return "";
+	const normalized = text.replace(/\s+/g, " ").trim();
+	if (normalized.length <= limit) return normalized;
+	return `${normalized.slice(0, limit - 3).trim()}...`;
+};
+
 const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 	const { addToCart, openSidebar2 } = useCartContext();
 	const [selectedColor, setSelectedColor] = useState("");
@@ -245,6 +252,9 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 		return formattedSKU;
 	};
 
+	const plainDescription = product.description.replace(/<[^>]+>/g, "");
+	const metaDescription = truncateMetaDescription(plainDescription);
+
 	return (
 		<div>
 			<Helmet>
@@ -351,12 +361,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 					property='og:title'
 					content={capitalizeWords(escapeJsonString(product.productName))}
 				/>
-				<meta
-					property='og:description'
-					content={escapeJsonString(
-						product.description.replace(/<[^>]+>/g, "")
-					)}
-				/>
+				<meta property='og:description' content={metaDescription} />
 				<meta property='og:image' content={chosenImages[0]} />
 				<meta
 					property='og:url'
@@ -395,12 +400,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 						`${product.category.categoryName} | ${product.productName}`
 					)}
 				</title>
-				<meta
-					name='description'
-					content={escapeJsonString(
-						product.description.replace(/<[^>]+>/g, "")
-					)}
-				/>
+				<meta name='description' content={metaDescription} />
 				<script
 					type='application/ld+json'
 					dangerouslySetInnerHTML={{
