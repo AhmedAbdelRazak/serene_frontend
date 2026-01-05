@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import ReactGA from "react-ga4";
 import { Helmet } from "react-helmet";
 // Context
 import { useCartContext } from "../../cart_context";
@@ -18,7 +17,11 @@ import {
 	gettingCategoriesAndSubcategories,
 	gettingSpecificProducts,
 } from "../../apiCore";
-import { resolveImageUrl } from "../../utils/image";
+import {
+	buildCloudinarySrcSet,
+	getCloudinaryOptimizedUrl,
+	resolveImageUrl,
+} from "../../utils/image";
 
 /* Keyframes for the fade-up animation */
 const fadeUp = keyframes`
@@ -34,6 +37,8 @@ const fadeUp = keyframes`
 
 /* Simple styled div that applies the fadeUp animation */
 const FadeUpDiv = styled.div`
+	content-visibility: auto;
+	contain-intrinsic-size: 1000px;
 	animation: ${fadeUp} 1.2s ease-in-out;
 `;
 
@@ -231,6 +236,7 @@ const HomePageHelmet = ({
 	featuredProducts = [],
 	newArrivalProducts = [],
 	customDesignProducts = [],
+	heroBanner,
 }) => {
 	const title = "Serene Jannat | Best Gifts and Candles Online Shop";
 	const description =
@@ -249,6 +255,19 @@ const HomePageHelmet = ({
 		...customDesignProducts,
 	]);
 
+	const heroUrl = heroBanner?.url || "";
+	const isCloudinaryHero =
+		heroUrl && heroUrl.includes("res.cloudinary.com");
+	const heroSrcSet = isCloudinaryHero
+		? buildCloudinarySrcSet(heroUrl, [480, 768, 1200, 1600])
+		: "";
+	const heroHref = heroUrl
+		? isCloudinaryHero
+			? getCloudinaryOptimizedUrl(heroUrl, { width: 1200 })
+			: heroUrl
+		: "";
+	const heroSizes = "100vw";
+
 	return (
 		<Helmet>
 			<title>{title}</title>
@@ -265,6 +284,17 @@ const HomePageHelmet = ({
 			<meta property='og:url' content='https://serenejannat.com' />
 			<meta property='og:type' content='website' />
 			<link rel='canonical' href='https://serenejannat.com' />
+			{heroHref && (
+				<link
+					rel='preload'
+					as='image'
+					href={heroHref}
+					{...(heroSrcSet
+						? { imageSrcSet: heroSrcSet, imageSizes: heroSizes }
+						: {})}
+					fetchPriority='high'
+				/>
+			)}
 			<script type='application/ld+json'>
 				{JSON.stringify(productSchema)}
 			</script>
@@ -282,11 +312,6 @@ const HomePageHelmet = ({
 				}}
 			/>
 
-			<script
-				async
-				src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980713140793330'
-				crossorigin='anonymous'
-			></script>
 		</Helmet>
 	);
 };
@@ -319,6 +344,32 @@ const Home = () => {
 	const [loading, setLoading] = useState([]);
 
 	const { websiteSetup } = useCartContext();
+	const heroBanner = websiteSetup?.homeMainBanners?.[0];
+
+	useEffect(() => {
+		const loadAdSense = () => {
+			if (document.querySelector('script[data-adsbygoogle="true"]')) {
+				return;
+			}
+			const script = document.createElement("script");
+			script.async = true;
+			script.src =
+				"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980713140793330";
+			script.crossOrigin = "anonymous";
+			script.setAttribute("data-adsbygoogle", "true");
+			document.head.appendChild(script);
+		};
+
+		if (typeof window === "undefined") return undefined;
+
+		if ("requestIdleCallback" in window) {
+			const idleId = window.requestIdleCallback(loadAdSense, { timeout: 3000 });
+			return () => window.cancelIdleCallback?.(idleId);
+		}
+
+		const timeoutId = window.setTimeout(loadAdSense, 3000);
+		return () => window.clearTimeout(timeoutId);
+	}, []);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -381,17 +432,6 @@ const Home = () => {
 		fetchData();
 	}, []);
 
-	// GA tracking for page:
-	useEffect(() => {
-		// Instead of ReactGA.send(...), do this:
-		ReactGA.send({
-			hitType: "pageview",
-			page: window.location.pathname + window.location.search,
-		});
-		// If you prefer old .pageview approach in GA4, you can do:
-		// ReactGA.pageview(window.location.pathname + window.location.search);
-	}, []);
-
 	// Scroll to top on mount
 	useEffect(() => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
@@ -414,6 +454,7 @@ const Home = () => {
 				featuredProducts={featuredProducts}
 				newArrivalProducts={newArrivalProducts}
 				customDesignProducts={customDesignProducts}
+				heroBanner={heroBanner}
 			/>
 			<VisuallyHiddenH1>
 				Serene Jannat - Best Gifts and Candles Online Shop

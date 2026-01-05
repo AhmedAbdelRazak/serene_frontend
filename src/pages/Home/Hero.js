@@ -1,38 +1,10 @@
 import React from "react";
 import Slider from "react-slick";
 import styled from "styled-components";
+import { getCloudinaryOptimizedUrl } from "../../utils/image";
 
-/**
- * Ensures we always insert "f_auto,q_auto,w_1600" into the Cloudinary URL.
- * If it's not a Cloudinary URL, or if it already has transformations,
- * we handle it accordingly.
- */
-const getCloudinaryOptimizedUrl = (url) => {
-	if (!url?.includes("res.cloudinary.com")) {
-		// Not a Cloudinary URL => leave as is
-		return url;
-	}
-
-	// If it already has f_auto or q_auto, we still ensure w_1600 is inserted
-	if (url.includes("f_auto") || url.includes("q_auto")) {
-		// If the URL doesn't contain w_\d+, insert w_1600
-		if (!/w_\d+/.test(url)) {
-			return url
-				.replace("/upload/", "/upload/") // optional, ensures path is consistent
-				.replace("f_auto,q_auto", "f_auto,q_auto,w_1600");
-		}
-		return url;
-	}
-
-	// Otherwise, insert the transformations right after '/upload/'
-	const parts = url.split("/upload/");
-	if (parts.length === 2) {
-		return `${parts[0]}/upload/f_auto,q_auto,w_1600/${parts[1]}`;
-	}
-
-	// Fallback
-	return url;
-};
+const HERO_IMAGE_WIDTH = 1920;
+const HERO_IMAGE_HEIGHT = 997;
 
 const Hero = ({ websiteSetup }) => {
 	const banners = websiteSetup?.homeMainBanners || [];
@@ -63,10 +35,10 @@ const Hero = ({ websiteSetup }) => {
 						} = banner;
 
 						// Cloudinary transforms
-						const base1600 = getCloudinaryOptimizedUrl(url);
-						const base480 = base1600.replace("w_1600", "w_480");
-						const base768 = base1600.replace("w_1600", "w_768");
-						const base1200 = base1600.replace("w_1600", "w_1200");
+						const base1600 = getCloudinaryOptimizedUrl(url, { width: 1600 });
+						const base1200 = getCloudinaryOptimizedUrl(url, { width: 1200 });
+						const base768 = getCloudinaryOptimizedUrl(url, { width: 768 });
+						const base480 = getCloudinaryOptimizedUrl(url, { width: 480 });
 
 						const isFirstSlide = idx === 0;
 
@@ -82,15 +54,15 @@ const Hero = ({ websiteSetup }) => {
                         ${base1200} 1200w,
                         ${base1600} 1600w
                       `}
-											sizes='(max-width: 600px) 480px,
-                             (max-width: 1024px) 768px,
-                             1600px'
+											sizes='100vw'
 											alt={`Banner ${idx + 1}`}
 											loading={isFirstSlide ? "eager" : "lazy"}
 											// We can safely pass fetchpriority to a *raw* <img>.
 											// styled-components never sees this prop:
 											fetchpriority={isFirstSlide ? "high" : undefined}
 											decoding='async'
+											width={HERO_IMAGE_WIDTH}
+											height={HERO_IMAGE_HEIGHT}
 										/>
 									</BannerImageWrapper>
 								) : (

@@ -6,52 +6,7 @@ import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
 import axios from "axios";
 import { isAuthenticated } from "../../auth";
-
-/**
- * Helper to insert Cloudinary transformations:
- *   - f_auto,q_auto,w_{width}
- *   - optionally f_webp for forceWebP
- *
- * e.g.:
- *   https://res.cloudinary.com/.../upload/f_auto,q_auto,w_600/...
- */
-const getCloudinaryOptimizedUrl = (
-	url,
-	{ width = 600, forceWebP = false } = {}
-) => {
-	if (!url || !url.includes("res.cloudinary.com")) {
-		return url; // Not a Cloudinary URL
-	}
-
-	// If the URL already has 'f_auto' or 'q_auto'
-	// we still ensure "w_..." is added if not present
-	let newUrl = url;
-	// Check if transformations already exist:
-	const hasTransform = newUrl.includes("f_auto") || newUrl.includes("q_auto");
-
-	if (!hasTransform) {
-		// Insert transformations after '/upload/'
-		const parts = newUrl.split("/upload/");
-		if (parts.length === 2) {
-			// e.g. ".../upload/f_auto,q_auto,w_600/..."
-			const transform = `f_auto,q_auto,w_${width}`;
-			const finalTransform = forceWebP ? `${transform},f_webp` : transform;
-			newUrl = `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
-		}
-	} else {
-		// If transformations exist, ensure 'w_{width}' is present
-		if (!newUrl.match(/w_\d+/)) {
-			// Insert 'w_{width}' after 'f_auto,q_auto'
-			// or append if there's no w_
-			newUrl = newUrl.replace("f_auto,q_auto", `f_auto,q_auto,w_${width}`);
-			if (forceWebP && !newUrl.includes("f_webp")) {
-				newUrl = newUrl.replace("f_auto,q_auto", "f_auto,q_auto,f_webp");
-			}
-		}
-	}
-
-	return newUrl;
-};
+import { getCloudinaryOptimizedUrl } from "../../utils/image";
 
 const ZCategories = ({ allCategories }) => {
 	const { user } = isAuthenticated();
@@ -115,12 +70,11 @@ const ZCategories = ({ allCategories }) => {
 						// Base (JPEG/PNG/etc.) - forcing width=600 by default
 						const baseJpg = getCloudinaryOptimizedUrl(originalUrl, {
 							width: 600,
-							forceWebP: false,
 						});
 						// WebP version
 						const baseWebp = getCloudinaryOptimizedUrl(originalUrl, {
 							width: 600,
-							forceWebP: true,
+							format: "webp",
 						});
 
 						// Now let's do *responsive* widths via string replace:
@@ -167,18 +121,18 @@ const ZCategories = ({ allCategories }) => {
 											<source
 												type='image/webp'
 												srcSet={webpUrl.srcset}
-												sizes='(max-width: 480px) 480px,
-                               (max-width: 768px) 768px,
-                               (max-width: 1200px) 1200px,
-                               1600px'
+												sizes='(max-width: 480px) 45vw,
+                               (max-width: 768px) 45vw,
+                               (max-width: 1024px) 30vw,
+                               18vw'
 											/>
 											<source
 												type='image/jpeg'
 												srcSet={imageUrl.srcset}
-												sizes='(max-width: 480px) 480px,
-                               (max-width: 768px) 768px,
-                               (max-width: 1200px) 1200px,
-                               1600px'
+												sizes='(max-width: 480px) 45vw,
+                               (max-width: 768px) 45vw,
+                               (max-width: 1024px) 30vw,
+                               18vw'
 											/>
 
 											<CategoryImage

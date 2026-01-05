@@ -4,6 +4,67 @@ const CLOUDINARY_BASE_URL =
 const buildCloudinaryUrl = (publicId) =>
 	publicId ? `${CLOUDINARY_BASE_URL}${publicId}` : "";
 
+const isCloudinaryUrl = (url) =>
+	typeof url === "string" && url.includes("res.cloudinary.com");
+
+export const getCloudinaryOptimizedUrl = (
+	url,
+	{ width, format = "auto", quality = "auto" } = {}
+) => {
+	if (!url || !isCloudinaryUrl(url)) return url || "";
+
+	const [prefix, rest] = url.split("/upload/");
+	if (!rest) return url;
+
+	const parts = rest.split("/");
+	const first = parts[0];
+	const isVersion = /^v\d+/.test(first);
+	const hasTransform = !isVersion && (first.includes(",") || first.includes("_"));
+	const tokens = hasTransform ? first.split(",") : [];
+
+	const setOrAppendToken = (token, predicate) => {
+		const index = tokens.findIndex(predicate);
+		if (index >= 0) {
+			tokens[index] = token;
+		} else {
+			tokens.push(token);
+		}
+	};
+
+	if (quality) {
+		setOrAppendToken(`q_${quality}`, (t) => t.startsWith("q_"));
+	}
+
+	if (width) {
+		setOrAppendToken(`w_${width}`, (t) => t.startsWith("w_"));
+	}
+
+	if (format) {
+		const formatToken = format === "webp" ? "f_webp" : "f_auto";
+		setOrAppendToken(formatToken, (t) => t.startsWith("f_"));
+	}
+
+	const transform = tokens.join(",");
+	const newParts = hasTransform
+		? [transform, ...parts.slice(1)]
+		: [transform, ...parts];
+	return `${prefix}/upload/${newParts.join("/")}`;
+};
+
+export const buildCloudinarySrcSet = (
+	url,
+	widths = [],
+	{ format = "auto", quality = "auto" } = {}
+) => {
+	if (!url || widths.length === 0) return "";
+	return widths
+		.map(
+			(width) =>
+				`${getCloudinaryOptimizedUrl(url, { width, format, quality })} ${width}w`
+		)
+		.join(", ");
+};
+
 export const resolveImageUrl = (image, { preferCloudinary = true } = {}) => {
 	if (!image) return "";
 	if (typeof image === "string") return image;

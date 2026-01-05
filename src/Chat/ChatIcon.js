@@ -6,7 +6,7 @@ import { MessageOutlined } from "@ant-design/icons";
 import ChatWindow from "./ChatWindow";
 import { getUnseenMessagesCountByCustomer } from "../Admin/apiAdmin"; // We should get the data from "../apiCore"  as I sent them in my previous comment and use them accordingly
 import notificationSound from "./Notification.wav";
-import socket from "./socket";
+import { getSocket } from "./socket";
 import ReactGA from "react-ga4";
 import { useCartContext } from "../cart_context";
 
@@ -185,6 +185,10 @@ const ChatIcon = () => {
 
 	// Listen for new messages
 	useEffect(() => {
+		if (!hasInteracted) return undefined;
+
+		const socket = getSocket();
+
 		const handleReceiveMessage = () => {
 			if (!isOpen) {
 				playNotificationSound();
@@ -196,7 +200,7 @@ const ChatIcon = () => {
 		return () => {
 			socket.off("receiveMessage", handleReceiveMessage);
 		};
-	}, [isOpen, playNotificationSound, fetchUnseenMessagesCount]);
+	}, [hasInteracted, isOpen, playNotificationSound, fetchUnseenMessagesCount]);
 
 	// Allow playing sound on user interaction
 	useEffect(() => {

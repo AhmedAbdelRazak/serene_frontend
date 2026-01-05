@@ -29,7 +29,7 @@ import {
 	checkInvoiceNumber,
 } from "../apiCore"; // adjust path if needed
 import styled, { keyframes } from "styled-components";
-import socket from "./socket";
+import { getSocket } from "./socket";
 import EmojiPicker from "emoji-picker-react";
 import {
 	UploadOutlined,
@@ -103,6 +103,7 @@ const ChatWindow = ({ closeChatWindow, chosenLanguage, websiteSetup }) => {
 		() => (customerEmail ? customerEmail.toLowerCase() : ""),
 		[customerEmail]
 	);
+	const socket = useMemo(() => getSocket(), []);
 
 	const fetchSupportCase = useCallback(async (id) => {
 		try {
@@ -150,7 +151,7 @@ const ChatWindow = ({ closeChatWindow, chosenLanguage, websiteSetup }) => {
 		return () => {
 			if (caseId) socket.emit("leaveRoom", { caseId });
 		};
-	}, [caseId]);
+	}, [caseId, socket]);
 
 	/* ════════════════════════════════════════════════════════
 	   3) SOCKET LISTENERS
@@ -202,7 +203,7 @@ const ChatWindow = ({ closeChatWindow, chosenLanguage, websiteSetup }) => {
 			socket.off("typing", handleTyping);
 			socket.off("stopTyping", handleStopTyping);
 		};
-	}, [caseId, customerName, customerEmail]); // ← added missing dep
+	}, [caseId, customerName, customerEmail, socket]); // ← added missing dep
 
 	/* ════════════════════════════════════════════════════════
 	   4) LOCAL‑STORAGE SYNC + mark‑seen

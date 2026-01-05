@@ -337,7 +337,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 																src={primarySrc}
 																fallbackSrc={fallbackSrc}
 																alt={`${product.productName} - view ${index + 1}`}
-																sizes='(max-width: 480px) 80vw, (max-width: 768px) 45vw, (max-width: 1200px) 30vw, 240px'
+																sizes='(max-width: 480px) 85vw, (max-width: 600px) 50vw, (max-width: 1024px) 33vw, 20vw'
 																widths={[240, 360, 480, 600, 800]}
 																loading='lazy'
 															/>
@@ -351,7 +351,7 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 														src={singlePrimarySrc}
 														fallbackSrc={singleFallbackSrc}
 														alt={`${product.productName} - single view`}
-														sizes='(max-width: 480px) 80vw, (max-width: 768px) 45vw, (max-width: 1200px) 30vw, 240px'
+														sizes='(max-width: 480px) 85vw, (max-width: 600px) 50vw, (max-width: 1024px) 33vw, 20vw'
 														widths={[240, 360, 480, 600, 800]}
 														loading='lazy'
 													/>
