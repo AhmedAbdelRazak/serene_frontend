@@ -85,7 +85,14 @@ const NavbarTop = memo(() => {
 					<Link to='/' style={{ textDecoration: "none", display: "flex" }}>
 						<picture>
 							<source srcSet={webpLogoUrl} type='image/webp' />
-							<Logo src={optimizedLogoUrl} alt='Serene Jannat Shop' />
+							<Logo
+								src={optimizedLogoUrl}
+								alt='Serene Jannat Shop'
+								width={441}
+								height={111}
+								decoding='async'
+								fetchPriority='high'
+							/>
 						</picture>
 					</Link>
 				)}
@@ -261,6 +268,7 @@ const NavbarTopWrapper = styled.nav`
 
 const Logo = styled.img`
 	height: 50px;
+	width: auto;
 	cursor: pointer;
 	object-fit: cover !important;
 `;

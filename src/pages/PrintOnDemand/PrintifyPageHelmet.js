@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import { useLocation } from "react-router-dom";
+import { resolveImageUrl } from "../../utils/image";
 
 /**
  * Utility: Capitalize words
@@ -44,7 +45,10 @@ const generateProductSchema = (products) => {
 			(product.description || "").replace(/<[^>]+>/g, "")
 		);
 		// Basic fallback image
-		const image = product.thumbnailImage?.[0]?.images?.[0]?.url || "";
+		const image =
+			resolveImageUrl(product?.productAttributes?.[0]?.exampleDesignImage) ||
+			resolveImageUrl(product.thumbnailImage?.[0]?.images?.[0]) ||
+			"";
 
 		// Price logic: If multiple attributes, use the first's price or fallback
 		const hasAttributes =

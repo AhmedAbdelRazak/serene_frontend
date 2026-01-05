@@ -10,6 +10,8 @@ import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
 import axios from "axios";
 import { isAuthenticated } from "../../auth";
+import OptimizedImage from "../../components/OptimizedImage";
+import { resolveImageUrl } from "../../utils/image";
 
 const { Meta } = Card;
 
@@ -264,7 +266,12 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 						const chosenProductAttributes = product.productAttributes[0];
 						const images =
 							chosenProductAttributes?.productImages ||
-							product.thumbnailImage[0].images;
+							product.thumbnailImage?.[0]?.images ||
+							[];
+						const singlePrimarySrc = resolveImageUrl(images[0]);
+						const singleFallbackSrc = resolveImageUrl(images[0], {
+							preferCloudinary: false,
+						});
 
 						// Original & discounted prices
 						const originalPrice =
@@ -319,35 +326,35 @@ const ZFeaturedProducts = ({ featuredProducts }) => {
 
 											{images.length > 1 ? (
 												<Slider {...imageSettings}>
-													{images.map((img, index) => (
+													{images.map((img, index) => {
+														const primarySrc = resolveImageUrl(img);
+														const fallbackSrc = resolveImageUrl(img, {
+															preferCloudinary: false,
+														});
+														return (
 														<ImageWrapper key={index}>
-															<picture>
-																<source
-																	srcSet={`${img.url}?auto=format&fit=max&w=600&format=webp`}
-																	type='image/webp'
-																/>
-																<ProductImage
-																	src={`${img.url}?auto=format&fit=max&w=600`}
-																	alt={`${product.productName} - view ${index + 1}`}
-																	loading='lazy'
-																/>
-															</picture>
+															<ProductImage
+																src={primarySrc}
+																fallbackSrc={fallbackSrc}
+																alt={`${product.productName} - view ${index + 1}`}
+																sizes='(max-width: 480px) 80vw, (max-width: 768px) 45vw, (max-width: 1200px) 30vw, 240px'
+																widths={[240, 360, 480, 600, 800]}
+																loading='lazy'
+															/>
 														</ImageWrapper>
-													))}
+														);
+													})}
 												</Slider>
 											) : (
 												<ImageWrapper>
-													<picture>
-														<source
-															srcSet={`${images[0].url}?auto=format&fit=max&w=600&format=webp`}
-															type='image/webp'
-														/>
-														<ProductImage
-															src={`${images[0].url}?auto=format&fit=max&w=600`}
-															alt={`${product.productName} - single view`}
-															loading='lazy'
-														/>
-													</picture>
+													<ProductImage
+														src={singlePrimarySrc}
+														fallbackSrc={singleFallbackSrc}
+														alt={`${product.productName} - single view`}
+														sizes='(max-width: 480px) 80vw, (max-width: 768px) 45vw, (max-width: 1200px) 30vw, 240px'
+														widths={[240, 360, 480, 600, 800]}
+														loading='lazy'
+													/>
 												</ImageWrapper>
 											)}
 										</ImageContainer>
@@ -479,7 +486,7 @@ const ImageWrapper = styled.div`
 	}
 `;
 
-const ProductImage = styled.img`
+const ProductImage = styled(OptimizedImage)`
 	width: 100%;
 	height: 100%;
 	object-fit: cover;

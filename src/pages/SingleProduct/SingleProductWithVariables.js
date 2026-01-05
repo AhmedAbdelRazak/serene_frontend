@@ -9,6 +9,7 @@ import ColorsAndSizes from "./ColorsAndSizes";
 import DisplayImages from "./DisplayImages";
 import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
+import { resolveImageUrl } from "../../utils/image";
 
 import {
 	HeartOutlined,
@@ -81,7 +82,7 @@ const SingleProductWithVariables = ({ product, likee, setLikee }) => {
 						attr.size === size &&
 						attr.productImages.length > 0
 				)
-				.flatMap((attr) => attr.productImages.map((img) => img.url));
+				.flatMap((attr) => attr.productImages.map((img) => resolveImageUrl(img)));
 
 			setChosenImages(images.slice(0, 5)); // Limit to 5 images
 		},

@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import { useLocation } from "react-router-dom";
+import { resolveImageUrl } from "../../utils/image";
 
 // Safely capitalize words; provide a default to avoid .replace on undefined
 const capitalizeWords = (str = "") => {
@@ -125,7 +126,7 @@ const generateProductSchema = (products = []) => {
 			"@context": "http://schema.org",
 			"@type": "Product",
 			name: capitalizeWords(escapeJsonString(product?.productName || "")),
-			image: product?.thumbnailImage?.[0]?.images?.[0]?.url || "",
+			image: resolveImageUrl(product?.thumbnailImage?.[0]?.images?.[0]) || "",
 			description: escapeJsonString(
 				// remove HTML tags if description is present
 				(product?.description || "").replace(/<[^>]+>/g, "")

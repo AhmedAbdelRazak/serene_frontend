@@ -18,6 +18,7 @@ import {
 	gettingCategoriesAndSubcategories,
 	gettingSpecificProducts,
 } from "../../apiCore";
+import { resolveImageUrl } from "../../utils/image";
 
 /* Keyframes for the fade-up animation */
 const fadeUp = keyframes`
@@ -138,7 +139,7 @@ const generateProductSchema = (products = []) => {
 			"@context": "http://schema.org",
 			"@type": "Product",
 			name: capitalizeWords(escapeJsonString(product?.productName || "")),
-			image: product?.thumbnailImage?.[0]?.images?.[0]?.url || "",
+			image: resolveImageUrl(product?.thumbnailImage?.[0]?.images?.[0]),
 			description: escapeJsonString(
 				(product?.description || "").replace(/<[^>]+>/g, "")
 			),
@@ -258,7 +259,7 @@ const HomePageHelmet = ({
 			<meta
 				property='og:image'
 				content={
-					featuredProducts?.[0]?.thumbnailImage?.[0]?.images?.[0]?.url || ""
+					resolveImageUrl(featuredProducts?.[0]?.thumbnailImage?.[0]?.images?.[0])
 				}
 			/>
 			<meta property='og:url' content='https://serenejannat.com' />

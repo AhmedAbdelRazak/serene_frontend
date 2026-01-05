@@ -5,6 +5,8 @@ import { useHistory } from "react-router-dom";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useCartContext } from "../cart_context";
 import { readProduct } from "../apiCore";
+import OptimizedImage from "../components/OptimizedImage";
+import { resolveImageSources } from "../utils/image";
 
 const { Meta } = Card;
 
@@ -30,8 +32,9 @@ const ProductCard = ({ product }) => {
 	const productImages =
 		product.productAttributes && product.productAttributes.length > 0
 			? product.productAttributes[0].productImages
-			: product.thumbnailImage[0]?.images || [];
-	const imageUrl = productImages.length > 0 ? productImages[0].url : "";
+			: product.thumbnailImage?.[0]?.images || [];
+	const { primary: primarySrc, fallback: fallbackSrc } =
+		resolveImageSources(productImages[0]);
 
 	const chosenProductAttributes =
 		product.productAttributes && product.productAttributes.length > 0
@@ -63,8 +66,13 @@ const ProductCard = ({ product }) => {
 				<ImageContainer>
 					<CartIcon onClick={handleAddToCart} />
 					<ProductImage
-						src={imageUrl}
+						src={primarySrc}
+						fallbackSrc={fallbackSrc}
 						alt={product.productName}
+						loading='lazy'
+						decoding='async'
+						sizes='(max-width: 480px) 80vw, (max-width: 768px) 45vw, (max-width: 1200px) 30vw, 240px'
+						widths={[240, 360, 480, 600, 800]}
 						onClick={() => {
 							window.scrollTo({ top: 0, behavior: "smooth" });
 							history.push(
@@ -104,7 +112,7 @@ const ImageContainer = styled.div`
 	position: relative;
 `;
 
-const ProductImage = styled.img`
+const ProductImage = styled(OptimizedImage)`
 	width: 100%;
 	height: 100%;
 	object-fit: cover;

@@ -6,46 +6,10 @@ import { useHistory } from "react-router-dom";
 import ReactGA from "react-ga4";
 import { gettingSpecificProducts } from "../../apiCore";
 import ReactPixel from "react-facebook-pixel";
+import OptimizedImage from "../../components/OptimizedImage";
+import { resolveImageUrl } from "../../utils/image";
 
 const { Meta } = Card;
-
-/**
- * (1) Cloudinary Transform Helper
- * If the URL isn't Cloudinary, returns original.
- * Otherwise, inserts f_auto,q_auto,w_{width} + optional f_webp.
- */
-const getCloudinaryOptimizedUrl = (
-	url,
-	{ width = 600, forceWebP = false } = {}
-) => {
-	if (!url || !url.includes("res.cloudinary.com")) {
-		return url; // Not a Cloudinary URL
-	}
-
-	let newUrl = url;
-	const hasTransform = newUrl.includes("f_auto") || newUrl.includes("q_auto");
-
-	if (!hasTransform) {
-		const parts = newUrl.split("/upload/");
-		if (parts.length === 2) {
-			const baseTransform = `f_auto,q_auto,w_${width}`;
-			const finalTransform = forceWebP
-				? `${baseTransform},f_webp`
-				: baseTransform;
-			newUrl = `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
-		}
-	} else {
-		// If transformations exist, ensure 'w_{width}' is present
-		if (!newUrl.match(/w_\d+/)) {
-			newUrl = newUrl.replace("f_auto,q_auto", `f_auto,q_auto,w_${width}`);
-			if (forceWebP && !newUrl.includes("f_webp")) {
-				newUrl = newUrl.replace("f_auto,q_auto", "f_auto,q_auto,f_webp");
-			}
-		}
-	}
-
-	return newUrl;
-};
 
 const MAX_PRODUCTS = 15;
 
@@ -183,12 +147,12 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 						const chosenProductAttributes = product.productAttributes[0];
 
 						// eslint-disable-next-line
-						const images =
-							chosenProductAttributes?.productImages ||
-							product.thumbnailImage[0].images;
-
 						// Always just take the first image
 						const firstImage = chosenProductAttributes?.exampleDesignImage;
+						const primarySrc = resolveImageUrl(firstImage);
+						const fallbackSrc = resolveImageUrl(firstImage, {
+							preferCloudinary: false,
+						});
 
 						const originalPrice = product.price || 0;
 						const discountedPrice =
@@ -203,21 +167,6 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 						const isPOD =
 							product.isPrintifyProduct && product.printifyProductDetails?.POD;
 
-						// Create optimized URLs for the single first image
-						let baseJpg = "";
-						let baseWebp = "";
-
-						if (firstImage?.url) {
-							baseJpg = getCloudinaryOptimizedUrl(firstImage.url, {
-								width: 600,
-								forceWebP: false,
-							});
-							baseWebp = getCloudinaryOptimizedUrl(firstImage.url, {
-								width: 600,
-								forceWebP: true,
-							});
-						}
-
 						return (
 							<div key={i} className='slide'>
 								<ProductCard
@@ -229,15 +178,15 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 											{isPOD && <PodBadge>Custom Design 💖</PodBadge>}
 
 											<ImageWrapper>
-												{baseJpg ? (
-													<picture>
-														<source srcSet={baseWebp} type='image/webp' />
-														<ProductImage
-															src={baseJpg}
-															alt={`${product.productName} - single view`}
-															loading='lazy'
-														/>
-													</picture>
+												{primarySrc ? (
+													<ProductImage
+														src={primarySrc}
+														fallbackSrc={fallbackSrc}
+														alt={`${product.productName} - single view`}
+														loading='lazy'
+														sizes='(max-width: 480px) 80vw, (max-width: 768px) 45vw, (max-width: 1200px) 30vw, 240px'
+														widths={[240, 360, 480, 600, 800]}
+													/>
 												) : (
 													<NoImagePlaceholder>No Image</NoImagePlaceholder>
 												)}
@@ -400,7 +349,7 @@ const ImageWrapper = styled.div`
 	}
 `;
 
-const ProductImage = styled.img`
+const ProductImage = styled(OptimizedImage)`
 	width: 100%;
 	height: 100%;
 	object-fit: cover;

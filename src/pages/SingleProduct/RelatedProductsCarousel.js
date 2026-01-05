@@ -8,6 +8,8 @@ import "slick-carousel/slick/slick-theme.css";
 import { useCartContext } from "../../cart_context";
 import { readProduct } from "../../apiCore";
 import { useHistory } from "react-router-dom";
+import OptimizedImage from "../../components/OptimizedImage";
+import { resolveImageSources } from "../../utils/image";
 
 const { Meta } = Card;
 
@@ -72,6 +74,10 @@ const RelatedProductsCarousel = ({ relatedProducts }) => {
 					{relatedProducts &&
 						relatedProducts.map((product, i) => {
 							var chosenProductAttributes = product.productAttributes[0];
+							const images =
+								product.productAttributes?.[0]?.productImages ||
+								product.thumbnailImage?.[0]?.images ||
+								[];
 							return (
 								<div key={i} className='slide'>
 									<ProductCard
@@ -104,19 +110,22 @@ const RelatedProductsCarousel = ({ relatedProducts }) => {
 													}}
 												/>
 												<Slider {...imageSettings}>
-													{(
-														(product.productAttributes &&
-															product.productAttributes.length > 0 &&
-															product.productAttributes[0].productImages) ||
-														product.thumbnailImage[0].images
-													).map((img, index) => (
-														<ImageWrapper key={index}>
-															<ProductImage
-																src={img.url}
-																alt={`${product.productName} - view ${index + 1}`}
-															/>
-														</ImageWrapper>
-													))}
+													{images.map((img, index) => {
+														const { primary, fallback } =
+															resolveImageSources(img);
+														return (
+															<ImageWrapper key={index}>
+																<ProductImage
+																	src={primary}
+																	fallbackSrc={fallback}
+																	alt={`${product.productName} - view ${index + 1}`}
+																	sizes='(max-width: 480px) 80vw, (max-width: 768px) 45vw, (max-width: 1200px) 30vw, 300px'
+																	widths={[240, 360, 480, 600, 800]}
+																	loading='lazy'
+																/>
+															</ImageWrapper>
+														);
+													})}
 												</Slider>
 											</ImageContainer>
 										}
@@ -222,7 +231,7 @@ const ImageWrapper = styled.div`
 	overflow: hidden;
 `;
 
-const ProductImage = styled.img`
+const ProductImage = styled(OptimizedImage)`
 	width: 100%;
 	height: 100%;
 	object-fit: cover;

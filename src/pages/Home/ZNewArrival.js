@@ -10,44 +10,10 @@ import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
 import axios from "axios";
 import { isAuthenticated } from "../../auth";
+import OptimizedImage from "../../components/OptimizedImage";
+import { resolveImageUrl } from "../../utils/image";
 
 const { Meta } = Card;
-
-/**
- * Ensures Cloudinary transformations: f_auto,q_auto,w_{width}
- * plus optional f_webp if forceWebP=true.
- */
-const getCloudinaryOptimizedUrl = (
-	url,
-	{ width = 600, forceWebP = false } = {}
-) => {
-	if (!url || !url.includes("res.cloudinary.com")) {
-		return url; // Not a Cloudinary URL
-	}
-
-	let newUrl = url;
-	const hasTransform = newUrl.includes("f_auto") || newUrl.includes("q_auto");
-
-	if (!hasTransform) {
-		const parts = newUrl.split("/upload/");
-		if (parts.length === 2) {
-			const baseTransform = `f_auto,q_auto,w_${width}`;
-			const finalTransform = forceWebP
-				? `${baseTransform},f_webp`
-				: baseTransform;
-			newUrl = `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
-		}
-	} else {
-		// If transformations exist, ensure 'w_{width}' is present
-		if (!newUrl.match(/w_\d+/)) {
-			newUrl = newUrl.replace("f_auto,q_auto", `f_auto,q_auto,w_${width}`);
-			if (forceWebP && !newUrl.includes("f_webp")) {
-				newUrl = newUrl.replace("f_auto,q_auto", "f_auto,q_auto,f_webp");
-			}
-		}
-	}
-	return newUrl;
-};
 
 const ZNewArrival = ({ newArrivalProducts }) => {
 	const { openSidebar2, addToCart } = useCartContext();
@@ -274,46 +240,13 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 						const chosenProductAttributes = product.productAttributes?.[0];
 						const images =
 							chosenProductAttributes?.productImages ||
-							product.thumbnailImage?.[0]?.images;
-						const firstImage = images?.[0];
-
-						// Build multiple Cloudinary URLs
-						let fallbackJpg = "";
-						let srcsetJpg = "";
-						let srcsetWebp = "";
-
-						if (firstImage?.url) {
-							const baseJpg = getCloudinaryOptimizedUrl(firstImage.url, {
-								width: 600,
-								forceWebP: false,
-							});
-							const baseWebp = getCloudinaryOptimizedUrl(firstImage.url, {
-								width: 600,
-								forceWebP: true,
-							});
-
-							const jpg480 = baseJpg.replace("w_600", "w_480");
-							const jpg768 = baseJpg.replace("w_600", "w_768");
-							const jpg1200 = baseJpg.replace("w_600", "w_1200");
-
-							const webp480 = baseWebp.replace("w_600", "w_480");
-							const webp768 = baseWebp.replace("w_600", "w_768");
-							const webp1200 = baseWebp.replace("w_600", "w_1200");
-
-							fallbackJpg = jpg480;
-							srcsetJpg = `
-				  ${jpg480} 480w,
-				  ${jpg768} 768w,
-				  ${jpg1200} 1200w,
-				  ${baseJpg} 1600w
-				`;
-							srcsetWebp = `
-				  ${webp480} 480w,
-				  ${webp768} 768w,
-				  ${webp1200} 1200w,
-				  ${baseWebp} 1600w
-				`;
-						}
+							product.thumbnailImage?.[0]?.images ||
+							[];
+						const firstImage = images[0];
+						const primarySrc = resolveImageUrl(firstImage);
+						const fallbackSrc = resolveImageUrl(firstImage, {
+							preferCloudinary: false,
+						});
 
 						const originalPrice = product.price || 0;
 						const discountedPrice =
@@ -351,29 +284,14 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 											)}
 
 											<ImageWrapper>
-												<picture>
-													<source
-														srcSet={srcsetWebp}
-														sizes='(max-width: 480px) 480px,
-									 (max-width: 768px) 768px,
-									 (max-width: 1200px) 1200px,
-									 1600px'
-														type='image/webp'
-													/>
-													<source
-														srcSet={srcsetJpg}
-														sizes='(max-width: 480px) 480px,
-									 (max-width: 768px) 768px,
-									 (max-width: 1200px) 1200px,
-									 1600px'
-														type='image/jpeg'
-													/>
-													<ProductImage
-														loading='lazy'
-														src={fallbackJpg}
-														alt={`${product.productName} - single view`}
-													/>
-												</picture>
+												<ProductImage
+													loading='lazy'
+													src={primarySrc}
+													fallbackSrc={fallbackSrc}
+													alt={`${product.productName} - single view`}
+													sizes='(max-width: 480px) 80vw, (max-width: 768px) 45vw, (max-width: 1200px) 30vw, 240px'
+													widths={[240, 360, 480, 600, 800]}
+												/>
 											</ImageWrapper>
 										</ImageContainer>
 									}
@@ -506,7 +424,7 @@ const ImageWrapper = styled.div`
 	}
 `;
 
-const ProductImage = styled.img`
+const ProductImage = styled(OptimizedImage)`
 	width: 100%;
 	height: 100%;
 	object-fit: cover;

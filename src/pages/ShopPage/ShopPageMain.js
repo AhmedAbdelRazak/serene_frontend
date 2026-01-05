@@ -26,6 +26,8 @@ import ReactPixel from "react-facebook-pixel";
 import ShopPageHelmet from "./ShopPageHelmet";
 import axios from "axios";
 import { isAuthenticated } from "../../auth";
+import OptimizedImage from "../../components/OptimizedImage";
+import { resolveImageSources } from "../../utils/image";
 
 const { Meta } = Card;
 const { Option } = Select;
@@ -67,39 +69,6 @@ function ShopPageMain() {
 
 	const { user } = isAuthenticated();
 
-	// (1) Cloudinary Transform Helper
-	//     If the URL isn't Cloudinary, returns original.
-	//     Otherwise, inserts f_auto,q_auto,w_{width} + optional f_webp.
-	const getCloudinaryOptimizedUrl = (
-		url,
-		{ width = 600, forceWebP = false } = {}
-	) => {
-		if (!url || !url.includes("res.cloudinary.com")) {
-			return url; // Not a Cloudinary URL
-		}
-
-		// If we've already inserted something like f_auto,q_auto, skip
-		if (url.includes("f_auto") || url.includes("q_auto")) {
-			return url;
-		}
-
-		// Split at '/upload/' to insert transformations
-		const parts = url.split("/upload/");
-		if (parts.length !== 2) {
-			return url; // Can't parse, return original
-		}
-
-		// Build transformation string
-		// Example: f_auto,q_auto,w_600 or f_auto,q_auto,w_600,f_webp
-		const baseTransform = `f_auto,q_auto,w_${width}`;
-		const finalTransform = forceWebP
-			? `${baseTransform},f_webp`
-			: baseTransform;
-
-		// Reconstruct URL
-		// e.g. https://res.cloudinary.com/.../upload/f_auto,q_auto,w_600/...
-		return `${parts[0]}/upload/${finalTransform}/${parts[1]}`;
-	};
 
 	// Initialize GA and track page views
 	useEffect(() => {
@@ -616,19 +585,13 @@ function ShopPageMain() {
 									productImages = prod.thumbnailImage[0].images;
 								}
 
-								const rawImageUrl =
-									productImages?.[0]?.url ||
+								const defaultImage =
 									"https://res.cloudinary.com/infiniteapps/image/upload/v1723694291/janat/default-image.jpg";
-
-								// (2) Use Cloudinary Helper for WebP + fallback
-								const webpUrl = getCloudinaryOptimizedUrl(rawImageUrl, {
-									width: 600,
-									forceWebP: true,
-								});
-								const fallbackUrl = getCloudinaryOptimizedUrl(rawImageUrl, {
-									width: 600,
-									forceWebP: false,
-								});
+								const { primary, fallback } = resolveImageSources(
+									productImages?.[0]
+								);
+								const primarySrc = primary || defaultImage;
+								const fallbackSrc = fallback || defaultImage;
 
 								// Price logic
 								const originalPrice = prod?.price || 0;
@@ -730,47 +693,49 @@ function ShopPageMain() {
 														<OutOfStockBadge>Out of Stock</OutOfStockBadge>
 													)}
 
-													<picture>
-														<source srcSet={webpUrl} type='image/webp' />
-														<ProductImage
-															src={fallbackUrl}
-															alt={prod?.productName || "Product Image"}
-															onClick={() => {
-																const eventId = `Lead-ShopMain-${prod?._id}-${Date.now()}`;
+													<ProductImage
+														src={primarySrc}
+														fallbackSrc={fallbackSrc}
+														alt={prod?.productName || "Product Image"}
+														loading='lazy'
+														decoding='async'
+														sizes='(max-width: 480px) 80vw, (max-width: 768px) 45vw, (max-width: 1200px) 30vw, 280px'
+														widths={[280, 360, 480, 600, 800, 1000]}
+														onClick={() => {
+															const eventId = `Lead-ShopMain-${prod?._id}-${Date.now()}`;
 
-																ReactGA.event({
-																	category: "Single Product Clicked",
-																	action:
-																		"User Navigated To Single Product From Products Page",
-																	label: `User viewed ${prod?.productName || "unknown"}`,
-																});
+															ReactGA.event({
+																category: "Single Product Clicked",
+																action:
+																	"User Navigated To Single Product From Products Page",
+																label: `User viewed ${prod?.productName || "unknown"}`,
+															});
 
-																ReactPixel.track("Lead", {
-																	content_name: `User viewed ${prod?.productName || "unknown"} From Shop Page`,
-																	click_type: "Shop Page Product Clicked",
-																	// You can add more parameters if you want
-																	// e.g. currency: "USD", value: 0
-																});
+															ReactPixel.track("Lead", {
+																content_name: `User viewed ${prod?.productName || "unknown"} From Shop Page`,
+																click_type: "Shop Page Product Clicked",
+																// You can add more parameters if you want
+																// e.g. currency: "USD", value: 0
+															});
 
-																axios.post(
-																	`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
-																	{
-																		eventName: "Lead",
-																		eventId,
-																		email: user?.email || "Unknown", // if you have a user object
-																		phone: user?.phone || "Unknown", // likewise
-																		currency: "USD", // not essential for "Lead," but you can pass
-																		value: 0,
-																		contentIds: [prod?._id], // or any ID you want
-																		userAgent: window.navigator.userAgent,
-																	}
-																);
+															axios.post(
+																`${process.env.REACT_APP_API_URL}/facebookpixel/conversionapi`,
+																{
+																	eventName: "Lead",
+																	eventId,
+																	email: user?.email || "Unknown", // if you have a user object
+																	phone: user?.phone || "Unknown", // likewise
+																	currency: "USD", // not essential for "Lead," but you can pass
+																	value: 0,
+																	contentIds: [prod?._id], // or any ID you want
+																	userAgent: window.navigator.userAgent,
+																}
+															);
 
-																window.scrollTo({ top: 0, behavior: "smooth" });
-																history.push(getProductLink(prod));
-															}}
-														/>
-													</picture>
+															window.scrollTo({ top: 0, behavior: "smooth" });
+															history.push(getProductLink(prod));
+														}}
+													/>
 												</ImageContainer>
 											}
 										>
@@ -959,7 +924,7 @@ const DiscountBadge = styled.div`
 	box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 `;
 
-const ProductImage = styled.img`
+const ProductImage = styled(OptimizedImage)`
 	width: 100%;
 	height: 100%;
 	object-fit: cover;

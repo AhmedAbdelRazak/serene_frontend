@@ -9,6 +9,8 @@ import ReactPixel from "react-facebook-pixel";
 import PrintifyPageHelmet from "./PrintifyPageHelmet";
 import AnimationProductPresentation from "../MyAnimationComponents/AnimationProductPresentation";
 import { isAuthenticated } from "../../auth";
+import OptimizedImage from "../../components/OptimizedImage";
+import { resolveImageUrl } from "../../utils/image";
 
 // Slick carousel settings
 const sliderSettings = {
@@ -148,7 +150,11 @@ const PrintifyAvailableProducts = () => {
 						const isPOD =
 							product.isPrintifyProduct && product.printifyProductDetails?.POD;
 						const exampleDesignImage =
-							product?.productAttributes?.[0]?.exampleDesignImage?.url;
+							product?.productAttributes?.[0]?.exampleDesignImage;
+						const examplePrimary = resolveImageUrl(exampleDesignImage);
+						const exampleFallback = resolveImageUrl(exampleDesignImage, {
+							preferCloudinary: false,
+						});
 
 						return (
 							<Card
@@ -157,15 +163,25 @@ const PrintifyAvailableProducts = () => {
 							>
 								<CarouselWrapper>
 									<Slider {...sliderSettings}>
-										{displayImages.map((imgObj, idx) => (
-											<ImageContainer key={idx}>
-												<img
-													src={imgObj.url}
-													alt={product.productName}
-													loading='lazy'
-												/>
-											</ImageContainer>
-										))}
+										{displayImages.map((imgObj, idx) => {
+											const primarySrc = resolveImageUrl(imgObj);
+											const fallbackSrc = resolveImageUrl(imgObj, {
+												preferCloudinary: false,
+											});
+											return (
+												<ImageContainer key={idx}>
+													<ProductImage
+														src={primarySrc}
+														fallbackSrc={fallbackSrc}
+														alt={product.productName}
+														loading='lazy'
+														decoding='async'
+														sizes='(max-width: 600px) 90vw, (max-width: 1024px) 45vw, 320px'
+														widths={[320, 480, 640, 800]}
+													/>
+												</ImageContainer>
+											);
+										})}
 									</Slider>
 								</CarouselWrapper>
 
@@ -173,9 +189,17 @@ const PrintifyAvailableProducts = () => {
                   Only show example design overlay if it's a POD product 
                   and there's an example design image.
                 */}
-								{isPOD && exampleDesignImage && (
+								{isPOD && examplePrimary && (
 									<ExampleDesignOverlay className='exampleDesignOverlay'>
-										<img src={exampleDesignImage} alt='Example Design' />
+										<ExampleDesignImage
+											src={examplePrimary}
+											fallbackSrc={exampleFallback}
+											alt='Example Design'
+											loading='lazy'
+											decoding='async'
+											sizes='(max-width: 600px) 90vw, (max-width: 1024px) 45vw, 320px'
+											widths={[320, 480, 640, 800]}
+										/>
 									</ExampleDesignOverlay>
 								)}
 
@@ -334,13 +358,13 @@ const ImageContainer = styled.div`
 	width: 100%;
 	height: 300px;
 	overflow: hidden;
+`;
 
-	img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		display: block;
-	}
+const ProductImage = styled(OptimizedImage)`
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
 `;
 
 /* Overlay for the example design image */
@@ -354,12 +378,13 @@ const ExampleDesignOverlay = styled.div`
 	z-index: 2;
 	transition: opacity 0.4s ease;
 
-	img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		display: block;
-	}
+`;
+
+const ExampleDesignImage = styled(OptimizedImage)`
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
 `;
 
 const CardBody = styled.div`

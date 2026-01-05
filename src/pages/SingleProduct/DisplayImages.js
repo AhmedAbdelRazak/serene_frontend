@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { Carousel } from "antd";
+import OptimizedImage from "../../components/OptimizedImage";
+import { resolveImageSources } from "../../utils/image";
 
 const DisplayImages = ({ images }) => {
 	return (
@@ -10,9 +12,20 @@ const DisplayImages = ({ images }) => {
 					(
 						img,
 						index // Ensure no more than 5 images are displayed
-					) => (
-						<img key={index} src={img} alt={`Product view ${index + 1}`} />
-					)
+					) => {
+						const { primary, fallback } = resolveImageSources(img);
+						return (
+							<OptimizedImage
+								key={index}
+								src={primary}
+								fallbackSrc={fallback}
+								alt={`Product view ${index + 1}`}
+								sizes='(max-width: 768px) 100vw, 700px'
+								widths={[600, 800, 1000, 1200, 1600]}
+								loading='lazy'
+							/>
+						);
+					}
 				)}
 			</Carousel>
 		</ImageCarousel>

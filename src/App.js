@@ -9,6 +9,7 @@ import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import "./perf-overrides.css";
 import "react-quill/dist/quill.snow.css";
 import ReactGA from "react-ga4";
 import ReactPixel from "react-facebook-pixel";
