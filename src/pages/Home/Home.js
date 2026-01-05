@@ -295,6 +295,20 @@ const loadingIcon = (
 	<LoadingOutlined style={{ fontSize: 60, color: "#555" }} spin />
 );
 
+const VisuallyHiddenH1 = styled.h1`
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+`;
+
 const Home = () => {
 	const [categories, setCategories] = useState([]);
 	const [subcategories, setSubcategories] = useState([]);
@@ -400,6 +414,9 @@ const Home = () => {
 				newArrivalProducts={newArrivalProducts}
 				customDesignProducts={customDesignProducts}
 			/>
+			<VisuallyHiddenH1>
+				Serene Jannat - Best Gifts and Candles Online Shop
+			</VisuallyHiddenH1>
 
 			{/* Hero */}
 			<Hero websiteSetup={websiteSetup} />
