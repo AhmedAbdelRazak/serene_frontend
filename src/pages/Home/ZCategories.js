@@ -44,7 +44,7 @@ const ZCategories = ({ allCategories }) => {
 					contentIds: [`cat-${categoryName}`], // or any ID you want
 					userAgent: window.navigator.userAgent,
 				}
-			);
+			).catch(() => {});
 
 			window.scrollTo({ top: 0, behavior: "smooth" });
 		},
@@ -55,11 +55,22 @@ const ZCategories = ({ allCategories }) => {
 		<Container>
 			<ZCategoriesWrapper>
 				{allCategories.map((category) => {
-					// Determine the target URL based on the category's id
-					const linkTarget =
-						category._id === "679bb2a7dba50a58933d01eb"
-							? "/custom-gifts"
-							: `/our-products?category=${category.categorySlug}`;
+					// Determine the target URL based on the category's id.
+					// Use category ObjectId in query for backend filtering + pagination consistency.
+					const linkTarget = (() => {
+						if (category._id === "679bb2a7dba50a58933d01eb") {
+							return "/custom-gifts";
+						}
+						const params = new URLSearchParams();
+						if (category?._id) {
+							params.set("category", category._id);
+						}
+						if (category?.categorySlug) {
+							params.set("categorySlug", category.categorySlug);
+						}
+						const serialized = params.toString();
+						return serialized ? `/our-products?${serialized}` : "/our-products";
+					})();
 
 					// If there's a thumbnail, generate multiple Cloudinary URLs
 					let imageUrl = "";

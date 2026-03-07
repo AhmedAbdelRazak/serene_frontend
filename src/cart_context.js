@@ -28,6 +28,7 @@ import {
 	gettingCategoriesAndSubcategories,
 	// eslint-disable-next-line
 	gettingSpecificProducts,
+	cleanupPreviewCustomDesign,
 } from "./apiCore";
 
 // Utility to load cart from localStorage
@@ -114,8 +115,33 @@ export const CartProvider = ({ children }) => {
 		});
 	};
 
+	const isSameCartEntry = (item, id, size, color) =>
+		item.id === id &&
+		(item.size?.toLowerCase() ?? "") + " " + (item.color?.toLowerCase() ?? "") ===
+			(size?.toLowerCase() ?? "") + " " + (color?.toLowerCase() ?? "");
+
+	const cleanupPreviewForCartItem = async (cartItem) => {
+		const previewProductId = cartItem?.customDesign?.previewProductId;
+		if (!previewProductId) return;
+
+		const previewShopId =
+			cartItem?.customDesign?.previewShopId ||
+			cartItem?.printifyProductDetails?.shop_id;
+		try {
+			await cleanupPreviewCustomDesign(previewProductId, previewShopId);
+		} catch (error) {
+			console.warn("Failed to clean preview product from cart removal:", error);
+		}
+	};
+
 	// remove item
-	const removeItem = (id, size, color) => {
+	const removeItem = async (id, size, color) => {
+		const itemsToRemove = state.cart.filter((item) =>
+			isSameCartEntry(item, id, size, color)
+		);
+		await Promise.allSettled(
+			itemsToRemove.map((item) => cleanupPreviewForCartItem(item))
+		);
 		dispatch({ type: REMOVE_CART_ITEM, payload: { id, size, color } });
 	};
 
@@ -128,7 +154,13 @@ export const CartProvider = ({ children }) => {
 	};
 
 	// clear cart
-	const clearCart = () => {
+	const clearCart = async () => {
+		const itemsWithPreview = state.cart.filter(
+			(item) => !!item?.customDesign?.previewProductId
+		);
+		await Promise.allSettled(
+			itemsWithPreview.map((item) => cleanupPreviewForCartItem(item))
+		);
 		dispatch({ type: CLEAR_CART });
 	};
 

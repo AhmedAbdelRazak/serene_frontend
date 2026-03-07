@@ -206,6 +206,140 @@ export const cloudinaryUpload1 = (userId, token, uploadData) => {
 		});
 };
 
+export const cleanupPreviewCustomDesign = (previewProductId, shopId) => {
+	if (!previewProductId) {
+		return Promise.resolve({
+			success: false,
+			deleted: false,
+			error: "Missing previewProductId",
+		});
+	}
+
+	return axios
+		.delete(
+			`${process.env.REACT_APP_API_URL}/preview-custom-design/${previewProductId}`,
+			{
+				data: { shop_id: shopId || null },
+			},
+		)
+		.then((res) => res.data)
+		.catch((err) => {
+			console.error("cleanupPreviewCustomDesign error:", err);
+			throw err;
+		});
+};
+
+export const getPodListPreview = (
+	productId,
+	{ occasion, name, variantId, forceRefresh = false } = {},
+) => {
+	if (!productId) {
+		return Promise.resolve({
+			success: false,
+			error: "Missing productId",
+		});
+	}
+
+	const params = new URLSearchParams();
+	if (occasion) params.set("occasion", occasion);
+	if (name) params.set("name", name);
+	if (variantId) params.set("variant_id", variantId);
+	if (forceRefresh) params.set("force", "1");
+	const queryString = params.toString();
+	const requestUrl = queryString
+		? `${process.env.REACT_APP_API_URL}/pod/list-preview/${productId}?${queryString}`
+		: `${process.env.REACT_APP_API_URL}/pod/list-preview/${productId}`;
+
+	return axios
+		.get(requestUrl)
+		.then((res) => res.data)
+		.catch((err) => {
+			console.error("getPodListPreview error:", err);
+			throw err;
+		});
+};
+
+export const cleanupPodListPreviewSession = (
+	items = [],
+	{ keepalive = false } = {},
+) => {
+	const safeItems = Array.isArray(items)
+		? items
+				.map((item) => {
+					const previewProductId = String(
+						item?.preview_product_id || item?.previewProductId || "",
+					).trim();
+					if (!previewProductId) return null;
+					return {
+						preview_product_id: previewProductId,
+						shop_id: item?.shop_id ?? item?.shopId ?? null,
+						product_id:
+							item?.product_id || item?.productId
+								? String(item?.product_id || item?.productId).trim()
+								: null,
+					};
+				})
+				.filter(Boolean)
+		: [];
+
+	if (!safeItems.length) {
+		return Promise.resolve({
+			success: true,
+			requested: 0,
+			deleted: 0,
+			not_found: 0,
+			failed: 0,
+		});
+	}
+
+	const endpoint = `${process.env.REACT_APP_API_URL}/pod/list-preview/cleanup-session`;
+	if (keepalive) {
+		if (
+			typeof navigator !== "undefined" &&
+			typeof navigator.sendBeacon === "function"
+		) {
+			try {
+				const queued = navigator.sendBeacon(
+					endpoint,
+					new Blob([JSON.stringify({ items: safeItems })], {
+						type: "application/json",
+					}),
+				);
+				if (queued) {
+					return Promise.resolve({ success: true, queued: true });
+				}
+			} catch (err) {
+				console.warn("sendBeacon cleanup fallback to fetch:", err);
+			}
+		}
+		return fetch(endpoint, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ items: safeItems }),
+			keepalive: true,
+		})
+			.then(async (response) => {
+				try {
+					return await response.json();
+				} catch {
+					return { success: response.ok };
+				}
+			})
+			.catch((err) => {
+				console.error("cleanupPodListPreviewSession (keepalive) error:", err);
+				throw err;
+			});
+	}
+
+	return axios
+		.post(endpoint, { items: safeItems })
+		.then((res) => res.data)
+		.catch((err) => {
+			console.error("cleanupPodListPreviewSession error:", err);
+			throw err;
+		});
+};
+
 export const productStar = (productId, star, token, email, userId) => {
 	return fetch(
 		`${process.env.REACT_APP_API_URL}/product/star/${productId}/${userId}`,
@@ -500,13 +634,18 @@ export const gettingSingleProduct = (slug, categorySlug, productId) => {
 };
 
 export const gettingFilteredProducts = (filters, page, records) => {
+	const normalizedFilters = `${filters || ""}`.trim() || "all";
 	return fetch(
-		`${process.env.REACT_APP_API_URL}/products/${filters}/${page}/${records}`,
+		`${process.env.REACT_APP_API_URL}/products/${normalizedFilters}/${page}/${records}`,
 		{
 			method: "GET",
+			cache: "no-store",
 		}
 	)
 		.then((response) => {
+			if (!response.ok) {
+				throw new Error(`Filtered products request failed (${response.status})`);
+			}
 			return response.json();
 		})
 		.catch((err) => console.log(err));

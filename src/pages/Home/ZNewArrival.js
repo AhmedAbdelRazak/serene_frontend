@@ -217,7 +217,7 @@ const ZNewArrival = ({ newArrivalProducts }) => {
 					contentIds: [product._id], // or any ID you want
 					userAgent: window.navigator.userAgent,
 				}
-			);
+			).catch(() => {});
 
 			window.scrollTo({ top: 0, behavior: "smooth" });
 			history.push(

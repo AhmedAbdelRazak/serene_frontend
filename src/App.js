@@ -27,33 +27,33 @@ import Footer from "./Footer";
 import ModalApp from "./ModalApp";
 
 const SellerDashboardMain = lazy(
-	() => import("./Seller/SellerDashboard/SellerDashboardMain")
+	() => import("./Seller/SellerDashboard/SellerDashboardMain"),
 );
 
 const SellerStoreManagementMain = lazy(
-	() => import("./Seller/StoreManagement/SellerStoreManagementMain")
+	() => import("./Seller/StoreManagement/SellerStoreManagementMain"),
 );
 
 const SellerProductManagementMain = lazy(
-	() => import("./Seller/ProductManagement/SellerProductManagementMain")
+	() => import("./Seller/ProductManagement/SellerProductManagementMain"),
 );
 
 const CustomerServiceSellerMain = lazy(
-	() => import("./Seller/CustomerService/CustomerServiceSellerMain")
+	() => import("./Seller/CustomerService/CustomerServiceSellerMain"),
 );
 
 const CouponManagementMain = lazy(
-	() => import("./Seller/CouponManagement/CouponManagementMain")
+	() => import("./Seller/CouponManagement/CouponManagementMain"),
 );
 
 const PrintifyAvailableProducts = lazy(
-	() => import("./pages/PrintOnDemand/PrintifyAvailableProducts")
+	() => import("./pages/PrintOnDemand/PrintifyAvailableProducts"),
 );
 const CustomizeSelectedProduct = lazy(
-	() => import("./pages/PrintOnDemand/CustomizeSelectedProduct")
+	() => import("./pages/PrintOnDemand/CustomizeSelectedProduct"),
 );
 const PrintifyMain = lazy(
-	() => import("./Admin/PrintifyProductManagement/PrintifyMain")
+	() => import("./Admin/PrintifyProductManagement/PrintifyMain"),
 );
 const WebsiteMain = lazy(() => import("./Admin/EditingWebsite/WebsiteMain"));
 
@@ -68,33 +68,33 @@ const ReturnRefundPolicy = lazy(() => import("./pages/ReturnRefundPolicy"));
 const About = lazy(() => import("./pages/About/About"));
 const Cart = lazy(() => import("./pages/Checkout/Cart"));
 const AdminDashboard = lazy(
-	() => import("./Admin/AdminMainDashboard/AdminDashboard")
+	() => import("./Admin/AdminMainDashboard/AdminDashboard"),
 );
 const CategoriesMain = lazy(() => import("./Admin/Categories/CategoriesMain"));
 const SubcategoryMain = lazy(
-	() => import("./Admin/Subcategory/SubcategoryMain")
+	() => import("./Admin/Subcategory/SubcategoryMain"),
 );
 const ParentMain = lazy(() => import("./Admin/Gender/GenderMain"));
 const AttributesMain = lazy(() => import("./Admin/Attributes/AttributesMain"));
 const ProductMain = lazy(() => import("./Admin/Product/ProductMain"));
 const AdminStoreManagementMain = lazy(
-	() => import("./Admin/StoreManagement/AdminStoreManagementMain")
+	() => import("./Admin/StoreManagement/AdminStoreManagementMain"),
 );
 
 const CustomerServiceMainAdmin = lazy(
-	() => import("./Admin/CustomerService/CustomerServiceMainAdmin")
+	() => import("./Admin/CustomerService/CustomerServiceMainAdmin"),
 );
 const StorePOSMain = lazy(() => import("./Admin/StorePOS/StorePOSMain"));
 const UserDashboard = lazy(() => import("./User/UserDashboard"));
 const SingleProductMain = lazy(
-	() => import("./pages/SingleProduct/SingleProductMain")
+	() => import("./pages/SingleProduct/SingleProductMain"),
 );
 const ShopPageMain = lazy(() => import("./pages/ShopPage/ShopPageMain"));
 const ContactUs = lazy(() => import("./pages/Contact/ContactUs"));
 const ChatIcon = lazy(() => import("./Chat/ChatIcon"));
 const LinkGenerated = lazy(() => import("./Admin/StorePOS/LinkGenerated"));
 const CouponManagement = lazy(
-	() => import("./Admin/CouponManagement/CouponManagement")
+	() => import("./Admin/CouponManagement/CouponManagement"),
 );
 
 const AIMarketingMain = lazy(() => import("./Admin/Marketing/AIMarketingMain"));
@@ -198,6 +198,11 @@ const AppContent = () => {
 						path='/custom-gifts'
 						exact
 						component={PrintifyAvailableProducts}
+					/>
+					<Route
+						path='/custom-gifts/:productSlug/:productId'
+						exact
+						component={CustomizeSelectedProduct}
 					/>
 					<Route
 						path='/custom-gifts/:productId'

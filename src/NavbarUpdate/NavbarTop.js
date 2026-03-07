@@ -241,10 +241,21 @@ const NavbarTopWrapper = styled.nav`
 	padding: 0.5rem 5rem;
 	background-color: var(--neutral-light);
 	box-shadow: var(--box-shadow-light);
+	position: relative;
+	z-index: 1200;
+	transition:
+		background-color 220ms ease,
+		box-shadow 220ms ease;
+	will-change: background-color, box-shadow;
+	transform: translateZ(0);
 
 	@media (max-width: 600px) {
+		position: sticky;
 		top: 0;
-		z-index: 200;
+		z-index: 1250;
+		background-color: rgba(255, 255, 255, 0.95);
+		backdrop-filter: saturate(145%) blur(8px);
+		-webkit-backdrop-filter: saturate(145%) blur(8px);
 	}
 	@media (max-width: 768px) {
 		padding: 0.5rem 0.5rem;

@@ -1,58 +1,60 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { AiOutlineShoppingCart } from "react-icons/ai"; // Import for cart icon
 import SidebarCart from "./SidebarCart"; // Import SidebarCart
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useCartContext } from "../cart_context";
 
 const NavbarBottom = () => {
 	const [clickedLink, setClickedLink] = useState("");
-	const [isSticky, setIsSticky] = useState(false); // State for sticky navbar
+	const [isSticky, setIsSticky] = useState(false);
+	const rafRef = useRef(null);
+	const lastStickyStateRef = useRef(false);
+	const location = useLocation();
 	const { openSidebar2, total_items } = useCartContext();
 
-	// Sticky navbar logic
+	// Sticky style logic (position is CSS sticky; JS only controls visual state).
 	useEffect(() => {
 		const handleScroll = () => {
-			if (window.scrollY > 70) {
-				setIsSticky(true);
-			} else {
-				setIsSticky(false);
-			}
+			if (rafRef.current) return;
+			rafRef.current = window.requestAnimationFrame(() => {
+				const nextStickyState = window.scrollY > 8;
+				if (lastStickyStateRef.current !== nextStickyState) {
+					lastStickyStateRef.current = nextStickyState;
+					setIsSticky(nextStickyState);
+				}
+				rafRef.current = null;
+			});
 		};
 
-		window.addEventListener("scroll", handleScroll);
+		handleScroll();
+		window.addEventListener("scroll", handleScroll, { passive: true });
 		return () => {
 			window.removeEventListener("scroll", handleScroll);
+			if (rafRef.current) {
+				window.cancelAnimationFrame(rafRef.current);
+				rafRef.current = null;
+			}
 		};
 	}, []);
 
 	// Track the current pathname to highlight active link
 	useEffect(() => {
-		const handleLocationChange = () => {
-			const path = window.location.pathname;
-			if (path === "/") {
-				setClickedLink("home");
-			} else if (path === "/our-products") {
-				setClickedLink("products");
-			} else if (path === "/custom-gifts") {
-				setClickedLink("customgifts");
-			} else if (path === "/about") {
-				setClickedLink("about");
-			} else if (path === "/contact") {
-				setClickedLink("contact");
-			} else {
-				setClickedLink("");
-			}
-		};
-
-		// Call once + listen for "popstate" (back/forward navigation)
-		handleLocationChange();
-		window.addEventListener("popstate", handleLocationChange);
-
-		return () => {
-			window.removeEventListener("popstate", handleLocationChange);
-		};
-	}, []);
+		const path = location.pathname;
+		if (path === "/") {
+			setClickedLink("home");
+		} else if (path === "/our-products") {
+			setClickedLink("products");
+		} else if (path.startsWith("/custom-gifts")) {
+			setClickedLink("customgifts");
+		} else if (path === "/about") {
+			setClickedLink("about");
+		} else if (path === "/contact") {
+			setClickedLink("contact");
+		} else {
+			setClickedLink("");
+		}
+	}, [location.pathname]);
 
 	const handleNavLinkClick = (link) => {
 		setClickedLink(link);
@@ -60,7 +62,7 @@ const NavbarBottom = () => {
 
 	return (
 		<>
-			<NavbarBottomWrapper className={isSticky ? "sticky" : ""}>
+			<NavbarBottomWrapper $isSticky={isSticky}>
 				<NavLinks
 					onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 				>
@@ -126,22 +128,26 @@ const NavbarBottomWrapper = styled.nav`
 	justify-content: space-between;
 	align-items: center;
 	padding: 0.5rem 5rem;
-	background-color: var(--accent-color-2-dark);
+	position: sticky;
+	top: 0;
+	z-index: 1150;
+	background-color: ${(props) =>
+		props.$isSticky ? "rgba(62, 62, 62, 0.94)" : "var(--accent-color-2-dark)"};
 	color: var(--text-color-secondary);
-	transition: all 0.3s ease;
-
-	&.sticky {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		z-index: 1000;
-		box-shadow: var(--box-shadow-dark);
-		background-color: var(--primary-color-darker);
-	}
+	box-shadow: ${(props) =>
+		props.$isSticky
+			? "0 8px 24px rgba(0, 0, 0, 0.18)"
+			: "0 2px 8px rgba(0, 0, 0, 0.08)"};
+	transition:
+		background-color 220ms ease,
+		box-shadow 220ms ease;
+	will-change: background-color, box-shadow;
+	backdrop-filter: saturate(150%) blur(8px);
+	-webkit-backdrop-filter: saturate(150%) blur(8px);
+	transform: translateZ(0);
 
 	@media (max-width: 768px) {
-		display: none; // Hides the navbar on smaller screens
+		display: none;
 	}
 `;
 
@@ -177,7 +183,7 @@ const CartIconWrapper = styled.div`
 	display: flex;
 	align-items: center;
 	margin-left: auto;
-	padding-right: 5rem; /* Adjust as needed for spacing */
+	padding-right: 0.5rem;
 `;
 
 const CartIcon = styled(AiOutlineShoppingCart)`
@@ -190,8 +196,8 @@ const CartIcon = styled(AiOutlineShoppingCart)`
 
 const Badge = styled.span`
 	position: absolute;
-	top: -15px;
-	right: 65px;
+	top: -8px;
+	right: -4px;
 	background: var(--primary-color-darker);
 	color: var(--neutral-light);
 	border-radius: 50%;

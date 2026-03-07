@@ -22,12 +22,15 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 
 const PrintifyCheckoutModal = ({
+	open,
 	visible,
 	onClose,
 	order,
 	setOrder,
 	product,
 }) => {
+	const modalOpen = typeof open === "boolean" ? open : !!visible;
+
 	/**
 	 * Helper function to calculate total price
 	 * - Variant price + $5 per text + $10 per image
@@ -139,7 +142,7 @@ const PrintifyCheckoutModal = ({
 	return (
 		<Modal
 			title='Review Your Order'
-			visible={visible}
+			open={modalOpen}
 			onCancel={onClose}
 			footer={[
 				<Button key='back' onClick={onClose}>
@@ -350,7 +353,8 @@ const PrintifyCheckoutModal = ({
 };
 
 PrintifyCheckoutModal.propTypes = {
-	visible: PropTypes.bool.isRequired,
+	open: PropTypes.bool,
+	visible: PropTypes.bool,
 	onClose: PropTypes.func.isRequired,
 	order: PropTypes.object.isRequired,
 	setOrder: PropTypes.func.isRequired,

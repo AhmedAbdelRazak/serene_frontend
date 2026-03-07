@@ -101,6 +101,15 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 	// -----------------------------
 	// 3) Handlers
 	// -----------------------------
+	const resolvePreferredImageSources = useCallback((image) => {
+		const direct = resolveImageUrl(image, { preferCloudinary: false });
+		const optimized = resolveImageUrl(image, { preferCloudinary: true });
+		return {
+			primary: direct || optimized || "",
+			fallback: direct || optimized || "",
+		};
+	}, []);
+
 	const navigateToProduct = useCallback(
 		(product) => {
 			// If it's a POD product, redirect to custom gifts page
@@ -144,21 +153,43 @@ const ZCustomDesigns = ({ customDesignProducts }) => {
 
 				<Slider {...settings}>
 					{designList.map((product, i) => {
-						const chosenProductAttributes = product.productAttributes[0];
-
-						// eslint-disable-next-line
-						// Always just take the first image
-						const firstImage = chosenProductAttributes?.exampleDesignImage;
-						const primarySrc = resolveImageUrl(firstImage);
-						const fallbackSrc = resolveImageUrl(firstImage, {
-							preferCloudinary: false,
-						});
+						const attributes = Array.isArray(product?.productAttributes)
+							? product.productAttributes
+							: [];
+						const firstExampleDesignImage =
+							attributes.find((attribute) => {
+								const { primary, fallback } = resolvePreferredImageSources(
+									attribute?.exampleDesignImage
+								);
+								return Boolean(primary || fallback);
+							})?.exampleDesignImage || null;
+						const fallbackProductImage =
+							attributes?.[0]?.productImages?.[0] ||
+							product?.thumbnailImage?.[0]?.images?.[0] ||
+							null;
+						const imageCandidates = [
+							firstExampleDesignImage,
+							fallbackProductImage,
+							product?.printifyProductDetails?.images?.[0] || null,
+							product?.thumbnailImage?.[0]?.images?.[0] || null,
+						];
+						let primarySrc = "";
+						let fallbackSrc = "";
+						for (const candidate of imageCandidates) {
+							const { primary, fallback } =
+								resolvePreferredImageSources(candidate);
+							if (primary || fallback) {
+								primarySrc = primary || fallback;
+								fallbackSrc = fallback || primary;
+								break;
+							}
+						}
 
 						const originalPrice = product.price || 0;
 						const discountedPrice =
 							product.priceAfterDiscount > 0
 								? product.priceAfterDiscount
-								: chosenProductAttributes?.priceAfterDiscount || 0;
+								: attributes?.[0]?.priceAfterDiscount || 0;
 
 						const originalPriceFixed = originalPrice.toFixed(2);
 						const discountedPriceFixed = discountedPrice.toFixed(2);

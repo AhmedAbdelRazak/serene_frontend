@@ -34,4 +34,19 @@ export const disconnectSocket = () => {
 	}
 };
 
-export default getSocket;
+// Backward-compatible facade:
+// - Existing files using `import socket from ".../socket"` can call socket.on/off/emit
+// - Newer files can keep using `getSocket()`
+const socketFacade = {
+	on: (...args) => getSocket().on(...args),
+	once: (...args) => getSocket().once(...args),
+	emit: (...args) => getSocket().emit(...args),
+	off: (...args) => {
+		if (!socket) return;
+		return socket.off(...args);
+	},
+	connect: () => getSocket().connect(),
+	disconnect: () => disconnectSocket(),
+};
+
+export default socketFacade;

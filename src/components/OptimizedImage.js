@@ -90,6 +90,7 @@ const OptimizedImage = ({
 	fetchPriority,
 	referrerPolicy = "strict-origin-when-cross-origin",
 	fallbackSrc,
+	enableFetchOptimization = false,
 	...imgProps
 }) => {
 	const baseSrc = src || fallbackSrc || "";
@@ -97,6 +98,7 @@ const OptimizedImage = ({
 	const origin =
 		typeof window !== "undefined" ? window.location.origin : "";
 	const normalizedSrc = toAbsoluteUrl(baseSrc);
+	const isCloudinarySource = isCloudinaryUrl(normalizedSrc);
 	let isSameSite = false;
 
 	if (origin && normalizedSrc) {
@@ -109,7 +111,7 @@ const OptimizedImage = ({
 		}
 	}
 
-	const useFetch = !isSameSite;
+	const useFetch = enableFetchOptimization && !isSameSite && !isCloudinarySource;
 
 	const { srcSet, webpSrcSet, resolvedSrc } = useMemo(() => {
 		if (!baseSrc) {

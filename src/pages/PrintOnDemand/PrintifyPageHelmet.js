@@ -10,6 +10,14 @@ const capitalizeWords = (str) => {
 	return str.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
+const toPodSlug = (str = "") =>
+	(str || "custom-gift")
+		.toLowerCase()
+		.replace(/[^a-z0-9\s-]/g, "")
+		.trim()
+		.replace(/\s+/g, "-")
+		.replace(/-+/g, "-");
+
 /**
  * Utility: Safely escape special JSON characters
  */
@@ -97,7 +105,9 @@ const generateProductSchema = (products) => {
 					value: "Print-on-Demand Personalization",
 				},
 			],
-			url: `https://serenejannat.com/custom-gifts/${product._id}`,
+			url: `https://serenejannat.com/custom-gifts/${toPodSlug(
+				product.productName
+			)}/${product._id}`,
 		};
 	});
 };
@@ -111,8 +121,8 @@ const PrintifyPageHelmet = ({ products }) => {
 	const keywords = generateKeywords(products);
 	const productSchema = generateProductSchema(products);
 
-	// for canonical link
-	const canonicalUrl = `https://serenejannat.com${location.pathname}${location.search}`;
+	// Keep canonical stable to avoid duplicate indexing from personalization params.
+	const canonicalUrl = `https://serenejannat.com${location.pathname}`;
 
 	return (
 		<Helmet>

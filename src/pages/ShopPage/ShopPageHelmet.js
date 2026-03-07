@@ -224,8 +224,8 @@ const ShopPageHelmet = ({ products = [] }) => {
 	const keywords = generateKeywords(products);
 	const productSchema = generateProductSchema(products);
 
-	// Full canonical URL
-	const canonicalUrl = `https://serenejannat.com${location.pathname}${location.search}`;
+	// Keep canonical stable to avoid duplicate indexing for filtered URLs.
+	const canonicalUrl = `https://serenejannat.com${location.pathname}`;
 
 	return (
 		<Helmet>

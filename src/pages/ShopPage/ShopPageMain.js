@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import styled from "styled-components";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import styled, { keyframes } from "styled-components";
 import {
 	Select,
 	Input,
@@ -11,6 +11,7 @@ import {
 	Drawer,
 	Button,
 	ConfigProvider,
+	Modal,
 } from "antd";
 import { useHistory, useLocation } from "react-router-dom";
 import {
@@ -27,11 +28,231 @@ import ShopPageHelmet from "./ShopPageHelmet";
 import axios from "axios";
 import { isAuthenticated } from "../../auth";
 import OptimizedImage from "../../components/OptimizedImage";
-import { resolveImageSources } from "../../utils/image";
+import { resolveImageUrl } from "../../utils/image";
+import {
+	POD_OCCASION_OPTIONS,
+	resolvePodPersonalization,
+	savePodPersonalization,
+	buildPersonalizationSearch,
+	markPodModalShown,
+	shouldShowPodModalNow,
+	hasStoredPodPersonalization,
+	parsePersonalizationFromSearch,
+} from "../PrintOnDemand/podPersonalization";
 
 const { Meta } = Card;
 const { Option } = Select;
 const { Search } = Input;
+
+const MULTI_SELECT_FILTER_KEYS = ["color", "category", "size"];
+const PRICE_EPSILON = 0.01;
+
+function createDefaultFilters() {
+	return {
+		color: [],
+		priceMin: 0,
+		priceMax: 1000,
+		category: [],
+		size: [],
+		gender: "",
+		store: "",
+		searchTerm: "",
+		offers: "",
+	};
+}
+
+const FILTER_DEFAULTS = createDefaultFilters();
+
+const OBJECT_ID_REGEX = /^[a-f\d]{24}$/i;
+
+function toTitleCase(value = "") {
+	return `${value}`
+		.toLowerCase()
+		.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function isHexColor(value = "") {
+	return /^#[0-9a-f]{6}$/i.test((value || "").trim());
+}
+
+function hexToRgb(hex = "") {
+	const safe = hex.replace("#", "").trim();
+	if (safe.length !== 6) return null;
+	const parsed = Number.parseInt(safe, 16);
+	if (Number.isNaN(parsed)) return null;
+	return {
+		r: (parsed >> 16) & 255,
+		g: (parsed >> 8) & 255,
+		b: parsed & 255,
+	};
+}
+
+const COLOR_NAME_PALETTE = [
+	{ name: "Black", hex: "#000000" },
+	{ name: "White", hex: "#ffffff" },
+	{ name: "Gray", hex: "#808080" },
+	{ name: "Navy", hex: "#1f2a44" },
+	{ name: "Blue", hex: "#1e40af" },
+	{ name: "Teal", hex: "#0f766e" },
+	{ name: "Green", hex: "#166534" },
+	{ name: "Olive", hex: "#556b2f" },
+	{ name: "Yellow", hex: "#eab308" },
+	{ name: "Orange", hex: "#ea580c" },
+	{ name: "Brown", hex: "#78350f" },
+	{ name: "Red", hex: "#b91c1c" },
+	{ name: "Burgundy", hex: "#7f1d1d" },
+	{ name: "Pink", hex: "#ec4899" },
+	{ name: "Purple", hex: "#6d28d9" },
+	{ name: "Maroon", hex: "#800000" },
+];
+
+function distanceBetweenRgb(a, b) {
+	const dr = a.r - b.r;
+	const dg = a.g - b.g;
+	const db = a.b - b.b;
+	return Math.sqrt(dr * dr + dg * dg + db * db);
+}
+
+function getApproxHexColorName(hex = "") {
+	const rgb = hexToRgb(hex);
+	if (!rgb) return "";
+	let best = null;
+	let bestDistance = Number.POSITIVE_INFINITY;
+	for (const candidate of COLOR_NAME_PALETTE) {
+		const candidateRgb = hexToRgb(candidate.hex);
+		if (!candidateRgb) continue;
+		const distance = distanceBetweenRgb(rgb, candidateRgb);
+		if (distance < bestDistance) {
+			bestDistance = distance;
+			best = candidate.name;
+		}
+	}
+	return best || "";
+}
+
+function normalizeFilterArray(values = []) {
+	const normalized = values
+		.map((value) => `${value || ""}`.trim())
+		.filter(Boolean);
+	const unique = Array.from(new Set(normalized));
+	return unique.sort((a, b) => a.localeCompare(b));
+}
+
+function areStringArraysEqual(arrA = [], arrB = []) {
+	if (arrA.length !== arrB.length) return false;
+	for (let index = 0; index < arrA.length; index += 1) {
+		if (arrA[index] !== arrB[index]) return false;
+	}
+	return true;
+}
+
+function getMultiParamValues(params, key) {
+	const valuesFromSearch = params.getAll(key);
+	const rawValues = valuesFromSearch.length
+		? valuesFromSearch.flatMap((value) => `${value || ""}`.split(","))
+		: params.get(key)
+		? `${params.get(key)}`.split(",")
+		: [];
+	const decodedValues = rawValues.map((value) =>
+		decodeURIComponent(`${value || ""}`).trim()
+	);
+	return normalizeFilterArray(decodedValues);
+}
+
+function parseShopFiltersFromSearch(search = "") {
+	const params = new URLSearchParams(search);
+	const rawPriceMin = Number(params.get("priceMin"));
+	const rawPriceMax = Number(params.get("priceMax"));
+	const rawCategories = getMultiParamValues(params, "category").filter((value) =>
+		OBJECT_ID_REGEX.test(value)
+	);
+	const rawColors = getMultiParamValues(params, "color").filter(
+		(value) => value.toLowerCase() !== "unknown"
+	);
+	const rawSizes = getMultiParamValues(params, "size");
+	const rawStore = decodeURIComponent(params.get("store") || "").trim();
+	const safeSearchTerm = decodeURIComponent(params.get("searchTerm") || "").trim();
+
+	const safePriceMin =
+		Number.isFinite(rawPriceMin) && rawPriceMin >= 0
+			? rawPriceMin
+			: FILTER_DEFAULTS.priceMin;
+	const safePriceMax =
+		Number.isFinite(rawPriceMax) && rawPriceMax >= 0
+			? rawPriceMax
+			: FILTER_DEFAULTS.priceMax;
+
+	return {
+		...createDefaultFilters(),
+		color: rawColors,
+		priceMin: safePriceMin,
+		priceMax: safePriceMax,
+		category: rawCategories,
+		size: rawSizes,
+		gender: params.get("gender") || "",
+		store: rawStore,
+		searchTerm: safeSearchTerm,
+		offers: params.get("offers") || "",
+	};
+}
+
+function appendMultiFilterParams(params, key, values = []) {
+	values.forEach((value) => {
+		const safe = `${value || ""}`.trim();
+		if (safe) params.append(key, safe);
+	});
+}
+
+function buildApiFilterQueryString(activeFilters) {
+	const params = new URLSearchParams();
+	appendMultiFilterParams(params, "color", activeFilters.color);
+	appendMultiFilterParams(params, "category", activeFilters.category);
+	appendMultiFilterParams(params, "size", activeFilters.size);
+	if (activeFilters.gender) params.set("gender", activeFilters.gender);
+	if (activeFilters.store) params.set("store", activeFilters.store);
+	if ((activeFilters.searchTerm || "").trim()) {
+		params.set("searchTerm", activeFilters.searchTerm.trim());
+	}
+	if (activeFilters.offers) params.set("offers", activeFilters.offers);
+	return params.toString();
+}
+
+function isNearlyEqualPrice(a, b) {
+	return Math.abs(Number(a) - Number(b)) <= PRICE_EPSILON;
+}
+
+function isFullPriceSelection(range = [0, 0], bounds = [0, 0]) {
+	return isNearlyEqualPrice(range[0], bounds[0]) && isNearlyEqualPrice(range[1], bounds[1]);
+}
+
+function clampPriceRange(range = [0, 1000], bounds = [0, 1000]) {
+	const minBound = Number(bounds?.[0] ?? 0);
+	const maxBound = Number(bounds?.[1] ?? 1000);
+	const safeMinBound = Number.isFinite(minBound) ? minBound : 0;
+	const safeMaxBound = Number.isFinite(maxBound) ? maxBound : 1000;
+
+	const rawMin = Number(range?.[0]);
+	const rawMax = Number(range?.[1]);
+	let minValue = Number.isFinite(rawMin) ? rawMin : safeMinBound;
+	let maxValue = Number.isFinite(rawMax) ? rawMax : safeMaxBound;
+
+	minValue = Math.max(safeMinBound, Math.min(minValue, safeMaxBound));
+	maxValue = Math.max(minValue, Math.min(maxValue, safeMaxBound));
+
+	return [
+		Number(minValue.toFixed(2)),
+		Number(maxValue.toFixed(2)),
+	];
+}
+
+function resolvePreferredImageSources(image) {
+	const direct = resolveImageUrl(image, { preferCloudinary: false });
+	const optimized = resolveImageUrl(image, { preferCloudinary: true });
+	return {
+		primary: direct || optimized || "",
+		fallback: direct || optimized || "",
+	};
+}
 
 function ShopPageMain() {
 	const history = useHistory();
@@ -45,25 +266,45 @@ function ShopPageMain() {
 	const [sizes, setSizes] = useState([]);
 	const [categories, setCategories] = useState([]);
 	const [genders, setGenders] = useState([]);
+	const [stores, setStores] = useState([]);
 	const [priceRange, setPriceRange] = useState([0, 1000]);
 	const [allColors, setAllColors] = useState([]);
 
-	const [filters, setFilters] = useState({
-		color: "",
-		priceMin: 0,
-		priceMax: 1000,
-		category: "",
-		size: "",
-		gender: "",
-		searchTerm: "",
-		offers: new URLSearchParams(location.search).get("offers"),
-	});
+	const initialFilters = parseShopFiltersFromSearch(location.search);
+	const [filters, setFilters] = useState(() => initialFilters);
 
-	const [page, setPage] = useState(1);
+	const [page, setPage] = useState(() => {
+		const initialPage = Number(new URLSearchParams(location.search).get("page"));
+		return Number.isFinite(initialPage) && initialPage > 0
+			? Math.floor(initialPage)
+			: 1;
+	});
 	const [drawerVisible, setDrawerVisible] = useState(false);
 
+	const initialPersonalization = resolvePodPersonalization(location.search);
+	const [podOccasion, setPodOccasion] = useState(
+		initialPersonalization.occasion
+	);
+	const [podName, setPodName] = useState(initialPersonalization.name);
+	const [showPodWelcomeModal, setShowPodWelcomeModal] = useState(false);
+	const [pendingPodProduct, setPendingPodProduct] = useState(null);
+	const [podFieldPulseKey, setPodFieldPulseKey] = useState(0);
+	const [searchInput, setSearchInput] = useState(initialFilters.searchTerm);
+	const [isPriceFilterActive, setIsPriceFilterActive] = useState(() => {
+		const params = new URLSearchParams(location.search);
+		return params.has("priceMin") || params.has("priceMax");
+	});
+	const [draftPriceRange, setDraftPriceRange] = useState(() => [
+		initialFilters.priceMin,
+		initialFilters.priceMax,
+	]);
+	const lastFetchKeyRef = useRef("");
+	const inFlightFetchKeyRef = useRef("");
+	const priceSliderInteractingRef = useRef(false);
+	const didAutoOpenPodModalRef = useRef(false);
+
 	// How many products per page:
-	const records = 80;
+	const records = 30;
 
 	const { openSidebar2, addToCart } = useCartContext();
 
@@ -91,15 +332,110 @@ function ShopPageMain() {
 		});
 	}, []);
 
+	useEffect(() => {
+		const resolved = resolvePodPersonalization(location.search);
+		setPodOccasion(resolved.occasion);
+		setPodName(resolved.name);
+	}, [location.search]);
+
+	const commitPodPersonalization = useCallback((occasion, name) => {
+		const safe = savePodPersonalization({ occasion, name });
+		setPodOccasion(safe.occasion);
+		setPodName(safe.name);
+		return safe;
+	}, []);
+
+	const shouldAskForPodPersonalization = useCallback(() => {
+		if (!location.pathname.includes("/our-products")) return false;
+		if (!shouldShowPodModalNow()) return false;
+		if (parsePersonalizationFromSearch(location.search)) return false;
+		return !hasStoredPodPersonalization();
+	}, [location.pathname, location.search]);
+
+	useEffect(() => {
+		if (!location.pathname.includes("/our-products")) return;
+		if (didAutoOpenPodModalRef.current) return;
+		didAutoOpenPodModalRef.current = true;
+		setPendingPodProduct(null);
+		setShowPodWelcomeModal(true);
+	}, [location.pathname]);
+
+	useEffect(() => {
+		if (showPodWelcomeModal) {
+			// Re-mount wrappers so the two-beat animation always replays on open.
+			setPodFieldPulseKey((prev) => prev + 1);
+		}
+	}, [showPodWelcomeModal]);
+
+	const legacyCategorySlug = useMemo(() => {
+		const params = new URLSearchParams(location.search);
+		const explicitSlug = `${params.get("categorySlug") || ""}`.trim();
+		if (explicitSlug) return explicitSlug;
+
+		const rawCategory = params.getAll("category");
+		const firstCategory = rawCategory.length ? rawCategory[0] : params.get("category");
+		const firstCategoryValue = `${firstCategory || ""}`
+			.split(",")[0]
+			.trim();
+		if (firstCategoryValue && !OBJECT_ID_REGEX.test(firstCategoryValue)) {
+			return firstCategoryValue;
+		}
+		return "";
+	}, [location.search]);
+
+	const handlePodWelcomeClose = () => {
+		commitPodPersonalization(podOccasion, podName);
+		markPodModalShown();
+		setPendingPodProduct(null);
+		setShowPodWelcomeModal(false);
+	};
+
+	const handlePodWelcomeStart = () => {
+		const safe = commitPodPersonalization(podOccasion, podName);
+		markPodModalShown();
+		setShowPodWelcomeModal(false);
+		if (pendingPodProduct) {
+			const safePersonalization = savePodPersonalization(safe);
+			history.push(getProductLink(pendingPodProduct, safePersonalization));
+			setPendingPodProduct(null);
+			return;
+		}
+		history.push(`/custom-gifts${buildPersonalizationSearch(safe)}`);
+	};
+
 	// Fetch filtered products
 	const fetchFilteredProducts = useCallback(() => {
 		// Convert filters to a query string
-		const query = new URLSearchParams(filters).toString();
+		const queryParams = new URLSearchParams(buildApiFilterQueryString(filters));
+		if (isPriceFilterActive) {
+			const safeMin = Number(filters.priceMin);
+			const safeMax = Number(filters.priceMax);
+			if (Number.isFinite(safeMin)) {
+				queryParams.set("priceMin", String(safeMin));
+			}
+			if (Number.isFinite(safeMax)) {
+				queryParams.set("priceMax", String(safeMax));
+			}
+		}
+		const query = queryParams.toString();
+		const requestKey = `${query}|${page}|${records}`;
+		if (
+			lastFetchKeyRef.current === requestKey ||
+			inFlightFetchKeyRef.current === requestKey
+		) {
+			return;
+		}
+		inFlightFetchKeyRef.current = requestKey;
 
 		gettingFilteredProducts(query, page, records).then((data) => {
+			inFlightFetchKeyRef.current = "";
 			if (data?.error) {
 				console.log(data.error);
+				lastFetchKeyRef.current = "";
+			} else if (!data || !Array.isArray(data.products)) {
+				lastFetchKeyRef.current = "";
 			} else {
+				lastFetchKeyRef.current = requestKey;
 				// We'll use a map to ensure uniqueness
 				const uniqueProductMap = {};
 
@@ -166,13 +502,13 @@ function ShopPageMain() {
 						// ==========================
 						// 2) NON-POD PRODUCTS
 						// ==========================
-						if (productAttributes.length > 0) {
-							// Expand by color, 1 card per color
-							const uniqueAttributes = productAttributes.reduce((acc, attr) => {
-								if (attr?.productImages?.length > 0 && !acc[attr.color]) {
-									acc[attr.color] = {
-										...product,
-										productAttributes: [attr],
+							if (productAttributes.length > 0) {
+								// Expand by color, 1 card per color
+								const uniqueAttributes = productAttributes.reduce((acc, attr) => {
+									if (!acc[attr.color]) {
+										acc[attr.color] = {
+											...product,
+											productAttributes: [attr],
 										thumbnailImage: product?.thumbnailImage,
 									};
 								}
@@ -195,11 +531,12 @@ function ShopPageMain() {
 					})
 					.flat();
 
-				// If the URL has ?category=..., optionally filter
-				const params = new URLSearchParams(location.search);
-				const categorySlug = params.get("category");
-				const finalProducts = categorySlug
-					? processed.filter((p) => p?.category?.categorySlug === categorySlug)
+				const shouldApplyLegacySlugFilter =
+					legacyCategorySlug && (!filters?.category || filters.category.length === 0);
+				const finalProducts = shouldApplyLegacySlugFilter
+					? processed.filter(
+							(p) => p?.category?.categorySlug === legacyCategorySlug
+						)
 					: processed;
 
 				setProducts(finalProducts);
@@ -208,18 +545,35 @@ function ShopPageMain() {
 				setSizes(data?.sizes || []);
 				setCategories(data?.categories || []);
 				setGenders(data?.genders || []);
-				setPriceRange([
-					data?.priceRange?.minPrice ?? 0,
-					data?.priceRange?.maxPrice ?? 1000,
-				]);
+				setStores(data?.stores || []);
+				const nextPriceRange = [
+					Number(data?.priceRange?.minPrice ?? 0),
+					Number(data?.priceRange?.maxPrice ?? 1000),
+				];
+				setPriceRange((prevRange) => {
+					if (
+						prevRange[0] === nextPriceRange[0] &&
+						prevRange[1] === nextPriceRange[1]
+					) {
+						return prevRange;
+					}
+					return nextPriceRange;
+				});
 			}
 		});
-	}, [filters, page, records, location.search]);
+	}, [filters, isPriceFilterActive, legacyCategorySlug, page, records]);
 
 	// 1) We only fetch products on filters/page changes
 	useEffect(() => {
 		fetchFilteredProducts();
 	}, [filters, page, fetchFilteredProducts]);
+
+	useEffect(() => {
+		const totalPages = Math.max(1, Math.ceil(totalRecords / records));
+		if (page > totalPages) {
+			setPage(totalPages);
+		}
+	}, [page, records, totalRecords]);
 
 	// 2) We only scroll to top once on initial mount
 	useEffect(() => {
@@ -233,34 +587,303 @@ function ShopPageMain() {
 		};
 	}, []);
 
+	const formatReadableColor = useCallback(
+		(rawColor = "") => {
+			const safe = (rawColor || "").trim();
+			if (!safe) return "";
+			if (safe.toLowerCase() === "unknown") return "Unknown";
+
+			const foundByHex = allColors.find(
+				(item) => (item?.hexa || "").toLowerCase() === safe.toLowerCase()
+			);
+			if (foundByHex?.color) return toTitleCase(foundByHex.color);
+
+			const foundByName = allColors.find(
+				(item) => (item?.color || "").toLowerCase() === safe.toLowerCase()
+			);
+			if (foundByName?.color) return toTitleCase(foundByName.color);
+
+			if (isHexColor(safe)) {
+				const approx = getApproxHexColorName(safe);
+				if (approx) return `${approx} (${safe.toUpperCase()})`;
+				return `Color ${safe.toUpperCase()}`;
+			}
+
+			return safe;
+		},
+		[allColors]
+	);
+
+	const resolveColorFilterValue = useCallback(
+		(colorValue = "") => {
+			const safe = (colorValue || "").trim();
+			if (!safe) return "";
+			if (safe.toLowerCase() === "unknown") return "";
+
+			const exactColor = colors.find((item) => item === safe);
+			if (exactColor) return exactColor;
+
+			const caseInsensitiveColor = colors.find(
+				(item) => item?.toLowerCase() === safe.toLowerCase()
+			);
+			if (caseInsensitiveColor) return caseInsensitiveColor;
+
+			const fromSchemaByName = allColors.find(
+				(item) => (item?.color || "").toLowerCase() === safe.toLowerCase()
+			);
+			if (fromSchemaByName?.hexa) {
+				const foundHex = colors.find(
+					(item) =>
+						item?.toLowerCase() === fromSchemaByName.hexa.toLowerCase()
+				);
+				if (foundHex) return foundHex;
+			}
+
+			const fromSchemaByHex = allColors.find(
+				(item) => (item?.hexa || "").toLowerCase() === safe.toLowerCase()
+			);
+			if (fromSchemaByHex?.hexa) {
+				const foundHex = colors.find(
+					(item) =>
+						item?.toLowerCase() === fromSchemaByHex.hexa.toLowerCase()
+				);
+				if (foundHex) return foundHex;
+			}
+
+			return safe;
+		},
+		[allColors, colors]
+	);
+
+	const displayColorOptions = useMemo(() => {
+		const optionMap = new Map();
+		(colors || []).forEach((raw) => {
+			const value = `${raw || ""}`.trim();
+			if (!value || value.toLowerCase() === "unknown") return;
+			const label = formatReadableColor(value);
+			if (!label) return;
+			if (!optionMap.has(value)) {
+				optionMap.set(value, { value, label });
+			}
+		});
+
+		return Array.from(optionMap.values()).sort((a, b) =>
+			a.label.localeCompare(b.label)
+		);
+	}, [colors, formatReadableColor]);
+
+	const buildShopSearchFromFilters = useCallback(
+		(nextFilters, nextPage) => {
+			const params = new URLSearchParams();
+			if (legacyCategorySlug && (!nextFilters.category || nextFilters.category.length === 0)) {
+				params.set("categorySlug", legacyCategorySlug);
+			}
+
+			appendMultiFilterParams(params, "color", nextFilters.color);
+			appendMultiFilterParams(params, "category", nextFilters.category);
+			appendMultiFilterParams(params, "size", nextFilters.size);
+			if (nextFilters.gender) params.set("gender", nextFilters.gender);
+			if (nextFilters.store) params.set("store", nextFilters.store);
+			if ((nextFilters.searchTerm || "").trim()) {
+				params.set("searchTerm", nextFilters.searchTerm.trim());
+			}
+			if (nextFilters.offers) params.set("offers", nextFilters.offers);
+			if (isPriceFilterActive) {
+				const [minBound, maxBound] = clampPriceRange(priceRange, priceRange);
+				const [selectedMin, selectedMax] = clampPriceRange(
+					[nextFilters.priceMin, nextFilters.priceMax],
+					[minBound, maxBound]
+				);
+				if (!isFullPriceSelection([selectedMin, selectedMax], [minBound, maxBound])) {
+					params.set("priceMin", String(selectedMin));
+					params.set("priceMax", String(selectedMax));
+				}
+			}
+			if (nextPage > 1) params.set("page", String(nextPage));
+
+			const serialized = params.toString();
+			return serialized ? `?${serialized}` : "";
+		},
+		[isPriceFilterActive, legacyCategorySlug, priceRange]
+	);
+
+	useEffect(() => {
+		const nextFilters = parseShopFiltersFromSearch(location.search);
+		setFilters((prev) => {
+			const same =
+				areStringArraysEqual(prev.color, nextFilters.color) &&
+				prev.priceMin === nextFilters.priceMin &&
+				prev.priceMax === nextFilters.priceMax &&
+				areStringArraysEqual(prev.category, nextFilters.category) &&
+				areStringArraysEqual(prev.size, nextFilters.size) &&
+				prev.gender === nextFilters.gender &&
+				prev.store === nextFilters.store &&
+				prev.searchTerm === nextFilters.searchTerm &&
+				prev.offers === nextFilters.offers;
+			return same ? prev : nextFilters;
+		});
+
+		const nextPage = Number(new URLSearchParams(location.search).get("page"));
+		const resolvedPage =
+			Number.isFinite(nextPage) && nextPage > 0 ? Math.floor(nextPage) : 1;
+		setPage((prevPage) => (prevPage === resolvedPage ? prevPage : resolvedPage));
+
+		const params = new URLSearchParams(location.search);
+		const hasPriceParams = params.has("priceMin") || params.has("priceMax");
+		setIsPriceFilterActive((prevActive) =>
+			prevActive === hasPriceParams ? prevActive : hasPriceParams
+		);
+	}, [location.search]);
+
+	useEffect(() => {
+		setSearchInput((prevInput) =>
+			prevInput === filters.searchTerm ? prevInput : filters.searchTerm
+		);
+	}, [filters.searchTerm]);
+
+	useEffect(() => {
+		if (!filters.color.length || !colors.length) return;
+		const resolved = normalizeFilterArray(
+			filters.color
+				.map((colorValue) => resolveColorFilterValue(colorValue))
+				.filter(Boolean)
+		);
+		if (areStringArraysEqual(resolved, filters.color)) return;
+		setFilters((prev) => ({ ...prev, color: resolved }));
+	}, [colors, filters.color, resolveColorFilterValue]);
+
+	useEffect(() => {
+		const nextSearch = buildShopSearchFromFilters(filters, page);
+		if (nextSearch !== location.search) {
+			history.replace({ pathname: location.pathname, search: nextSearch });
+		}
+	}, [
+		buildShopSearchFromFilters,
+		filters,
+		history,
+		location.pathname,
+		location.search,
+		page,
+	]);
+
+	useEffect(() => {
+		if (!isPriceFilterActive) {
+			const fullRange = clampPriceRange(priceRange, priceRange);
+			setDraftPriceRange((prev) => {
+				if (prev[0] === fullRange[0] && prev[1] === fullRange[1]) {
+					return prev;
+				}
+				return fullRange;
+			});
+			return;
+		}
+
+		const clamped = clampPriceRange([filters.priceMin, filters.priceMax], priceRange);
+		setDraftPriceRange((prev) => {
+			if (prev[0] === clamped[0] && prev[1] === clamped[1]) {
+				return prev;
+			}
+			return clamped;
+		});
+	}, [filters.priceMin, filters.priceMax, isPriceFilterActive, priceRange]);
+
+	useEffect(() => {
+		const normalizedSearch = `${searchInput || ""}`.trim();
+		if (normalizedSearch === filters.searchTerm) return undefined;
+		const timerId = window.setTimeout(() => {
+			setFilters((prev) =>
+				prev.searchTerm === normalizedSearch
+					? prev
+					: { ...prev, searchTerm: normalizedSearch }
+			);
+			setPage(1);
+		}, 320);
+		return () => {
+			window.clearTimeout(timerId);
+		};
+	}, [filters.searchTerm, searchInput]);
+
+	const handleSearchSubmit = useCallback((value = "") => {
+		const normalizedSearch = `${value || ""}`.trim();
+		setSearchInput(normalizedSearch);
+		setFilters((prev) =>
+			prev.searchTerm === normalizedSearch
+				? prev
+				: { ...prev, searchTerm: normalizedSearch }
+		);
+		setPage(1);
+	}, []);
+
+	const handlePriceRangeCommit = useCallback(
+		(rangeValue) => {
+			const [nextMin, nextMax] = clampPriceRange(rangeValue, priceRange);
+			const isFullSelectionNow = isFullPriceSelection(
+				[nextMin, nextMax],
+				priceRange
+			);
+			setIsPriceFilterActive(!isFullSelectionNow);
+			setFilters((prev) => {
+				const targetMin = isFullSelectionNow
+					? FILTER_DEFAULTS.priceMin
+					: nextMin;
+				const targetMax = isFullSelectionNow
+					? FILTER_DEFAULTS.priceMax
+					: nextMax;
+				if (prev.priceMin === targetMin && prev.priceMax === targetMax) {
+					return prev;
+				}
+				return {
+					...prev,
+					priceMin: targetMin,
+					priceMax: targetMax,
+				};
+			});
+			setPage(1);
+		},
+		[priceRange]
+	);
+
+	const handlePriceRangeBeforeChange = useCallback(() => {
+		priceSliderInteractingRef.current = true;
+	}, []);
+
+	const handlePriceRangeAfterChange = useCallback(
+		(rangeValue) => {
+			if (!priceSliderInteractingRef.current) return;
+			priceSliderInteractingRef.current = false;
+			handlePriceRangeCommit(rangeValue);
+		},
+		[handlePriceRangeCommit]
+	);
+
 	// Update filters and reset page
 	function handleFilterChange(key, value) {
+		let normalizedValue = value;
+		if (MULTI_SELECT_FILTER_KEYS.includes(key)) {
+			const asArray = Array.isArray(value) ? value : [];
+			normalizedValue = normalizeFilterArray(asArray);
+		} else {
+			normalizedValue =
+				value === undefined || value === null ? "" : `${value}`.trim();
+		}
 		setFilters((prev) => ({
 			...prev,
-			[key]: value || "",
+			[key]: normalizedValue,
 		}));
 		setPage(1);
 	}
 
 	// Reset filters
 	function resetFilters() {
-		setFilters({
-			color: "",
-			priceMin: 0,
-			priceMax: 1000,
-			category: "",
-			size: "",
-			gender: "",
-			searchTerm: "",
-			offers: "",
-		});
+		const defaults = createDefaultFilters();
+		setFilters(defaults);
+		setIsPriceFilterActive(false);
+		setSearchInput(defaults.searchTerm);
+		setDraftPriceRange([
+			defaults.priceMin,
+			defaults.priceMax,
+		]);
 		setPage(1);
-	}
-
-	// Retrieve color name
-	function getColorNameFromHexa(hexa = "") {
-		const colorObject = allColors.find((c) => c.hexa === hexa);
-		return colorObject ? colorObject.color : hexa || "Unknown";
 	}
 
 	// Drawer controls
@@ -271,10 +894,25 @@ function ShopPageMain() {
 		setDrawerVisible(false);
 	}
 
+	function toPodSlug(name = "") {
+		return (name || "custom-gift")
+			.toLowerCase()
+			.replace(/[^a-z0-9\s-]/g, "")
+			.trim()
+			.replace(/\s+/g, "-")
+			.replace(/-+/g, "-");
+	}
+
 	// Decide product link
-	function getProductLink(product = {}) {
+	function getProductLink(product = {}, personalization) {
 		if (product?.printifyProductDetails?.POD) {
-			return `/custom-gifts/${product._id}`;
+			const safe = savePodPersonalization(
+				personalization || { occasion: podOccasion, name: podName }
+			);
+			const slug = toPodSlug(product?.productName);
+			return `/custom-gifts/${slug}/${product._id}${buildPersonalizationSearch(
+				safe
+			)}`;
 		}
 		return `/single-product/${product?.slug || ""}/${
 			product?.category?.categorySlug || ""
@@ -308,61 +946,67 @@ function ShopPageMain() {
 			<ShopPageMainOverallWrapper>
 				<ShopPageMainWrapper>
 					{/* ==================== DESKTOP FILTERS ==================== */}
-					<FiltersSection>
-						<Row gutter={[16, 16]}>
-							<Col span={6}>
-								<Select
-									placeholder='Color'
-									style={{ width: "100%" }}
-									value={filters.color}
-									onChange={(value) => handleFilterChange("color", value)}
-								>
-									<Option value=''>All Colors</Option>
-									{colors.map((c, i) => (
-										<Option key={i} value={c}>
-											{getColorNameFromHexa(c)}
-										</Option>
-									))}
-								</Select>
-							</Col>
+						<FiltersSection>
+								<Row gutter={[16, 16]}>
+									<Col xs={24} sm={12} md={8} lg={6} xl={4}>
+										<Select
+											placeholder='Color'
+											style={{ width: "100%" }}
+											mode='multiple'
+											allowClear
+											maxTagCount='responsive'
+											value={filters.color}
+											onChange={(value) => handleFilterChange("color", value)}
+										>
+											{displayColorOptions.map((option) => (
+												<Option key={option.value} value={option.value}>
+													{option.label}
+												</Option>
+											))}
+										</Select>
+									</Col>
 
-							<Col span={6}>
-								<Select
-									placeholder='Category'
-									style={{ width: "100%" }}
-									value={filters.category}
-									onChange={(value) => handleFilterChange("category", value)}
-								>
-									<Option value=''>All Categories</Option>
-									{categories.map((cat) => (
-										<Option key={cat.id} value={cat.id}>
-											{cat.name}
-										</Option>
-									))}
-								</Select>
-							</Col>
+									<Col xs={24} sm={12} md={8} lg={6} xl={4}>
+										<Select
+											placeholder='Category'
+											style={{ width: "100%" }}
+											mode='multiple'
+											allowClear
+											maxTagCount='responsive'
+											value={filters.category}
+											onChange={(value) => handleFilterChange("category", value)}
+										>
+											{categories.map((cat) => (
+												<Option key={cat.id} value={`${cat.id}`}>
+													{toTitleCase(cat.name)}
+												</Option>
+											))}
+										</Select>
+									</Col>
 
-							<Col span={6}>
-								<Select
-									placeholder='Size'
-									style={{ width: "100%" }}
-									value={filters.size}
-									onChange={(value) => handleFilterChange("size", value)}
-								>
-									<Option value=''>All Sizes</Option>
-									{sizes.map((size, index) => (
-										<Option key={index} value={size}>
-											{size}
-										</Option>
-									))}
-								</Select>
-							</Col>
+									<Col xs={24} sm={12} md={8} lg={6} xl={4}>
+										<Select
+											placeholder='Size'
+											style={{ width: "100%" }}
+											mode='multiple'
+											allowClear
+											maxTagCount='responsive'
+											value={filters.size}
+											onChange={(value) => handleFilterChange("size", value)}
+										>
+											{sizes.map((size, index) => (
+												<Option key={index} value={size}>
+													{size}
+												</Option>
+											))}
+										</Select>
+									</Col>
 
-							<Col span={6}>
-								<Select
-									placeholder='Gender'
-									style={{ width: "100%" }}
-									value={filters.gender}
+								<Col xs={24} sm={12} md={8} lg={6} xl={4}>
+									<Select
+										placeholder='Gender'
+										style={{ width: "100%" }}
+										value={filters.gender}
 									onChange={(value) => handleFilterChange("gender", value)}
 								>
 									<Option value=''>All Genders</Option>
@@ -371,22 +1015,54 @@ function ShopPageMain() {
 											{g.name}
 										</Option>
 									))}
-								</Select>
-							</Col>
-						</Row>
+									</Select>
+								</Col>
 
-						<Row gutter={[16, 16]} style={{ marginTop: "20px" }}>
-							<Col span={12}>
-								<div style={{ marginBottom: "8px" }}>Price Range</div>
-								<Slider
-									range
-									value={[filters.priceMin, filters.priceMax]}
+									<Col xs={24} sm={12} md={8} lg={6} xl={4}>
+										<Select
+											placeholder='Store'
+											style={{ width: "100%" }}
+											value={filters.store}
+											onChange={(value) => handleFilterChange("store", value)}
+										showSearch
+										optionFilterProp='children'
+									>
+										<Option value=''>All Stores</Option>
+										{stores.map((storeEntry) => (
+											<Option
+												key={storeEntry?.id || storeEntry?.name}
+												value={storeEntry?.name || ""}
+											>
+												{storeEntry?.name || ""}
+											</Option>
+										))}
+										</Select>
+									</Col>
+								</Row>
+
+							<Row gutter={[16, 16]} style={{ marginTop: "20px" }}>
+									<Col xs={24} lg={12}>
+									<div style={{ marginBottom: "8px" }}>Price Range</div>
+									<div
+										style={{
+											marginBottom: "8px",
+											fontSize: "0.9rem",
+											fontWeight: 600,
+										}}
+									>
+										Selected: ${draftPriceRange[0].toFixed(2)} - $
+										{draftPriceRange[1].toFixed(2)}
+									</div>
+									<Slider
+										range
+										value={draftPriceRange}
 									min={priceRange[0]}
 									max={priceRange[1]}
-									onChange={(val) => {
-										handleFilterChange("priceMin", val[0]);
-										handleFilterChange("priceMax", val[1]);
-									}}
+									onBeforeChange={handlePriceRangeBeforeChange}
+									onChange={(val) =>
+										setDraftPriceRange(clampPriceRange(val, priceRange))
+									}
+									onAfterChange={handlePriceRangeAfterChange}
 									tooltip={{ formatter: (val) => `$${val}` }}
 								/>
 								<div
@@ -411,14 +1087,12 @@ function ShopPageMain() {
 								</div>
 							</Col>
 
-							<Col span={12} className='mt-3 py-2'>
+								<Col xs={24} lg={12} className='mt-3 py-2'>
 								<Search
 									placeholder='Search'
-									value={filters.searchTerm}
-									onChange={(e) =>
-										handleFilterChange("searchTerm", e.target.value)
-									}
-									onSearch={(value) => handleFilterChange("searchTerm", value)}
+									value={searchInput}
+									onChange={(e) => setSearchInput(e.target.value)}
+									onSearch={(value) => handleSearchSubmit(value)}
 									enterButton
 								/>
 							</Col>
@@ -442,9 +1116,9 @@ function ShopPageMain() {
 						<Search
 							placeholder='Search'
 							className='mx-2'
-							value={filters.searchTerm}
-							onChange={(e) => handleFilterChange("searchTerm", e.target.value)}
-							onSearch={(value) => handleFilterChange("searchTerm", value)}
+							value={searchInput}
+							onChange={(e) => setSearchInput(e.target.value)}
+							onSearch={(value) => handleSearchSubmit(value)}
 						/>
 					</SearchInputWrapper>
 
@@ -456,59 +1130,65 @@ function ShopPageMain() {
 						onClose={closeDrawer}
 						open={drawerVisible}
 					>
-						<Row gutter={[16, 16]}>
-							<Col span={24}>
-								<Select
-									placeholder='Color'
-									style={{ width: "100%" }}
-									value={filters.color}
-									onChange={(val) => handleFilterChange("color", val)}
-								>
-									<Option value=''>All Colors</Option>
-									{colors.map((c, i) => (
-										<Option key={i} value={c}>
-											{getColorNameFromHexa(c)}
+							<Row gutter={[16, 16]}>
+								<Col span={24}>
+									<Select
+										placeholder='Color'
+										style={{ width: "100%" }}
+										mode='multiple'
+										allowClear
+										maxTagCount='responsive'
+										value={filters.color}
+										onChange={(val) => handleFilterChange("color", val)}
+									>
+										{displayColorOptions.map((option) => (
+											<Option key={option.value} value={option.value}>
+												{option.label}
 										</Option>
 									))}
 								</Select>
 							</Col>
 
-							<Col span={24}>
-								<Select
-									placeholder='Category'
-									style={{ width: "100%" }}
-									value={filters.category}
-									onChange={(val) => handleFilterChange("category", val)}
-								>
-									<Option value=''>All Categories</Option>
-									{categories.map((cat) => (
-										<Option key={cat.id} value={cat.id}>
-											{cat.name}
+								<Col span={24}>
+									<Select
+										placeholder='Category'
+										style={{ width: "100%" }}
+										mode='multiple'
+										allowClear
+										maxTagCount='responsive'
+										value={filters.category}
+										onChange={(val) => handleFilterChange("category", val)}
+									>
+										{categories.map((cat) => (
+											<Option key={cat.id} value={`${cat.id}`}>
+												{toTitleCase(cat.name)}
+											</Option>
+										))}
+									</Select>
+								</Col>
+
+								<Col span={24}>
+									<Select
+										placeholder='Size'
+										style={{ width: "100%" }}
+										mode='multiple'
+										allowClear
+										maxTagCount='responsive'
+										value={filters.size}
+										onChange={(val) => handleFilterChange("size", val)}
+									>
+										{sizes.map((size, i) => (
+											<Option key={i} value={size}>
+												{size}
 										</Option>
 									))}
 								</Select>
 							</Col>
 
-							<Col span={24}>
-								<Select
-									placeholder='Size'
-									style={{ width: "100%" }}
-									value={filters.size}
-									onChange={(val) => handleFilterChange("size", val)}
-								>
-									<Option value=''>All Sizes</Option>
-									{sizes.map((size, i) => (
-										<Option key={i} value={size}>
-											{size}
-										</Option>
-									))}
-								</Select>
-							</Col>
-
-							<Col span={24}>
-								<Select
-									placeholder='Gender'
-									style={{ width: "100%" }}
+								<Col span={24}>
+									<Select
+										placeholder='Gender'
+										style={{ width: "100%" }}
 									value={filters.gender}
 									onChange={(val) => handleFilterChange("gender", val)}
 								>
@@ -518,22 +1198,54 @@ function ShopPageMain() {
 											{g.name}
 										</Option>
 									))}
-								</Select>
-							</Col>
-						</Row>
+									</Select>
+								</Col>
+
+								<Col span={24}>
+									<Select
+										placeholder='Store'
+										style={{ width: "100%" }}
+										value={filters.store}
+										onChange={(val) => handleFilterChange("store", val)}
+										showSearch
+										optionFilterProp='children'
+									>
+										<Option value=''>All Stores</Option>
+										{stores.map((storeEntry) => (
+											<Option
+												key={storeEntry?.id || storeEntry?.name}
+												value={storeEntry?.name || ""}
+											>
+												{storeEntry?.name || ""}
+											</Option>
+										))}
+										</Select>
+									</Col>
+								</Row>
 
 						<Row gutter={[16, 16]} style={{ marginTop: "20px" }}>
-							<Col span={24}>
-								<div style={{ marginBottom: "8px" }}>Price Range</div>
-								<Slider
-									range
-									value={[filters.priceMin, filters.priceMax]}
+								<Col span={24}>
+									<div style={{ marginBottom: "8px" }}>Price Range</div>
+									<div
+										style={{
+											marginBottom: "8px",
+											fontSize: "0.9rem",
+											fontWeight: 600,
+										}}
+									>
+										Selected: ${draftPriceRange[0].toFixed(2)} - $
+										{draftPriceRange[1].toFixed(2)}
+									</div>
+									<Slider
+										range
+										value={draftPriceRange}
 									min={priceRange[0]}
 									max={priceRange[1]}
-									onChange={(val) => {
-										handleFilterChange("priceMin", val[0]);
-										handleFilterChange("priceMax", val[1]);
-									}}
+									onBeforeChange={handlePriceRangeBeforeChange}
+									onChange={(val) =>
+										setDraftPriceRange(clampPriceRange(val, priceRange))
+									}
+									onAfterChange={handlePriceRangeAfterChange}
 									tooltip={{ formatter: (val) => `$${val}` }}
 								/>
 								<div
@@ -585,13 +1297,25 @@ function ShopPageMain() {
 									productImages = prod.thumbnailImage[0].images;
 								}
 
-								const defaultImage =
-									"https://res.cloudinary.com/infiniteapps/image/upload/v1723694291/janat/default-image.jpg";
-								const { primary, fallback } = resolveImageSources(
-									productImages?.[0]
-								);
-								const primarySrc = primary || defaultImage;
-								const fallbackSrc = fallback || defaultImage;
+								const fallbackGridImageCandidate =
+									productImages?.[0] || prod?.thumbnailImage?.[0]?.images?.[0] || null;
+								const podExampleDesignImage = isPOD
+									? (Array.isArray(prod?.productAttributes)
+											? prod.productAttributes
+											: []
+									  ).find((attribute) => {
+											const candidate = attribute?.exampleDesignImage;
+											const { primary, fallback } =
+												resolvePreferredImageSources(candidate);
+											return Boolean(primary || fallback);
+									  })?.exampleDesignImage || null
+									: null;
+								const imageCandidate =
+									(isPOD && podExampleDesignImage) || fallbackGridImageCandidate;
+								const { primary, fallback } =
+									resolvePreferredImageSources(imageCandidate);
+								const primarySrc = primary || fallback || "";
+								const fallbackSrc = fallback || primary || "";
 
 								// Price logic
 								const originalPrice = prod?.price || 0;
@@ -611,7 +1335,7 @@ function ShopPageMain() {
 								const totalQty = prod?.quantity || 0;
 
 								return (
-									<Col xs={24} sm={12} md={12} lg={6} xl={6} key={idx}>
+									<Col xs={12} sm={12} md={12} lg={8} xl={4} key={idx}>
 										<ProductCard
 											hoverable
 											cover={
@@ -668,7 +1392,7 @@ function ShopPageMain() {
 																		contentIds: [prod?._id],
 																		userAgent: window.navigator.userAgent,
 																	}
-																);
+																).catch(() => {});
 
 																readProduct(prod?._id).then((res) => {
 																	if (res?.error) {
@@ -730,10 +1454,25 @@ function ShopPageMain() {
 																	contentIds: [prod?._id], // or any ID you want
 																	userAgent: window.navigator.userAgent,
 																}
-															);
+															).catch(() => {});
 
 															window.scrollTo({ top: 0, behavior: "smooth" });
-															history.push(getProductLink(prod));
+															if (
+																prod?.printifyProductDetails?.POD &&
+																shouldAskForPodPersonalization()
+															) {
+																setPendingPodProduct(prod);
+																setShowPodWelcomeModal(true);
+																return;
+															}
+															const safePersonalization =
+																savePodPersonalization({
+																	occasion: podOccasion,
+																	name: podName,
+																});
+															history.push(
+																getProductLink(prod, safePersonalization)
+															);
 														}}
 													/>
 												</ImageContainer>
@@ -776,16 +1515,85 @@ function ShopPageMain() {
 								window.scrollTo({ top: 0, behavior: "smooth" });
 							}}
 						>
-							<Pagination
-								current={page}
-								pageSize={records}
-								onChange={(pg) => setPage(pg)}
-								total={totalRecords}
-							/>
+								<Pagination
+									current={page}
+									pageSize={records}
+									onChange={(pg) => setPage(pg)}
+									total={totalRecords}
+									responsive
+									showSizeChanger={false}
+									hideOnSinglePage={totalRecords <= records}
+								/>
 						</PaginationWrapper>
 					</ProductsSection>
 				</ShopPageMainWrapper>
 			</ShopPageMainOverallWrapper>
+
+			<Modal
+				open={showPodWelcomeModal}
+				onCancel={handlePodWelcomeClose}
+				footer={null}
+				destroyOnClose
+				centered
+				width={680}
+			>
+				<PodWelcomeCard>
+					<PodWelcomeEyebrow>Personalized Gifts Made Easy</PodWelcomeEyebrow>
+					<PodWelcomeTitle>Looking for the perfect gift?</PodWelcomeTitle>
+					<PodWelcomeSubtitle>
+						Choose an occasion once, add a name if you want, and we will pre-fill
+						custom gift designs for you.
+					</PodWelcomeSubtitle>
+
+					<PodFieldLabel>What is your occasion?</PodFieldLabel>
+					<PodFieldPulseWrap
+						key={`pod-occasion-${podFieldPulseKey}`}
+						$delayMs={80}
+					>
+						<Select
+							size='large'
+							value={podOccasion}
+							style={{ width: "100%" }}
+							onChange={(value) => setPodOccasion(value)}
+						>
+							{POD_OCCASION_OPTIONS.map((item) => (
+								<Option key={item.value} value={item.value}>
+									<span>
+										{item.icon} {item.value}
+									</span>
+								</Option>
+							))}
+						</Select>
+					</PodFieldPulseWrap>
+
+					<PodFieldLabel style={{ marginTop: "12px" }}>
+						Optional: name to include in designs
+					</PodFieldLabel>
+					<PodFieldPulseWrap
+						key={`pod-name-${podFieldPulseKey}`}
+						$delayMs={200}
+					>
+						<Input
+							size='large'
+							value={podName}
+							onChange={(e) => setPodName(e.target.value)}
+							placeholder='Example: Emma'
+							maxLength={40}
+						/>
+					</PodFieldPulseWrap>
+
+					<PodModalHint>
+						You can update these anytime on the custom gifts pages.
+					</PodModalHint>
+
+					<PodActions>
+						<Button onClick={handlePodWelcomeClose}>Maybe later</Button>
+						<Button type='primary' onClick={handlePodWelcomeStart}>
+							Show Me Custom Gifts
+						</Button>
+					</PodActions>
+				</PodWelcomeCard>
+			</Modal>
 		</ConfigProvider>
 	);
 }
@@ -817,12 +1625,6 @@ const FiltersSection = styled.div`
 	padding: 20px;
 	margin-bottom: 20px;
 	border-radius: 8px;
-
-	@media (max-width: 768px) {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 16px;
-	}
 
 	@media (max-width: 576px) {
 		display: none; /* Hide filters on small screens */
@@ -866,32 +1668,48 @@ const ProductCard = styled(Card)`
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
-	min-height: 600px;
-	max-height: 640px;
+	height: 100%;
 	transition: var(--main-transition);
 	text-transform: capitalize;
+	background: #fff;
 
-	&:hover {
-		transform: translateY(-10px);
-		box-shadow: var(--box-shadow-light);
+	.ant-card-cover {
+		margin: 0 !important;
 	}
 
-	@media (max-width: 700px) {
-		min-height: 600px;
-		max-height: 640px;
+	.ant-card-body {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 14px;
+	}
+
+	.ant-card-meta-title {
+		white-space: normal;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		line-height: 1.35;
+		min-height: calc(1.35em * 2);
+	}
+
+	.ant-card-meta-description {
+		min-height: 24px;
+	}
+
+	&:hover {
+		transform: translateY(-6px);
+		box-shadow: var(--box-shadow-light);
 	}
 `;
 
 const ImageContainer = styled.div`
 	position: relative;
-	height: 500px;
+	aspect-ratio: 1 / 1;
 	overflow: hidden;
 	border-radius: 10px 10px 0 0;
-
-	@media (max-width: 700px) {
-		height: 500px;
-	}
 `;
 
 const BadgeContainer = styled.div`
@@ -1003,4 +1821,82 @@ const CursiveText = styled.div`
 	font-style: italic;
 	font-weight: bolder;
 	line-height: 1;
+`;
+
+const PodWelcomeCard = styled.div`
+	padding: 6px 4px;
+`;
+
+const PodWelcomeEyebrow = styled.div`
+	display: inline-block;
+	padding: 4px 10px;
+	border-radius: 999px;
+	background: linear-gradient(90deg, #ffe7d7, #fff4e2);
+	color: #6a3f1b;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+`;
+
+const PodWelcomeTitle = styled.h2`
+	margin: 12px 0 4px;
+	font-size: clamp(1.25rem, 2vw, 1.8rem);
+	line-height: 1.25;
+	color: #1c1a19;
+`;
+
+const PodWelcomeSubtitle = styled.p`
+	margin: 0 0 14px;
+	font-size: 0.98rem;
+	color: #554d48;
+	line-height: 1.5;
+`;
+
+const podFieldBeat = keyframes`
+	0% {
+		transform: scale(1);
+		box-shadow: 0 0 0 rgba(255, 173, 99, 0);
+	}
+	35% {
+		transform: scale(1.03);
+		box-shadow: 0 0 0 8px rgba(255, 173, 99, 0.12);
+	}
+	65% {
+		transform: scale(0.995);
+		box-shadow: 0 0 0 2px rgba(255, 173, 99, 0.08);
+	}
+	100% {
+		transform: scale(1);
+		box-shadow: 0 0 0 rgba(255, 173, 99, 0);
+	}
+`;
+
+const PodFieldLabel = styled.label`
+	display: block;
+	margin: 8px 0 6px;
+	font-size: 0.92rem;
+	font-weight: 600;
+	color: #2a2522;
+`;
+
+const PodFieldPulseWrap = styled.div`
+	border-radius: 10px;
+	will-change: transform, box-shadow;
+	transition: transform 220ms ease, box-shadow 220ms ease;
+	animation: ${podFieldBeat} 620ms ease-in-out ${(props) => props.$delayMs || 0}ms 2;
+`;
+
+const PodModalHint = styled.p`
+	margin: 10px 0 0;
+	font-size: 0.85rem;
+	color: #6a625d;
+`;
+
+const PodActions = styled.div`
+	margin-top: 18px;
+	display: flex;
+	gap: 8px;
+	justify-content: flex-end;
+	flex-wrap: wrap;
 `;

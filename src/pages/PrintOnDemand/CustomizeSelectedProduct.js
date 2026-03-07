@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory, useLocation } from "react-router-dom";
 import {
 	Button,
 	Row,
@@ -16,6 +16,8 @@ import {
 	InputNumber,
 	Modal,
 	Spin,
+	Switch,
+	Progress,
 } from "antd";
 import Slider from "react-slick";
 import { useDropzone } from "react-dropzone";
@@ -32,10 +34,11 @@ import {
 	CloudUploadOutlined,
 	ReloadOutlined,
 	CameraOutlined,
+	EyeOutlined,
 } from "@ant-design/icons";
 import PrintifyCheckoutModal from "./PrintifyCheckoutModal";
 import { isAuthenticated } from "../../auth";
-import { cloudinaryUpload1 } from "../../apiCore";
+import { cloudinaryUpload1, cleanupPreviewCustomDesign } from "../../apiCore";
 
 import html2canvas from "html2canvas";
 import { useCartContext } from "../../cart_context";
@@ -52,11 +55,370 @@ import heic2any from "heic2any";
 // Fallback library for final image conversion
 import domtoimage from "dom-to-image-more";
 
-// Child tutorial/animation
-import AnimationPODWalkThrough from "../MyAnimationComponents/AnimationPODWalkThrough";
+// Child tutorial/animation (temporarily disabled on the single POD page)
+// import AnimationPODWalkThrough from "../MyAnimationComponents/AnimationPODWalkThrough";
+import {
+	POD_OCCASION_OPTIONS,
+	resolvePodPersonalization,
+	savePodPersonalization,
+	buildGiftMessage,
+	getOccasionOption,
+} from "./podPersonalization";
+import { getOccasionDesignPreset } from "./podDesignPresets";
 
 const { Title } = Typography;
 const { Option } = Select;
+const POD_ADVANCED_MODE_KEY = "podAdvancedModeEnabledV1";
+
+function clampNumber(value, min, max) {
+	return Math.min(max, Math.max(min, value));
+}
+
+function getPodProductKindForDefaultDesign(product = {}) {
+	const normalizedName = `${product?.title || product?.productName || ""}`.toLowerCase();
+	if (
+		normalizedName.includes("t-shirt") ||
+		normalizedName.includes("tee") ||
+		(normalizedName.includes("shirt") &&
+			!normalizedName.includes("sweatshirt"))
+	) {
+		return "apparel";
+	}
+	if (
+		normalizedName.includes("hoodie") ||
+		normalizedName.includes("sweatshirt") ||
+		normalizedName.includes("pullover")
+	) {
+		return "hoodie";
+	}
+	if (normalizedName.includes("tote")) return "tote";
+	if (normalizedName.includes("weekender") || normalizedName.includes("bag")) {
+		return "bag";
+	}
+	if (normalizedName.includes("mug")) return "mug";
+	if (normalizedName.includes("pillow")) return "pillow";
+	if (normalizedName.includes("magnet")) return "magnet";
+	return "default";
+}
+
+function getPodPrintAreaFrame(product = {}) {
+	const kind = getPodProductKindForDefaultDesign(product);
+	switch (kind) {
+		case "apparel":
+			return { top: "19%", left: "21%", width: "58%", height: "72%" };
+		case "hoodie":
+			return { top: "20%", left: "21%", width: "58%", height: "71%" };
+		case "tote":
+			return { top: "20%", left: "24%", width: "52%", height: "64%" };
+		case "bag":
+			return { top: "18%", left: "22%", width: "56%", height: "62%" };
+		case "mug":
+			return { top: "30%", left: "18%", width: "64%", height: "42%" };
+		case "pillow":
+		case "magnet":
+			return { top: "16%", left: "16%", width: "68%", height: "68%" };
+		default:
+			return { top: "20%", left: "20%", width: "60%", height: "75%" };
+	}
+}
+
+function getPodPrintifySafeInsetPercent(product = {}) {
+	const kind = getPodProductKindForDefaultDesign(product);
+	switch (kind) {
+		case "apparel":
+		case "hoodie":
+			return 8;
+		case "tote":
+		case "bag":
+			return 8;
+		case "mug":
+			return 12;
+		case "pillow":
+		case "magnet":
+			return 7;
+		default:
+			return 8;
+	}
+}
+
+function resolvePrintifySafeBounds(containerWidth, containerHeight, insetPercent = 0) {
+	const width = Math.max(0, Number(containerWidth) || 0);
+	const height = Math.max(0, Number(containerHeight) || 0);
+	const safeInsetPercent = clampNumber(Number(insetPercent) || 0, 0, 45);
+	const insetX = (width * safeInsetPercent) / 100;
+	const insetY = (height * safeInsetPercent) / 100;
+	return {
+		minX: insetX,
+		minY: insetY,
+		maxX: Math.max(insetX, width - insetX),
+		maxY: Math.max(insetY, height - insetY),
+	};
+}
+
+function clampElementPositionWithinBounds(x, y, width, height, bounds) {
+	const safeWidth = Math.max(24, Number(width) || 0);
+	const safeHeight = Math.max(24, Number(height) || 0);
+	const minX = Number(bounds?.minX) || 0;
+	const minY = Number(bounds?.minY) || 0;
+	const maxX = Math.max(minX, (Number(bounds?.maxX) || 0) - safeWidth);
+	const maxY = Math.max(minY, (Number(bounds?.maxY) || 0) - safeHeight);
+	return {
+		x: clampNumber(Number(x) || 0, minX, maxX),
+		y: clampNumber(Number(y) || 0, minY, maxY),
+	};
+}
+
+function clampElementRectWithinBounds(rect = {}, bounds) {
+	const minX = Number(bounds?.minX) || 0;
+	const minY = Number(bounds?.minY) || 0;
+	const maxX = Number(bounds?.maxX) || minX;
+	const maxY = Number(bounds?.maxY) || minY;
+	const limitWidth = Math.max(24, maxX - minX);
+	const limitHeight = Math.max(24, maxY - minY);
+	const width = clampNumber(Math.max(24, Number(rect.width) || 24), 24, limitWidth);
+	const height = clampNumber(Math.max(24, Number(rect.height) || 24), 24, limitHeight);
+	const point = clampElementPositionWithinBounds(
+		rect.x,
+		rect.y,
+		width,
+		height,
+		bounds
+	);
+	return {
+		x: point.x,
+		y: point.y,
+		width,
+		height,
+	};
+}
+
+function resolveAutoDesignGeometry(product = {}, preset = {}) {
+	const kind = getPodProductKindForDefaultDesign(product);
+	const normalizedName = `${product?.title || product?.productName || ""}`.toLowerCase();
+	const isCottonCanvasTote =
+		kind === "tote" &&
+		(normalizedName.includes("cotton canvas tote bag") ||
+			normalizedName.includes("cotton canvas tote"));
+	const defaultsByKind = {
+		apparel: {
+			messageWidthRatio: 0.5,
+			messageHeightRatio: 0.2,
+			messageCenterYRatio: 0.4,
+			iconSizeRatio: 0.078,
+			iconOverlapPx: 8,
+			maxMessageHeight: 92,
+			maxIconSize: 48,
+		},
+		hoodie: {
+			messageWidthRatio: 0.5,
+			messageHeightRatio: 0.198,
+			messageCenterYRatio: 0.395,
+			iconSizeRatio: 0.078,
+			iconOverlapPx: 8,
+			maxMessageHeight: 92,
+			maxIconSize: 48,
+		},
+		tote: {
+			messageWidthRatio: 0.66,
+			messageHeightRatio: 0.24,
+			messageCenterYRatio: 0.48,
+			iconSizeRatio: 0.086,
+			iconOverlapPx: 6,
+			maxMessageHeight: 104,
+			maxIconSize: 50,
+		},
+		bag: {
+			messageWidthRatio: 0.64,
+			messageHeightRatio: 0.23,
+			messageCenterYRatio: 0.47,
+			iconSizeRatio: 0.084,
+			iconOverlapPx: 6,
+			maxMessageHeight: 102,
+			maxIconSize: 48,
+		},
+		mug: {
+			messageWidthRatio: 0.6,
+			messageHeightRatio: 0.245,
+			messageCenterYRatio: 0.54,
+			iconSizeRatio: 0.08,
+			iconOverlapPx: 6,
+			maxMessageHeight: 100,
+			maxIconSize: 50,
+		},
+		pillow: {
+			messageWidthRatio: 0.62,
+			messageHeightRatio: 0.24,
+			messageCenterYRatio: 0.54,
+			iconSizeRatio: 0.078,
+			iconOverlapPx: 6,
+			maxMessageHeight: 104,
+			maxIconSize: 52,
+		},
+		magnet: {
+			messageWidthRatio: 0.62,
+			messageHeightRatio: 0.24,
+			messageCenterYRatio: 0.53,
+			iconSizeRatio: 0.078,
+			iconOverlapPx: 6,
+			maxMessageHeight: 102,
+			maxIconSize: 52,
+		},
+		default: {
+			messageWidthRatio: 0.52,
+			messageHeightRatio: 0.2,
+			messageCenterYRatio: 0.43,
+			iconSizeRatio: 0.076,
+			iconOverlapPx: 6,
+			maxMessageHeight: 92,
+			maxIconSize: 48,
+		},
+	};
+	const visualTuneByKind = {
+		apparel: {
+			messageWidthFactor: 1,
+			messageHeightFactor: 1,
+			iconSizeFactor: 1,
+			centerYOffset: 0,
+		},
+		hoodie: {
+			messageWidthFactor: 1,
+			messageHeightFactor: 1,
+			iconSizeFactor: 1,
+			centerYOffset: 0,
+		},
+		tote: {
+			messageWidthFactor: 1,
+			messageHeightFactor: 1,
+			iconSizeFactor: 1,
+			centerYOffset: 0,
+		},
+		bag: {
+			messageWidthFactor: 1,
+			messageHeightFactor: 1,
+			iconSizeFactor: 1,
+			centerYOffset: 0,
+		},
+		default: {
+			messageWidthFactor: 1,
+			messageHeightFactor: 1,
+			iconSizeFactor: 1,
+			centerYOffset: 0,
+		},
+	};
+	const productSpecificCenterYOffset = isCottonCanvasTote ? 0.17 : 0;
+	const base = defaultsByKind[kind] || defaultsByKind.default;
+	const visualTune = visualTuneByKind[kind] || visualTuneByKind.default;
+	const numberOrFallback = (value, fallback) => {
+		const num = Number(value);
+		return Number.isFinite(num) ? num : fallback;
+	};
+	const rawMessageWidthRatio = numberOrFallback(
+		preset.messageWidthRatio,
+		base.messageWidthRatio,
+	);
+	const rawMessageHeightRatio = numberOrFallback(
+		preset.messageHeightRatio,
+		base.messageHeightRatio,
+	);
+	const rawMessageCenterYRatio = numberOrFallback(
+		preset.messageCenterYRatio,
+		base.messageCenterYRatio,
+	);
+	const rawIconSizeRatio = numberOrFallback(
+		preset.iconSizeRatio,
+		base.iconSizeRatio,
+	);
+	return {
+		kind,
+		messageWidthRatio: clampNumber(
+			rawMessageWidthRatio * Number(visualTune.messageWidthFactor || 1),
+			0.34,
+			0.72,
+		),
+		messageHeightRatio: clampNumber(
+			rawMessageHeightRatio * Number(visualTune.messageHeightFactor || 1),
+			0.1,
+			0.3,
+		),
+		messageCenterYRatio: clampNumber(
+			rawMessageCenterYRatio +
+				Number(visualTune.centerYOffset || 0) +
+				productSpecificCenterYOffset,
+			0.2,
+			0.72,
+		),
+		iconSizeRatio: clampNumber(
+			rawIconSizeRatio * Number(visualTune.iconSizeFactor || 1),
+			0.05,
+			0.16,
+		),
+		iconOverlapPx: numberOrFallback(preset.iconOverlapPx, base.iconOverlapPx),
+		maxMessageHeight: clampNumber(
+			numberOrFallback(preset.maxMessageHeight, base.maxMessageHeight || 74),
+			74,
+			140,
+		),
+		maxIconSize: clampNumber(
+			numberOrFallback(preset.maxIconSize, base.maxIconSize || 44),
+			44,
+			84,
+		),
+	};
+}
+
+function buildTextElementStyle(el = {}) {
+	const safeBackgroundColor = el.backgroundColor || "transparent";
+	const hasGradient = typeof el.backgroundImage === "string" && el.backgroundImage.trim();
+	const borderWidth = clampNumber(Number(el.borderWidth) || 0, 0, 12);
+	const safePaddingX = clampNumber(Number(el.paddingX) || 4, 0, 60);
+	const safePaddingY = clampNumber(Number(el.paddingY) || 4, 0, 40);
+	const safeBorderRadius = clampNumber(Number(el.borderRadius) || 0, 0, 999);
+	return {
+		whiteSpace: "pre-wrap",
+		color: el.color,
+		backgroundColor: safeBackgroundColor,
+		backgroundImage: hasGradient ? el.backgroundImage : "none",
+		fontSize: el.fontSize,
+		fontFamily: el.fontFamily,
+		fontWeight: el.fontWeight,
+		fontStyle: el.fontStyle,
+		letterSpacing: el.letterSpacing || "normal",
+		textShadow: el.textShadow || "none",
+		borderRadius: safeBorderRadius,
+		border: borderWidth
+			? `${borderWidth}px solid ${el.borderColor || "transparent"}`
+			: "none",
+		boxShadow: el.boxShadow || "none",
+		width: "100%",
+		height: "100%",
+		padding: `${safePaddingY}px ${safePaddingX}px`,
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		textAlign: "center",
+		lineHeight: Number(el.lineHeight) || 1.2,
+	};
+}
+
+function renderTextElementContent(el = {}) {
+	const ornamentLeft = String(el.ornamentLeft || "").trim();
+	const ornamentRight = String(el.ornamentRight || "").trim();
+	const hasOrnaments = Boolean(ornamentLeft || ornamentRight);
+	const ornamentStyle = {
+		color: el.ornamentColor || "rgba(120, 80, 40, 0.5)",
+		fontSize: "0.7em",
+		fontWeight: 700,
+		lineHeight: 1,
+	};
+	if (!hasOrnaments) return el.text;
+	return (
+		<>
+			{ornamentLeft ? <span style={ornamentStyle}>{ornamentLeft}</span> : null}
+			<span style={{ padding: "0 8px" }}>{el.text}</span>
+			{ornamentRight ? <span style={ornamentStyle}>{ornamentRight}</span> : null}
+		</>
+	);
+}
 
 /**
  * ------------------------------------------------------------------------
@@ -91,62 +453,6 @@ function truncateText(text, wordLimit) {
 	const words = text.split(/\s+/);
 	if (words.length <= wordLimit) return text;
 	return words.slice(0, wordLimit).join(" ") + "...";
-}
-
-/**
- * Crop a canvas to remove fully-transparent edges
- */
-function cropCanvasToTransparentBounds(originalCanvas) {
-	const ctx = originalCanvas.getContext("2d", { willReadFrequently: true });
-	const { width, height } = originalCanvas;
-	const imageData = ctx.getImageData(0, 0, width, height).data;
-
-	let top = 0,
-		bottom = height,
-		left = 0,
-		right = width;
-
-	topLoop: for (; top < height; top++) {
-		for (let x = 0; x < width; x++) {
-			const idx = (top * width + x) * 4 + 3;
-			if (imageData[idx] !== 0) break topLoop;
-		}
-	}
-	bottomLoop: for (; bottom > top; bottom--) {
-		for (let x = 0; x < width; x++) {
-			const idx = ((bottom - 1) * width + x) * 4 + 3;
-			if (imageData[idx] !== 0) break bottomLoop;
-		}
-	}
-	leftLoop: for (; left < width; left++) {
-		for (let y = top; y < bottom; y++) {
-			const idx = (y * width + left) * 4 + 3;
-			if (imageData[idx] !== 0) break leftLoop;
-		}
-	}
-	rightLoop: for (; right > left; right--) {
-		for (let y = top; y < bottom; y++) {
-			const idx = (y * width + right - 1) * 4 + 3;
-			if (imageData[idx] !== 0) break rightLoop;
-		}
-	}
-
-	const croppedWidth = right - left;
-	const croppedHeight = bottom - top;
-	if (croppedWidth <= 0 || croppedHeight <= 0) {
-		// everything is transparent => return original
-		return originalCanvas;
-	}
-	const newCanvas = document.createElement("canvas");
-	newCanvas.width = croppedWidth;
-	newCanvas.height = croppedHeight;
-	const newCtx = newCanvas.getContext("2d", { willReadFrequently: true });
-	newCtx.putImageData(
-		ctx.getImageData(left, top, croppedWidth, croppedHeight),
-		0,
-		0
-	);
-	return newCanvas;
 }
 
 function dataURLtoBlob(dataURL) {
@@ -373,9 +679,70 @@ async function fallbackVanillaJSXHRUpload(file, userId, token) {
  * ------------------------------------------------------------------------
  */
 export default function CustomizeSelectedProduct() {
-	const { productId } = useParams();
+	const { productId, productSlug } = useParams();
+	const history = useHistory();
+	const location = useLocation();
+
+	const initialPersonalization = resolvePodPersonalization(location.search);
+	const [selectedOccasion, setSelectedOccasion] = useState(
+		initialPersonalization.occasion
+	);
+	const [selectedGiftName, setSelectedGiftName] = useState(
+		initialPersonalization.name
+	);
+	const [advancedEditMode, setAdvancedEditMode] = useState(() => {
+		try {
+			const stored = localStorage.getItem(POD_ADVANCED_MODE_KEY);
+			if (stored === null) return true;
+			return stored === "true";
+		} catch {
+			return true;
+		}
+	});
+	const occasionStylePreset = useMemo(
+		() => getOccasionDesignPreset(selectedOccasion),
+		[selectedOccasion]
+	);
+	const selectedOccasionMeta = useMemo(
+		() => getOccasionOption(selectedOccasion),
+		[selectedOccasion]
+	);
+
+	const syncPersonalization = (occasion, name) => {
+		const safe = savePodPersonalization({ occasion, name });
+		setSelectedOccasion(safe.occasion);
+		setSelectedGiftName(safe.name);
+		return safe;
+	};
+
+	const handleAdvancedModeChange = (checked) => {
+		setAdvancedEditMode(!!checked);
+		try {
+			localStorage.setItem(POD_ADVANCED_MODE_KEY, String(!!checked));
+		} catch {
+			// localStorage may be unavailable in strict privacy mode
+		}
+	};
+
+	function toPodSlug(name = "") {
+		return (name || "custom-gift")
+			.toLowerCase()
+			.replace(/[^a-z0-9\s-]/g, "")
+			.trim()
+			.replace(/\s+/g, "-")
+			.replace(/-+/g, "-");
+	}
+
 	const [product, setProduct] = useState(null);
 	const [loading, setLoading] = useState(true);
+	const printAreaFrame = useMemo(
+		() => getPodPrintAreaFrame(product || {}),
+		[product],
+	);
+	const printifySafeInsetPercent = useMemo(
+		() => getPodPrintifySafeInsetPercent(product || {}),
+		[product],
+	);
 
 	const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
@@ -383,6 +750,10 @@ export default function CustomizeSelectedProduct() {
 	const [selectedColor, setSelectedColor] = useState("");
 	const [selectedSize, setSelectedSize] = useState("");
 	const [selectedScent, setSelectedScent] = useState("");
+	const effectiveOccasionStylePreset = useMemo(
+		() => occasionStylePreset,
+		[occasionStylePreset],
+	);
 
 	// Current text styling
 	const [userText, setUserText] = useState("");
@@ -416,17 +787,29 @@ export default function CustomizeSelectedProduct() {
 		shipping_method: "",
 	});
 
-	const [userJustSingleClickedText, setUserJustSingleClickedText] =
-		useState(false);
-
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 	useEffect(() => {
-		localStorage.setItem("customGiftModalDismissed", "true");
-		localStorage.setItem("customGiftModalDismissed2", "Yes");
 		const handleResize = () => setIsMobile(window.innerWidth < 800);
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
+
+	useEffect(() => {
+		const resolved = resolvePodPersonalization(location.search);
+		setSelectedOccasion(resolved.occasion);
+		setSelectedGiftName(resolved.name);
+		savePodPersonalization(resolved);
+	}, [location.search]);
+
+	useEffect(() => {
+		// Keep text-tool defaults aligned with the selected occasion preset.
+		setTextColor(effectiveOccasionStylePreset.textColor);
+		setFontFamily(effectiveOccasionStylePreset.fontFamily);
+		setFontSize(effectiveOccasionStylePreset.fontSize);
+		setFontWeight(effectiveOccasionStylePreset.fontWeight);
+		setFontStyle(effectiveOccasionStylePreset.fontStyle);
+		setBorderRadius(effectiveOccasionStylePreset.borderRadius);
+	}, [effectiveOccasionStylePreset]);
 
 	const { addToCart, openSidebar2 } = useCartContext();
 	const { user, token } = isAuthenticated();
@@ -449,6 +832,15 @@ export default function CustomizeSelectedProduct() {
 	// For separate "gallery" vs "camera"
 	const hiddenGalleryInputRef = useRef(null);
 	const hiddenCameraInputRef = useRef(null);
+	const copiedElementRef = useRef(null);
+	const pasteCountRef = useRef(0);
+	const frameContextMenuRef = useRef(null);
+	const [frameContextMenu, setFrameContextMenu] = useState({
+		visible: false,
+		x: 0,
+		y: 0,
+		targetId: null,
+	});
 
 	// Desktop drag/drop
 	const { getRootProps, getInputProps } = useDropzone({
@@ -506,11 +898,7 @@ export default function CustomizeSelectedProduct() {
 	const [uploadingImage, setUploadingImage] = useState(false);
 
 	// Additional states to track user actions
-	const [didUserAddToCart, setDidUserAddToCart] = useState(false);
 	const [hasChangedSizeOrColor, setHasChangedSizeOrColor] = useState(false);
-	const [userJustDoubleClickedCanvas, setUserJustDoubleClickedCanvas] =
-		useState(false);
-	const [hasMultipleSizeOrColor, setHasMultipleSizeOrColor] = useState(false);
 
 	/**
 	 * ----------------------------------------------------------------
@@ -563,6 +951,14 @@ export default function CustomizeSelectedProduct() {
 				});
 
 				setProduct(fetchedProduct);
+				const canonicalSlug = toPodSlug(
+					fetchedProduct.title || fetchedProduct.productName
+				);
+				if (canonicalSlug && canonicalSlug !== productSlug) {
+					history.replace(
+						`/custom-gifts/${canonicalSlug}/${productId}${location.search}`
+					);
+				}
 
 				// FB pixel track
 				ReactPixel.track("CustomizeProduct", {
@@ -572,7 +968,7 @@ export default function CustomizeSelectedProduct() {
 				});
 
 				// Check query params for color/size/scent
-				const queryParams = new URLSearchParams(window.location.search);
+				const queryParams = new URLSearchParams(location.search);
 				const colorParam = queryParams.get("color");
 				const sizeParam = queryParams.get("size");
 				const scentParam = queryParams.get("scent");
@@ -669,33 +1065,7 @@ export default function CustomizeSelectedProduct() {
 			}
 		};
 		fetchProduct();
-	}, [productId]);
-
-	/**
-	 * Check if multiple color/size/scent
-	 */
-	useEffect(() => {
-		if (!product) return;
-		const colorOpt = product.options.find(
-			(o) => o.name.toLowerCase() === "colors"
-		);
-		const sizeOpt = product.options.find(
-			(o) => o.name.toLowerCase() === "sizes"
-		);
-		const scentOpt = product.options.find(
-			(o) => o.name.toLowerCase() === "scents"
-		);
-
-		const multipleColors = colorOpt?.values?.length > 1;
-		const multipleSizes = sizeOpt?.values?.length > 1;
-		const multipleScents = scentOpt?.values?.length > 1;
-
-		if (multipleColors || multipleSizes || multipleScents) {
-			setHasMultipleSizeOrColor(true);
-		} else {
-			setHasMultipleSizeOrColor(false);
-		}
-	}, [product]);
+	}, [history, location.search, productId, productSlug]);
 
 	/**
 	 * 2) Add a default text box in the middle
@@ -705,34 +1075,298 @@ export default function CustomizeSelectedProduct() {
 		if (!printAreaRef.current) return;
 
 		const boundingRect = printAreaRef.current.getBoundingClientRect();
-		const boxWidth = 200;
-		const boxHeight = 100;
+		const safeBounds = resolvePrintifySafeBounds(
+			boundingRect.width,
+			boundingRect.height,
+			printifySafeInsetPercent
+		);
+		const safeStartX = safeBounds.minX;
+		const safeStartY = safeBounds.minY;
+		const safeWidth = Math.max(120, safeBounds.maxX - safeBounds.minX);
+		const safeHeight = Math.max(90, safeBounds.maxY - safeBounds.minY);
+		const geometry = resolveAutoDesignGeometry(
+			product,
+			effectiveOccasionStylePreset,
+		);
 
-		const centerX = boundingRect.width / 2 - boxWidth / 2;
-		const centerY = boundingRect.height / 2 - boxHeight / 1;
+		const messageWidth = Math.min(
+			Math.round(safeWidth * 0.72),
+			Math.max(124, Math.round(safeWidth * geometry.messageWidthRatio))
+		);
+		const messageHeight = Math.min(
+			geometry.maxMessageHeight || 74,
+			Math.max(42, Math.round(safeHeight * geometry.messageHeightRatio))
+		);
+		const iconSize = Math.min(
+			geometry.maxIconSize || 44,
+			Math.max(24, Math.round(safeWidth * geometry.iconSizeRatio)),
+		);
+		const messageYCenter = safeStartY + safeHeight * geometry.messageCenterYRatio;
 
-		const newEl = {
-			id: Date.now(),
+		const messageX = safeStartX + Math.round((safeWidth - messageWidth) / 2);
+		let messageY = Math.round(messageYCenter - messageHeight / 2);
+		messageY = Math.max(
+			safeStartY + iconSize - geometry.iconOverlapPx + 2,
+			Math.min(messageY, safeStartY + safeHeight - messageHeight)
+		);
+		const iconX = safeStartX + Math.round((safeWidth - iconSize) / 2);
+		const iconY = Math.max(
+			safeStartY,
+			Math.min(messageY - 2, messageY - iconSize + geometry.iconOverlapPx)
+		);
+		const messageFontSize = clampNumber(
+			Math.round(messageHeight * 0.3),
+			13,
+			20,
+		);
+		const iconFontSize = clampNumber(
+			Math.round(iconSize * 0.48),
+			16,
+			26,
+		);
+		const messageGradientStart =
+			effectiveOccasionStylePreset.messageGradientStart ||
+			effectiveOccasionStylePreset.backgroundColor;
+		const messageGradientEnd =
+			effectiveOccasionStylePreset.messageGradientEnd ||
+			effectiveOccasionStylePreset.backgroundColor;
+		const messageBorderWidth = clampNumber(
+			Number(effectiveOccasionStylePreset.messageBorderWidth) || 2,
+			1,
+			4,
+		);
+		const iconGradientStart =
+			effectiveOccasionStylePreset.accentBackgroundColor ||
+			effectiveOccasionStylePreset.messageGradientStart ||
+			"#ffffff";
+		const iconGradientEnd =
+			effectiveOccasionStylePreset.accentBackgroundColor2 ||
+			effectiveOccasionStylePreset.accentBackgroundColor ||
+			"#f3f4f6";
+		const baseId = Date.now();
+
+		const messageEl = {
+			id: baseId,
 			type: "text",
-			text: "Start typing here...",
-			color: "#000000",
-			backgroundColor: "transparent",
-			fontFamily: "Arial",
-			fontSize: 20,
-			fontWeight: "normal",
-			fontStyle: "normal",
-			borderRadius: 0,
+			text: buildGiftMessage(selectedOccasion, selectedGiftName),
+			color: effectiveOccasionStylePreset.textColor,
+			backgroundColor: effectiveOccasionStylePreset.backgroundColor,
+			backgroundImage: `linear-gradient(140deg, ${messageGradientStart} 0%, ${messageGradientEnd} 100%)`,
+			fontFamily: effectiveOccasionStylePreset.fontFamily,
+			fontSize: messageFontSize,
+			fontWeight: effectiveOccasionStylePreset.fontWeight,
+			fontStyle: effectiveOccasionStylePreset.fontStyle,
+			letterSpacing: effectiveOccasionStylePreset.letterSpacing || "0.08px",
+			textShadow:
+				effectiveOccasionStylePreset.textShadow ||
+				"0 1px 2px rgba(16, 33, 24, 0.16)",
+			borderRadius: effectiveOccasionStylePreset.borderRadius,
+			borderColor:
+				effectiveOccasionStylePreset.messageBorderColor ||
+				effectiveOccasionStylePreset.accentBorderColor ||
+				"rgba(31, 41, 55, 0.2)",
+			borderWidth: messageBorderWidth,
+			boxShadow:
+				effectiveOccasionStylePreset.messageShadow ||
+				"0 6px 16px rgba(16, 33, 24, 0.12)",
+			lineHeight: 1.08,
+			paddingX: clampNumber(
+				Number(effectiveOccasionStylePreset.paddingX) ||
+					Math.round(messageWidth * 0.055),
+				8,
+				20,
+			),
+			paddingY: clampNumber(
+				Number(effectiveOccasionStylePreset.paddingY) ||
+					Math.round(messageHeight * 0.09),
+				4,
+				10,
+			),
+			ornamentLeft: effectiveOccasionStylePreset.ornamentLeft || "",
+			ornamentRight: effectiveOccasionStylePreset.ornamentRight || "",
+			ornamentColor:
+				effectiveOccasionStylePreset.ornamentColor ||
+				"rgba(16, 33, 24, 0.35)",
 			rotation: 0,
-			x: centerX,
-			y: centerY,
-			width: boxWidth,
-			height: boxHeight,
+			x: messageX,
+			y: messageY,
+			width: messageWidth,
+			height: messageHeight,
 			wasReset: false,
+			isAutoGenerated: true,
+			autoKind: "message",
 		};
 
-		setElements((prev) => [...prev, newEl]);
+		const iconEl = {
+			id: baseId + 1,
+			type: "text",
+			text: effectiveOccasionStylePreset.accentIcon || selectedOccasionMeta.icon,
+			color: effectiveOccasionStylePreset.accentTextColor,
+			backgroundColor: effectiveOccasionStylePreset.accentBackgroundColor,
+			backgroundImage: `linear-gradient(145deg, ${iconGradientStart} 0%, ${iconGradientEnd} 100%)`,
+			fontFamily: effectiveOccasionStylePreset.fontFamily,
+			fontSize: iconFontSize,
+			fontWeight: "600",
+			fontStyle: "normal",
+			textShadow:
+				effectiveOccasionStylePreset.textShadow ||
+				"0 1px 2px rgba(16, 33, 24, 0.16)",
+			borderRadius: 999,
+			borderColor:
+				effectiveOccasionStylePreset.accentBorderColor ||
+				"rgba(31, 41, 55, 0.2)",
+			borderWidth: clampNumber(
+				Number(effectiveOccasionStylePreset.accentBorderWidth) || 2,
+				1,
+				3,
+			),
+			boxShadow:
+				effectiveOccasionStylePreset.accentShadow ||
+				"0 5px 13px rgba(16, 33, 24, 0.1)",
+			paddingX: 1,
+			paddingY: 1,
+			lineHeight: 1,
+			rotation: 0,
+			x: iconX,
+			y: iconY,
+			width: iconSize,
+			height: iconSize,
+			wasReset: false,
+			isAutoGenerated: true,
+			autoKind: "icon",
+		};
+
+		setElements((prev) => [...prev, messageEl, iconEl]);
+		setSelectedElementId(messageEl.id);
 		setDefaultTextAdded(true);
-	}, [product, defaultTextAdded]);
+	}, [
+		defaultTextAdded,
+		effectiveOccasionStylePreset,
+		product,
+		selectedGiftName,
+		selectedOccasionMeta.icon,
+		selectedOccasion,
+		printifySafeInsetPercent,
+	]);
+
+	useEffect(() => {
+		const autoMessage = buildGiftMessage(selectedOccasion, selectedGiftName);
+		const autoIcon =
+			effectiveOccasionStylePreset.accentIcon || selectedOccasionMeta.icon;
+		const messageGradientStart =
+			effectiveOccasionStylePreset.messageGradientStart ||
+			effectiveOccasionStylePreset.backgroundColor;
+		const messageGradientEnd =
+			effectiveOccasionStylePreset.messageGradientEnd ||
+			effectiveOccasionStylePreset.backgroundColor;
+		const iconGradientStart =
+			effectiveOccasionStylePreset.accentBackgroundColor ||
+			effectiveOccasionStylePreset.messageGradientStart ||
+			"#ffffff";
+		const iconGradientEnd =
+			effectiveOccasionStylePreset.accentBackgroundColor2 ||
+			effectiveOccasionStylePreset.accentBackgroundColor ||
+			"#f3f4f6";
+		setElements((prev) => {
+			const next = prev.map((item) => {
+				if (item.type !== "text" || !item.isAutoGenerated) return item;
+				if (item.autoKind === "icon") {
+					const iconFontSize = clampNumber(
+						Math.round((item.height || 36) * 0.48),
+						16,
+						26,
+					);
+					return {
+						...item,
+						text: autoIcon,
+						color: effectiveOccasionStylePreset.accentTextColor,
+						backgroundColor: effectiveOccasionStylePreset.accentBackgroundColor,
+						backgroundImage: `linear-gradient(145deg, ${iconGradientStart} 0%, ${iconGradientEnd} 100%)`,
+						fontFamily: effectiveOccasionStylePreset.fontFamily,
+						fontSize: iconFontSize,
+						fontWeight: "600",
+						fontStyle: "normal",
+						textShadow:
+							effectiveOccasionStylePreset.textShadow ||
+							"0 1px 2px rgba(16, 33, 24, 0.16)",
+						borderRadius: 999,
+						borderColor:
+							effectiveOccasionStylePreset.accentBorderColor ||
+							"rgba(31, 41, 55, 0.2)",
+						borderWidth: clampNumber(
+							Number(effectiveOccasionStylePreset.accentBorderWidth) || 2,
+							1,
+							3,
+						),
+						boxShadow:
+							effectiveOccasionStylePreset.accentShadow ||
+							"0 5px 13px rgba(16, 33, 24, 0.1)",
+						paddingX: 1,
+						paddingY: 1,
+						lineHeight: 1,
+					};
+				}
+
+				const messageFontSize = clampNumber(
+					Math.round((item.height || 56) * 0.3),
+					13,
+					20,
+				);
+				return {
+					...item,
+					text: autoMessage,
+					color: effectiveOccasionStylePreset.textColor,
+					backgroundColor: effectiveOccasionStylePreset.backgroundColor,
+					backgroundImage: `linear-gradient(140deg, ${messageGradientStart} 0%, ${messageGradientEnd} 100%)`,
+					fontFamily: effectiveOccasionStylePreset.fontFamily,
+					fontSize: messageFontSize,
+					fontWeight: effectiveOccasionStylePreset.fontWeight,
+					fontStyle: effectiveOccasionStylePreset.fontStyle,
+					letterSpacing: effectiveOccasionStylePreset.letterSpacing || "0.08px",
+					textShadow:
+						effectiveOccasionStylePreset.textShadow ||
+						"0 1px 2px rgba(16, 33, 24, 0.16)",
+					borderRadius: effectiveOccasionStylePreset.borderRadius,
+					borderColor:
+						effectiveOccasionStylePreset.messageBorderColor ||
+						effectiveOccasionStylePreset.accentBorderColor ||
+						"rgba(31, 41, 55, 0.2)",
+					borderWidth: clampNumber(
+						Number(effectiveOccasionStylePreset.messageBorderWidth) || 2,
+						1,
+						4,
+					),
+					boxShadow:
+						effectiveOccasionStylePreset.messageShadow ||
+						"0 6px 16px rgba(16, 33, 24, 0.12)",
+					lineHeight: 1.08,
+					paddingX: clampNumber(
+						Number(effectiveOccasionStylePreset.paddingX) ||
+							Math.round((item.width || 180) * 0.055),
+						8,
+						20,
+					),
+					paddingY: clampNumber(
+						Number(effectiveOccasionStylePreset.paddingY) ||
+							Math.round((item.height || 56) * 0.09),
+						4,
+						10,
+					),
+					ornamentLeft: effectiveOccasionStylePreset.ornamentLeft || "",
+					ornamentRight: effectiveOccasionStylePreset.ornamentRight || "",
+					ornamentColor:
+						effectiveOccasionStylePreset.ornamentColor ||
+						"rgba(16, 33, 24, 0.35)",
+				};
+			});
+			return next;
+		});
+	}, [
+		effectiveOccasionStylePreset,
+		selectedGiftName,
+		selectedOccasion,
+		selectedOccasionMeta.icon,
+	]);
 
 	/**
 	 * 3) Whenever color/size/scent changes => update variant_id
@@ -777,6 +1411,43 @@ export default function CustomizeSelectedProduct() {
 		setOrder((prev) => ({ ...prev, variant_id: matchingVariant?.id || null }));
 	}, [product, selectedColor, selectedSize, selectedScent]);
 
+	useEffect(() => {
+		if (!product) return;
+		const safe = savePodPersonalization({
+			occasion: selectedOccasion,
+			name: selectedGiftName,
+		});
+
+		const params = new URLSearchParams(location.search);
+		params.set("occasion", safe.occasion);
+		if (safe.name) params.set("name", safe.name);
+		else params.delete("name");
+
+		if (selectedColor) params.set("color", selectedColor);
+		else params.delete("color");
+
+		if (selectedSize) params.set("size", selectedSize);
+		else params.delete("size");
+
+		if (selectedScent) params.set("scent", selectedScent);
+		else params.delete("scent");
+
+		const nextSearch = `?${params.toString()}`;
+		if (nextSearch !== location.search) {
+			history.replace({ pathname: location.pathname, search: nextSearch });
+		}
+	}, [
+		history,
+		location.pathname,
+		location.search,
+		product,
+		selectedColor,
+		selectedGiftName,
+		selectedOccasion,
+		selectedScent,
+		selectedSize,
+	]);
+
 	// If user changes color/size/scent => setHasChanged
 	useEffect(() => {
 		if (
@@ -786,61 +1457,6 @@ export default function CustomizeSelectedProduct() {
 			setHasChangedSizeOrColor(true);
 		}
 	}, [selectedColor, selectedSize, selectedScent, hasChangedSizeOrColor]);
-
-	/**
-	 * 3a) HELPER to see if a given color combination is valid =>
-	 * (We usually won't disable color the same way we do size, but if you need it, here's a sample.)
-	 */
-	function variantExistsForColor(colorTitle, chosenSize, chosenScent) {
-		if (!product) return false;
-
-		const colorOpt = product.options.find(
-			(o) => o.name.toLowerCase() === "colors"
-		);
-		const sizeOpt = product.options.find(
-			(o) => o.name.toLowerCase() === "sizes"
-		);
-		const scentOpt = product.options.find(
-			(o) => o.name.toLowerCase() === "scents"
-		);
-
-		function numOrStr(val) {
-			return typeof val === "number" ? val : parseInt(val, 10);
-		}
-
-		let chosenColorId = null;
-		if (colorOpt && colorTitle) {
-			const colorVal = colorOpt.values.find((v) => v.title === colorTitle);
-			if (!colorVal) return false;
-			chosenColorId = numOrStr(colorVal.id);
-		}
-
-		let chosenSizeId = null;
-		if (sizeOpt && chosenSize) {
-			const sVal = sizeOpt.values.find((v) => v.title === chosenSize);
-			if (sVal) chosenSizeId = numOrStr(sVal.id);
-		}
-
-		let chosenScentId = null;
-		if (scentOpt && chosenScent) {
-			const scVal = scentOpt.values.find((v) => v.title === chosenScent);
-			if (scVal) chosenScentId = numOrStr(scVal.id);
-		}
-
-		return product.variants.some((v) => {
-			const varIds = v.options.map(numOrStr);
-			if (chosenColorId != null && !varIds.includes(chosenColorId)) {
-				return false;
-			}
-			if (chosenSizeId != null && !varIds.includes(chosenSizeId)) {
-				return false;
-			}
-			if (chosenScentId != null && !varIds.includes(chosenScentId)) {
-				return false;
-			}
-			return true;
-		});
-	}
 
 	/**
 	 * We already have "variantExistsForOption" for size:
@@ -935,10 +1551,8 @@ export default function CustomizeSelectedProduct() {
 	 * 4) IMAGE UPLOAD LOGIC
 	 */
 	function handleBlankAreaDoubleClick(e) {
-		if (!e.target.closest(".rnd-element")) {
-			setUserJustDoubleClickedCanvas(true);
-			setTimeout(() => setUserJustDoubleClickedCanvas(false), 500);
-		}
+		// Reserved hook for future tutorial interactions.
+		if (!e.target.closest(".rnd-element")) return;
 	}
 
 	const addImageElement = async (file) => {
@@ -989,7 +1603,7 @@ export default function CustomizeSelectedProduct() {
 									fallbackUserId,
 									fallbackToken
 								);
-								addImageElementToCanvas(public_id, url);
+								await addImageElementToCanvas(public_id, url);
 							} catch (finalErr) {
 								console.error(
 									"All fallback attempts for upload failed!",
@@ -1006,7 +1620,7 @@ export default function CustomizeSelectedProduct() {
 										fallbackUserId,
 										fallbackToken
 									);
-									addImageElementToCanvas(public_id, url);
+									await addImageElementToCanvas(public_id, url);
 								} catch (permFail) {
 									console.error(
 										"Even after permissions, final attempt failed.",
@@ -1043,7 +1657,7 @@ export default function CustomizeSelectedProduct() {
 		if (!public_id || !url) {
 			throw new Error("Missing public_id or url from direct upload response");
 		}
-		addImageElementToCanvas(public_id, url);
+		await addImageElementToCanvas(public_id, url);
 	}
 
 	async function handleImageResizingThenUpload(file) {
@@ -1059,16 +1673,57 @@ export default function CustomizeSelectedProduct() {
 		if (!public_id || !url) {
 			throw new Error("Missing public_id or url after resizing");
 		}
-		addImageElementToCanvas(public_id, url);
+		await addImageElementToCanvas(public_id, url);
 	}
 
-	function addImageElementToCanvas(public_id, url) {
+	function getImageNaturalSize(url) {
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			img.crossOrigin = "anonymous";
+			img.onload = () =>
+				resolve({
+					width: Math.max(1, Number(img.naturalWidth) || 1),
+					height: Math.max(1, Number(img.naturalHeight) || 1),
+				});
+			img.onerror = reject;
+			img.src = url;
+		});
+	}
+
+	async function addImageElementToCanvas(public_id, url) {
 		if (!printAreaRef.current) return;
 		const boundingRect = printAreaRef.current.getBoundingClientRect();
-		const imgWidth = 150;
-		const imgHeight = 200;
-		const centerX = boundingRect.width / 2 - imgWidth / 2;
-		const centerY = boundingRect.height / 2 - imgHeight / 2;
+		const safeBounds = resolvePrintifySafeBounds(
+			boundingRect.width,
+			boundingRect.height,
+			printifySafeInsetPercent
+		);
+		const safeWidth = Math.max(80, safeBounds.maxX - safeBounds.minX);
+		const safeHeight = Math.max(80, safeBounds.maxY - safeBounds.minY);
+		let naturalWidth = 1;
+		let naturalHeight = 1;
+		try {
+			const naturalSize = await getImageNaturalSize(url);
+			naturalWidth = naturalSize.width;
+			naturalHeight = naturalSize.height;
+		} catch {
+			naturalWidth = 1;
+			naturalHeight = 1;
+		}
+
+		const ratio = Math.max(0.1, naturalWidth / naturalHeight);
+		const maxStartWidth = Math.max(90, safeWidth * 0.58);
+		const maxStartHeight = Math.max(90, safeHeight * 0.58);
+		let imgWidth = maxStartWidth;
+		let imgHeight = imgWidth / ratio;
+		if (imgHeight > maxStartHeight) {
+			imgHeight = maxStartHeight;
+			imgWidth = imgHeight * ratio;
+		}
+		imgWidth = clampNumber(imgWidth, 72, safeWidth);
+		imgHeight = clampNumber(imgHeight, 72, safeHeight);
+		const centerX = safeBounds.minX + (safeWidth - imgWidth) / 2;
+		const centerY = safeBounds.minY + (safeHeight - imgHeight) / 2;
 
 		const newId = Date.now();
 		const removedBg = removeImageBackground(url);
@@ -1190,6 +1845,7 @@ export default function CustomizeSelectedProduct() {
 			width: boxWidth,
 			height: boxHeight,
 			wasReset: false,
+			isAutoGenerated: false,
 		};
 		setElements((prev) => [...prev, newEl]);
 	}
@@ -1202,7 +1858,6 @@ export default function CustomizeSelectedProduct() {
 		setSelectedElementId(el.id);
 
 		if (el.type === "text") {
-			setUserJustSingleClickedText(true);
 			setUserText(el.text || "");
 			setTextColor(el.color || "#000000");
 			setFontFamily(el.fontFamily || "Arial");
@@ -1216,14 +1871,7 @@ export default function CustomizeSelectedProduct() {
 	}
 
 	function handleTextDoubleClick(el) {
-		if (el.text === "Start typing here...") {
-			setElements((prev) =>
-				prev.map((item) => (item.id === el.id ? { ...item, text: "" } : item))
-			);
-			setInlineEditText("");
-		} else {
-			setInlineEditText(el.text);
-		}
+		setInlineEditText(el.text || "");
 		setInlineEditId(el.id);
 	}
 
@@ -1240,11 +1888,12 @@ export default function CustomizeSelectedProduct() {
 	function handleInlineEditSave(elId) {
 		setElements((prev) =>
 			prev.map((item) =>
-				item.id === elId ? { ...item, text: inlineEditText } : item
+				item.id === elId
+					? { ...item, text: inlineEditText, isAutoGenerated: false }
+					: item
 			)
 		);
 		setInlineEditId(null);
-		setUserJustSingleClickedText(false);
 	}
 
 	async function deleteSelectedElement(elId) {
@@ -1268,28 +1917,403 @@ export default function CustomizeSelectedProduct() {
 		setSelectedElementId(null);
 	}
 
-	const [showCenterLine, setShowCenterLine] = useState(false);
+	const [showCenterGuides, setShowCenterGuides] = useState({
+		vertical: false,
+		horizontal: false,
+	});
+	const [forceDragRelease, setForceDragRelease] = useState(false);
+	const dragSessionRef = useRef(false);
+	const dragReleaseTimerRef = useRef(null);
+	const dragPositionRafRef = useRef(null);
+	const dragPositionPendingRef = useRef(null);
+	const dragLastPositionRef = useRef({
+		elementId: null,
+		x: null,
+		y: null,
+	});
+	const dragGeometryRef = useRef({
+		ready: false,
+		containerCenterX: 0,
+		containerCenterY: 0,
+		safeBounds: null,
+	});
+	const centerGuideStateRef = useRef({ vertical: false, horizontal: false });
+	const centerGuidePendingRef = useRef({ vertical: false, horizontal: false });
+	const centerGuideRafRef = useRef(null);
+	const hideFrameContextMenuRef = useRef(() => {});
+	const copyFrameToClipboardRef = useRef(() => false);
+	const pasteFrameFromClipboardRef = useRef(() => null);
+	const hideCenterGuidesImmediateRef = useRef(() => {});
+	const getActivePrintifySafeBoundsRef = useRef(() => null);
+	const commitElementDragPositionRef = useRef(() => {});
+	const clearPendingDragPositionRafRef = useRef(() => {});
+	const onRotationEndRef = useRef(() => {});
+
+	function queueCenterGuides(nextGuides) {
+		const next = {
+			vertical: Boolean(nextGuides?.vertical),
+			horizontal: Boolean(nextGuides?.horizontal),
+		};
+		centerGuidePendingRef.current = next;
+		if (centerGuideRafRef.current) return;
+		centerGuideRafRef.current = window.requestAnimationFrame(() => {
+			centerGuideRafRef.current = null;
+			const pending = centerGuidePendingRef.current;
+			const current = centerGuideStateRef.current;
+			if (
+				current.vertical === pending.vertical &&
+				current.horizontal === pending.horizontal
+			) {
+				return;
+			}
+			centerGuideStateRef.current = pending;
+			setShowCenterGuides(pending);
+		});
+	}
+
+	function hideCenterGuidesImmediate() {
+		if (centerGuideRafRef.current) {
+			window.cancelAnimationFrame(centerGuideRafRef.current);
+			centerGuideRafRef.current = null;
+		}
+		centerGuidePendingRef.current = { vertical: false, horizontal: false };
+		const current = centerGuideStateRef.current;
+		if (!current.vertical && !current.horizontal) return;
+		centerGuideStateRef.current = { vertical: false, horizontal: false };
+		setShowCenterGuides({ vertical: false, horizontal: false });
+	}
+	hideCenterGuidesImmediateRef.current = hideCenterGuidesImmediate;
+
+	function hideFrameContextMenu() {
+		setFrameContextMenu((prev) =>
+			prev.visible ? { ...prev, visible: false } : prev
+		);
+	}
+	hideFrameContextMenuRef.current = hideFrameContextMenu;
+
+	function openFrameContextMenu(event, targetId = null) {
+		if (isMobile) return;
+		setFrameContextMenu({
+			visible: true,
+			x: event.clientX,
+			y: event.clientY,
+			targetId,
+		});
+	}
+
+	function getActivePrintifySafeBounds() {
+		if (!printAreaRef.current) return null;
+		const rect = printAreaRef.current.getBoundingClientRect();
+		return resolvePrintifySafeBounds(
+			rect.width,
+			rect.height,
+			printifySafeInsetPercent
+		);
+	}
+	getActivePrintifySafeBoundsRef.current = getActivePrintifySafeBounds;
+
+	function clearPendingDragPositionRaf() {
+		if (dragPositionRafRef.current) {
+			window.cancelAnimationFrame(dragPositionRafRef.current);
+			dragPositionRafRef.current = null;
+		}
+		dragPositionPendingRef.current = null;
+	}
+	clearPendingDragPositionRafRef.current = clearPendingDragPositionRaf;
+
+	function commitElementDragPosition(elementId, x, y) {
+		if (!Number.isFinite(x) || !Number.isFinite(y) || !elementId) return;
+		setElements((prev) =>
+			prev.map((item) => {
+				if (item.id !== elementId) return item;
+				const safeBounds = getActivePrintifySafeBounds();
+				if (!safeBounds) {
+					if (item.x === x && item.y === y) return item;
+					return { ...item, x, y };
+				}
+				const clamped = clampElementPositionWithinBounds(
+					x,
+					y,
+					item.width,
+					item.height,
+					safeBounds
+				);
+				if (item.x === clamped.x && item.y === clamped.y) return item;
+				return { ...item, x: clamped.x, y: clamped.y };
+			})
+		);
+	}
+	commitElementDragPositionRef.current = commitElementDragPosition;
+
+	function queueDragPositionCommit(elementId, x, y) {
+		dragPositionPendingRef.current = { elementId, x, y };
+		dragLastPositionRef.current = { elementId, x, y };
+		if (dragPositionRafRef.current) return;
+		dragPositionRafRef.current = window.requestAnimationFrame(() => {
+			dragPositionRafRef.current = null;
+			const pending = dragPositionPendingRef.current;
+			dragPositionPendingRef.current = null;
+			if (!pending) return;
+			commitElementDragPosition(pending.elementId, pending.x, pending.y);
+		});
+	}
+
+	function captureCurrentDragGeometry() {
+		if (!printAreaRef.current) {
+			dragGeometryRef.current = {
+				ready: false,
+				containerCenterX: 0,
+				containerCenterY: 0,
+				safeBounds: null,
+			};
+			return;
+		}
+		const printAreaBounds = printAreaRef.current.getBoundingClientRect();
+		const overlayBounds =
+			designOverlayRef.current?.getBoundingClientRect() || printAreaBounds;
+		const printAreaOffsetX = printAreaBounds.left - overlayBounds.left;
+		const printAreaOffsetY = printAreaBounds.top - overlayBounds.top;
+		const containerCenterX = clampNumber(
+			overlayBounds.width / 2 - printAreaOffsetX,
+			0,
+			printAreaBounds.width
+		);
+		const containerCenterY = clampNumber(
+			overlayBounds.height / 2 - printAreaOffsetY,
+			0,
+			printAreaBounds.height
+		);
+		const safeBounds = resolvePrintifySafeBounds(
+			printAreaBounds.width,
+			printAreaBounds.height,
+			printifySafeInsetPercent
+		);
+		dragGeometryRef.current = {
+			ready: true,
+			containerCenterX,
+			containerCenterY,
+			safeBounds,
+		};
+	}
+
+	function copyFrameToClipboard(frame, { notify = true } = {}) {
+		if (!frame) return false;
+		copiedElementRef.current = JSON.parse(JSON.stringify(frame));
+		pasteCountRef.current = 0;
+		if (notify) message.success("Frame copied.");
+		return true;
+	}
+	copyFrameToClipboardRef.current = copyFrameToClipboard;
+
+	function pasteFrameFromClipboard({
+		anchorClientX = null,
+		anchorClientY = null,
+		notify = true,
+	} = {}) {
+		const source = copiedElementRef.current;
+		if (!source) {
+			if (notify) message.warning("Copy a frame first.");
+			return null;
+		}
+
+		const width = Math.max(24, Number(source.width) || 160);
+		const height = Math.max(24, Number(source.height) || 90);
+		const offset = 16 + Math.min(5, pasteCountRef.current) * 8;
+		let nextX = Number(source.x) + offset;
+		let nextY = Number(source.y) + offset;
+
+		if (printAreaRef.current) {
+			const rect = printAreaRef.current.getBoundingClientRect();
+			if (
+				Number.isFinite(anchorClientX) &&
+				Number.isFinite(anchorClientY)
+			) {
+				nextX = anchorClientX - rect.left - width / 2;
+				nextY = anchorClientY - rect.top - height / 2;
+			}
+			const safeBounds = resolvePrintifySafeBounds(
+				rect.width,
+				rect.height,
+				printifySafeInsetPercent
+			);
+			const clampedPoint = clampElementPositionWithinBounds(
+				nextX,
+				nextY,
+				width,
+				height,
+				safeBounds
+			);
+			nextX = clampedPoint.x;
+			nextY = clampedPoint.y;
+		}
+
+		const newElementId = Date.now() + Math.floor(Math.random() * 1000);
+		const cloned = {
+			...source,
+			id: newElementId,
+			x: nextX,
+			y: nextY,
+			width,
+			height,
+			wasReset: false,
+			isAutoGenerated: false,
+		};
+		delete cloned.autoKind;
+
+		setElements((prev) => [...prev, cloned]);
+		setSelectedElementId(newElementId);
+		pasteCountRef.current += 1;
+		if (notify) message.success("Frame pasted.");
+		return newElementId;
+	}
+	pasteFrameFromClipboardRef.current = pasteFrameFromClipboard;
+
+	function handleElementContextMenu(event, frame) {
+		event.preventDefault();
+		event.stopPropagation();
+		if (!frame?.id) return;
+		setSelectedElementId(frame.id);
+		openFrameContextMenu(event, frame.id);
+	}
+
+	function handlePrintAreaContextMenu(event) {
+		event.preventDefault();
+		openFrameContextMenu(event, selectedElementId || null);
+	}
+
+	function handleContextMenuCopy() {
+		const frameId = frameContextMenu.targetId || selectedElementId;
+		const target = elements.find((item) => item.id === frameId);
+		if (!target) {
+			message.warning("Select a frame to copy.");
+			hideFrameContextMenu();
+			return;
+		}
+		copyFrameToClipboard(target);
+		hideFrameContextMenu();
+	}
+
+	function handleContextMenuPaste() {
+		pasteFrameFromClipboard({
+			anchorClientX: frameContextMenu.x,
+			anchorClientY: frameContextMenu.y,
+		});
+		hideFrameContextMenu();
+	}
+
+	function handleMobileDuplicateFrame() {
+		if (!isMobile) return;
+		const selected = elements.find((item) => item.id === selectedElementId);
+		if (!selected) {
+			message.warning("Select a frame first.");
+			return;
+		}
+		copyFrameToClipboard(selected, { notify: false });
+		pasteFrameFromClipboard({ notify: false });
+		message.success("Frame duplicated.");
+	}
+
+	useEffect(() => {
+		if (!frameContextMenu.visible) return undefined;
+		const hideOnOutsidePointer = (event) => {
+			if (frameContextMenuRef.current?.contains(event.target)) return;
+			hideFrameContextMenuRef.current();
+		};
+		const hideOnEscape = (event) => {
+			if (event.key === "Escape") hideFrameContextMenuRef.current();
+		};
+		const hideOnViewportChange = () => hideFrameContextMenuRef.current();
+
+		document.addEventListener("mousedown", hideOnOutsidePointer);
+		document.addEventListener("touchstart", hideOnOutsidePointer, {
+			passive: true,
+		});
+		window.addEventListener("resize", hideOnViewportChange);
+		window.addEventListener("scroll", hideOnViewportChange, true);
+		window.addEventListener("keydown", hideOnEscape);
+
+		return () => {
+			document.removeEventListener("mousedown", hideOnOutsidePointer);
+			document.removeEventListener("touchstart", hideOnOutsidePointer);
+			window.removeEventListener("resize", hideOnViewportChange);
+			window.removeEventListener("scroll", hideOnViewportChange, true);
+			window.removeEventListener("keydown", hideOnEscape);
+		};
+	}, [frameContextMenu.visible]);
+
+	useEffect(() => {
+		const safeBounds = getActivePrintifySafeBoundsRef.current();
+		if (!safeBounds) return;
+		setElements((prev) => {
+			let changed = false;
+			const next = prev.map((item) => {
+				const clamped = clampElementRectWithinBounds(
+					{
+						x: item.x,
+						y: item.y,
+						width: item.width,
+						height: item.height,
+					},
+					safeBounds
+				);
+				if (
+					clamped.x === item.x &&
+					clamped.y === item.y &&
+					clamped.width === item.width &&
+					clamped.height === item.height
+				) {
+					return item;
+				}
+				changed = true;
+				return {
+					...item,
+					x: clamped.x,
+					y: clamped.y,
+					width: clamped.width,
+					height: clamped.height,
+				};
+			});
+			return changed ? next : prev;
+		});
+	}, [printifySafeInsetPercent, printAreaFrame, product?._id]);
 
 	function handleRndDrag(e, data, elId) {
-		if (!printAreaRef.current) return;
-		const boundingRect = printAreaRef.current.getBoundingClientRect();
-		const containerCenterX = boundingRect.width / 2;
-
 		const theElement = elements.find((x) => x.id === elId);
 		if (!theElement) return;
+		if (!dragGeometryRef.current.ready) {
+			captureCurrentDragGeometry();
+		}
+		const geometry = dragGeometryRef.current;
+		const safeBounds = geometry.safeBounds;
+		if (!safeBounds) return;
+		const clampedPoint = clampElementPositionWithinBounds(
+			data.x,
+			data.y,
+			theElement.width,
+			theElement.height,
+			safeBounds
+		);
 
-		const elementCenterX = data.x + theElement.width / 2;
-		const isCentered = Math.abs(elementCenterX - containerCenterX) < 5;
-		setShowCenterLine(isCentered);
+		const elementCenterX = clampedPoint.x + theElement.width / 2;
+		const elementCenterY = clampedPoint.y + theElement.height / 2;
+		const isCenteredVertically =
+			Math.abs(elementCenterX - geometry.containerCenterX) < 6;
+		const isCenteredHorizontally =
+			Math.abs(elementCenterY - geometry.containerCenterY) < 6;
+		queueCenterGuides({
+			vertical: isCenteredVertically,
+			horizontal: isCenteredHorizontally,
+		});
+		queueDragPositionCommit(elId, clampedPoint.x, clampedPoint.y);
 	}
 
 	function handleRndDragStop(e, data, elId) {
-		setShowCenterLine(false);
-		setElements((prev) =>
-			prev.map((item) =>
-				item.id === elId ? { ...item, x: data.x, y: data.y } : item
-			)
-		);
+		dragSessionRef.current = false;
+		dragGeometryRef.current.ready = false;
+		hideCenterGuidesImmediate();
+		clearPendingDragPositionRaf();
+		commitElementDragPosition(elId, data.x, data.y);
+		dragLastPositionRef.current = { elementId: null, x: null, y: null };
 	}
 
 	function handleRndResizeStop(e, direction, ref, delta, position, elId) {
@@ -1298,13 +2322,34 @@ export default function CustomizeSelectedProduct() {
 		setElements((prev) =>
 			prev.map((item) =>
 				item.id === elId
-					? {
-							...item,
-							x: position.x,
-							y: position.y,
-							width: newWidth,
-							height: newHeight,
-						}
+					? (() => {
+							const safeBounds = getActivePrintifySafeBounds();
+							if (!safeBounds) {
+								return {
+									...item,
+									x: position.x,
+									y: position.y,
+									width: newWidth,
+									height: newHeight,
+								};
+							}
+							const clamped = clampElementRectWithinBounds(
+								{
+									x: position.x,
+									y: position.y,
+									width: newWidth,
+									height: newHeight,
+								},
+								safeBounds
+							);
+							return {
+								...item,
+								x: clamped.x,
+								y: clamped.y,
+								width: clamped.width,
+								height: clamped.height,
+							};
+						})()
 					: item
 			)
 		);
@@ -1374,6 +2419,62 @@ export default function CustomizeSelectedProduct() {
 		document.removeEventListener("mouseup", onRotationEnd);
 		document.removeEventListener("touchend", onRotationEnd);
 	}
+	onRotationEndRef.current = onRotationEnd;
+
+	useEffect(() => {
+		const hardStopDragSession = (event) => {
+			if (!dragSessionRef.current && !rotationData.current.rotatingElementId) return;
+			const last = dragLastPositionRef.current;
+			if (
+				dragSessionRef.current &&
+				last?.elementId &&
+				Number.isFinite(last.x) &&
+				Number.isFinite(last.y)
+			) {
+				clearPendingDragPositionRafRef.current();
+				commitElementDragPositionRef.current(last.elementId, last.x, last.y);
+			}
+			dragSessionRef.current = false;
+			dragGeometryRef.current.ready = false;
+			dragLastPositionRef.current = { elementId: null, x: null, y: null };
+			hideCenterGuidesImmediateRef.current();
+			if (rotationData.current.rotatingElementId) {
+				onRotationEndRef.current();
+			}
+			const eventType = String(event?.type || "").toLowerCase();
+			const shouldForceRelease = eventType === "touchcancel" || eventType === "blur";
+			if (shouldForceRelease) {
+				setForceDragRelease(true);
+				if (dragReleaseTimerRef.current) {
+					clearTimeout(dragReleaseTimerRef.current);
+				}
+				dragReleaseTimerRef.current = setTimeout(() => {
+					setForceDragRelease(false);
+				}, 0);
+			}
+		};
+
+		window.addEventListener("mouseup", hardStopDragSession, true);
+		window.addEventListener("pointerup", hardStopDragSession, true);
+		window.addEventListener("touchend", hardStopDragSession, true);
+		window.addEventListener("touchcancel", hardStopDragSession, true);
+		window.addEventListener("blur", hardStopDragSession);
+
+		return () => {
+			window.removeEventListener("mouseup", hardStopDragSession, true);
+			window.removeEventListener("pointerup", hardStopDragSession, true);
+			window.removeEventListener("touchend", hardStopDragSession, true);
+			window.removeEventListener("touchcancel", hardStopDragSession, true);
+			window.removeEventListener("blur", hardStopDragSession);
+			clearPendingDragPositionRafRef.current();
+			if (dragReleaseTimerRef.current) {
+				clearTimeout(dragReleaseTimerRef.current);
+			}
+			if (centerGuideRafRef.current) {
+				window.cancelAnimationFrame(centerGuideRafRef.current);
+			}
+		};
+	}, []);
 
 	function getPointerXY(evt) {
 		if (evt.touches && evt.touches.length > 0) {
@@ -1521,8 +2622,6 @@ export default function CustomizeSelectedProduct() {
 		}
 		document.addEventListener("mousedown", handleGlobalClick);
 		document.addEventListener("touchstart", handleGlobalClick);
-		setUserJustSingleClickedText(true);
-		setUserJustSingleClickedText(true);
 		return () => {
 			document.removeEventListener("mousedown", handleGlobalClick);
 			document.removeEventListener("touchstart", handleGlobalClick);
@@ -1530,6 +2629,67 @@ export default function CustomizeSelectedProduct() {
 	}, [selectedElementId]);
 
 	const [isCheckoutModalVisible, setIsCheckoutModalVisible] = useState(false);
+	const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
+	const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+	const [isPreviewButtonDisabled, setIsPreviewButtonDisabled] = useState(false);
+	const [previewImages, setPreviewImages] = useState([]);
+	const [previewProgress, setPreviewProgress] = useState(0);
+	const [previewStatusText, setPreviewStatusText] = useState(
+		"Preparing your preview..."
+	);
+	const [activePreviewSession, setActivePreviewSession] = useState(null);
+	const [isPreviewLinkedToCart, setIsPreviewLinkedToCart] = useState(false);
+
+	const cleanupActivePreviewSession = async (sessionOverride = null) => {
+		const session = sessionOverride || activePreviewSession;
+		if (!session?.previewProductId) return;
+		try {
+			await cleanupPreviewCustomDesign(
+				session.previewProductId,
+				session.shopId || null
+			);
+		} catch (error) {
+			console.warn("Failed to cleanup preview product session:", error);
+		}
+	};
+
+	const handleClosePreviewModal = async ({ keepForCart = false } = {}) => {
+		setIsPreviewModalVisible(false);
+		setPreviewImages([]);
+		setPreviewProgress(0);
+		setPreviewStatusText("Preparing your preview...");
+
+		const shouldCleanup =
+			!keepForCart && !isPreviewLinkedToCart && !!activePreviewSession?.previewProductId;
+		const sessionToCleanup = activePreviewSession;
+
+		setActivePreviewSession(null);
+		setIsPreviewLinkedToCart(false);
+
+		if (shouldCleanup) {
+			await cleanupActivePreviewSession(sessionToCleanup);
+		}
+	};
+
+	const handlePreviewModalAddToCart = async () => {
+		const added = await handleAddToCart();
+		if (added) {
+			await handleClosePreviewModal({ keepForCart: true });
+		}
+	};
+
+	useEffect(() => {
+		return () => {
+			if (activePreviewSession?.previewProductId && !isPreviewLinkedToCart) {
+				cleanupPreviewCustomDesign(
+					activePreviewSession.previewProductId,
+					activePreviewSession.shopId || null
+				).catch((error) => {
+					console.warn("Unmount cleanup for preview product failed:", error);
+				});
+			}
+		};
+	}, [activePreviewSession, isPreviewLinkedToCart]);
 
 	/**
 	 * 6) ADD TO CART => SCREENSHOT
@@ -1549,10 +2709,10 @@ export default function CustomizeSelectedProduct() {
 		await new Promise((res) => setTimeout(res, 50));
 
 		/* ── early guards ─────────────────────────────────────────────────────── */
-		if (isAddToCartDisabled) return;
+		if (isAddToCartDisabled) return false;
 		if (!order.variant_id) {
 			message.warning("Please select required options before adding to cart.");
-			return;
+			return false;
 		}
 		setIsAddToCartDisabled(true);
 
@@ -1573,14 +2733,11 @@ export default function CustomizeSelectedProduct() {
 			};
 
 			/* bare print‑area only */
-			const bareCanvas = await html2canvas(
-				bareDesignRef.current,
-				screenshotOptions
-			);
-			const croppedBare = cropCanvasToTransparentBounds(bareCanvas);
-			const bareDataURL = await compressCanvas(croppedBare, {
-				mimeType: "image/jpeg",
-				quality: 0.9,
+			const bareCaptureNode = barePrintAreaRef.current || bareDesignRef.current;
+			const bareCanvas = await html2canvas(bareCaptureNode, screenshotOptions);
+			const bareDataURL = await compressCanvas(bareCanvas, {
+				mimeType: "image/png",
+				quality: 1,
 			});
 			const bareUpload = await cloudinaryUpload1(
 				fallbackUserId,
@@ -1619,13 +2776,13 @@ export default function CustomizeSelectedProduct() {
 				};
 
 				const bareBlob = await domtoimage.toBlob(
-					bareDesignRef.current,
+					barePrintAreaRef.current || bareDesignRef.current,
 					domOptions
 				);
 				const bareCanvas = await blobToCanvas(bareBlob);
 				const bareDataURL = await compressCanvas(bareCanvas, {
-					mimeType: "image/jpeg",
-					quality: 0.9,
+					mimeType: "image/png",
+					quality: 1,
 				});
 				bareUrl = (
 					await cloudinaryUpload1(fallbackUserId, fallbackToken, {
@@ -1654,7 +2811,7 @@ export default function CustomizeSelectedProduct() {
 				);
 				setSelectedElementId(previouslySelected);
 				setIsAddToCartDisabled(false);
-				return;
+				return false;
 			}
 		}
 
@@ -1665,7 +2822,7 @@ export default function CustomizeSelectedProduct() {
 			);
 			setSelectedElementId(previouslySelected);
 			setIsAddToCartDisabled(false);
-			return;
+			return false;
 		}
 
 		/* ── Step 3: rebuild variant‑price info, assemble customDesign payload ── */
@@ -1722,6 +2879,11 @@ export default function CustomizeSelectedProduct() {
 			scent: selectedScent,
 			printArea: "front",
 			PrintifyProductId: product.printifyProductDetails?.id || null,
+			previewProductId: activePreviewSession?.previewProductId || null,
+			previewShopId:
+				activePreviewSession?.shopId ||
+				product.printifyProductDetails?.shop_id ||
+				null,
 			variants: {
 				color: colorOpt
 					? colorOpt.values.find((c) => c.title === selectedColor)
@@ -1793,12 +2955,254 @@ export default function CustomizeSelectedProduct() {
 
 		openSidebar2();
 		message.success("Added to cart with custom design!");
-		setDidUserAddToCart(true);
+		if (activePreviewSession?.previewProductId) {
+			setIsPreviewLinkedToCart(true);
+		}
 
 		/* ── finally: restore selection & button state ───────────────────────── */
 		setSelectedElementId(previouslySelected);
 		setIsAddToCartDisabled(false);
+		return true;
 	}
+
+	async function handlePreviewDesign() {
+		if (isPreviewButtonDisabled || isPreviewLoading) return;
+		if (!order.variant_id) {
+			message.warning("Please select required options before previewing.");
+			return;
+		}
+
+		let progressTicker = null;
+		const stopProgressTicker = () => {
+			if (progressTicker) {
+				clearInterval(progressTicker);
+				progressTicker = null;
+			}
+		};
+		const bumpProgress = (value) => {
+			setPreviewProgress((prev) => Math.max(prev, Math.min(100, value)));
+		};
+
+		const previouslySelected = selectedElementId;
+
+		try {
+			if (activePreviewSession?.previewProductId && !isPreviewLinkedToCart) {
+				await cleanupActivePreviewSession(activePreviewSession);
+			}
+			setActivePreviewSession(null);
+			setIsPreviewLinkedToCart(false);
+
+			setIsPreviewButtonDisabled(true);
+			setIsPreviewLoading(true);
+			setIsPreviewModalVisible(true);
+			setPreviewImages([]);
+			setPreviewStatusText("Preparing your design...");
+			setPreviewProgress(8);
+
+			progressTicker = setInterval(() => {
+				setPreviewProgress((prev) => (prev < 92 ? prev + 1 : prev));
+			}, 180);
+
+			setSelectedElementId(null);
+			await new Promise((res) => setTimeout(res, 50));
+
+			let bareUrl;
+			try {
+				const screenshotOptions = {
+					scale: isMobile ? 1.5 : 2,
+					useCORS: true,
+					allowTaint: false,
+					ignoreElements: (el) => el.classList?.contains("noScreenshot"),
+					backgroundColor: null,
+				};
+				const previewNode =
+					barePrintAreaRef.current || printAreaRef.current || bareDesignRef.current;
+				if (!previewNode) {
+					throw new Error("Preview capture area is not ready yet.");
+				}
+
+				setPreviewStatusText("Capturing design area...");
+				bumpProgress(20);
+
+				await waitForImagesReady(previewNode);
+				const bareCanvas = await html2canvas(previewNode, screenshotOptions);
+				const bareDataURL = await compressCanvas(bareCanvas, {
+					mimeType: "image/png",
+					quality: 1,
+				});
+
+				setPreviewStatusText("Uploading design for preview...");
+				bumpProgress(42);
+				bareUrl = (
+					await cloudinaryUpload1(fallbackUserId, fallbackToken, {
+						image: bareDataURL,
+					})
+				).url;
+			} catch (htmlCaptureError) {
+				console.warn("html2canvas preview fallback ...", htmlCaptureError);
+				const domOptions = {
+					quality: 1,
+					bgcolor: null,
+					style: { transform: "scale(1.5)", transformOrigin: "top left" },
+					filter: (node) => !node.classList?.contains("noScreenshot"),
+				};
+				const previewNode =
+					barePrintAreaRef.current || printAreaRef.current || bareDesignRef.current;
+				if (!previewNode) {
+					throw new Error("Preview capture area is not ready yet.");
+				}
+				await waitForImagesReady(previewNode);
+				const bareBlob = await domtoimage.toBlob(previewNode, domOptions);
+				const bareCanvas = await blobToCanvas(bareBlob);
+				const bareDataURL = await compressCanvas(bareCanvas, {
+					mimeType: "image/png",
+					quality: 1,
+				});
+
+				setPreviewStatusText("Uploading design for preview...");
+				bumpProgress(42);
+				bareUrl = (
+					await cloudinaryUpload1(fallbackUserId, fallbackToken, {
+						image: bareDataURL,
+					})
+				).url;
+			}
+
+			if (!bareUrl) {
+				throw new Error("Could not prepare the design image for preview.");
+			}
+
+			const numOrStr = (value) =>
+				typeof value === "number" ? value : parseInt(value, 10);
+			const colorOpt = product.options.find(
+				(option) => option.name.toLowerCase() === "colors"
+			);
+			const sizeOpt = product.options.find(
+				(option) => option.name.toLowerCase() === "sizes"
+			);
+			const scentOpt = product.options.find(
+				(option) => option.name.toLowerCase() === "scents"
+			);
+
+			const chosenIds = [];
+			if (colorOpt && selectedColor) {
+				const colorValue = colorOpt.values.find(
+					(value) => value.title === selectedColor
+				);
+				if (colorValue) chosenIds.push(numOrStr(colorValue.id));
+			}
+			if (sizeOpt && selectedSize) {
+				const sizeValue = sizeOpt.values.find(
+					(value) => value.title === selectedSize
+				);
+				if (sizeValue) chosenIds.push(numOrStr(sizeValue.id));
+			}
+			if (scentOpt && selectedScent) {
+				const scentValue = scentOpt.values.find(
+					(value) => value.title === selectedScent
+				);
+				if (scentValue) chosenIds.push(numOrStr(scentValue.id));
+			}
+
+			const matchingVariant = product.variants.find((variant) =>
+				chosenIds.every((id) => variant.options.map(numOrStr).includes(id))
+			);
+			const previewPayload = {
+				blueprint_id: product.printifyProductDetails?.blueprint_id,
+				print_provider_id: product.printifyProductDetails?.print_provider_id,
+				variant_id: matchingVariant?.id || order.variant_id,
+				design_image_url: bareUrl,
+				bare_design_image_url: bareUrl,
+				design_covers_print_area: true,
+				design_is_full_print_area_capture: true,
+				title: product.title || product.productName,
+				print_areas: product.printifyProductDetails?.print_areas || [],
+			};
+
+			setPreviewStatusText("Generating live mockups...");
+			bumpProgress(62);
+			const response = await axios.post(
+				`${process.env.REACT_APP_API_URL}/preview-custom-design`,
+				previewPayload
+			);
+			const images = Array.isArray(response?.data?.preview_images)
+				? response.data.preview_images
+				: [];
+			const previewProductId =
+				response?.data?.preview_product_id || response?.data?.product_id || null;
+			const previewShopId = response?.data?.shop_id || null;
+
+			if (!images.length) {
+				throw new Error("No preview images returned.");
+			}
+
+			setPreviewStatusText("Finalizing previews...");
+			bumpProgress(94);
+			setPreviewImages(images.slice(0, 3));
+			if (previewProductId) {
+				setActivePreviewSession({
+					previewProductId,
+					shopId: previewShopId,
+				});
+			} else {
+				setActivePreviewSession(null);
+			}
+			setIsPreviewLinkedToCart(false);
+			setPreviewProgress(100);
+			setPreviewStatusText("Preview ready");
+		} catch (previewError) {
+			console.error("Preview generation failed:", previewError);
+			setPreviewStatusText("Preview failed. Please try again.");
+			setPreviewProgress(0);
+			message.error(
+				previewError?.response?.data?.error ||
+					previewError?.message ||
+					"Preview request failed. Please try again."
+			);
+		} finally {
+			stopProgressTicker();
+			setSelectedElementId(previouslySelected);
+			setIsPreviewButtonDisabled(false);
+			setIsPreviewLoading(false);
+		}
+	}
+
+	useEffect(() => {
+		const isTypingTarget = (target) => {
+			if (!target) return false;
+			const tag = String(target.tagName || "").toLowerCase();
+			if (tag === "input" || tag === "textarea" || tag === "select") return true;
+			if (target.isContentEditable) return true;
+			return false;
+		};
+
+		const handleCopyPasteShortcuts = (event) => {
+			const withModifier = event.ctrlKey || event.metaKey;
+			if (!withModifier) return;
+			if (isTypingTarget(event.target)) return;
+
+			const key = String(event.key || "").toLowerCase();
+			if (key === "c") {
+				const selected = elements.find((item) => item.id === selectedElementId);
+				if (!selected) return;
+				event.preventDefault();
+				copyFrameToClipboardRef.current(selected);
+				hideFrameContextMenuRef.current();
+				return;
+			}
+
+			if (key === "v") {
+				event.preventDefault();
+				pasteFrameFromClipboardRef.current();
+				hideFrameContextMenuRef.current();
+			}
+		};
+
+		window.addEventListener("keydown", handleCopyPasteShortcuts);
+		return () => {
+			window.removeEventListener("keydown", handleCopyPasteShortcuts);
+		};
+	}, [elements, selectedElementId]);
 
 	async function blobToCanvas(blob) {
 		return new Promise((resolve, reject) => {
@@ -1819,6 +3223,35 @@ export default function CustomizeSelectedProduct() {
 			};
 			img.src = url;
 		});
+	}
+
+	async function waitForImagesReady(rootNode) {
+		if (!rootNode || typeof rootNode.querySelectorAll !== "function") return;
+		const imageNodes = Array.from(rootNode.querySelectorAll("img"));
+		if (!imageNodes.length) return;
+
+		await Promise.all(
+			imageNodes.map(
+				(img) =>
+					new Promise((resolve) => {
+						if (img.complete && (img.naturalWidth || 0) > 0) {
+							resolve();
+							return;
+						}
+						let settled = false;
+						const finish = () => {
+							if (settled) return;
+							settled = true;
+							img.removeEventListener("load", finish);
+							img.removeEventListener("error", finish);
+							resolve();
+						};
+						img.addEventListener("load", finish);
+						img.addEventListener("error", finish);
+						setTimeout(finish, 2500);
+					}),
+			),
+		);
 	}
 
 	function handleRemoveBgToggle(elementId) {
@@ -1888,8 +3321,10 @@ export default function CustomizeSelectedProduct() {
 			? truncateText(productDescription, 30)
 			: productDescription;
 
-	const canonicalUrl = `https://serenejannat.com/custom-gifts/${productId}`;
-	const metaTitle = `${product.title || product.productName} | Customize`;
+	const seoSlug = toPodSlug(product.title || product.productName);
+	const canonicalUrl = `https://serenejannat.com/custom-gifts/${seoSlug}/${productId}`;
+	const personalizationLine = buildGiftMessage(selectedOccasion, selectedGiftName);
+	const metaTitle = `${product.title || product.productName} for ${selectedOccasion} | Serene Jannat`;
 	const rawMetaDescription =
 		product.printifyProductDetails?.description ||
 		product.description ||
@@ -1897,15 +3332,24 @@ export default function CustomizeSelectedProduct() {
 	const normalizedMetaDescription = stripHtmlTags(rawMetaDescription)
 		.replace(/\s+/g, " ")
 		.trim();
+	const metaDescriptionBase = `${normalizedMetaDescription} Personalized for ${selectedOccasion}. ${personalizationLine}`;
 	const metaDescription =
-		normalizedMetaDescription.length > 155
-			? `${normalizedMetaDescription.slice(0, 152).trim()}...`
-			: normalizedMetaDescription;
+		metaDescriptionBase.length > 155
+			? `${metaDescriptionBase.slice(0, 152).trim()}...`
+			: metaDescriptionBase;
+	const metaKeywords = [
+		"Print On Demand",
+		"Custom Gift",
+		selectedOccasion,
+		`${selectedOccasion} gifts`,
+		"Personalized Gifts USA",
+	].join(", ");
 	const metaImage =
 		filteredImages?.[0]?.src ||
 		product.images?.[0]?.src ||
 		product.thumbnailImage?.[0]?.images?.[0]?.url ||
 		"https://serenejannat.com/logo192.png";
+	const schemaPrice = Number(String(displayedPrice || "").replace(/[^0-9.]/g, "")) || 0;
 
 	// color/size/scent option objects:
 	const colorOpt = product.options.find(
@@ -1921,7 +3365,7 @@ export default function CustomizeSelectedProduct() {
 			<Helmet>
 				<title>{metaTitle}</title>
 				<meta name='description' content={metaDescription} />
-				<meta name='keywords' content='Print On Demand, Custom Gift' />
+				<meta name='keywords' content={metaKeywords} />
 				<link rel='canonical' href={canonicalUrl} />
 				<meta property='og:title' content={metaTitle} />
 				<meta property='og:description' content={metaDescription} />
@@ -1933,6 +3377,41 @@ export default function CustomizeSelectedProduct() {
 				<meta name='twitter:description' content={metaDescription} />
 				<meta name='twitter:image' content={metaImage} />
 				<meta name='twitter:url' content={canonicalUrl} />
+				<script
+					type='application/ld+json'
+					dangerouslySetInnerHTML={{
+						__html: JSON.stringify({
+							"@context": "https://schema.org",
+							"@type": "Product",
+							name: product.title || product.productName,
+							description: metaDescription,
+							image: [metaImage],
+							brand: {
+								"@type": "Brand",
+								name: "Serene Jannat",
+							},
+							offers: {
+								"@type": "Offer",
+								priceCurrency: "USD",
+								price: schemaPrice.toFixed(2),
+								availability: "https://schema.org/InStock",
+								url: canonicalUrl,
+							},
+							additionalProperty: [
+								{
+									"@type": "PropertyValue",
+									name: "Occasion",
+									value: selectedOccasion,
+								},
+								{
+									"@type": "PropertyValue",
+									name: "Personalization",
+									value: personalizationLine,
+								},
+							],
+						}),
+					}}
+				/>
 				<script
 					type='application/ld+json'
 					dangerouslySetInnerHTML={{
@@ -1950,7 +3429,11 @@ export default function CustomizeSelectedProduct() {
 				/>
 			</Helmet>
 
-			{/* Child Animation/Tutorial */}
+			{/*
+				Child Animation/Tutorial is intentionally disabled for now.
+				Keep this block commented for easy re-enable later.
+			*/}
+			{/*
 			<AnimationPODWalkThroughWrapper>
 				<AnimationPODWalkThrough
 					userAddedText={elements.some(
@@ -1969,7 +3452,6 @@ export default function CustomizeSelectedProduct() {
 					onUserUploadPhoto={() => {
 						hiddenGalleryInputRef.current?.click();
 					}}
-					// color, size, scent
 					onHandleColorChange={setSelectedColor}
 					onHandleSizeChange={setSelectedSize}
 					onHandleScentChange={setSelectedScent}
@@ -1979,12 +3461,25 @@ export default function CustomizeSelectedProduct() {
 					selectedColor={selectedColor}
 					selectedSize={selectedSize}
 					selectedScent={selectedScent}
-					// Provide the 3 "variantExists" functions
 					variantExistsForColor={variantExistsForColor}
 					variantExistsForSize={variantExistsForOption}
 					variantExistsForScent={variantExistsForScent}
 				/>
 			</AnimationPODWalkThroughWrapper>
+			*/}
+
+			{isMobile && (
+				<TopPreviewActionBar className='noScreenshot'>
+					<Button
+						type='default'
+						icon={<EyeOutlined />}
+						onClick={handlePreviewDesign}
+						disabled={isPreviewButtonDisabled || isPreviewLoading}
+					>
+						{isPreviewLoading ? "Preparing Preview..." : "Preview Design"}
+					</Button>
+				</TopPreviewActionBar>
+			)}
 
 			<Row gutter={[18, 20]}>
 				<Col xs={24} md={12}>
@@ -2132,6 +3627,12 @@ export default function CustomizeSelectedProduct() {
 												>
 													Add Text
 												</Button>
+												<Button
+													onClick={handleMobileDuplicateFrame}
+													disabled={!selectedElementId}
+												>
+													Duplicate
+												</Button>
 
 												<Button
 													icon={<CameraOutlined />}
@@ -2201,15 +3702,57 @@ export default function CustomizeSelectedProduct() {
 											alt={`${product.title}-front`}
 											crossOrigin='anonymous'
 										/>
+										{showCenterGuides.horizontal && (
+											<HorizontalCenterIndicator />
+										)}
+										{(showCenterGuides.vertical ||
+											showCenterGuides.horizontal) && <CenterGuideDot />}
 										<PrintArea
 											id='print-area'
 											ref={printAreaRef}
+											style={printAreaFrame}
 											onDoubleClick={handleBlankAreaDoubleClick}
+											onContextMenu={handlePrintAreaContextMenu}
 										>
-											{showCenterLine && <CenterIndicator />}
+											{showCenterGuides.vertical && <CenterIndicator />}
 											<DottedOverlay className='noScreenshot' />
+											<PrintifyGridOverlay className='noScreenshot'>
+												<PrintifySafeZone
+													style={{ inset: `${printifySafeInsetPercent}%` }}
+												/>
+											</PrintifyGridOverlay>
 											{renderDesignElements()}
 										</PrintArea>
+										{frameContextMenu.visible && (
+											<FrameContextMenu
+												ref={frameContextMenuRef}
+												style={{
+													top: frameContextMenu.y,
+													left: frameContextMenu.x,
+												}}
+											>
+												<FrameContextMenuItem
+													type='button'
+													onClick={handleContextMenuCopy}
+													disabled={
+														!elements.some(
+															(item) =>
+																item.id ===
+																(frameContextMenu.targetId || selectedElementId)
+														)
+													}
+												>
+													Copy frame
+												</FrameContextMenuItem>
+												<FrameContextMenuItem
+													type='button'
+													onClick={handleContextMenuPaste}
+													disabled={!copiedElementRef.current}
+												>
+													Paste frame
+												</FrameContextMenuItem>
+											</FrameContextMenu>
+										)}
 									</DesignOverlay>
 								</div>
 							);
@@ -2250,15 +3793,140 @@ export default function CustomizeSelectedProduct() {
 						</span>
 					</div>
 
-					<div style={{ marginBottom: 16 }}>
-						<strong>Note: </strong>
-						<span style={{ fontSize: "1rem", color: "var(--text-color-dark)" }}>
-							Please ensure to design within the dotted area.
-							<br />
-							If your design extends slightly beyond the dotted border, it may
-							be cropped.
-						</span>
-					</div>
+					{!isMobile && (
+						<DesktopActionBar>
+							<Button
+								type='default'
+								icon={<EyeOutlined />}
+								onClick={handlePreviewDesign}
+								disabled={isPreviewButtonDisabled || isPreviewLoading}
+								block
+							>
+								{isPreviewLoading ? "Preparing Preview..." : "Preview Design"}
+							</Button>
+							<Button
+								type='primary'
+								icon={<ShoppingCartOutlined />}
+								onClick={handleAddToCart}
+								disabled={isAddToCartDisabled}
+								block
+							>
+								{isAddToCartDisabled ? "Processing..." : "Add to Cart"}
+							</Button>
+						</DesktopActionBar>
+					)}
+
+					<PersonalizationPanel>
+						<Title
+							level={4}
+							style={{ color: "var(--text-color-dark)", marginBottom: 8 }}
+						>
+							Gift Personalization
+						</Title>
+						<Row gutter={12}>
+							<Col span={12}>
+								<Select
+									style={{ width: "100%" }}
+									value={selectedOccasion}
+									onChange={(value) =>
+										syncPersonalization(value, selectedGiftName)
+									}
+								>
+									{POD_OCCASION_OPTIONS.map((item) => (
+										<Option key={item.value} value={item.value}>
+											<span>
+												{item.icon} {item.value}
+											</span>
+										</Option>
+									))}
+								</Select>
+							</Col>
+							<Col span={12}>
+								<Input
+									value={selectedGiftName}
+									onChange={(e) =>
+										syncPersonalization(selectedOccasion, e.target.value)
+									}
+									placeholder='Name (optional)'
+									maxLength={40}
+								/>
+							</Col>
+						</Row>
+						<PresetPreviewBox>
+						<PresetPreviewText
+								style={{
+									color: effectiveOccasionStylePreset.textColor,
+									backgroundColor: effectiveOccasionStylePreset.backgroundColor,
+									backgroundImage: `linear-gradient(140deg, ${
+										effectiveOccasionStylePreset.messageGradientStart ||
+										effectiveOccasionStylePreset.backgroundColor
+									} 0%, ${
+										effectiveOccasionStylePreset.messageGradientEnd ||
+										effectiveOccasionStylePreset.backgroundColor
+									} 100%)`,
+									fontFamily: effectiveOccasionStylePreset.fontFamily,
+									fontSize: `${Math.max(16, effectiveOccasionStylePreset.fontSize - 6)}px`,
+									fontWeight: effectiveOccasionStylePreset.fontWeight,
+									fontStyle: effectiveOccasionStylePreset.fontStyle,
+									letterSpacing: effectiveOccasionStylePreset.letterSpacing || "0.08px",
+									textShadow:
+										effectiveOccasionStylePreset.textShadow ||
+										"0 1px 2px rgba(16, 33, 24, 0.16)",
+									borderRadius: `${effectiveOccasionStylePreset.borderRadius}px`,
+									border: `${clampNumber(
+										Number(effectiveOccasionStylePreset.messageBorderWidth) || 2,
+										1,
+										4,
+									)}px solid ${
+										effectiveOccasionStylePreset.messageBorderColor ||
+										effectiveOccasionStylePreset.accentBorderColor ||
+										"rgba(31, 41, 55, 0.2)"
+									}`,
+									boxShadow:
+										effectiveOccasionStylePreset.messageShadow ||
+										"0 6px 16px rgba(16, 33, 24, 0.12)",
+								}}
+							>
+								<PresetIconBubble
+									style={{
+										color: effectiveOccasionStylePreset.accentTextColor,
+										backgroundColor: effectiveOccasionStylePreset.accentBackgroundColor,
+										backgroundImage: `linear-gradient(145deg, ${
+											effectiveOccasionStylePreset.accentBackgroundColor ||
+											effectiveOccasionStylePreset.messageGradientStart ||
+											"#ffffff"
+										} 0%, ${
+											effectiveOccasionStylePreset.accentBackgroundColor2 ||
+											effectiveOccasionStylePreset.accentBackgroundColor ||
+											"#f3f4f6"
+										} 100%)`,
+										borderColor: effectiveOccasionStylePreset.accentBorderColor,
+										boxShadow:
+											effectiveOccasionStylePreset.accentShadow ||
+											"0 5px 13px rgba(16, 33, 24, 0.1)",
+										textShadow:
+											effectiveOccasionStylePreset.textShadow ||
+											"0 1px 2px rgba(16, 33, 24, 0.16)",
+									}}
+								>
+									{effectiveOccasionStylePreset.accentIcon || selectedOccasionMeta.icon}
+								</PresetIconBubble>
+								<span>
+									{effectiveOccasionStylePreset.ornamentLeft || ""}
+									{effectiveOccasionStylePreset.ornamentLeft ? " " : ""}
+									{buildGiftMessage(selectedOccasion, selectedGiftName)}
+									{effectiveOccasionStylePreset.ornamentRight ? " " : ""}
+									{effectiveOccasionStylePreset.ornamentRight || ""}
+								</span>
+							</PresetPreviewText>
+						</PresetPreviewBox>
+						<Switch
+							checked={advancedEditMode}
+							onChange={handleAdvancedModeChange}
+							checkedChildren='Advanced on'
+							unCheckedChildren='Simple mode'
+						/>
+					</PersonalizationPanel>
 
 					<CustomizePanel className='whole-select-options'>
 						<Title
@@ -2405,25 +4073,6 @@ export default function CustomizeSelectedProduct() {
 						)}
 					</CustomizePanel>
 
-					{!isMobile && (
-						<div
-							style={{ width: "50%", fontSize: "1.1rem", fontWeight: "bold" }}
-						>
-							<button
-								type='primary'
-								onClick={handleAddToCart}
-								disabled={isAddToCartDisabled}
-								className='btn btn-success'
-								style={{
-									width: "50%",
-									fontSize: "1.2rem",
-									fontWeight: "bold",
-								}}
-							>
-								{isAddToCartDisabled ? "Processing..." : "Add to Cart"}
-							</button>
-						</div>
-					)}
 				</Col>
 			</Row>
 
@@ -2432,6 +4081,117 @@ export default function CustomizeSelectedProduct() {
 				<MobileBottomPanel>
 					<Divider />
 					<CustomizePanel>
+						<Title
+							level={4}
+							style={{ color: "var(--text-color-dark)", marginBottom: 8 }}
+						>
+							Gift Personalization
+						</Title>
+						<Row gutter={8}>
+							<Col span={12}>
+								<Select
+									style={{ width: "100%" }}
+									value={selectedOccasion}
+									onChange={(value) =>
+										syncPersonalization(value, selectedGiftName)
+									}
+								>
+									{POD_OCCASION_OPTIONS.map((item) => (
+										<Option key={item.value} value={item.value}>
+											<span>
+												{item.icon} {item.value}
+											</span>
+										</Option>
+									))}
+								</Select>
+							</Col>
+							<Col span={12}>
+								<Input
+									value={selectedGiftName}
+									onChange={(e) =>
+										syncPersonalization(selectedOccasion, e.target.value)
+									}
+									placeholder='Name (optional)'
+									maxLength={40}
+								/>
+							</Col>
+						</Row>
+						<PresetPreviewBox>
+						<PresetPreviewText
+								style={{
+									color: effectiveOccasionStylePreset.textColor,
+									backgroundColor: effectiveOccasionStylePreset.backgroundColor,
+									backgroundImage: `linear-gradient(140deg, ${
+										effectiveOccasionStylePreset.messageGradientStart ||
+										effectiveOccasionStylePreset.backgroundColor
+									} 0%, ${
+										effectiveOccasionStylePreset.messageGradientEnd ||
+										effectiveOccasionStylePreset.backgroundColor
+									} 100%)`,
+									fontFamily: effectiveOccasionStylePreset.fontFamily,
+									fontSize: `${Math.max(14, effectiveOccasionStylePreset.fontSize - 8)}px`,
+									fontWeight: effectiveOccasionStylePreset.fontWeight,
+									fontStyle: effectiveOccasionStylePreset.fontStyle,
+									letterSpacing: effectiveOccasionStylePreset.letterSpacing || "0.08px",
+									textShadow:
+										effectiveOccasionStylePreset.textShadow ||
+										"0 1px 2px rgba(16, 33, 24, 0.16)",
+									borderRadius: `${effectiveOccasionStylePreset.borderRadius}px`,
+									border: `${clampNumber(
+										Number(effectiveOccasionStylePreset.messageBorderWidth) || 2,
+										1,
+										4,
+									)}px solid ${
+										effectiveOccasionStylePreset.messageBorderColor ||
+										effectiveOccasionStylePreset.accentBorderColor ||
+										"rgba(31, 41, 55, 0.2)"
+									}`,
+									boxShadow:
+										effectiveOccasionStylePreset.messageShadow ||
+										"0 6px 16px rgba(16, 33, 24, 0.12)",
+								}}
+							>
+								<PresetIconBubble
+									style={{
+										color: effectiveOccasionStylePreset.accentTextColor,
+										backgroundColor: effectiveOccasionStylePreset.accentBackgroundColor,
+										backgroundImage: `linear-gradient(145deg, ${
+											effectiveOccasionStylePreset.accentBackgroundColor ||
+											effectiveOccasionStylePreset.messageGradientStart ||
+											"#ffffff"
+										} 0%, ${
+											effectiveOccasionStylePreset.accentBackgroundColor2 ||
+											effectiveOccasionStylePreset.accentBackgroundColor ||
+											"#f3f4f6"
+										} 100%)`,
+										borderColor: effectiveOccasionStylePreset.accentBorderColor,
+										boxShadow:
+											effectiveOccasionStylePreset.accentShadow ||
+											"0 5px 13px rgba(16, 33, 24, 0.1)",
+										textShadow:
+											effectiveOccasionStylePreset.textShadow ||
+											"0 1px 2px rgba(16, 33, 24, 0.16)",
+									}}
+								>
+									{effectiveOccasionStylePreset.accentIcon || selectedOccasionMeta.icon}
+								</PresetIconBubble>
+								<span>
+									{effectiveOccasionStylePreset.ornamentLeft || ""}
+									{effectiveOccasionStylePreset.ornamentLeft ? " " : ""}
+									{buildGiftMessage(selectedOccasion, selectedGiftName)}
+									{effectiveOccasionStylePreset.ornamentRight ? " " : ""}
+									{effectiveOccasionStylePreset.ornamentRight || ""}
+								</span>
+							</PresetPreviewText>
+						</PresetPreviewBox>
+						<Switch
+							checked={advancedEditMode}
+							onChange={handleAdvancedModeChange}
+							checkedChildren='Advanced'
+							unCheckedChildren='Simple'
+						/>
+						<Divider style={{ margin: "16px 0" }} />
+
 						<Title
 							level={4}
 							style={{ color: "var(--text-color-dark)", marginBottom: 8 }}
@@ -2562,15 +4322,26 @@ export default function CustomizeSelectedProduct() {
 						</UploadZone>
 
 						<Divider />
-						<Button
-							type='primary'
-							icon={<ShoppingCartOutlined />}
-							onClick={handleAddToCart}
-							disabled={isAddToCartDisabled}
-							style={{ width: "100%", marginTop: "1rem" }}
-						>
-							{isAddToCartDisabled ? "Processing..." : "Add to Cart"}
-						</Button>
+						<MobileStickyActions className='noScreenshot'>
+							<Button
+								type='default'
+								icon={<EyeOutlined />}
+								onClick={handlePreviewDesign}
+								disabled={isPreviewButtonDisabled || isPreviewLoading}
+								block
+							>
+								{isPreviewLoading ? "Preparing Preview..." : "Preview Design"}
+							</Button>
+							<Button
+								type='primary'
+								icon={<ShoppingCartOutlined />}
+								onClick={handleAddToCart}
+								disabled={isAddToCartDisabled}
+								block
+							>
+								{isAddToCartDisabled ? "Processing..." : "Add to Cart"}
+							</Button>
+						</MobileStickyActions>
 					</CustomizePanel>
 				</MobileBottomPanel>
 			)}
@@ -2592,6 +4363,62 @@ export default function CustomizeSelectedProduct() {
 				/>
 			</Modal>
 
+			<Modal
+				title='Preview Design'
+				open={isPreviewModalVisible}
+				onCancel={() => {
+					handleClosePreviewModal();
+				}}
+				footer={[
+					<Button
+						key='add-to-cart'
+						type='primary'
+						icon={<ShoppingCartOutlined />}
+						onClick={handlePreviewModalAddToCart}
+						disabled={isPreviewLoading || isAddToCartDisabled}
+					>
+						{isAddToCartDisabled ? "Processing..." : "Add to Cart"}
+					</Button>,
+					<Button
+						key='close'
+						onClick={() => {
+							handleClosePreviewModal();
+						}}
+					>
+						Close
+					</Button>,
+				]}
+				width={920}
+				destroyOnClose
+			>
+				{isPreviewLoading ? (
+					<PreviewLoadingWrap>
+						<Spin size='large' />
+						<PreviewProgressBox>
+							<PreviewStatusText>{previewStatusText}</PreviewStatusText>
+							<Progress
+								percent={previewProgress}
+								status={previewProgress >= 100 ? "success" : "active"}
+								showInfo
+							/>
+						</PreviewProgressBox>
+					</PreviewLoadingWrap>
+				) : previewImages.length === 0 ? (
+					<PersonalizationHint>
+						No preview images were returned. Please try a different variant or
+						design.
+					</PersonalizationHint>
+				) : (
+					<PreviewImagesGrid>
+						{previewImages.map((imageUrl, index) => (
+							<PreviewImageCard key={`${imageUrl}-${index}`}>
+								<img src={imageUrl} alt={`Design preview ${index + 1}`} />
+							</PreviewImageCard>
+						))}
+					</PreviewImagesGrid>
+				)}
+			</Modal>
+
 			{uploadingImage && (
 				<UploadOverlay>
 					<Spin size='large' tip='Uploading image...' />
@@ -2600,7 +4427,11 @@ export default function CustomizeSelectedProduct() {
 
 			{/* BARE DESIGN (for screenshot) */}
 			<BareDesignOverlay ref={bareDesignRef}>
-				<BarePrintArea id='bare-print-area' ref={barePrintAreaRef}>
+				<BarePrintArea
+					id='bare-print-area'
+					ref={barePrintAreaRef}
+					style={printAreaFrame}
+				>
 					{elements.map((el) => (
 						<Rnd
 							key={el.id}
@@ -2629,34 +4460,24 @@ export default function CustomizeSelectedProduct() {
 							>
 								{el.type === "text" ? (
 									<div
-										style={{
-											whiteSpace: "pre-wrap",
-											color: el.color,
-											backgroundColor: el.backgroundColor,
-											fontSize: el.fontSize,
-											fontFamily: el.fontFamily,
-											fontWeight: el.fontWeight,
-											fontStyle: el.fontStyle,
-											borderRadius: el.borderRadius,
-											width: "100%",
-											height: "100%",
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-											textAlign: "center",
-										}}
+										style={buildTextElementStyle(el)}
 									>
-										{el.text}
+										{renderTextElementContent(el)}
 									</div>
 								) : (
 									<img
 										src={el.src}
 										alt='Custom'
+										crossOrigin='anonymous'
 										style={{
 											width: "100%",
 											height: "100%",
 											objectFit: "contain",
-											borderRadius: el.borderRadius || 0,
+											borderRadius: clampNumber(
+												Number(el.borderRadius) || 0,
+												0,
+												999,
+											),
 										}}
 									/>
 								)}
@@ -2682,6 +4503,8 @@ export default function CustomizeSelectedProduct() {
 	function renderDesignElements() {
 		return elements.map((el) => {
 			const isSelected = el.id === selectedElementId;
+			const dragEnabled =
+				!forceDragRelease && (advancedEditMode || el.type === "image");
 			return (
 				<Rnd
 					key={el.id}
@@ -2689,32 +4512,45 @@ export default function CustomizeSelectedProduct() {
 					bounds='#print-area'
 					position={{ x: el.x, y: el.y }}
 					size={{ width: el.width, height: el.height }}
-					enableResizing={{
-						topLeft: true,
-						topRight: true,
-						bottomLeft: true,
-						bottomRight: true,
-					}}
+					enableResizing={
+						advancedEditMode
+							? {
+									topLeft: true,
+									topRight: true,
+									bottomLeft: true,
+									bottomRight: true,
+								}
+							: false
+					}
+					disableDragging={!dragEnabled}
 					handleStyles={{
 						topLeft: { width: "20px", height: "20px" },
 						topRight: { width: "20px", height: "20px" },
 						bottomLeft: { width: "20px", height: "20px" },
 						bottomRight: { width: "20px", height: "20px" },
 					}}
+					onDragStart={() => {
+						dragSessionRef.current = true;
+						captureCurrentDragGeometry();
+						if (dragEnabled) setSelectedElementId(el.id);
+					}}
 					onDrag={(e, data) => handleRndDrag(e, data, el.id)}
 					onDragStop={(e, data) => handleRndDragStop(e, data, el.id)}
-					onResizeStart={() => setSelectedElementId(el.id)}
+					onResizeStart={() => advancedEditMode && setSelectedElementId(el.id)}
 					onResizeStop={(e, dir, ref, delta, pos) =>
 						handleRndResizeStop(e, dir, ref, delta, pos, el.id)
 					}
-					dragHandleClassName={DRAGGABLE_REGION_CLASS}
+					dragHandleClassName={
+						dragEnabled ? DRAGGABLE_REGION_CLASS : undefined
+					}
 					cancel='.rotate-handle, .text-toolbar, .image-toolbar, .text-toolbar *, .image-toolbar *'
 					style={{
-						border: isSelected
+						border: isSelected && advancedEditMode
 							? "1px dashed var(--text-color-dark)"
 							: "1px dashed transparent",
 						position: "absolute",
 					}}
+					onContextMenu={(event) => handleElementContextMenu(event, el)}
 					onMouseDown={() => handleElementClick(el)}
 					onTouchStart={() => handleElementClick(el)}
 				>
@@ -2723,7 +4559,8 @@ export default function CustomizeSelectedProduct() {
 						style={{
 							width: "100%",
 							height: "100%",
-							cursor: "move",
+							cursor: dragEnabled ? "move" : "default",
+							touchAction: "none",
 							transform: `rotate(${el.rotation || 0}deg)`,
 							transformOrigin: "center center",
 							display: "flex",
@@ -2765,43 +4602,34 @@ export default function CustomizeSelectedProduct() {
 									onDoubleClick={() => handleTextDoubleClick(el)}
 									onTouchEnd={() => handleTextTouchEnd(el)}
 									style={{
-										whiteSpace: "pre-wrap",
-										color: el.color,
-										backgroundColor: el.backgroundColor,
-										fontSize: el.fontSize,
-										fontFamily: el.fontFamily,
-										fontWeight: el.fontWeight,
-										fontStyle: el.fontStyle,
-										borderRadius: el.borderRadius,
-										width: "100%",
-										height: "100%",
-										padding: "4px",
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-										textAlign: "center",
+										...buildTextElementStyle(el),
 										userSelect: "none",
 									}}
 								>
-									{el.text}
+									{renderTextElementContent(el)}
 								</TextElement>
 							)
 						) : (
 							<ImageElement
 								src={el.src}
 								alt='Custom'
+								crossOrigin='anonymous'
 								style={{
 									width: "100%",
 									height: "100%",
 									objectFit: "contain",
-									borderRadius: el.borderRadius || 0,
+									borderRadius: clampNumber(
+										Number(el.borderRadius) || 0,
+										0,
+										999,
+									),
 									userSelect: "none",
 								}}
 							/>
 						)}
 					</div>
 
-					{isSelected && (
+					{isSelected && advancedEditMode && (
 						<RotateHandle
 							className='rotate-handle'
 							onMouseDown={(evt) => onRotationStart(evt, el.id)}
@@ -3025,13 +4853,20 @@ export default function CustomizeSelectedProduct() {
 									/>
 									<InputNumber
 										min={0}
-										max={50}
+										max={999}
 										value={el.borderRadius}
 										onChange={(value) =>
 											setElements((prev) =>
 												prev.map((item) =>
 													item.id === el.id
-														? { ...item, borderRadius: value }
+														? {
+																...item,
+																borderRadius: clampNumber(
+																	Number(value) || 0,
+																	0,
+																	999,
+																),
+															}
 														: item
 												)
 											)
@@ -3079,17 +4914,22 @@ export default function CustomizeSelectedProduct() {
 								<ToolbarRowImage>
 									<InputNumber
 										min={0}
-										max={200}
+										max={999}
 										value={el.borderRadius || 0}
 										onChange={(value) => {
+											const safeRadius = clampNumber(
+												Number(value) || 0,
+												0,
+												999,
+											);
 											setElements((prev) =>
 												prev.map((item) =>
 													item.id === el.id
-														? { ...item, borderRadius: value }
+														? { ...item, borderRadius: safeRadius }
 														: item
 												)
 											);
-											setBorderRadius(value);
+											setBorderRadius(safeRadius);
 										}}
 										size='small'
 										style={{ width: 80 }}
@@ -3188,6 +5028,20 @@ const DottedOverlay = styled.div`
 	z-index: 2;
 `;
 
+const PrintifyGridOverlay = styled.div`
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	z-index: 2;
+`;
+
+const PrintifySafeZone = styled.div`
+	position: absolute;
+	border: 1px dashed rgba(32, 91, 63, 0.35);
+	border-radius: 2px;
+	background: transparent;
+`;
+
 const OverlayImage = styled.img`
 	display: block;
 	width: 100%;
@@ -3248,6 +5102,66 @@ const FloatingActions = styled.div`
 
 const MobileBottomPanel = styled.div`
 	margin-top: 2rem;
+`;
+
+const TopPreviewActionBar = styled.div`
+	display: flex;
+	justify-content: flex-end;
+	margin: 0 0 12px;
+	position: static;
+	top: auto;
+	z-index: 1;
+
+	button {
+		border-radius: 10px;
+		border: 1px solid #e5d7cc;
+		background: #fff;
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+	}
+
+	@media (max-width: 800px) {
+		top: 62px;
+		margin-bottom: 8px;
+		button {
+			width: 100%;
+		}
+	}
+`;
+
+const DesktopActionBar = styled.div`
+	display: flex;
+	gap: 10px;
+	margin: 0 0 16px;
+	padding: 10px;
+	position: static;
+	top: auto;
+	z-index: 1;
+	background: #fff;
+	border: 1px solid #ece0d6;
+	border-radius: 12px;
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+
+	@media (max-width: 900px) {
+		flex-direction: column;
+	}
+`;
+
+const MobileStickyActions = styled.div`
+	position: sticky;
+	bottom: 8px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+	background: #fff;
+	border: 1px solid #ece0d6;
+	border-radius: 12px;
+	padding: 10px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+	z-index: 20;
+
+	@media (max-width: 380px) {
+		grid-template-columns: 1fr;
+	}
 `;
 
 const TextElement = styled.div`
@@ -3349,6 +5263,55 @@ const CustomizePanel = styled.div`
 	box-shadow: var(--box-shadow-light);
 `;
 
+const PersonalizationPanel = styled.div`
+	background: linear-gradient(180deg, #fffaf5 0%, #fff 100%);
+	padding: 16px;
+	margin-bottom: 16px;
+	border-radius: 8px;
+	border: 1px solid #f2e4d9;
+	box-shadow: var(--box-shadow-light);
+`;
+
+const PersonalizationHint = styled.p`
+	margin: 10px 0;
+	font-size: 0.9rem;
+	color: var(--text-color-secondary);
+`;
+
+const PresetPreviewBox = styled.div`
+	margin-top: 10px;
+	padding: 12px;
+	border-radius: 12px;
+	background: linear-gradient(160deg, #fff9f3 0%, #ffffff 100%);
+	border: 1px solid #eadbcc;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+`;
+
+const PresetPreviewText = styled.div`
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	padding: 11px 15px;
+	line-height: 1.25;
+	text-wrap: balance;
+	min-height: 52px;
+	max-width: 100%;
+`;
+
+const PresetIconBubble = styled.span`
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	min-width: 30px;
+	height: 30px;
+	border-radius: 999px;
+	border: 1px solid rgba(0, 0, 0, 0.14);
+	font-size: 1rem;
+	font-weight: 700;
+`;
+
 const UploadZone = styled.div`
 	width: 100%;
 	padding: 16px;
@@ -3402,9 +5365,9 @@ const BareDesignOverlay = styled.div`
 const BarePrintArea = styled.div`
 	position: absolute;
 	top: 20%;
-	left: 25%;
-	width: 50%;
-	height: 40%;
+	left: 20%;
+	width: 60%;
+	height: 75%;
 	pointer-events: auto;
 `;
 
@@ -3504,11 +5467,71 @@ const CenterIndicator = styled.div`
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	width: 2px;
+	width: 0;
 	left: 50%;
+	transform: translateX(-50%);
 	pointer-events: none;
 	z-index: 9999;
-	border: 1px dotted rgba(255, 0, 0, 0.3);
+	border-left: 1px dashed rgba(222, 53, 32, 0.55);
+`;
+
+const HorizontalCenterIndicator = styled.div`
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	pointer-events: none;
+	z-index: 9999;
+	border-top: 1px dashed rgba(222, 53, 32, 0.55);
+`;
+
+const CenterGuideDot = styled.div`
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 7px;
+	height: 7px;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	background: rgba(222, 53, 32, 0.75);
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+	pointer-events: none;
+	z-index: 10000;
+`;
+
+const FrameContextMenu = styled.div`
+	position: fixed;
+	min-width: 168px;
+	background: #ffffff;
+	border: 1px solid rgba(16, 24, 40, 0.14);
+	border-radius: 10px;
+	box-shadow: 0 8px 24px rgba(16, 24, 40, 0.2);
+	padding: 6px;
+	z-index: 1000001;
+`;
+
+const FrameContextMenuItem = styled.button`
+	display: block;
+	width: 100%;
+	border: 0;
+	background: transparent;
+	padding: 8px 10px;
+	border-radius: 8px;
+	text-align: left;
+	font-size: 0.9rem;
+	color: #1f2937;
+	cursor: pointer;
+
+	&:hover:not(:disabled) {
+		background: #f5f7fa;
+	}
+
+	&:disabled {
+		color: #9ca3af;
+		cursor: not-allowed;
+	}
 `;
 
 const UploadOverlay = styled.div`
@@ -3524,6 +5547,46 @@ const UploadOverlay = styled.div`
 	justify-content: center;
 `;
 
+const PreviewLoadingWrap = styled.div`
+	min-height: 200px;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	align-items: center;
+	justify-content: center;
+`;
+
+const PreviewProgressBox = styled.div`
+	width: min(420px, 90%);
+`;
+
+const PreviewStatusText = styled.p`
+	margin: 0 0 8px;
+	font-size: 0.95rem;
+	color: var(--text-color-secondary);
+	text-align: center;
+`;
+
+const PreviewImagesGrid = styled.div`
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 12px;
+`;
+
+const PreviewImageCard = styled.div`
+	border: 1px solid #ebe0d4;
+	border-radius: 12px;
+	overflow: hidden;
+	background: #fff;
+
+	img {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+`;
+
+/*
 const AnimationPODWalkThroughWrapper = styled.div`
 	position: absolute;
 	top: 50%;
@@ -3545,3 +5608,4 @@ const AnimationPODWalkThroughWrapper = styled.div`
 		}
 	}
 `;
+*/
